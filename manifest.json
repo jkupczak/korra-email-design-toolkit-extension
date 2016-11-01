@@ -1,0 +1,50 @@
+{
+
+  // Can I add a shortcut key?
+  // I need to figure out how to copy to clipboard.
+  // Only allow clicking/activation when the current URL is relevant?
+  
+  "manifest_version": 2,
+
+  "name": "Local Design Companion",
+
+  "background": { // https://developer.chrome.com/extensions/event_pages
+    "scripts": ["scripts.js"],
+    "persistent": false
+  },
+
+  "description": "Immediately navigate to the opposite version of the current Dropbox file (Dropbox.com to local and vice versa).",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    
+    // "default_popup": "popup.html",
+    // "default_script": "scripts.js",
+
+    "default_title": "1.0.1"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "clipboardWrite",
+    "clipboardRead",
+    "http://*/*", 
+    "https://*/*",
+    "*://*.google.com/*"
+  ],
+
+  "content_scripts": [
+    // https://developer.chrome.com/extensions/content_scripts
+    {
+      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*"],
+      "css": ["injected_styles.css"],
+      "js": ["injected_scripts.js"]
+    }
+  ],
+
+  "web_accessible_resources": [
+    "favicons/*"
+  ]
+
+}
