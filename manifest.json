@@ -6,10 +6,10 @@
   
   "manifest_version": 2,
 
-  "name": "Local Design Companion",
+  "name": "Marketing Monkey",
 
   "background": { // https://developer.chrome.com/extensions/event_pages
-    "scripts": ["scripts.js"],
+    "scripts": ["eventPage.js"],
     "persistent": false
   },
 
@@ -27,19 +27,24 @@
   "permissions": [
     "activeTab",
     "tabs",
+    "contextMenus",
     "clipboardWrite",
     "clipboardRead",
     "http://*/*", 
     "https://*/*",
     "*://*.google.com/*"
   ],
-
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
   "content_scripts": [
     // https://developer.chrome.com/extensions/content_scripts
     {
       "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*"],
       "css": ["injected_styles.css"],
-      "js": ["injected_scripts.js"]
+      "js": ["contentScript.js"]
     }
   ],
 
