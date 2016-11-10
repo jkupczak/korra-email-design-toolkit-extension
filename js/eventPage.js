@@ -16,29 +16,24 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
   	console.log(request.greeting);
-  	
+
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
                 "from the extension");
-
-    if (request.greeting == "hello") {
-      sendResponse({farewell: "goodbye"});
-    }
-
-    sharePath = request.greeting;
-    console.log(sharePath);
 
 
     // Get right-click background image message
     // Use a function to save it outside of this listener.
     // http://stackoverflow.com/a/26373282/556079
-    saveMessage(request.bkgUrl); 
+    saveMessage(request.bkgUrl);
 
 });
 
+
+
 // http://stackoverflow.com/a/26373282/556079
 function saveMessage(data) {
-  
+
   bkgUrl = data;
 
   if (data == null) {
@@ -52,72 +47,6 @@ function saveMessage(data) {
   console.log("saveMessage function: " + bkgUrl);
 
 }
-
-////
-//// ICON CLICK ACTION
-//// Do this when icon is clicked.
-////
-chrome.browserAction.onClicked.addListener(function(tab) {
-
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-
-
-		var currUrl = tabs[0].url
-
-		if ( /^https?:\/\/(www\.)?dropbox\.com\/home\//.test(currUrl) ) { // If the current URL is on Dropbox, and is not a shortened link.
-			var newUrl = currUrl.replace(/https?:\/\/(www\.)?dropbox\.com\/home\//gi, "file:///Users/jameskupczak/Dropbox%20(MedBridge%20.)/");
-			var newUrl = newUrl.replace(/\/?\?preview=/gi, "\/");
-		} 
-
-		else if ( /^https?:\/\/(www\.)?dropbox\.com\/s\//.test(currUrl) ) { // Else, if the URL is shortened.
-
-			var filename = currUrl.replace(/(https?:\/\/(www\.)?dropbox\.com\/s\/.+?\/|\?dl=.+)/gi, "");
-
-			var newUrl = "file:///Users/jameskupczak/Dropbox%20(MedBridge%20.)" + sharePath + filename
-
-		} else if ( /^https?:\/\/(dl\.)?dropboxusercontent\.com\/s\//.test(currUrl) ) { // Else, if the URL is dl.dropboxusercontent.com
-
-			var newUrl = currUrl.replace(/(https?:\/\/(dl\.)?dropboxusercontent\.com\/s\/.+?\/|\?dl.+)/gi, "");
-
-			var splitUrl = newUrl.split("-",6);
-
-			var discipline = splitUrl[3];
-			var year       = splitUrl[0];
-			var fullYear   = "20" + year;
-			var month      = splitUrl[1];
-			var fullMonth  = "";
-			var day        = splitUrl[2];
-			var author     = splitUrl[5];
-			var filename = newUrl;
-
-			if ( month === "01" ) { fullMonth = "Jan" }
-				else if ( month === "02" ) { fullMonth = "Feb" }
-				else if ( month === "03" ) { fullMonth = "Mar" }
-				else if ( month === "04" ) { fullMonth = "Apr" }
-				else if ( month === "05" ) { fullMonth = "May" }
-				else if ( month === "06" ) { fullMonth = "June" }
-				else if ( month === "07" ) { fullMonth = "July" }
-				else if ( month === "08" ) { fullMonth = "Aug" }
-				else if ( month === "09" ) { fullMonth = "Sept" }
-				else if ( month === "10" ) { fullMonth = "Sept" }
-				else if ( month === "11" ) { fullMonth = "Nov" }
-				else if ( month === "12" ) { fullMonth = "Dec" }
-
-			var newUrl = "file:///Users/jameskupczak/Dropbox%20(MedBridge%20.)/Marketing%202/Campaigns/Email/" + discipline + "/" + fullYear + "/" + fullMonth + "-" + discipline + "/" + year + "-" + month + "-" + day + "-" + author + "/" + filename
-
-		}
-
-		else if ( /^file/.test(currUrl) ) { // Else, it's a local file.
-			var newUrl = currUrl.replace(/file:\/\/\/Users\/(jameskupczak)?\/Dropbox%20\(MedBridge%20\.\)\//gi, "https://www.dropbox.com/home/");
-		}
-
-		chrome.tabs.update({
-		     url: newUrl
-		});
-
-	});
-
-});
 
 
 
@@ -174,16 +103,16 @@ function onClickHandler(info, tab) {
                 " was clicked, state is now: " + info.checked +
                 " (previous state was " + info.wasChecked + ")");
 
-  } 
+  }
   else if (info.menuItemId == "backgroundImageAWS") {
   	window.open("https://console.aws.amazon.com/s3/home?region=us-east-1#&bucket=medbridgemarketing&prefix=" + awsFilepath(bkgUrl));
-  } 
+  }
   else if (info.menuItemId == "viewBackgroundImg") {
   	window.open(trimUrl(bkgUrl));
-  } 
+  }
   else if (info.menuItemId == "contextimage") {
   	window.open("https://console.aws.amazon.com/s3/home?region=us-east-1#&bucket=medbridgemarketing&prefix=" + awsFilepath(info.srcUrl));
-  }  
+  }
   else {
     console.log("item " + info.menuItemId + " was clicked");
     console.log("info: " + JSON.stringify(info));

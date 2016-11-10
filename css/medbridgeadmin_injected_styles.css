@@ -26,7 +26,9 @@ form.bs-form.form-horizontal .control-label {
 
 /* Active button */
 /* Prevent accidental clicks by making this an inline-block level element. */
+.control-group .controls label.bs-checkbox,
 .control-group .controls label[for="affiliate-isactive"],
 .control-group .controls label[for="code-isactive"] {
   display:inline-block !important;
+  cursor:pointer;
 }
