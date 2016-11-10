@@ -1,3 +1,8 @@
+// !!!!!!!!!!!!!
+// NO DOM ACCESS
+// !!!!!!!!!!!!!
+
+
 //
 // If I want to share this extension, I need a way to make it easy to find/keep the Users/<namehere>/ value.
 //
@@ -23,14 +28,35 @@ chrome.runtime.onMessage.addListener(
     sharePath = request.greeting;
     console.log(sharePath);
 
+
+    // Get right-click background image message
+    // Use a function to save it outside of this listener.
+    // http://stackoverflow.com/a/26373282/556079
+    saveMessage(request.bkgUrl); 
+
 });
 
+// http://stackoverflow.com/a/26373282/556079
+function saveMessage(data) {
+  
+  bkgUrl = data;
 
+  if (data == null) {
+  	chrome.contextMenus.update("backgroundImageAWS", { enabled: false });
+  	chrome.contextMenus.update("viewBackgroundImg", { enabled: false });
+  } else {
+  	chrome.contextMenus.update("backgroundImageAWS", { enabled: true });
+  	chrome.contextMenus.update("viewBackgroundImg", { enabled: true });
+  }
 
-//
-// ICON CLICK ACTION
-// Do this when icon is clicked.
-//
+  console.log("saveMessage function: " + bkgUrl);
+
+}
+
+////
+//// ICON CLICK ACTION
+//// Do this when icon is clicked.
+////
 chrome.browserAction.onClicked.addListener(function(tab) {
 
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -77,12 +103,11 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 				else if ( month === "11" ) { fullMonth = "Nov" }
 				else if ( month === "12" ) { fullMonth = "Dec" }
 
-
 			var newUrl = "file:///Users/jameskupczak/Dropbox%20(MedBridge%20.)/Marketing%202/Campaigns/Email/" + discipline + "/" + fullYear + "/" + fullMonth + "-" + discipline + "/" + year + "-" + month + "-" + day + "-" + author + "/" + filename
 
 		}
 
-		else { // Else, it's a local file.
+		else if ( /^file/.test(currUrl) ) { // Else, it's a local file.
 			var newUrl = currUrl.replace(/file:\/\/\/Users\/(jameskupczak)?\/Dropbox%20\(MedBridge%20\.\)\//gi, "https://www.dropbox.com/home/");
 		}
 
@@ -99,6 +124,11 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 ////
 //// MY FUNCTIONS
 ////
+
+function trimUrl(url) {
+ var url = url.replace(/(^("| +)|("| +)$)/gi, "");
+ return url
+}
 
 function awsFilename(link) {
 	var imgFile = link.replace(/^.+\//gi, "");
@@ -144,9 +174,17 @@ function onClickHandler(info, tab) {
                 " was clicked, state is now: " + info.checked +
                 " (previous state was " + info.wasChecked + ")");
 
-  } else if (info.menuItemId == "contextimage") {
+  } 
+  else if (info.menuItemId == "backgroundImageAWS") {
+  	window.open("https://console.aws.amazon.com/s3/home?region=us-east-1#&bucket=medbridgemarketing&prefix=" + awsFilepath(bkgUrl));
+  } 
+  else if (info.menuItemId == "viewBackgroundImg") {
+  	window.open(trimUrl(bkgUrl));
+  } 
+  else if (info.menuItemId == "contextimage") {
   	window.open("https://console.aws.amazon.com/s3/home?region=us-east-1#&bucket=medbridgemarketing&prefix=" + awsFilepath(info.srcUrl));
-  } else {
+  }  
+  else {
     console.log("item " + info.menuItemId + " was clicked");
     console.log("info: " + JSON.stringify(info));
     console.log("tab: " + JSON.stringify(tab));
@@ -155,27 +193,31 @@ function onClickHandler(info, tab) {
   }
 };
 
+
+
 chrome.contextMenus.onClicked.addListener(onClickHandler);
 
 // Set up context menu tree at install time.
 chrome.runtime.onInstalled.addListener(function() {
 
-  // Create one test item for each context type.
-	  // var contexts = ["page","selection","link","editable","image","video",
-	  //                 "audio"];
-	  // for (var i = 0; i < contexts.length; i++) {
-	  //   var context = contexts[i];
-	  //   var title = "Test '" + context + "' menu item";
-	  //   var id = chrome.contextMenus.create({"title": title, "contexts":[context],
-	  //                                        "id": "context" + context});
-	  //   console.log("'" + context + "' item:" + id);
-	  // }
-
   // Load the AWS page based on the Amazon Image that is clicked
   // Can I load different scripts based on the image clicked? And load different "title" text to match those different images?
-  chrome.contextMenus.create({"title": "Open image folder on AWS", "contexts":["image"], "id": "context" + "image"});
+  chrome.contextMenus.create({"title": "View image folder on AWS", "contexts":["image"], "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "context" + "image" });
+
+  // Create one test item for each context type.
+	  var contexts = ["all","page","selection","link","editable","video",
+	                  "audio","browser_action","page_action"];
+	  for (var i = 0; i < contexts.length; i++) {
+	    var context = contexts[i];
+	    var title = "Test '" + context + "' menu item";
+	    var id = chrome.contextMenus.create({"title": title, "contexts":[context],
+	                                         "id": "context" + context});
+	    console.log("'" + context + "' item:" + id);
+	  }
 
   // Create a parent item and two children.
+
+  chrome.contextMenus.create({"id": "sep", "type":'separator'});
   chrome.contextMenus.create({"title": "Test parent item", "id": "parent"});
   chrome.contextMenus.create(
       {"title": "Child 1", "parentId": "parent", "id": "child1"});
@@ -196,6 +238,17 @@ chrome.runtime.onInstalled.addListener(function() {
   chrome.contextMenus.create(
       {"title": "Checkbox2", "type": "checkbox", "id": "checkbox2"});
   console.log("checkbox1 checkbox2");
+
+  chrome.contextMenus.create({"title": "Radio 3", "type": "radio",
+                              "id": "radio3"});
+
+chrome.contextMenus.create({"id": "sep2", "type":'separator'});
+
+
+  chrome.contextMenus.create({"id": "sep1", "type":'separator'});
+
+  chrome.contextMenus.create({"title": "View background image folder on AWS", "contexts":["all"], "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "backgroundImageAWS"});
+  chrome.contextMenus.create({"title": "Open background image in new tab", "contexts":["all"], "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "viewBackgroundImg"});
 
 
 });

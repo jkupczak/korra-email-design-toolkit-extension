@@ -1,0 +1,90 @@
+
+body[class*="discipline"] .c-wizardNavigation.selfclear,
+body[class*="discipline"] .c-wizardNavigation.selfclear a,
+body[class*="discipline"] .line.selfclear,
+body[class*="discipline"] .line.selfclear a {
+  color:#fff !important;
+}
+
+/* PT */
+.discipline-pt .c-wizardNavigation.selfclear,
+.discipline-pt .wizard-freddie {
+  box-shadow: inset 0 4px 0px var(--pt);
+} .discipline-pt .wizard-freddie { background: var(--pt); }
+
+/*******/
+/* AT */
+.discipline-at .c-wizardNavigation.selfclear,
+.discipline-at .line.selfclear
+ { background: var(--at-dark); }
+.discipline-at .c-wizardNavigation.selfclear,
+.discipline-at .line.selfclear,
+.discipline-at #freddielink,
+.discipline-at .wizard-freddie {
+  box-shadow: inset 0 4px 0px var(--at);
+}
+.discipline-at .wizard-freddie, .discipline-at .c-wizardLink--top:hover,
+.discipline-at #freddielink,
+.discipline-at .gray-link:hover {
+  background: var(--at) !important;
+}
+.discipline-at .main-navigation .selected::after { border-bottom-color: var(--at); }
+
+/*******/
+/* OT */
+.discipline-ot .c-wizardNavigation.selfclear,
+.discipline-ot .line.selfclear
+ { background: var(--ot-dark); }
+.discipline-ot .c-wizardNavigation.selfclear,
+.discipline-ot .line.selfclear,
+.discipline-ot #freddielink,
+.discipline-ot .wizard-freddie {
+  box-shadow: inset 0 4px 0px var(--ot);
+}
+.discipline-ot .wizard-freddie, .discipline-ot .c-wizardLink--top:hover,
+.discipline-ot #freddielink,
+.discipline-ot .gray-link:hover {
+  background: var(--ot) !important;
+}
+.discipline-ot .main-navigation .selected::after { border-bottom-color: var(--ot); }
+
+/********/
+/* SLP */
+.discipline-slp .c-wizardNavigation.selfclear,
+.discipline-slp .line.selfclear
+ { background: var(--slp-dark); }
+.discipline-slp .c-wizardNavigation.selfclear,
+.discipline-slp .line.selfclear,
+.discipline-slp #freddielink,
+.discipline-slp .wizard-freddie {
+  box-shadow: inset 0 4px 0px var(--slp);
+}
+.discipline-slp .wizard-freddie, .discipline-slp .c-wizardLink--top:hover,
+.discipline-slp #freddielink,
+.discipline-slp .gray-link:hover {
+  background: var(--slp) !important;
+}
+.discipline-slp .main-navigation .selected::after { border-bottom-color: var(--slp); }
+
+/* Other */
+
+/* Massage */
+
+/* Enterprise */
+
+
+
+
+li[class*="discipline-"] > div.meta.cp-meta {
+  border-left-width:5px;
+  border-left-style:solid;
+  padding-left:20px;
+}
+
+.discipline-pt > div.meta.cp-meta       { border-left-color:#e3c902; }
+.discipline-at  > div.meta.cp-meta      { border-left-color:#ff620d; }
+.discipline-ot   > div.meta.cp-meta     { border-left-color:#bf002d; }
+.discipline-slp   > div.meta.cp-meta    { border-left-color:#00c2e0; }
+.discipline-other  > div.meta.cp-meta   { border-left-color:#bd00bf; }
+.discipline-massage  > div.meta.cp-meta { border-left-color:#1aa37a; }
+.discipline-undefined > div.meta.cp-meta{ border-left-color:#c2c2c2; }

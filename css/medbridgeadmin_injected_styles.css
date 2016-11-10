@@ -1,0 +1,32 @@
+/*body {
+  padding:100px !important;
+}*/
+
+.layout {
+  width:100% !important;
+}
+
+.layoutRight, .login_work_area {
+  width:1000px !important;
+}
+
+form.bs-form.form-horizontal .controls {
+  margin-left:0px !important;
+}
+
+input[type="text"] {
+  padding:10px !important;
+  width:100% !important;
+}
+
+form.bs-form.form-horizontal .control-label {
+  text-align:left !important;
+}
+
+
+/* Active button */
+/* Prevent accidental clicks by making this an inline-block level element. */
+.control-group .controls label[for="affiliate-isactive"],
+.control-group .controls label[for="code-isactive"] {
+  display:inline-block !important;
+}

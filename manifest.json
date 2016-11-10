@@ -3,26 +3,26 @@
   // Can I add a shortcut key?
   // I need to figure out how to copy to clipboard.
   // Only allow clicking/activation when the current URL is relevant?
-  
+
   "manifest_version": 2,
 
-  "name": "Marketing Monkey",
+  "name": "Marketing Bridge",
 
   "background": { // https://developer.chrome.com/extensions/event_pages
-    "scripts": ["eventPage.js"],
+    "scripts": ["js/eventPage.js"],
     "persistent": false
   },
 
-  "description": "Immediately navigate to the opposite version of the current Dropbox file (Dropbox.com to local and vice versa).",
-  "version": "1.0",
+  "description": "Designed to help automate everyday tasks and provide additional styling and visual clues that can assist designers at a glance. Upgrades the user experience on Dropbox.com, MedBridgeEducation.com, MailChimp.com, Amazon Web Services, Gmail.com, and with files saved to the local harddrive.",
+  "version": "1.2",
 
   "browser_action": {
     "default_icon": "icon.png",
-    
+
     // "default_popup": "popup.html",
     // "default_script": "scripts.js",
 
-    "default_title": "1.0.1"
+    "default_title": "Marketing Bridge"
   },
   "permissions": [
     "activeTab",
@@ -30,7 +30,7 @@
     "contextMenus",
     "clipboardWrite",
     "clipboardRead",
-    "http://*/*", 
+    "http://*/*",
     "https://*/*",
     "*://*.google.com/*"
   ],
@@ -41,10 +41,29 @@
   },
   "content_scripts": [
     // https://developer.chrome.com/extensions/content_scripts
-    {
-      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*"],
-      "css": ["injected_styles.css"],
-      "js": ["contentScript.js"]
+    { // Global
+      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.mailchimp.com/*"],
+      "css": ["css/global_injected_styles.css"],
+      "js": ["js/global_injected_contentScript.js"]
+    },
+    { // Email Labeling
+      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
+      "js": ["js/emailLabeling_injected_contentScript.js"]
+    },
+    { // Dropbox & Local
+      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/*"],
+      "css": ["css/dropbox_injected_styles.css"],
+      "js": ["js/dropbox_injected_contentScript.js"]
+    },
+    { // MailChimp
+      "matches": ["*://*.mailchimp.com/*"],
+      "css": ["css/mailchimp_injected_styles.css"],
+      "js": ["js/mailchimp_injected_contentScript.js"]
+    },
+    { // MedBridge Admin Panel
+      "matches": ["*://*.medbridgeeducation.com/admin/*"],
+      "css": ["css/medbridgeadmin_injected_styles.css"],
+      "js": ["js/medbridgeadmin_injected_contentScript.js"]
     }
   ],
 
