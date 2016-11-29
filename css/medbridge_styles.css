@@ -1,0 +1,134 @@
+.course-wrapper {
+  position:relative;
+}
+.select-course {
+  width:50px;
+  height:50px;
+  line-height:50px;
+  font-size:40px;
+  position:absolute;
+  top:-7px; right:3px;
+  z-index:10;
+  border-radius:100%;
+  box-shadow:0 0 0 4px #ccc;
+  background:#fff;
+  color:#ccc;
+  text-align:center;
+}
+.select-course:hover {
+  cursor:pointer;
+}
+
+.select-course:before {
+  position:absolute; top:0; right:0; bottom:0; left:0; margin:auto;
+  width:100%; height:100%; line-height:50px;
+}
+
+.select-course.mb-check {
+  background: var(--pt);
+  color:#fff;
+  box-shadow:0 0 0 4px #fff;
+}
+.select-course.mb-check:hover:before {
+  content:"\6f";
+}
+
+.select-course.mb-plus:hover {
+  box-shadow:0 0 0 4px var(--pt);
+}
+.select-course.mb-plus:hover:before {
+  color:var(--pt);
+}
+
+.select-course.mb-check + .course-listing {
+  box-shadow:0 0 0px 4px var(--pt);
+  border-radius:0;
+  overflow:hidden;
+}
+
+/*.select-course:before {
+  text-align:center;
+  line-height:40px;
+}*/
+
+.course-collection-wrapper {
+  width:auto;
+  max-width:100%;
+  min-width:300px;
+  /*height:160px;*/
+  padding-bottom:20px; padding-left:20px; padding-right:20px;
+  background:rgba(255,255,255,0.9);
+  position:fixed;
+  bottom:0; left:0;
+  box-shadow:0 0 30px 0 rgba(0,0,0,0.35);
+  z-index:100;
+  border-radius:0 6px 0 0;
+}
+.course-collection {
+  height:auto;
+  display:flex;
+  flex-direction: row;
+  flex-wrap:nowrap;
+  align-items:center;
+}
+.course-menu {
+  height:50px;
+  width:100%;
+  display:flex;
+  flex-direction: row;
+  flex-wrap:nowrap;
+  align-items:center;
+}
+.course-menu > div {
+  cursor:pointer;
+  color:#1964b3;
+  margin-right:20px;
+} .course-menu > div:last-child { margin:0; }
+
+.course-copy {
+  margin-right:10px;
+  height:100px;
+  width:178px;
+  color:#fff;
+  font-weight:bold;
+  font-famiy:Roboto;
+  font-size:14px;
+  background:#000;
+  border-radius:3px;
+  padding:8px 10px 0 10px;
+  position:relative;
+  transition: all .4s;
+}
+.course-copy:last-child {
+  margin-right:0;
+}
+
+.course-copy img {
+  width:178px;
+  height:100px;
+  display:block;
+  position:absolute;
+  top:0; left:0;
+  z-index:0;
+  opacity:.25;
+}
+
+.course-copy .mb-x.bubble:before, .course-copy .course-number.bubble {
+  position:absolute;
+  border-radius:100%;
+  line-height:20px;
+  text-align:center;
+  box-shadow:0 0 0 3px #fff;
+  width:20px; height:20px;
+}
+
+.course-copy .mb-x:before {
+  top:-4px; right:-4px;
+  cursor:pointer;
+  background:#000;
+}
+
+.course-copy .course-number {
+  bottom:-4px; right:-4px;
+  background:#1964b3;
+}

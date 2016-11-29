@@ -13,6 +13,11 @@
     "persistent": false
   },
 
+  "web_accessible_resources": [
+    "medbridge-chrome-extension.woff",
+    "favicons/*"
+  ],
+
   "description": "Designed to help automate everyday tasks and provide additional styling and visual clues that can assist designers at a glance. Upgrades the user experience on Dropbox.com, MedBridgeEducation.com, MailChimp.com, Amazon Web Services, Gmail.com, and with files saved to the local harddrive.",
   "version": "1.2",
 
@@ -42,33 +47,40 @@
   "content_scripts": [
     // https://developer.chrome.com/extensions/content_scripts
     { // Global
-      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.mailchimp.com/*"],
-      "css": ["css/global_injected_styles.css"],
+      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*"],
+      "css": ["css/global_styles.css"],
       "js": ["js/global_injected_contentScript.js"]
     },
-    { // Email Labeling
-      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
+    { //Email-Labeling_Favicons_and_Title_bars
+      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*"],
       "js": ["js/emailLabeling_injected_contentScript.js"]
+    },
+    { //Newsletter
+      "matches": ["file:///*", "*://*.dropboxusercontent.com/*"],
+      "css": ["css/newsletter_styles.css"],
+      "js": ["js/newsletter_injected_contentScript.js"]
     },
     { // Dropbox & Local
       "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/*"],
-      "css": ["css/dropbox_injected_styles.css"],
+      "css": ["css/dropbox_styles.css"],
       "js": ["js/dropbox_injected_contentScript.js"]
     },
     { // MailChimp
       "matches": ["*://*.mailchimp.com/*"],
-      "css": ["css/mailchimp_injected_styles.css"],
+      "css": ["css/mailchimp_styles.css"],
       "js": ["js/mailchimp_injected_contentScript.js"]
     },
+    { //MedBridge Homepage
+      "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*"],
+      "exclude_matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
+      "css": ["css/medbridge_styles.css"],
+      "js": ["js/medbridge_injected_contentScript.js"]
+    },
     { // MedBridge Admin Panel
-      "matches": ["*://*.medbridgeeducation.com/admin/*"],
-      "css": ["css/medbridgeadmin_injected_styles.css"],
-      "js": ["js/medbridgeadmin_injected_contentScript.js"]
+      "matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
+      "css": ["css/admin_styles.css"],
+      "js": ["js/admin_injected_contentScript.js"]
     }
-  ],
-
-  "web_accessible_resources": [
-    "favicons/*"
   ]
 
 }

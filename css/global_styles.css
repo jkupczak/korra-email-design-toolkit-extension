@@ -1,0 +1,113 @@
+/* @charset "UTF-8"; */
+
+@font-face {
+  font-family: "medbridge-chrome-extension";
+  src: url(chrome-extension://__MSG_@@extension_id__/medbridge-chrome-extension.woff);
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  --pt:      #FFBE12;
+  --pt-dark: #dba004;
+
+  --at:      #ff620d;
+  --at-dark: #db5209;
+
+  --ot:      #bf002d;
+  --ot-dark: #83001f;
+
+  --slp:     #00c2e0;
+  --slp-dark: #0091a7;
+
+  --other:      #bd00bf;
+  --other-dark: #870489;
+
+  --massage:      #1aa37a;
+  --massage-dark: #0f7d5c;
+
+  --enterprise:      #565e61;
+  --enterprise-dark: #3f474a;
+}
+
+
+[data-icon]:before {
+  font-family: "medbridge-chrome-extension" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="mb-"]:before,
+[class*=" mb-"]:before {
+  font-family: "medbridge-chrome-extension" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mb-at:before {
+  content: "\61";
+}
+.mb-at-sub:before {
+  content: "\62";
+}
+.mb-lmt:before {
+  content: "\63";
+}
+.mb-lmt-sub:before {
+  content: "\64";
+}
+.mb-ot:before {
+  content: "\65";
+}
+.mb-ot-sub:before {
+  content: "\66";
+}
+.mb-other:before {
+  content: "\67";
+}
+.mb-other-sub:before {
+  content: "\68";
+}
+.mb-slp:before {
+  content: "\6a";
+}
+.mb-slp-sub:before {
+  content: "\6b";
+}
+.mb-check:before {
+  content: "\6c";
+}
+.mb-pt-sub:before {
+  content: "\69";
+}
+.mb-pt:before {
+  content: "\6d";
+}
+.mb-plus:before {
+  content: "\6e";
+}
+.mb-x:before {
+  content: "\6f";
+}
+.mb-abtest:before {
+  content: "\71";
+}
+.mb-asterisk:before {
+  content: "\70";
+}
+.mb-mirror:before {
+  content: "\72";
+}

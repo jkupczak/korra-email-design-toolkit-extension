@@ -1,4 +1,4 @@
-console.log("global_contentScript.js loaded");
+console.log("global_injected_contentScript.js loaded");
 
 ////
 ////// Global Functions
@@ -8,14 +8,22 @@ console.log("global_contentScript.js loaded");
 // Process string to find disciplineId
 //
 function getDisciplineId(string) {
-  if ( /-(PT(-|\.|$)|(Physical$|Physical-?))/gi.test(string) ) { var disciplineId = "pt"; }
-  else if ( /-(AT(-|\.|$)|(Athletic$|Athletic-?))/gi.test(string) ) { var disciplineId = "at"; }
-  else if ( /-OT(-|\.|$)/gi.test(string) ) { var disciplineId = "ot"; }
-  else if ( /-SLP(-|\.|$)/gi.test(string) ) { var disciplineId = "slp"; }
-  else if ( /-(Other|PTO)(-|\.|$)/gi.test(string) ) { var disciplineId = "other"; }
-  else if ( /-L?MT(-|\.|$)/gi.test(string) ) { var disciplineId = "lmt"; }
-  else if ( /-Enterprise(-|\.|$)/gi.test(string) ) { var disciplineId = "enterprise"; }
+  console.log("running function on string: " + string);
+
+  var string = string.trim();
+
+       if ( /-(PT|Physical)(\s|-|\.|$)/gi.test(string) ) { var disciplineId = "pt"; }
+  else if ( /-(AT|Athletic)(\s|-|\.|$)/gi.test(string) ) { var disciplineId = "at"; }
+  else if ( /-OT(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "ot"; }
+  else if ( /-SLP(\s|-|\.|$)/gi.test(string) )             { var disciplineId = "slp"; }
+  else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(string) )   { var disciplineId = "other"; }
+  else if ( /-LMT(\s|-|\.|$)/gi.test(string) )           { var disciplineId = "lmt"; }
+  else if ( /-MT(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "mt"; }
+  else if ( /-Enterprise(\s|-|\.|$)/gi.test(string) )    { var disciplineId = "enterprise"; }
+  else if ( /-DR(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "dr"; }
   else { var disciplineId = "undefined" }
+
+  console.log("function returned this: " + disciplineId);
 
   return disciplineId;
 }
@@ -26,6 +34,21 @@ function getDisciplineId(string) {
 function getSubStatus(string) {
 
   return /(-sub(-|\.)|-s(-|\.)|-sub$)/gi.test(string);
+
+}
+
+//
+// Process string to find sub vs ns
+//
+function getABstatus(string) {
+
+  if ( /-a\.html?$/gi.test(string) ) {
+    return "a";
+  } else if ( /-b\.html?$/gi.test(string) ) {
+    return "b";
+  } else {
+    return false;
+  }
 
 }
 
