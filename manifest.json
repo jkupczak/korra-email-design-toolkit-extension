@@ -46,19 +46,27 @@
   },
   "content_scripts": [
     // https://developer.chrome.com/extensions/content_scripts
+    { //Newsletter
+      "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
+      "exclude_matches": ["http://localhost:4567/__middleman/*"],
+      "css": ["css/tingle.css", "css/newsletter_styles.css"],
+      "js": ["js/tingle.js", "js/newsletter_injected_contentScript.js"]
+    },
     { // Global
-      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*"],
+      "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
+      "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/global_styles.css"],
       "js": ["js/global_injected_contentScript.js"]
     },
     { //Email-Labeling_Favicons_and_Title_bars
-      "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*"],
+      "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
+      "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "js": ["js/emailLabeling_injected_contentScript.js"]
     },
-    { //Newsletter
-      "matches": ["file:///*", "*://*.dropboxusercontent.com/*"],
-      "css": ["css/newsletter_styles.css"],
-      "js": ["js/newsletter_injected_contentScript.js"]
+    { //Middleman
+      "matches": ["http://localhost:4567/*"],
+      "css": ["css/middleman_styles.css"],
+      "js": ["js/middleman_injected_contentScript.js"]
     },
     { // Dropbox & Local
       "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/*"],
@@ -73,8 +81,8 @@
     { //MedBridge Homepage
       "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*"],
       "exclude_matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
-      "css": ["css/medbridge_styles.css"],
-      "js": ["js/medbridge_injected_contentScript.js"]
+      "css": ["css/tingle.css", "css/medbridge_styles.css"],
+      "js": ["js/tingle.js", "js/medbridge_injected_contentScript.js"]
     },
     { // MedBridge Admin Panel
       "matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],

@@ -17,6 +17,13 @@ if ( /dropbox(.+)?\.com\/(s|home|content_link)/gi.test(pageUrl) ) {
 } else if ( /mailchimp(.+)?\.com/gi.test(pageUrl) ) {
 	var onMailchimp = true;
   console.log("Page loaded is mailchimp.com");
+} else if ( /localhost/gi.test(pageUrl) ) {
+	var onMiddleman = true;
+  console.log("Page loaded is localhost using Middleman");
+} else if ( /campaign-archive2/gi.test(pageUrl) ) {
+	console.log("Page is loaded as a web view on campaign-archive2.com")
+} else {
+	console.log("Page is loaded locally");
 }
 
 //
@@ -44,6 +51,13 @@ var disciplineId = getDisciplineId(disciplineSearch);
 ////
 
 var currTitle = document.title;
+var newTitle = "";
+var finalTitle = "";
+
+// Middleman Emoji
+if ( onMiddleman ) {
+	// finalTitle = finalTitle + "⚡️ ";
+}
 
 // Get AB Test data
 var abTestId = ""
@@ -53,24 +67,27 @@ if ( getABstatus(disciplineSearch) === "a" ) {
 	var abTestId = "(B) "
 };
 
-
 if ( !onMailchimp ) {
-	console.log("! " + disciplineId);
-	console.log("! " + fileName);
+	console.log("disciplineId = " + disciplineId + " | fileName = " + fileName);
 	var re = new RegExp("(^.+" + disciplineId + "-|-(ns|s|sub)-?(a|b)?\.html?)","gi");
-	var newTitle = fileName.replace(re, "");
-	console.log("! " + newTitle);
-	var newTitle = newTitle.replace(/-/gi, " ");
-	console.log("! " + newTitle);
-	document.title = abTestId + newTitle + " <" + fileName + "> (" + currTitle + ")";
+	newTitle = fileName.replace(re, "");
+	newTitle = newTitle.replace(/-/gi, " ");
 
-}
-else {
+	console.log("newTitle = " + newTitle);
+	console.log("fileTitle = " + finalTitle);
+
+	finalTitle = finalTitle + abTestId + newTitle + " <" + fileName + "> (" + currTitle + ")";
+	document.title = finalTitle;
+
+} else {
 
 	var re = new RegExp("([0-9][0-9]-|-" + disciplineId + "(-|$)|-sub$|-ns$|-Physical-?$|-Atheletic-?$)","gi");
-	var newTitle = disciplineSearch.replace(re, "");
-	var newTitle = newTitle.replace(/-/gi, " ");
-	document.title = abTestId + newTitle + " " + "(" + currTitle + ")";
+	newTitle = disciplineSearch.replace(re, "");
+	newTitle = newTitle.replace(/-/gi, " ");
+
+	finalTitle = finalTitle + abTestId + newTitle + " " + "(" + currTitle + ")";
+	document.title = finalTitle;
+
 }
 
 
@@ -91,15 +108,21 @@ if ( getSubStatus(disciplineSearch) ) { favicon = favicon + "-sub"; }
 // if ( getABstatus(disciplineSearch) ) { favicon = favicon + "-" + getABstatus(disciplineSearch); }
 //Dropbox check
 if ( onDropbox ) {	favicon = favicon + "-dropbox"; }
+//Middleman check
+if ( onMiddleman ) {	favicon = favicon + "-mm"; }
 //Mailchimp check
 if ( !onMailchimp ) {
 
+	var faviconWrapper = document.getElementsByTagName('head')[0]
 	var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
 	link.type = 'image/x-icon';
 	link.rel = 'shortcut icon';
 	link.href = chrome.extension.getURL("favicons/" + favicon + ".png");
-	document.getElementsByTagName('head')[0].appendChild(link);
 
-	console.log("Favicon = " + favicon);
+	// For some reason, this tag affects the loading/use of fonts (specifically Roboto), SOMETIMES. Adding it to the DOM and then moving it a second time fixes this. I do not know why.
+	faviconWrapper.insertBefore(link, faviconWrapper.firstChild); // Add it to the <head> tag.
+	faviconWrapper.appendChild(link); // Move it around inside the <head> to fix font issues with the page.
+
+	// console.log("Favicon = " + favicon);
 
 }

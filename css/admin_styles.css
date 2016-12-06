@@ -35,3 +35,14 @@ form.bs-form.form-horizontal .control-label {
   display:inline-block !important;
   cursor:pointer;
 }
+
+
+.clean-fields {
+  margin-left:15px;
+  display: inline-block;
+  margin-bottom: 0;
+  vertical-align: middle;
+  width:auto;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  float:right;
+}

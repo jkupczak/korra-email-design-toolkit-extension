@@ -92,3 +92,9 @@
 .mb-mirror:before {
   content: "\72";
 }
+.mb-mobile:before {
+  content: "\73";
+}
+.mb-columns:before {
+  content: "\74";
+}

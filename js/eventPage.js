@@ -5,6 +5,7 @@
 
 //
 // If I want to share this extension, I need a way to make it easy to find/keep the Users/<namehere>/ value.
+// Idea: Options page where they enter their mac name. Save that in the extension and use it as a variable.
 //
 
 var bkg = chrome.extension.getBackgroundPage();
@@ -71,6 +72,7 @@ function awsFilepath(link) {
 
 	var arrayLength = splitUrl.length;
 	var awsPrefix = splitUrl[0];
+  awsPrefix = awsPrefix.replace(/\+/gi, "%20"); // Image URLs use a + for spaces in a folder name, but you have to %20 when looking at that folder on AWS.
 
 	for (var i = 1; i < arrayLength; i++) {
 	    console.log(splitUrl[i]);
@@ -131,7 +133,7 @@ chrome.runtime.onInstalled.addListener(function() {
 
   // Load the AWS page based on the Amazon Image that is clicked
   // Can I load different scripts based on the image clicked? And load different "title" text to match those different images?
-  chrome.contextMenus.create({"title": "View image folder on AWS", "contexts":["image"], "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "context" + "image" });
+  chrome.contextMenus.create({"title": "Open image folder in AWS", "contexts":["image"], "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://s3.amazonaws.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "context" + "image" });
 
   // Create one test item for each context type.
 	  var contexts = ["all","page","selection","link","editable","video",
@@ -176,8 +178,8 @@ chrome.contextMenus.create({"id": "sep2", "type":'separator'});
 
   chrome.contextMenus.create({"id": "sep1", "type":'separator'});
 
-  chrome.contextMenus.create({"title": "View background image folder on AWS", "contexts":["all"], "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "backgroundImageAWS"});
-  chrome.contextMenus.create({"title": "Open background image in new tab", "contexts":["all"], "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "viewBackgroundImg"});
+  chrome.contextMenus.create({"title": "Open image folder in AWS!", "contexts":["all"], "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "backgroundImageAWS"});
+  chrome.contextMenus.create({"title": "Open background image in new tab", "contexts":["all"], "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "viewBackgroundImg"});
 
 
 });

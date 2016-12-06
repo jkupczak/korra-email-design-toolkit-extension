@@ -153,6 +153,52 @@ function generateYAML() {
 
 }
 
+//
+///
+//
+function generateHTML() {
+
+  console.log("function generateHTML()");
+
+  var exportedHtml = "";
+
+  let selectedCourses = document.querySelectorAll(".course-copy");
+  for (let exportCourse of selectedCourses) {
+    var courseLink = exportCourse.dataset.href;
+    var courseTitle = exportCourse.dataset.title;
+    var courseAuthor = exportCourse.dataset.author;
+    var courseThumbnail = exportCourse.dataset.courseThumbnail;
+
+    exportedHtml += '<tr>\n  <td valign="top" align="left" style="border-bottom: 1px solid #eaeaea; padding: 15px 0px 10px 0px;">\n    <table data-sub-mod="course" border="0" cellpadding="0" cellspacing="0" width="590" class="fullWidth" style="border-collapse: separate; width: 590px; min-width: 590px;">\n      <tr>\n        <td valign="top" align="left">\n          <table border="0" cellpadding="0" cellspacing="0" width="125" class="fullWidth" align="left" style="border-collapse: separate; width: 125px; min-width: 125px;">\n            <tr>\n              <td valign="top" align="center">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td valign="top" align="center" style="padding-bottom: 10px;"><a href="' + courseLink + '" style="text-decoration: none; color: #000001;" target="_blank"><img src="' + courseThumbnail + '" class="img218" alt="" title="" width="125" height="72" hspace="0" vspace="0" style="width: 125px; min-width: 125px; -ms-interpolation-mode: bicubic; border:0; outline: none; display: block;" /></a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n          <!--[if gte mso 9]>\n          </td><td valign="top" align="left" width="330" style="width: 330px; min-width: 330px;">\n          <![endif]-->\n          <table border="0" cellpadding="0" cellspacing="0" width="330" class="fullWidth" align="left" style="border-collapse: separate; width: 330px; min-width: 330px;">\n            <tr>\n              <td class="courseDescCell" valign="top" align="center">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td data-sub-mod="course-title" class="textCenter" valign="top" align="left" style="padding-left: 10px; padding-right: 10px; font-family: Helvetica, Arial, sans-serif;font-weight: 400;font-size: 18px;line-height: 23px;color: #434343;"><a href="' + courseLink + '" style="text-decoration: none; color: #434343; font-family: Roboto,Helvetica,Arial,sans-serif !important;" target="_blank">' + courseTitle + '</a></td>\n                  </tr>\n                  <tr>\n                    <td data-sub-mod="author" class="textCenter" valign="top" align="left" style="padding-left: 10px; padding-right: 10px; font-family: Helvetica, Arial, sans-serif;font-weight: 300;font-size: 16px;line-height: 21px;color: #777777;"><a href="' + courseLink + '" style="text-decoration: none; color: #777777; font-family: Roboto,Helvetica, Arial, sans-serif !important;" target="_blank">' + courseAuthor + '</a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n          <!--[if gte mso 9]>\n          </td><td valign="top" align="left" width="135" style="width: 135px; min-width: 135px;">\n          <![endif]-->\n          <table border="0" cellpadding="0" cellspacing="0" width="135" class="fullWidth" align="left" style="border-collapse: separate; width: 135px; min-width: 135px;">\n            <tr>\n              <td valign="top" align="center" style="padding-top: 10px;">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td data-sub-mod="cta" valign="top" align="center" style="padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 15px; font-family: Helvetica, Arial, sans-serif;font-weight: 300;font-size: 16px;line-height: 21px;color: #2b2b2b;"><a href="' + courseLink + '" style="text-decoration: none; color: #076ad2; font-family: Roboto,Helvetica, Arial, sans-serif !important;" target="_blank">Start for Free &rarr;</a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n        </td>\n      </tr>\n    </table>\n  </td>\n</tr>'
+
+  }
+
+  // Create Plain-Text Modal
+  var generatedHtml = document.createElement("code");
+  generatedHtml.className = "plain-text-modal";
+  var generatedHtmlText = document.createTextNode(exportedHtml);
+  generatedHtml.appendChild(generatedHtmlText);
+
+  // instanciate new modal
+  var createHtmlModal = new tingle.modal({
+      footer: false,
+      stickyFooter: false,
+      cssClass: ['fill'],
+
+      onOpen: function() {
+          console.log('modal open');
+      },
+      onClose: function() {
+          console.log('modal closed');
+          createHtmlModal.destroy();
+      }
+  });
+
+  createHtmlModal.setContent(generatedHtml);
+  createHtmlModal.open();
+
+}
+
 
 //
 ///
@@ -225,13 +271,21 @@ function courseToggle() {
 
       var courseMenu = document.createElement("div");
       courseMenu.className = "course-menu";
-      courseMenu.innerHTML = "<div class='gen-yaml'>Generate YAML</div>";
+
+
+      // Generate HTML
+      var elemGenerateHTML = document.createElement("div");
+      elemGenerateHTML.className = "generate-html";
+      elemGenerateHTML.addEventListener("click", generateHTML, false);
+      var elemGenerateHTMLText = document.createTextNode("Get HTML");
+      elemGenerateHTML.appendChild(elemGenerateHTMLText);
+      courseMenu.appendChild(elemGenerateHTML);
 
       // Generate JSON
       var elemGenerateJSON = document.createElement("div");
       elemGenerateJSON.className = "generate-json";
       elemGenerateJSON.addEventListener("click", generateJSON, false);
-      var elemGenerateJSONText = document.createTextNode("Generate JSON");
+      var elemGenerateJSONText = document.createTextNode("Get JSON");
       elemGenerateJSON.appendChild(elemGenerateJSONText);
       courseMenu.appendChild(elemGenerateJSON);
 
@@ -239,7 +293,7 @@ function courseToggle() {
       var elemGenerateYAML = document.createElement("div");
       elemGenerateYAML.className = "generate-json";
       elemGenerateYAML.addEventListener("click", generateYAML, false);
-      var elemGenerateYAMLText = document.createTextNode("Generate JSON");
+      var elemGenerateYAMLText = document.createTextNode("Get YAML");
       elemGenerateYAML.appendChild(elemGenerateYAMLText);
       courseMenu.appendChild(elemGenerateYAML);
 
@@ -247,7 +301,7 @@ function courseToggle() {
       var resetCourses = document.createElement("div");
       resetCourses.className = "reset-courses";
       resetCourses.addEventListener("click", resetAllCourses, false);
-      var resetCoursesText = document.createTextNode("Reset Courses");
+      var resetCoursesText = document.createTextNode("Reset");
       resetCourses.appendChild(resetCoursesText);
       courseMenu.appendChild(resetCourses);
 
