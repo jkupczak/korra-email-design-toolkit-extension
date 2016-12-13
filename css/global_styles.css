@@ -1,4 +1,4 @@
-@charset "UTF-8"; 
+@charset "UTF-8";
 
 @font-face {
   font-family: "medbridge-chrome-extension";
@@ -8,6 +8,9 @@
 }
 
 :root {
+  --mb-blue: #1e78d7;
+  --mb-blue-hover: #1964b3;
+
   --pt:      #FFBE12;
   --pt-dark: #dba004;
 

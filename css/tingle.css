@@ -179,7 +179,7 @@
 }
 .tingle-modal-box {
   overflow:hidden;
-  box-shadow:0 0 0 3px #d7d7d7;
+  /*box-shadow:0 0 0 3px #d7d7d7;*/
 }
 /* Textarea */
 .tingle-modal.fill .tingle-modal-box__content {
@@ -190,7 +190,7 @@
 }
 
 .tingle-modal.fill .tingle-modal-box {
-  width:60vw;
+  width:70vw;
   max-width:90vw;
 }
 .tingle-modal textarea, .tingle-modal code {
@@ -200,7 +200,7 @@
   height:90vh;
   max-height:90vh;
   font-family:monospace;
-  font-size:13px;
+  font-size:12px;
   resize: none;
   overflow-y:scroll;
   overflow-x:hidden;

@@ -1,3 +1,56 @@
+.course-options-wrapper .tingle-modal-box {
+  width:400px;
+}
+/*.course-options {
+  width:300px;
+  background:#fff;
+  padding:30px;
+}*/
+.course-options .option-wrapper {
+  padding:0 0 20px;
+}
+.course-options .label-wrapper {
+  padding:5px;
+}
+.course-options .option-title {
+  font-weight:bold;
+  padding:0 0 10px
+}
+.course-options input[type="radio"] { margin-right: 5px; }
+.course-options label span {
+  font-family:monospace;
+  color:rgb(170,170,170);
+}
+.course-options-wrapper label, .course-options-wrapper input[type="radio"] {
+  cursor:pointer;
+}
+
+.course-options .course-confirm {
+  display:flex;
+  margin-top:30px;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.course-options .btn-confirm {
+  color:#fff; font-weight:bold;
+  border-radius:4px;
+  background: var(--mb-blue);
+  border:0; outline:0;
+  padding:10px 20px;
+  box-shadow:none;
+}
+.course-options .btn-confirm:hover {
+  background: var(--mb-blue-hover);
+}
+.course-options .btn-cancel {
+  font-weight:bold;
+  color:#444;
+  background:none;
+  border:0;
+  margin-right:20px;
+}
+
+
 .course-wrapper {
   position:relative;
 }

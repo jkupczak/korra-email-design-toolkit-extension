@@ -89,3 +89,12 @@
 .mb-align-left:before {
   content: "\75";
 }
+.mb-share:before {
+  content: "\76";
+}
+.mb-pencil:before {
+  content: "\77";
+}
+.mb-drive:before {
+  content: "\78";
+}

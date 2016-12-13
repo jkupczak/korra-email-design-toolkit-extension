@@ -15,7 +15,8 @@
 
   "web_accessible_resources": [
     "medbridge-chrome-extension.woff",
-    "favicons/*"
+    "favicons/*",
+    "img/*"
   ],
 
   "description": "Designed to help automate everyday tasks and provide additional styling and visual clues that can assist designers at a glance. Upgrades the user experience on Dropbox.com, MedBridgeEducation.com, MailChimp.com, Amazon Web Services, Gmail.com, and with files saved to the local harddrive.",
@@ -31,6 +32,7 @@
   },
   "permissions": [
     "activeTab",
+    "storage",
     "tabs",
     "contextMenus",
     "clipboardWrite",
@@ -46,17 +48,17 @@
   },
   "content_scripts": [
     // https://developer.chrome.com/extensions/content_scripts
-    { //Newsletter
-      "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
-      "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "css": ["css/tingle.css", "css/newsletter_styles.css"],
-      "js": ["js/tingle.js", "js/newsletter_injected_contentScript.js"]
-    },
     { // Global
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/global_styles.css"],
       "js": ["js/global_injected_contentScript.js"]
+    },
+    { //Newsletter
+      "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
+      "exclude_matches": ["http://localhost:4567/__middleman/*"],
+      "css": ["css/tingle.css", "css/newsletter_styles.css"],
+      "js": ["js/tingle.js", "js/newsletter_injected_contentScript.js"]
     },
     { //Email-Labeling_Favicons_and_Title_bars
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
@@ -88,6 +90,10 @@
       "matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
       "css": ["css/admin_styles.css"],
       "js": ["js/admin_injected_contentScript.js"]
+    },
+    { // Trello
+      "matches": ["*://*.trello.com/*"],
+      "js": ["js/trello_injected_contentScript.js"]
     }
   ]
 

@@ -10,25 +10,55 @@ console.log("medbridge_injected_contentScript.js loaded");
 // https://hacks.mozilla.org/2012/05/dom-mutationobserver-reacting-to-dom-changes-without-killing-browser-performance/
 //
 
-    // select the target node to watch
-    var target = document.querySelector('div.ng-scope > div.row:nth-child(3)');
+    // // select the target node to watch
+    // var targetNew = document.querySelector('div.ng-scope > div.row:nth-child(3)');
+    //
+    // // create an observer instance
+    // var observerNew = new MutationObserver(function(mutations) {
+    //
+    //     console.log("observer activated");
+    //
+    //     mutations.forEach(function(mutation) {
+    //         console.log(mutation.type);
+    //     });
+    // });
+    //
+    // // configuration of the observer:
+    // var configNew = { attributes: true, childList: true, characterData: true }
+    // // pass in the target node, as well as the observer options
+    // observerNew.observe(targetNew, configNew);
 
-    // create an observer instance
-    var observer = new MutationObserver(function(mutations) {
-
-        console.log("observer activated");
-
-        applyCourseTool();
-
-        mutations.forEach(function(mutation) {
-            console.log(mutation.type);
-        });
-    });
 
     // configuration of the observer:
     var config = { attributes: true, childList: true, characterData: true }
+
+
+    // select the target node to watch
+    var targetLoad = document.querySelector('div.ng-scope > div.row:nth-child(3)');
+    // create an observer instance
+    var observerLoad = new MutationObserver(function(mutations) {
+        console.log("observerLoad activated");
+        applyCourseTool();
+        mutations.forEach(function(mutation) { console.log(mutation.type); });
+    });
     // pass in the target node, as well as the observer options
-    observer.observe(target, config);
+    observerLoad.observe(targetLoad, config);
+
+
+    // When the discipline is changed using the left menu, a parent element is changed too. So we need to listen for that. Then when it happens, find the child element that is the new parent of the course list, apply it to a variable, and restart observing it.
+    var targetDiscChange = document.querySelector('div.catalogue-main > div.ng-scope:first-child');
+    var observerChange = new MutationObserver(function(mutations) {
+        console.log("observerChange activated");
+
+        observerLoad.disconnect(); // Seems like this would be the right thing to do and it doesn't seem to break anything.
+
+        var targetNewLoad = document.querySelector('div.ng-scope > div.row:nth-child(3)'); // Find the newly loaded course parent.
+        observerLoad.observe(targetNewLoad, config); // Start observing it.
+
+        mutations.forEach(function(mutation) { console.log(mutation.type); });
+    });
+    observerChange.observe(targetDiscChange, config);
+
 
     // Run this function to check each relevant div in the code and then add the proper html to it
     function applyCourseTool() {
@@ -39,21 +69,21 @@ console.log("medbridge_injected_contentScript.js loaded");
         if ( course.classList.contains("course-wrapper") ) {
           console.log("skip");
         } else {
-          // course.onclick = cancelClick;
-
           console.log("! " + course.classList);
           var sibling = course.firstElementChild;
 
           var selectCourseBtn = document.createElement("div");
           selectCourseBtn.className = "select-course mb-plus";
           course.insertBefore(selectCourseBtn, sibling);
-          // selectCourseBtn.onclick = courseToggle;
           selectCourseBtn.addEventListener("click", courseToggle, false);
 
           course.classList.add("course-wrapper");
         }
       }
     };
+
+
+
 
 //
 /// REMOVE _ALL_ COPIED COURSES
@@ -135,46 +165,103 @@ function renumberCourses() {
 }
 
 
-//
-///
-//
-function generateJSON() {
+function courseOptions() {
 
-  console.log("function generateJSON()");
+  // Get the requested code type
+  var type = this.dataset.codeType;
+
+  // Create Options Modal
+  var courseOptionsElem = document.createElement("div");
+  courseOptionsElem.className = "course-options";
+  courseOptionsElem.innerHTML = '<div class="course-options"> <div class="option-wrapper"> <div class="option-title">Target Audience</div><div class="label-wrapper"> <input name="audience" value="ns" id="course-opt-ns" type="radio" checked> <label for="course-opt-ns">Non-Subscribers</label> </div><div class="label-wrapper"> <input name="audience" value="sub" id="course-opt-sub" type="radio"> <label for="course-opt-sub">Subscribers</label> </div></div><div class="option-wrapper"> <div class="option-title">Whitelabeling</div><div class="label-wrapper"> <input name="whitelabel" value="www." id="course-opt-medbridge" type="radio" checked> <label for="course-opt-medbridge">MedBridge <span>(www)</span></label> </div><div class="label-wrapper"> <input name="whitelabel" value="healthsouth" id="course-opt-healthsouth" type="radio"> <label for="course-opt-healthsouth">HealthSouth <span>(healthsouth.)</span></label> </div><div class="label-wrapper"> <input name="whitelabel" value="foxrehab" id="course-opt-fox" type="radio"> <label for="course-opt-fox">Fox <span>(foxrehab.)</span></label> </div><div class="label-wrapper"> <input name="whitelabel" value="drayerpt" id="course-opt-drayer" type="radio"> <label for="course-opt-drayer">Drayer <span>(drayerpt.)</span></label> </div><div class="label-wrapper"> <input name="whitelabel" value="other" id="course-opt-other" type="radio"><label name="whitelabel" value="" for="course-opt-other">Other</label> <input id="course-opt-other-text" type="text"> </div></div><div class="course-confirm"> <button id="course-options-cancel" class="btn-cancel">Cancel</button> <button id="course-options-confirm" class="btn-confirm">Confirm</button> </div></div>';
+
+  // instanciate new modal
+  var createOptionsModal = new tingle.modal({
+      footer: false,
+      stickyFooter: false,
+      cssClass: ['course-options-wrapper'],
+
+      onOpen: function() {
+          console.log('modal open');
+      },
+      onClose: function() {
+          console.log('modal closed');
+          createOptionsModal.destroy();
+      }
+  });
+
+  createOptionsModal.setContent(courseOptionsElem);
+  createOptionsModal.open();
+
+  var optionsSubmitBtn = document.getElementById("course-options-confirm");
+  optionsSubmitBtn.onclick = saveOptions;
+
+  var optionsSubmitBtn = document.getElementById("course-options-cancel");
+  optionsSubmitBtn.onclick = cancelOptions;
+
+  // Set the sub/non-sub option if they pick an organization
+  // http://stackoverflow.com/a/8997289/556079
+  var rad = document.querySelectorAll('[name="whitelabel"]');
+  for(var i = 0; i < rad.length; i++) {
+    rad[i].onclick = function() {
+        if(this.value === "healthsouth" || this.value === "foxrehab" || this.value === "drayerpt") {
+            document.querySelector('#course-opt-sub').checked = true;
+        }
+    };
+  }
+
+  function saveOptions() {
+    var whiteLabel = document.querySelector('input[name="whitelabel"]:checked').value;
+    if (whiteLabel === "other") {
+      whiteLabel = document.querySelector('#course-opt-other-text').value;
+    }
+    var audience = document.querySelector('input[name="audience"]:checked').value;
+    generateCode(type, audience, whiteLabel);
+    createOptionsModal.close();
+  }
+  function cancelOptions() {
+    createOptionsModal.close();
+  }
 
 }
 
-//
-///
-//
-function generateYAML() {
 
-  console.log("function generateYAML()");
-
-}
 
 //
 ///
 //
-function generateHTML() {
 
-  console.log("function generateHTML()");
+function generateCode(type, audience, whiteLabel) {
+
+  console.log("function generateCode()");
+  console.log(type);
+  console.log(audience);
+  console.log(whiteLabel);
 
   var exportedHtml = "";
 
   let selectedCourses = document.querySelectorAll(".course-copy");
   for (let exportCourse of selectedCourses) {
-    var courseLink = exportCourse.dataset.href;
+
+    console.log(exportCourse);
+    console.log(selectedCourses);
+
+    var courseLink = exportCourse.dataset.href.replace(/www/gi, whiteLabel);
     var courseTitle = exportCourse.dataset.title;
     var courseAuthor = exportCourse.dataset.author;
     var courseThumbnail = exportCourse.dataset.courseThumbnail;
+    if (audience === "ns") {
+      ctaText = "Start for Free"
+    } else {
+      ctaText = "Start Now"
+    }
 
-    exportedHtml += '<tr>\n  <td valign="top" align="left" style="border-bottom: 1px solid #eaeaea; padding: 15px 0px 10px 0px;">\n    <table data-sub-mod="course" border="0" cellpadding="0" cellspacing="0" width="590" class="fullWidth" style="border-collapse: separate; width: 590px; min-width: 590px;">\n      <tr>\n        <td valign="top" align="left">\n          <table border="0" cellpadding="0" cellspacing="0" width="125" class="fullWidth" align="left" style="border-collapse: separate; width: 125px; min-width: 125px;">\n            <tr>\n              <td valign="top" align="center">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td valign="top" align="center" style="padding-bottom: 10px;"><a href="' + courseLink + '" style="text-decoration: none; color: #000001;" target="_blank"><img src="' + courseThumbnail + '" class="img218" alt="" title="" width="125" height="72" hspace="0" vspace="0" style="width: 125px; min-width: 125px; -ms-interpolation-mode: bicubic; border:0; outline: none; display: block;" /></a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n          <!--[if gte mso 9]>\n          </td><td valign="top" align="left" width="330" style="width: 330px; min-width: 330px;">\n          <![endif]-->\n          <table border="0" cellpadding="0" cellspacing="0" width="330" class="fullWidth" align="left" style="border-collapse: separate; width: 330px; min-width: 330px;">\n            <tr>\n              <td class="courseDescCell" valign="top" align="center">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td data-sub-mod="course-title" class="textCenter" valign="top" align="left" style="padding-left: 10px; padding-right: 10px; font-family: Helvetica, Arial, sans-serif;font-weight: 400;font-size: 18px;line-height: 23px;color: #434343;"><a href="' + courseLink + '" style="text-decoration: none; color: #434343; font-family: Roboto,Helvetica,Arial,sans-serif !important;" target="_blank">' + courseTitle + '</a></td>\n                  </tr>\n                  <tr>\n                    <td data-sub-mod="author" class="textCenter" valign="top" align="left" style="padding-left: 10px; padding-right: 10px; font-family: Helvetica, Arial, sans-serif;font-weight: 300;font-size: 16px;line-height: 21px;color: #777777;"><a href="' + courseLink + '" style="text-decoration: none; color: #777777; font-family: Roboto,Helvetica, Arial, sans-serif !important;" target="_blank">' + courseAuthor + '</a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n          <!--[if gte mso 9]>\n          </td><td valign="top" align="left" width="135" style="width: 135px; min-width: 135px;">\n          <![endif]-->\n          <table border="0" cellpadding="0" cellspacing="0" width="135" class="fullWidth" align="left" style="border-collapse: separate; width: 135px; min-width: 135px;">\n            <tr>\n              <td valign="top" align="center" style="padding-top: 10px;">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td data-sub-mod="cta" valign="top" align="center" style="padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 15px; font-family: Helvetica, Arial, sans-serif;font-weight: 300;font-size: 16px;line-height: 21px;color: #2b2b2b;"><a href="' + courseLink + '" style="text-decoration: none; color: #076ad2; font-family: Roboto,Helvetica, Arial, sans-serif !important;" target="_blank">Start for Free &rarr;</a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n        </td>\n      </tr>\n    </table>\n  </td>\n</tr>'
+    exportedHtml += '<tr>\n  <td valign="top" align="left" style="border-bottom: 1px solid #eaeaea; padding: 15px 0px 10px 0px;">\n    <table data-sub-mod="course" border="0" cellpadding="0" cellspacing="0" width="590" class="fullWidth" style="border-collapse: separate; width: 590px; min-width: 590px;">\n      <tr>\n        <td valign="top" align="left">\n          <table border="0" cellpadding="0" cellspacing="0" width="125" class="fullWidth" align="left" style="border-collapse: separate; width: 125px; min-width: 125px;">\n            <tr>\n              <td valign="top" align="center">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td valign="top" align="center" style="padding-bottom: 10px;"><a href="' + courseLink + '" style="text-decoration: none; color: #000001;" target="_blank"><img src="' + courseThumbnail + '" class="img218" alt="" title="" width="125" height="72" hspace="0" vspace="0" style="width: 125px; min-width: 125px; -ms-interpolation-mode: bicubic; border:0; outline: none; display: block;" /></a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n          <!--[if gte mso 9]>\n          </td><td valign="top" align="left" width="330" style="width: 330px; min-width: 330px;">\n          <![endif]-->\n          <table border="0" cellpadding="0" cellspacing="0" width="330" class="fullWidth" align="left" style="border-collapse: separate; width: 330px; min-width: 330px;">\n            <tr>\n              <td class="courseDescCell" valign="top" align="center">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td data-sub-mod="course-title" class="textCenter" valign="top" align="left" style="padding-left: 10px; padding-right: 10px; font-family: Helvetica, Arial, sans-serif;font-weight: 400;font-size: 18px;line-height: 23px;color: #434343;"><a href="' + courseLink + '" style="text-decoration: none; color: #434343; font-family: Roboto,Helvetica,Arial,sans-serif !important;" target="_blank">' + courseTitle + '</a></td>\n                  </tr>\n                  <tr>\n                    <td data-sub-mod="author" class="textCenter" valign="top" align="left" style="padding-left: 10px; padding-right: 10px; font-family: Helvetica, Arial, sans-serif;font-weight: 300;font-size: 16px;line-height: 21px;color: #777777;"><a href="' + courseLink + '" style="text-decoration: none; color: #777777; font-family: Roboto,Helvetica, Arial, sans-serif !important;" target="_blank">presented by ' + courseAuthor + '</a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n          <!--[if gte mso 9]>\n          </td><td valign="top" align="left" width="135" style="width: 135px; min-width: 135px;">\n          <![endif]-->\n          <table border="0" cellpadding="0" cellspacing="0" width="135" class="fullWidth" align="left" style="border-collapse: separate; width: 135px; min-width: 135px;">\n            <tr>\n              <td valign="top" align="center" style="padding-top: 10px;">\n                <table border="0" cellpadding="0" cellspacing="0" width="100%">\n                  <tr>\n                    <td data-sub-mod="cta" valign="top" align="center" style="padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 15px; font-family: Helvetica, Arial, sans-serif;font-weight: 300;font-size: 16px;line-height: 21px;color: #2b2b2b;"><a href="' + courseLink + '" style="text-decoration: none; color: #076ad2; font-family: Roboto,Helvetica, Arial, sans-serif !important;" target="_blank">' + ctaText + ' &rarr;</a></td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n        </td>\n      </tr>\n    </table>\n  </td>\n</tr>'
 
   }
 
   // Create Plain-Text Modal
-  var generatedHtml = document.createElement("code");
+  var generatedHtml = document.createElement("textarea");
   generatedHtml.className = "plain-text-modal";
   var generatedHtmlText = document.createTextNode(exportedHtml);
   generatedHtml.appendChild(generatedHtmlText);
@@ -196,6 +283,12 @@ function generateHTML() {
 
   createHtmlModal.setContent(generatedHtml);
   createHtmlModal.open();
+}
+
+
+function generateHTML() {
+
+  courseOptions();
 
 }
 
@@ -276,7 +369,8 @@ function courseToggle() {
       // Generate HTML
       var elemGenerateHTML = document.createElement("div");
       elemGenerateHTML.className = "generate-html";
-      elemGenerateHTML.addEventListener("click", generateHTML, false);
+      elemGenerateHTML.dataset.codeType = "html";
+      elemGenerateHTML.addEventListener("click", courseOptions, false);
       var elemGenerateHTMLText = document.createTextNode("Get HTML");
       elemGenerateHTML.appendChild(elemGenerateHTMLText);
       courseMenu.appendChild(elemGenerateHTML);
@@ -284,7 +378,8 @@ function courseToggle() {
       // Generate JSON
       var elemGenerateJSON = document.createElement("div");
       elemGenerateJSON.className = "generate-json";
-      elemGenerateJSON.addEventListener("click", generateJSON, false);
+      elemGenerateHTML.dataset.codeType = "json";
+      elemGenerateJSON.addEventListener("click", courseOptions, false);
       var elemGenerateJSONText = document.createTextNode("Get JSON");
       elemGenerateJSON.appendChild(elemGenerateJSONText);
       courseMenu.appendChild(elemGenerateJSON);
@@ -292,7 +387,8 @@ function courseToggle() {
       // Generate YAML
       var elemGenerateYAML = document.createElement("div");
       elemGenerateYAML.className = "generate-json";
-      elemGenerateYAML.addEventListener("click", generateYAML, false);
+      elemGenerateHTML.dataset.codeType = "yaml";
+      elemGenerateYAML.addEventListener("click", courseOptions, false);
       var elemGenerateYAMLText = document.createTextNode("Get YAML");
       elemGenerateYAML.appendChild(elemGenerateYAMLText);
       courseMenu.appendChild(elemGenerateYAML);

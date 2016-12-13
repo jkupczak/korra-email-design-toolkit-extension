@@ -100,7 +100,11 @@ if ( !onMailchimp ) {
 //// Change the default page favicon to something that more easily identifies the category of the email.
 ////
 
-var favicon = disciplineId;
+if ( disciplineId === "hs" ) {
+	var favicon = "slp"
+} else {
+	var favicon = disciplineId
+}
 
 //Sub check
 if ( getSubStatus(disciplineSearch) ) { favicon = favicon + "-sub"; }
