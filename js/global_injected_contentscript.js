@@ -72,21 +72,38 @@ function getBackgroundImage(el) {
     }
 }
 
+//
+// Get querystring values
+// http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+//
+function getParameterByName(name, url) {
+    if (!url) {
+      url = window.location.href;
+    }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+//
+// Find if an array contains a specific string.
+// Returns a boolean.
+// http://stackoverflow.com/a/15276975/556079
+//
+function arrayContains(string, array) {
+  return (array.indexOf(string) > -1);
+}
 
 
-
-
-// http://stackoverflow.com/questions/11129373/listen-for-creation-of-an-element-and-fire-an-event-when-it-appears-on-the-page
-// var observer = new WebKitMutationObserver(function(mutations) {
-//     mutations.forEach(function(mutation) {
-//         for (var i = 0; i < mutation.addedNodes.length; i++) {
-//             if(mutation.addedNodes[i].id == "myDiv") {
-//                 // target node added, respond now...
-//             }
-//         }
-//     });
-// });
-// observer.observe(document, { subtree: true });
+//
+// Convert a string to title case
+//
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
 
 
 

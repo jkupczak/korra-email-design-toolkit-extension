@@ -94,6 +94,10 @@
     { // Trello
       "matches": ["*://*.trello.com/*"],
       "js": ["js/trello_injected_contentScript.js"]
+    },
+    { //Gmail
+      "matches": ["*://mail.google.com/*"],
+      "css": ["css/gmail-styles.css"]
     }
   ]
 

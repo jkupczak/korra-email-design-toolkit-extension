@@ -39,7 +39,7 @@ console.log("medbridge_injected_contentScript.js loaded");
     var observerLoad = new MutationObserver(function(mutations) {
         console.log("observerLoad activated");
         applyCourseTool();
-        mutations.forEach(function(mutation) { console.log(mutation.type); });
+        mutations.forEach(function(mutation) { console.log("observer found this: " + mutation.type); });
     });
     // pass in the target node, as well as the observer options
     observerLoad.observe(targetLoad, config);
@@ -63,21 +63,31 @@ console.log("medbridge_injected_contentScript.js loaded");
     // Run this function to check each relevant div in the code and then add the proper html to it
     function applyCourseTool() {
 
-      let courseList = document.querySelectorAll('.row > .ng-scope > .ng-scope > .ng-scope');
+      let courseList = document.querySelectorAll('.row > .ng-scope > .ng-scope > .ng-scope .course-listing');
       for (let course of courseList) {
 
         if ( course.classList.contains("course-wrapper") ) {
-          console.log("skip");
+          // Course has already been styled, do nothing.
+          console.log("applyCourseTool() skipped course");
         } else {
-          console.log("! " + course.classList);
+          console.log("applyCourseTool() found fresh course");
+          // This course has not been styled yet. Apply styling by adding new elements to the DOM.
           var sibling = course.firstElementChild;
-
           var selectCourseBtn = document.createElement("div");
           selectCourseBtn.className = "select-course mb-plus";
           course.insertBefore(selectCourseBtn, sibling);
           selectCourseBtn.addEventListener("click", courseToggle, false);
-
           course.classList.add("course-wrapper");
+
+          // Check this course against the already saved courses. Because the courses reload everytime, previously selected courses will 'refresh' and no longer show as being selected. Determine if they were selected and then apply styles and data-attributes as normal.
+          var courseHref = course.querySelector("a").href;
+          if ( arrayContains(courseHref, courseLinks) ) {
+            console.log("applyCourseTool() found a previously selected course")
+            selectCourseBtn.classList.remove("mb-plus");
+            selectCourseBtn.classList.add("mb-check");
+            selectCourseBtn.closest(".select-course").dataset.href = courseHref;
+          }
+
         }
       }
     };
@@ -105,7 +115,7 @@ function resetAllCourses() {
 
 
 //
-/// REMOVE A COPIED COURSE & UNCHECK THE MATCHIG ORIGINAL COURSE
+/// REMOVE A COPIED COURSE & UNCHECK THE MATCHING ORIGINAL COURSE
 //
 function removeCourse(courseId) {
 
@@ -143,8 +153,11 @@ function removeCourse(courseId) {
   var originalCourse = document.querySelector('.select-course[data-href="' + clickedCourse + '"]');
 
   console.log("- " + originalCourse)
-  originalCourse.classList.remove("mb-check");
-  originalCourse.classList.add("mb-plus");
+
+  if ( typeof(originalCourse) != 'undefined' && originalCourse != null ) {
+    originalCourse.classList.remove("mb-check");
+    originalCourse.classList.add("mb-plus");
+  }
 
   copiedCourse.parentNode.removeChild(copiedCourse);
 
@@ -167,13 +180,10 @@ function renumberCourses() {
 
 function courseOptions() {
 
-  // Get the requested code type
-  var type = this.dataset.codeType;
-
   // Create Options Modal
   var courseOptionsElem = document.createElement("div");
   courseOptionsElem.className = "course-options";
-  courseOptionsElem.innerHTML = '<div class="course-options"> <div class="option-wrapper"> <div class="option-title">Target Audience</div><div class="label-wrapper"> <input name="audience" value="ns" id="course-opt-ns" type="radio" checked> <label for="course-opt-ns">Non-Subscribers</label> </div><div class="label-wrapper"> <input name="audience" value="sub" id="course-opt-sub" type="radio"> <label for="course-opt-sub">Subscribers</label> </div></div><div class="option-wrapper"> <div class="option-title">Whitelabeling</div><div class="label-wrapper"> <input name="whitelabel" value="www." id="course-opt-medbridge" type="radio" checked> <label for="course-opt-medbridge">MedBridge <span>(www)</span></label> </div><div class="label-wrapper"> <input name="whitelabel" value="healthsouth" id="course-opt-healthsouth" type="radio"> <label for="course-opt-healthsouth">HealthSouth <span>(healthsouth.)</span></label> </div><div class="label-wrapper"> <input name="whitelabel" value="foxrehab" id="course-opt-fox" type="radio"> <label for="course-opt-fox">Fox <span>(foxrehab.)</span></label> </div><div class="label-wrapper"> <input name="whitelabel" value="drayerpt" id="course-opt-drayer" type="radio"> <label for="course-opt-drayer">Drayer <span>(drayerpt.)</span></label> </div><div class="label-wrapper"> <input name="whitelabel" value="other" id="course-opt-other" type="radio"><label name="whitelabel" value="" for="course-opt-other">Other</label> <input id="course-opt-other-text" type="text"> </div></div><div class="course-confirm"> <button id="course-options-cancel" class="btn-cancel">Cancel</button> <button id="course-options-confirm" class="btn-confirm">Confirm</button> </div></div>';
+  courseOptionsElem.innerHTML = '<div class="course-options"> <div class="option-wrapper"> <div class="option-title">Target Audience</div><div class="options-columns"><div class="label-wrapper"> <label for="course-opt-ns"><input name="audience" value="ns" id="course-opt-ns" type="radio" checked> Non-Subscribers</label> </div><div class="label-wrapper"> <label for="course-opt-sub"><input name="audience" value="sub" id="course-opt-sub" type="radio"> Subscribers</label> </div></div></div><div class="option-wrapper"> <div class="option-title">Whitelabeling</div><div class="label-wrapper"> <label for="course-opt-medbridge"><input name="whitelabel" value="www." id="course-opt-medbridge" type="radio" checked> MedBridge <span>(www.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-healthsouth"><input name="whitelabel" value="healthsouth" id="course-opt-healthsouth" type="radio"> HealthSouth <span>(healthsouth.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-fox"><input name="whitelabel" value="foxrehab" id="course-opt-fox" type="radio"> Fox <span>(foxrehab.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-drayer"><input name="whitelabel" value="drayerpt" id="course-opt-drayer" type="radio"> Drayer <span>(drayerpt.)</span></label> </div><div class="label-wrapper"> <label name="whitelabel" value="" for="course-opt-other"><input name="whitelabel" value="other" id="course-opt-other" type="radio"> Other</label> <input id="course-opt-other-text" type="text"> </div></div><div class="option-wrapper"> <div class="option-title">Exported Code</div><div class="options-columns"><div class="label-wrapper"> <label for="course-opt-html"><input name="code" value="html" id="course-opt-html" type="radio" checked> HTML</label> </div><div class="label-wrapper"> <label for="course-opt-json"><input name="code" value="json" id="course-opt-json" type="radio"> JSON</label> </div><div class="label-wrapper"> <label for="course-opt-yaml"><input name="code" value="yaml" id="course-opt-yaml" type="radio"> YAML</label> </div></div></div><div class="course-confirm"> <button id="course-options-cancel" class="btn-cancel">Cancel</button> <button id="course-options-confirm" class="btn-confirm">Confirm</button> </div></div>';
 
   // instanciate new modal
   var createOptionsModal = new tingle.modal({
@@ -216,7 +226,8 @@ function courseOptions() {
       whiteLabel = document.querySelector('#course-opt-other-text').value;
     }
     var audience = document.querySelector('input[name="audience"]:checked').value;
-    generateCode(type, audience, whiteLabel);
+    var codeType = document.querySelector('input[name="code"]:checked').value;
+    generateCode(codeType, audience, whiteLabel);
     createOptionsModal.close();
   }
   function cancelOptions() {
@@ -231,10 +242,10 @@ function courseOptions() {
 ///
 //
 
-function generateCode(type, audience, whiteLabel) {
+function generateCode(codeType, audience, whiteLabel) {
 
   console.log("function generateCode()");
-  console.log(type);
+  console.log(codeType);
   console.log(audience);
   console.log(whiteLabel);
 
@@ -260,11 +271,22 @@ function generateCode(type, audience, whiteLabel) {
 
   }
 
-  // Create Plain-Text Modal
+  // Create wrapper for these two
+  var codeWrapper = document.createElement("div");
+  codeWrapper.className = "exported-code-wrapper";
+
+  // Create Textarea
   var generatedHtml = document.createElement("textarea");
   generatedHtml.className = "plain-text-modal";
   var generatedHtmlText = document.createTextNode(exportedHtml);
   generatedHtml.appendChild(generatedHtmlText);
+  codeWrapper.appendChild(generatedHtml);
+
+  // Create preview div
+  var previewiFrame = document.createElement("iframe");
+  previewiFrame.className = "exported-code-preview";
+  var previewHtml = "<div style='background:#fff;'>" + exportedHtml + "</div>"
+  codeWrapper.appendChild(previewiFrame);
 
   // instanciate new modal
   var createHtmlModal = new tingle.modal({
@@ -281,8 +303,13 @@ function generateCode(type, audience, whiteLabel) {
       }
   });
 
-  createHtmlModal.setContent(generatedHtml);
+  createHtmlModal.setContent(codeWrapper);
   createHtmlModal.open();
+
+  previewiFrame.contentWindow.document.open();
+  previewiFrame.contentWindow.document.write(previewHtml);
+  previewiFrame.contentWindow.document.close();
+
 }
 
 
@@ -311,6 +338,8 @@ function getCourseNumber() {
 var courses = [];
 var course = {};
 
+var courseLinks = [];
+
 function courseToggle() {
 
   if ( this.classList.contains("mb-plus") ) {
@@ -318,11 +347,14 @@ function courseToggle() {
     this.classList.add("mb-check");
 
     var link = "https://" + window.location.hostname + this.nextSibling.querySelector("a").getAttribute("href");
-    var title = this.nextSibling.querySelector(".course-listing__title").innerText;
-    var author = this.nextSibling.querySelector(".course-listing__instructors span").innerText;
+    var title = this.parentNode.querySelector(".course-listing__title").innerText;
+    var author = this.parentNode.querySelector(".course-listing__instructors span").innerText;
     var courseThumbnail = this.nextSibling.querySelector(".course-listing__img").getAttribute("src");;
 
     this.closest(".select-course").dataset.href = link;
+
+    courseLinks.push(link);
+    console.log(courseLinks)
 
     var courseArray = [];
     courseArray.push(link);
@@ -332,7 +364,7 @@ function courseToggle() {
 
     for(var i in courseArray) {
 
-        var item = courseArray[i];
+      var item = courseArray[i];
 
        courses.push({
             "link" : item.link,
@@ -343,16 +375,16 @@ function courseToggle() {
     }
     course.courses = courses;
 
-    console.log(JSON.stringify(course));
-    console.log(JSON.stringify(courses));
+    // console.log(JSON.stringify(course));
+    // console.log(JSON.stringify(courses));
 
     var jsonSource = JSON.stringify({course:{link:link,title:title,author:author,courseThumbnail,courseThumbnail}});
     console.log(jsonSource);
 
-    console.log(link);
-    console.log(title);
-    console.log(author);
-    console.log(courseThumbnail);
+    // console.log(link);
+    // console.log(title);
+    // console.log(author);
+    // console.log(courseThumbnail);
 
 
     // Add course collection wrapper
@@ -366,32 +398,13 @@ function courseToggle() {
       courseMenu.className = "course-menu";
 
 
-      // Generate HTML
+      // Generate Code
       var elemGenerateHTML = document.createElement("div");
-      elemGenerateHTML.className = "generate-html";
-      elemGenerateHTML.dataset.codeType = "html";
+      elemGenerateHTML.className = "generate-code";
       elemGenerateHTML.addEventListener("click", courseOptions, false);
-      var elemGenerateHTMLText = document.createTextNode("Get HTML");
+      var elemGenerateHTMLText = document.createTextNode("Generate Code");
       elemGenerateHTML.appendChild(elemGenerateHTMLText);
       courseMenu.appendChild(elemGenerateHTML);
-
-      // Generate JSON
-      var elemGenerateJSON = document.createElement("div");
-      elemGenerateJSON.className = "generate-json";
-      elemGenerateHTML.dataset.codeType = "json";
-      elemGenerateJSON.addEventListener("click", courseOptions, false);
-      var elemGenerateJSONText = document.createTextNode("Get JSON");
-      elemGenerateJSON.appendChild(elemGenerateJSONText);
-      courseMenu.appendChild(elemGenerateJSON);
-
-      // Generate YAML
-      var elemGenerateYAML = document.createElement("div");
-      elemGenerateYAML.className = "generate-json";
-      elemGenerateHTML.dataset.codeType = "yaml";
-      elemGenerateYAML.addEventListener("click", courseOptions, false);
-      var elemGenerateYAMLText = document.createTextNode("Get YAML");
-      elemGenerateYAML.appendChild(elemGenerateYAMLText);
-      courseMenu.appendChild(elemGenerateYAML);
 
       // Reset Courses
       var resetCourses = document.createElement("div");
@@ -447,3 +460,10 @@ function courseToggle() {
 
 
 }
+
+
+//////////////////
+/////////////////
+// FUNCTIONS
+///////////////
+//////////////

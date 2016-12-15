@@ -1,6 +1,8 @@
 console.log("newsletter_injected_contentScript.js loaded");
 var testing = true;
-if ( testing ) {
+var view = getParameterByName("view");
+
+if ( testing && view !== "1" ) {
 
 var pageUrl = document.URL;
 console.log("pageUrl = " + pageUrl);
@@ -504,6 +506,20 @@ plainTextOrb.className = "plain-text-orb orb glyph";
 plainTextOrb.addEventListener("click", plainText, false);
 orbsBottom.appendChild(plainTextOrb);
 
+function cleanPlainTxt(text) {
+  console.log("function for cleaning!");
+  console.log(text);
+
+  var cleanedTxt = text
+
+  cleanedTxt = cleanedTxt.replace(/(  +)/gi, "");
+  cleanedTxt = cleanedTxt.replace(/\t/gi, "");
+  cleanedTxt = cleanedTxt.replace(/\n\n+/gi, "\n\n");
+  cleanedTxt = cleanedTxt.trim();
+
+  return cleanedTxt
+}
+
 
 function plainText() {
 
@@ -624,7 +640,7 @@ function plainText() {
         var categoryTitle = toTitleCase(module.querySelector("[data-sub-mod='category-title']").innerText.trim()) + "\n\n"
         var headline = module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n";
         // var subheadline = module.querySelector("[data-sub-mod='sub-title']").innerText.trim() + "\n";
-        var summary = module.querySelector("[data-sub-mod='summary']").innerText.trim() + "\n\n";
+        var summary = cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
         var ctaText = module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
         var ctaLink = module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
 
@@ -726,17 +742,3 @@ preheaderWapper.innerHTML = preheader;
 //
 //
 //
-
-
-
-
-
-
-//
-// FUNCTIONS
-//
-
-function toTitleCase(str)
-{
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-}

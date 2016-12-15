@@ -12,6 +12,7 @@
   --mb-blue-hover: #1964b3;
 
   --pt:      #FFBE12;
+  --pt-rgb:  255, 190, 18;
   --pt-dark: #dba004;
 
   --at:      #ff620d;
@@ -31,6 +32,8 @@
 
   --enterprise:      #565e61;
   --enterprise-dark: #3f474a;
+
+  --newsletter-bg: #eaedee;
 }
 
 

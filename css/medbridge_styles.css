@@ -1,6 +1,29 @@
 .course-options-wrapper .tingle-modal-box {
   width:400px;
 }
+
+.exported-code-wrapper {
+  display:flex;
+  flex-wrap: nowrap;
+  align-items:flex-start;
+  align-content:flex-start;
+}
+.exported-code-wrapper .exported-code-preview {
+  width:640px;
+  min-width:640px;
+  height:90vh;
+  /*padding:10px 10px 0 10px;*/
+  /*display:flex;*/
+  /*justify-content: center;*/
+  /*align-items: center;*/
+  background: var(--newsletter-bg);
+  box-sizing:border-box;
+  border:0;
+}
+.exported-code-wrapper .exported-code-preview-wrapper {
+  background:#fff;
+}
+
 /*.course-options {
   width:300px;
   background:#fff;
@@ -8,6 +31,13 @@
 }*/
 .course-options .option-wrapper {
   padding:0 0 20px;
+}
+.course-options .option-wrapper .options-columns {
+  display:flex;
+  flex-direction:row;
+}
+.course-options .option-wrapper .options-columns > * {
+  flex-grow:1;
 }
 .course-options .label-wrapper {
   padding:5px;
@@ -55,39 +85,40 @@
   position:relative;
 }
 .select-course {
+  width:100%; height:calc(100% - 40px);
+  position:absolute;
+  top:-0; left:0;
+  z-index:10;
+}
+.select-course:hover {
+  cursor:pointer;
+  background: rgba(var(--pt-rgb), .5);
+}
+
+.select-course:before {
   width:50px;
   height:50px;
   line-height:50px;
   font-size:40px;
-  position:absolute;
-  top:-7px; right:3px;
-  z-index:10;
-  border-radius:100%;
-  box-shadow:0 0 0 4px #ccc;
-  background:#fff;
   color:#ccc;
   text-align:center;
-}
-.select-course:hover {
-  cursor:pointer;
-}
-
-.select-course:before {
-  position:absolute; top:0; right:0; bottom:0; left:0; margin:auto;
-  width:100%; height:100%; line-height:50px;
+  border-radius:0 0 0 10px;
+  box-shadow: inset 0 0 0 3px #ccc;
+  background: #fff;
+  position:absolute; top:0; right:0;
 }
 
-.select-course.mb-check {
+.select-course.mb-check:before {
   background: var(--pt);
   color:#fff;
-  box-shadow:0 0 0 4px #fff;
+  box-shadow: inset 0 0 0 4px #fff;
 }
 .select-course.mb-check:hover:before {
   content:"\6f";
 }
 
-.select-course.mb-plus:hover {
-  box-shadow:0 0 0 4px var(--pt);
+.select-course.mb-plus:hover:before {
+  box-shadow: inset 0 0 0 4px var(--pt);
 }
 .select-course.mb-plus:hover:before {
   color:var(--pt);
