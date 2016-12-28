@@ -16,7 +16,8 @@
   "web_accessible_resources": [
     "medbridge-chrome-extension.woff",
     "favicons/*",
-    "img/*"
+    "img/*",
+    "css/*"
   ],
 
   "description": "Designed to help automate everyday tasks and provide additional styling and visual clues that can assist designers at a glance. Upgrades the user experience on Dropbox.com, MedBridgeEducation.com, MailChimp.com, Amazon Web Services, Gmail.com, and with files saved to the local harddrive.",
@@ -31,6 +32,7 @@
     "default_title": "Marketing Bridge"
   },
   "permissions": [
+    "cookies",
     "activeTab",
     "storage",
     "tabs",
@@ -52,48 +54,48 @@
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/global_styles.css"],
-      "js": ["js/global_injected_contentScript.js"]
+      "js": ["js/global.js"]
     },
     { //Newsletter
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/tingle.css", "css/newsletter_styles.css"],
-      "js": ["js/tingle.js", "js/newsletter_injected_contentScript.js"]
+      "js": ["js/Dropbox-sdk.min.js", "js/tingle.js", "js/newsletter.js"]
     },
     { //Email-Labeling_Favicons_and_Title_bars
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "js": ["js/emailLabeling_injected_contentScript.js"]
+      "js": ["js/email-labeling.js"]
     },
     { //Middleman
       "matches": ["http://localhost:4567/*"],
       "css": ["css/middleman_styles.css"],
-      "js": ["js/middleman_injected_contentScript.js"]
+      "js": ["js/middleman.js"]
     },
     { // Dropbox & Local
       "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/*"],
       "css": ["css/dropbox_styles.css"],
-      "js": ["js/dropbox_injected_contentScript.js"]
+      "js": ["js/dropbox.js"]
     },
     { // MailChimp
       "matches": ["*://*.mailchimp.com/*"],
       "css": ["css/mailchimp_styles.css"],
-      "js": ["js/mailchimp_injected_contentScript.js"]
+      "js": ["js/mailchimp.js"]
     },
     { //MedBridge Homepage
       "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*"],
       "exclude_matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
       "css": ["css/tingle.css", "css/medbridge_styles.css"],
-      "js": ["js/tingle.js", "js/medbridge_injected_contentScript.js"]
+      "js": ["js/tingle.js", "js/medbridge.js"]
     },
     { // MedBridge Admin Panel
       "matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
       "css": ["css/admin_styles.css"],
-      "js": ["js/admin_injected_contentScript.js"]
+      "js": ["js/medbridge-admin.js"]
     },
     { // Trello
       "matches": ["*://*.trello.com/*"],
-      "js": ["js/trello_injected_contentScript.js"]
+      "js": ["js/trello.js"]
     },
     { //Gmail
       "matches": ["*://mail.google.com/*"],

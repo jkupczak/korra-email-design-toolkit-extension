@@ -1,3 +1,4 @@
+console.warn(">>> tingle.js loaded");
 /*!
  * tingle.js
  * @author  robin_parisi

@@ -1,4 +1,4 @@
-console.log("mailchimp_injected_contentScript.js loaded");
+console.log("mailchimp.js loaded");
 
 //
 // Apply check tool to each campaign as it loads in
@@ -77,6 +77,24 @@ if ( typeof(cpTitleInput) != 'undefined' && cpTitleInput != null ) {
       gaTitleInput.value = cpTitleInput.value;
     }
   }
+
+        // Clean Fields Button
+        var cleanFieldsEle = document.createElement("div");
+
+        var cleanFieldsEleText = document.createTextNode("Clean Field");
+        cleanFieldsEle.appendChild(cleanFieldsEleText);
+
+        cleanFieldsEle.className = "clean-fields chr-btn";
+        cleanFieldsEle.addEventListener("click", cleanMcTitleField, false);
+
+
+        var campaignNameFieldLabel = document.querySelector("div > label[for='title']:first-child") || document.querySelector("div > label[for='title']:nth-child(2)");
+        campaignNameFieldLabel.appendChild(cleanFieldsEle);
+
+        function cleanMcTitleField() {
+          var campaignNameField = document.querySelector("#title").value.replace(/ \(copy.+/gi, "");
+          document.querySelector("#title").value = campaignNameField;
+        }
 
 }
 function mirrorToggle() {

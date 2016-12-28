@@ -1,4 +1,4 @@
-console.log("trello_injected_contentScript.js loaded");
+console.warn(">>> trello.js loaded");
 
 // HELP
 // https://developer.chrome.com/extensions/storage

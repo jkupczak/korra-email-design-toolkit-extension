@@ -399,8 +399,21 @@ body.discipline-ready .line.selfclear li.hover-item > a {
   margin:7px 0 auto 77px;
 }
 
-
-
+/* Buttons */
+.clean-fields.chr-btn {
+  display:inline-block;
+  padding:3px 8px;
+  background:#5b5d6c;
+  font-weight:bold;
+  font-size:12px;
+  margin-left:10px;
+}
+.chr-btn {
+  text-align:center;
+  cursor:pointer;
+  border-radius:5px;
+  color:#fff;
+}
 
 
 /*li[class*="discipline-"] > div:first-child {

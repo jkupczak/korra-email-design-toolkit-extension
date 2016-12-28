@@ -1,4 +1,4 @@
-console.log("dropox_injected_contentScript.js loaded");
+console.warn(">>> dropbox.js loaded");
 
 
 // //

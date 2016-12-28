@@ -1,4 +1,4 @@
-console.log("medbridgeadmin_injected_contentScript.js loaded");
+console.warn(">>> medbridge-admin.js loaded");
 
 var affiliatePage = document.querySelector(".breadcrumbs span:last-child span").textContent;
 

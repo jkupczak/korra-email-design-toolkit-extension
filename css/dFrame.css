@@ -1,0 +1,37 @@
+html {
+  /*height:100%;*/
+}
+
+.link-marker-wrapper {
+  position: absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  max-width:100%;
+  overflow:hidden;
+  pointer-events: none;
+}
+  a.marked {
+  position:relative;
+}
+.link-marker {
+  display:none;
+  background:#1e78d7;
+  position:absolute;
+  border-radius:50px;
+  width:16px; height:16px;
+  z-index:1;
+  cursor:pointer;
+  opacity:1;
+  margin-left:-8px;
+  margin-top:-8px;
+  border:2px solid transparent;
+
+}
+.link-marker:hover {
+  transform:scale(1.5,1.5);
+}
+.link-marker.error {
+  display:block;
+  background:red;
+  box-shadow: 0 0 5px 3px red;
+}

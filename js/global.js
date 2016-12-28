@@ -1,4 +1,4 @@
-console.log("global_injected_contentScript.js loaded");
+console.warn(">>> global.js loaded");
 
 ////
 ////// Global Functions
@@ -8,7 +8,7 @@ console.log("global_injected_contentScript.js loaded");
 // Process string to find disciplineId
 //
 function getDisciplineId(string) {
-  console.log("running function on string: " + string);
+  // console.log("running function on string: " + string);
 
   var string = string.trim();
 
@@ -24,7 +24,7 @@ function getDisciplineId(string) {
   else if ( /-HS(-|\.|$)/gi.test(string) )               { var disciplineId = "hs"; }
   else { var disciplineId = "undefined" }
 
-  console.log("function returned this: " + disciplineId);
+  // console.log("function returned this: " + disciplineId);
 
   return disciplineId;
 }
@@ -61,7 +61,7 @@ function insertAfter(newNode, referenceNode) {
 // Determine the background image of an element or its nearest parent that has one.
 function getBackgroundImage(el) {
     if (el == null) {
-    	console.log("null");
+    //	console.log("null");
       return null;
     }
     var backgroundImage = window.getComputedStyle(el, false).getPropertyValue("background-image");
@@ -70,6 +70,11 @@ function getBackgroundImage(el) {
     } else {
       return getBackgroundImage(el.parentElement);
     }
+}
+
+// http://stackoverflow.com/questions/17885855/use-dynamic-variable-string-as-regex-pattern-in-javascript
+function escapeRegExp(stringToGoIntoTheRegex) {
+    return stringToGoIntoTheRegex.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
 //
@@ -119,7 +124,7 @@ document.body.addEventListener('contextmenu', function(ev) {
 
     var src = getBackgroundImage(ev.target);
 
-    console.log("message to send: " + src);
+  //  console.log("message to send: " + src);
 
 		chrome.runtime.sendMessage({bkgUrl: src});
 
@@ -127,7 +132,73 @@ document.body.addEventListener('contextmenu', function(ev) {
 }, false);
 
 
+//Where el is the DOM element you'd like to test for visibility
+// http://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
+function isHidden(el) {
+    return (el.offsetParent === null)
+}
 
+
+// Helper function to get an element's exact position
+function getPosition(el) {
+  var xPos = 0;
+  var yPos = 0;
+
+  while (el) {
+    if (el.tagName == "BODY") {
+      // deal with browser quirks with body/window/document and page scroll
+      var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+      var yScroll = el.scrollTop || document.documentElement.scrollTop;
+
+      xPos += (el.offsetLeft - xScroll + el.clientLeft);
+      yPos += (el.offsetTop - yScroll + el.clientTop);
+    } else {
+      // for all other non-BODY elements
+      xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+      yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+    }
+
+    el = el.offsetParent;
+  }
+  return {
+    x: xPos,
+    y: yPos
+  };
+}
+
+// Test if an element exists in the DOM.
+function elExists(el) {
+  if ( typeof(el) != 'undefined' && el != null ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+// Clean a string to create a nice looking plain text version.
+function cleanPlainTxt(text) {
+
+  // console.log(text);
+
+  text = text.replace(/(\&nbsp\;|\n|\t|\r|\u00a0)/gi, " "); // http://stackoverflow.com/a/1496863/556079
+  // text = text.replace(/(  +)/gi, "");
+  text = text.replace(/\t/gi, "");
+  text = text.replace(/\n\n+/gi, "\n\n");
+  text = text.replace(/   +/gi, " ");
+  text = text.replace(/(^ +?| +?$)/gi, "");
+  text = text.trim();
+
+  return text
+}
+
+// Grab text from an element if it exists in the DOM.
+function grabText(el) {
+  if ( typeof(el) != 'undefined' && el != null ) {
+    return cleanPlainTxt(el.innerText);
+  } else {
+    return "";
+  }
+}
 
 
 // https://github.com/akiomik/chrome-storage-promise
@@ -361,4 +432,4 @@ chrome.storage.promise = {
 
 
 // View entire storage
-chrome.storage.sync.get(function(result) { console.log("Entire chrome.storage results: "); console.log(result); });
+// chrome.storage.sync.get(function(result) { console.log("Entire chrome.storage results: "); console.log(result); });
