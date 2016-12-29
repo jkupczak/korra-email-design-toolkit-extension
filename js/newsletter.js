@@ -507,23 +507,24 @@ if ( dropboxTestPattern.test(document.URL) ) {
       console.log(response);
 
       if (response.links.length > 0) {
+        console.log("true: response.links.length > 0 = " + response.links.length);
         var shareableLink = response.links[0].url;
-        modifyDpLink();
+        modifyDpLink(shareableLink);
       } else {
+        console.log("false: response.links.length > 0 = " + response.links.length);
         dbx.sharingCreateSharedLinkWithSettings({path: dropboxFilePath})
           .then(function(response) {
             console.log(response);
-            var shareableLink = response.links[0].url;
+            var shareableLink = response.url;
+            modifyDpLink(shareableLink);
           })
           .catch(function(error) {
             console.log(error);
           });
-        modifyDpLink();
       }
 
-      function modifyDpLink() {
+      function modifyDpLink(shareableLink) {
         if ( shareableLink.length > 0 ) {
-          console.log(shareableLink);
           shareOrb.classList.remove("off");
           shareableLink = shareableLink.replace(/www\./i, "dl.");
           shareableLink = shareableLink.replace(/dropbox\.com/i, "dropboxusercontent.com");
@@ -534,7 +535,6 @@ if ( dropboxTestPattern.test(document.URL) ) {
           shareableLinkHolder.className = "hidden"
           shareableLinkHolder.value = shareableLink;
           document.body.appendChild(shareableLinkHolder);
-
         }
       }
 
