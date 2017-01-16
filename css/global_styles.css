@@ -138,3 +138,18 @@
 .mb-photo:before {
   content: "\79";
 }
+.mb-expand:before {
+  content: "\7a";
+}
+.mb-link:before {
+  content: "\41";
+}
+.mb-chevron-up:before {
+  content: "\42";
+}
+.mb-chevron-down:before {
+  content: "\43";
+}
+.mb-paintbucket:before {
+  content: "\44";
+}

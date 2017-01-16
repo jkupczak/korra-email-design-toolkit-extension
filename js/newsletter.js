@@ -1,16 +1,35 @@
 console.warn(">>> newsletter.js loaded");
 /////////////////////////////////////////
+/////////////////////////////////////////
+/*
+
+Text to Search For
+
+ASHA (only in SLP)
+AOTA (only in OT)
+
+
+
+
+
+*/
 
 var testing = true;
 var view = getParameterByName("view");
 
 if ( testing && view !== "1" && /\.htm/gi.test(document.URL) ) {
 
+// ERROR CHECKING FOR ENTIRE PAGE
+document.querySelector("html").classList.add("error-status");
+document.querySelector("html").classList.toggle("errors");
+//
+
+
 var pageUrl = document.URL;
 var fileUrl = pageUrl.replace(/.+\//gi, "");
 
 ///////////
-///// Determine location of the filex
+///// Determine location of the file you're currently viewing.
 ///////////
 
 if ( /dropboxusercontent/gi.test(pageUrl) ) {
@@ -20,6 +39,41 @@ if ( /dropboxusercontent/gi.test(pageUrl) ) {
 } else if ( /localhost\:4567/gi.test(pageUrl) ) {
   var onMiddleman = true;
 }
+
+///////////
+///// Determine type of email - Non-Subscriber versus Subscriber
+///////////
+var emailSubType;
+if ( /\-ns[\.\-]/gi.test(pageUrl) ) {
+  emailSubType = "ns"
+} else if ( /\-sub[\.\-]/gi.test(pageUrl) ) {
+  emailSubType = "sub"
+}
+if ( /\-Fox\-/gi.test(pageUrl) ) {
+  emailSubType = "fox"
+}
+if ( /\-HS\-/gi.test(pageUrl) ) {
+  emailSubType = "hs"
+}
+if ( /\-DR\-/gi.test(pageUrl) ) {
+  emailSubType = "dr"
+}
+
+///////////
+///// Determine audience - MedBridge versus Outside Organization
+///// Healthsouth, Drayer PT, Fox Rehab
+///////////
+var outsideOrg = false;
+if ( /\-(HS|DR|Fox)\-/gi.test(pageUrl) ) {
+  outsideOrg = true;
+}
+
+///////////
+///// Get Discipline
+///////////
+var emailDisc = getDisciplineId(pageUrl);
+
+
 
 //
 // if ( onLocal ) {
@@ -421,8 +475,20 @@ mobileViewOrb.className = "mobile-orb orb glyph";
 mobileViewOrb.addEventListener("click", viewMobile, false);
 orbsBottom.appendChild(mobileViewOrb);
 
+var viewMobileBoolean = false
+
 function viewMobile() {
+
+  viewMobileBoolean = !viewMobileBoolean;
+
   mobileIframeWrapper.classList.toggle('off');
+
+  if ( viewMobileBoolean ) {
+    history.replaceState(null,null, updateQueryString("mobile", "0") ); // http://stackoverflow.com/a/32171354/556079
+  } else {
+    history.replaceState(null,null, updateQueryString("mobile") );
+  }
+
 }
 
 
@@ -466,18 +532,71 @@ if ( onDropbox ) {
     });
 }
 
-// Create MailChimp Orb
-var mailchimpOrb = document.createElement("a");
-mailchimpOrb.className = "mailchimp-orb orb";
-mailchimpOrb.href = "https://us2.admin.mailchimp.com/campaigns/";
-mailchimpOrb.target = "_mailchimp";
-orbsTop.appendChild(mailchimpOrb);
+// // Create MailChimp Orb
+// var mailchimpOrb = document.createElement("a");
+// mailchimpOrb.className = "mailchimp-orb orb";
+// mailchimpOrb.href = "https://us2.admin.mailchimp.com/campaigns/";
+// mailchimpOrb.target = "_mailchimp";
+// orbsTop.appendChild(mailchimpOrb);
 
 
+
+// Create CSS Debug Orb
+var debugOrb = document.createElement("div");
+debugOrb.id = "debug-orb";
+debugOrb.className = "debug-orb orb glyph";
+debugOrb.addEventListener("click", debugCss, false);
+orbsBottom.appendChild(debugOrb);
+
+function debugCss() {
+
+  document.getElementById("debug-orb").classList.toggle("on");
+
+  if ( elExists(dFrame.getElementById("debug")) ) {
+    // var debugNode = dFrame.getElementById("debug");
+    // debugNode.parentNode.removeChild(debugNode);
+    destroy(dFrame.getElementById("debug"));
+    destroy(mFrame.getElementById("debug"));
+  } else {
+    var debugStyling = mFrame.createElement("style");
+    debugStyling.id = "debug";
+    debugStyling.appendChild(dFrame.createTextNode("* { background-color: rgba(255,0,0,.2); }* * { background-color: rgba(0,255,0,.2); }* * * { background-color: rgba(0,0,255,.2); }* * * * { background-color: rgba(255,0,255,.2); }* * * * * { background-color: rgba(0,255,255,.2); }* * * * * * { background-color: rgba(255,255,0,.2); }") );
+
+    var debugStylingM = mFrame.createElement("style");
+    debugStylingM.id = "debug";
+    debugStylingM.appendChild(dFrame.createTextNode("* { background-color: rgba(255,0,0,.2); }* * { background-color: rgba(0,255,0,.2); }* * * { background-color: rgba(0,0,255,.2); }* * * * { background-color: rgba(255,0,255,.2); }* * * * * { background-color: rgba(0,255,255,.2); }* * * * * * { background-color: rgba(255,255,0,.2); }") );
+
+    dFrame.getElementsByTagName("head")[0].appendChild(debugStyling);
+    mFrame.getElementsByTagName("head")[0].appendChild(debugStylingM);
+  }
+}
+
+// Create Nav Up/Down Orb
+var navOrb = document.createElement("div");
+navOrb.className = "nav-orb orb dual-orb glyph";
+orbsBottom.appendChild(navOrb);
+
+  var navOrbUp = document.createElement("div");
+  navOrbUp.className = "nav-orb-up orb glyph";
+  navOrbUp.addEventListener("click", navUp, false);
+  navOrb.appendChild(navOrbUp);
+
+  var navOrbDown = document.createElement("div");
+  navOrbDown.className = "nav-orb-down orb glyph";
+  navOrbDown.addEventListener("click", navDown, false);
+  navOrb.appendChild(navOrbDown);
+
+function navUp() {
+  // var linkPosition = getPosition(link);
+}
+
+function navDown() {
+
+}
 
 // Create Share Email Orb
 var shareOrb = document.createElement("div");
-shareOrb.className = "share-orb orb glyph off";
+shareOrb.className = "share-orb orb glyph";
 shareOrb.addEventListener("click", getDropboxLink, false);
 orbsTop.appendChild(shareOrb);
 
@@ -485,76 +604,91 @@ var dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
 var dropboxEscapedParentFolder = escapeRegExp(dropboxParentFolder)
 var dropboxTestPattern = new RegExp("^.+?" + dropboxEscapedParentFolder, "gi");
 
-if ( dropboxTestPattern.test(document.URL) ) {
-  console.log("Yes! This file exists in the local DropBox folder. [" + document.URL + "]");
-  var dropboxFilePath = document.URL.replace(dropboxTestPattern, "")
-  var dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "")
-  var dropboxFilePath = decodeURIComponent(dropboxFilePath); // the API does not accept encoded paths (eg %20 instead of a space)
 
-  //
-  // Dropbox API SDK - http://dropbox.github.io/dropbox-sdk-js/#toc0__anchor
-  // Documentation - https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
-  // Get Token - https://dropbox.github.io/dropbox-api-v2-explorer/#sharing_create_shared_link_with_settings
-  //
-  var dbx = new Dropbox({ accessToken: '9elIkCDq3zAAAAAAAAACPkVRrNch9EUklN5tkyJfFwegX-T01NnOOIXA9nSuRoy9' });
-  var shareableLink = "";
+function getDropboxLink() {
+  if ( !this.classList.contains("loading") ) {
 
-  console.log("dropboxFilePath - " + dropboxFilePath);
+    shareOrb.classList.add("loading");
 
-  dbx.sharingListSharedLinks({path: dropboxFilePath})
-    .then(function(response) {
+    if ( elExists(document.querySelector("#dropbox-link-text")) ) {
 
-      console.log(response);
+      shareOrb.classList.remove("loading");
+      copyToClipboard(document.querySelector("#dropbox-link-text"));
 
-      if (response.links.length > 0) {
-        console.log("true: response.links.length > 0 = " + response.links.length);
-        var shareableLink = response.links[0].url;
-        modifyDpLink(shareableLink);
-      } else {
-        console.log("false: response.links.length > 0 = " + response.links.length);
-        dbx.sharingCreateSharedLinkWithSettings({path: dropboxFilePath})
+    } else {
+
+      if ( dropboxTestPattern.test(document.URL) ) {
+        console.log("Yes! This file exists in the local DropBox folder. [" + document.URL + "]");
+        var dropboxFilePath = document.URL.replace(dropboxTestPattern, "")
+        var dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "")
+        var dropboxFilePath = decodeURIComponent(dropboxFilePath); // the API does not accept encoded paths (eg %20 instead of a space)
+
+        //
+        // Dropbox API SDK - http://dropbox.github.io/dropbox-sdk-js/#toc0__anchor
+        // Documentation - https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
+        // Get Token - https://dropbox.github.io/dropbox-api-v2-explorer/#sharing_create_shared_link_with_settings
+        //
+        var dbx = new Dropbox({ accessToken: '9elIkCDq3zAAAAAAAAACPkVRrNch9EUklN5tkyJfFwegX-T01NnOOIXA9nSuRoy9' });
+        var shareableLink = "";
+
+        console.log("dropboxFilePath - " + dropboxFilePath);
+
+        dbx.sharingListSharedLinks({path: dropboxFilePath})
           .then(function(response) {
+
             console.log(response);
-            var shareableLink = response.url;
-            modifyDpLink(shareableLink);
+
+            if (response.links.length > 0) {
+              console.log("true: response.links.length > 0 = " + response.links.length);
+              var shareableLink = response.links[0].url;
+              modifyDpLink(shareableLink);
+            } else {
+              console.log("false: response.links.length > 0 = " + response.links.length);
+              dbx.sharingCreateSharedLinkWithSettings({path: dropboxFilePath})
+                .then(function(response) {
+                  console.log(response);
+                  var shareableLink = response.url;
+                  modifyDpLink(shareableLink);
+                })
+                .catch(function(error) {
+                  console.log(error);
+                  shareOrb.classList.remove("loading");
+                });
+            }
+
+            function modifyDpLink(shareableLink) {
+              if ( shareableLink.length > 0 ) {
+                shareableLink = shareableLink.replace(/www\./i, "dl.");
+                shareableLink = shareableLink.replace(/dropbox\.com/i, "dropboxusercontent.com");
+                shareableLink = shareableLink.replace(/\?dl=0/i, "");
+
+                var shareableLinkHolder = document.createElement("input");
+                shareableLinkHolder.id = "dropbox-link-text"
+                shareableLinkHolder.className = "hidden"
+                shareableLinkHolder.value = shareableLink;
+                document.body.appendChild(shareableLinkHolder);
+
+                shareOrb.classList.remove("loading");
+
+                copyToClipboard(document.querySelector("#dropbox-link-text"));
+              }
+            }
+
           })
           .catch(function(error) {
             console.log(error);
+            shareOrb.classList.remove("loading");
           });
+
+      } else {
+        shareOrb.classList.remove("loading");
+        console.log("No! This file is not located in the local DropBox folder. [" + document.URL + "]");
+        alert("No! This file is not located in the local DropBox folder. [" + document.URL + "]");
       }
 
-      function modifyDpLink(shareableLink) {
-        if ( shareableLink.length > 0 ) {
-          shareOrb.classList.remove("off");
-          shareableLink = shareableLink.replace(/www\./i, "dl.");
-          shareableLink = shareableLink.replace(/dropbox\.com/i, "dropboxusercontent.com");
-          shareableLink = shareableLink.replace(/\?dl=0/i, "");
 
-          var shareableLinkHolder = document.createElement("input");
-          shareableLinkHolder.id = "dropbox-link-text"
-          shareableLinkHolder.className = "hidden"
-          shareableLinkHolder.value = shareableLink;
-          document.body.appendChild(shareableLinkHolder);
-        }
-      }
-
-    })
-    .catch(function(error) {
-      console.log(error);
-    });
-
-} else {
-  console.log("No! This file is not located in the local DropBox folder. [" + document.URL + "]");
-}
-
-function getDropboxLink() {
-  // Copy the Link - http://www.jstips.co/en/copy-to-clipboard/
-  // Select the content
-  document.querySelector("#dropbox-link-text").select();
-  // Copy to the clipboard
-  document.execCommand('copy');
-  //
-  alert("link copied!");
+    }
+  }
 }
 
 
@@ -601,7 +735,14 @@ orbsBottom.appendChild(imagesToggleOrb);
 var imagesToggle = false
 
 function toggleImages() {
+
   imagesToggle = !imagesToggle;
+
+  if ( imagesToggle ) {
+    history.replaceState(null,null, updateQueryString("img", "0") );
+  } else {
+    history.replaceState(null,null, updateQueryString("img") );
+  }
 
     let dFrameimgList = dFrame.querySelectorAll("img");
     for (let img of dFrameimgList) {
@@ -679,6 +820,7 @@ function plainText() {
     // data-module="featured-courses"
     // data-module="bbanner"
     // data-module="sale-banner"
+    // data-module="from-the-blog"
 
     var moduleType = ""
     var plainText = ""
@@ -719,13 +861,14 @@ function plainText() {
         console.log( module.querySelector("[data-sub-mod='title']") );
 
         insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n"
+
         if ( elExists(module.querySelector("[data-sub-mod='author']")) ) {
           insertText +=   module.querySelector("[data-sub-mod='author']").innerText.trim() + "\n\n";
         }
-         insertText +=  cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
-         insertText +=  module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
-         insertText +=  module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
 
+        insertText +=  cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
+        insertText +=  module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
+        insertText +=  module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
       }
 
       if (moduleType === "did-you-know") {
@@ -735,32 +878,30 @@ function plainText() {
       }
 
       if (moduleType === "from-the-blog") {
-        var categoryTitle = module.querySelector("[data-sub-mod='category-title']").innerText.trim() + "\n\n"
-        var title1 =   module.querySelectorAll("[data-sub-mod='title']")[0].innerText.trim() + "\n";
-        var author1 =   module.querySelectorAll("[data-sub-mod='author']")[0].innerText.trim() + "\n\n";
-        var ctaLink1 =  module.querySelectorAll("[data-sub-mod='title'] a")[0].getAttribute("href").trim() + "\n\n * * * \n\n";
-        var title2 =   module.querySelectorAll("[data-sub-mod='title']")[1].innerText.trim() + "\n";
-        var author2 =   module.querySelectorAll("[data-sub-mod='author']")[1].innerText.trim() + "\n\n";
-        var ctaLink2 =  module.querySelectorAll("[data-sub-mod='title'] a")[1].getAttribute("href").trim() + "\n\n * * * \n\n";
-        var title3 =   module.querySelectorAll("[data-sub-mod='title']")[2].innerText.trim() + "\n";
-        var author3 =   module.querySelectorAll("[data-sub-mod='author']")[2].innerText.trim() + "\n\n";
-        var ctaLink3 =  module.querySelectorAll("[data-sub-mod='title'] a")[2].getAttribute("href").trim();
-
-        var insertText = categoryTitle + title1 + author1 + ctaLink1 + title2 + author2 + ctaLink2 + title3 + author3 + ctaLink3;
+        var insertText = ""
+        insertText += module.querySelector("[data-sub-mod='category-title']").innerText.trim() + "\n\n"
+        insertText += module.querySelectorAll("[data-sub-mod='title']")[0].innerText.trim() + "\n";
+        insertText += module.querySelectorAll("[data-sub-mod='author']")[0].innerText.trim() + "\n\n";
+        insertText += module.querySelectorAll("[data-sub-mod='title'] a")[0].getAttribute("href").trim() + "\n\n * * * \n\n";
+        insertText += module.querySelectorAll("[data-sub-mod='title']")[1].innerText.trim() + "\n";
+        insertText += module.querySelectorAll("[data-sub-mod='author']")[1].innerText.trim() + "\n\n";
+        insertText += module.querySelectorAll("[data-sub-mod='title'] a")[1].getAttribute("href").trim() + "\n\n * * * \n\n";
+        insertText += module.querySelectorAll("[data-sub-mod='title']")[2].innerText.trim() + "\n";
+        insertText += module.querySelectorAll("[data-sub-mod='author']")[2].innerText.trim() + "\n\n";
+        insertText += module.querySelectorAll("[data-sub-mod='title'] a")[2].getAttribute("href").trim();
       }
 
       if (moduleType === "two-column-articles") {
-        var headline1 = module.querySelectorAll("[data-sub-mod='title']")[0].innerText.trim() + "\n";
-        var summary1  = cleanPlainTxt(module.querySelectorAll("[data-sub-mod='summary']")[0].innerText) + "\n\n";
-        var ctaText1  = module.querySelectorAll("[data-sub-mod='cta']")[0].innerText.trim() + "\n";
-        var ctaLink1  = module.querySelectorAll("[data-sub-mod='cta'] a")[0].getAttribute("href").trim();
+        var insertText = ""
+        insertText += module.querySelectorAll("[data-sub-mod='title']")[0].innerText.trim() + "\n";
+        insertText += cleanPlainTxt(module.querySelectorAll("[data-sub-mod='summary']")[0].innerText) + "\n\n";
+        insertText += module.querySelectorAll("[data-sub-mod='cta']")[0].innerText.trim() + "\n";
+        insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[0].getAttribute("href").trim() + "\n\n* * *\n\n";
 
-        var headline2 = module.querySelectorAll("[data-sub-mod='title']")[1].innerText.trim() + "\n";
-        var summary2  = cleanPlainTxt(module.querySelectorAll("[data-sub-mod='summary']")[1].innerText) + "\n\n";
-        var ctaText2  = module.querySelectorAll("[data-sub-mod='cta']")[1].innerText.trim() + "\n";
-        var ctaLink2  = module.querySelectorAll("[data-sub-mod='cta'] a")[1].getAttribute("href").trim();
-
-        var insertText = headline1 + summary1 + ctaText1 + ctaLink1 + "\n\n* * *\n\n" + headline2 + summary2 + ctaText2 + ctaLink2;
+        insertText += module.querySelectorAll("[data-sub-mod='title']")[1].innerText.trim() + "\n";
+        insertText += cleanPlainTxt(module.querySelectorAll("[data-sub-mod='summary']")[1].innerText) + "\n\n";
+        insertText += module.querySelectorAll("[data-sub-mod='cta']")[1].innerText.trim() + "\n";
+        insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[1].getAttribute("href").trim();
       }
 
       if (moduleType === "featured-courses") {
@@ -796,7 +937,9 @@ function plainText() {
 
         insertText += toTitleCase(module.querySelector("[data-sub-mod='category-title']").innerText.trim()) + "\n\n"
         insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n";
-        insertText += module.querySelector("[data-sub-mod='sub-title']").innerText.trim() + "\n";
+        if ( elExists(module.querySelector("[data-sub-mod='sub-title']")) ) {
+          insertText += module.querySelector("[data-sub-mod='sub-title']").innerText.trim() + "\n";
+        }
         insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
         insertText += module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
         insertText += module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
@@ -807,10 +950,16 @@ function plainText() {
 
         var insertText = ""
 
-        insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n";
-        // insertText += module.querySelector("[data-sub-mod='summary']").innerText.trim() + "\n\n";
-        insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='cta']").innerText) + "\n";
-        insertText += module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
+        if ( elExists(module.querySelector("[data-sub-mod='title']")) ) {
+          insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n";
+        }
+        if ( elExists(module.querySelector("[data-sub-mod='summary']")) ) {
+          insertText += module.querySelector("[data-sub-mod='summary']").innerText.trim() + "\n";
+        }
+        if ( elExists(module.querySelector("[data-sub-mod='cta']")) ) {
+          insertText += "\n" + module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
+          insertText += module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
+        }
 
       }
 
@@ -861,6 +1010,7 @@ function plainText() {
 
   plainTextTingle.open();
   document.getElementsByClassName('plain-text-modal')[0].focus(); // Active Chrome spellcheck
+  document.getElementsByClassName('plain-text-modal')[0].scrollTop = 0; // Scroll back to the top of the textarea
 
 }
 
@@ -932,50 +1082,173 @@ imgCheckerWrapper.innerHTML = imgCheckerHtml;
             console.log(dFrame);
             console.log(dFrame.body);
 
-              var linkMarkerWrapper = document.createElement("div");
-              linkMarkerWrapper.className = "link-marker-wrapper";
-              dFrame.body.appendChild(linkMarkerWrapper);
+              // var linkMarkerWrapper = document.createElement("div");
+              // linkMarkerWrapper.className = "link-marker-wrapper";
+              // dFrame.body.appendChild(linkMarkerWrapper);
 
             let linkList = dFrame.querySelectorAll("a");
             var i = 0
             console.log("Total Links: " + linkList.length)
 
-            console.groupCollapsed();
+            // console.groupCollapsed();
             for (let link of linkList) {
 
               i++
 
               // !isHidden(link) &&
 
-              if ( !/^\*\|/gi.test(link.href) ) {
+              if ( !/^\*\|/gi.test(link.href) ) { // If this isn't a MailChimp link (eg. *|ARCHIVE|*), continue processing.
+
+
 
                   console.log(link);
                   console.log("[" + i + "] " + link.href);
                   console.log( getPosition(link) );
 
-                var position = getPosition(link);
+                var linkPosition = getPosition(link);
 
                 link.classList.add("marked");
 
                 var linkMarker = document.createElement("div");
                 linkMarker.className = "link-marker";
-                linkMarker.style.top = position.y + "px";
-                linkMarker.style.left = position.x + "px";
+                linkMarker.style.top = (linkPosition.y - 10) + "px";
+                linkMarker.style.left = (linkPosition.x - 10) + "px";
                 linkMarker.dataset.href = link.href;
                 linkMarker.dataset.number = i;
                 dFrame.body.appendChild(linkMarker);
 
-                if ( link.hasAttribute("target") ) {
-                  // link.classList.add("");
-                } else {
+
+                //////////////////////////////
+                //////////////////////////////
+                //////////////////////////////
+                //////////////////////////////
+
+                ////
+                // Validate URL
+                // Ignore valid URLs, valid mailto:, and valid MailChimp links ( *|text|* converted to *%7Ctext%7C* )
+                // http://stackoverflow.com/a/15734347/556079
+                if ( !/^(http|https):\/\/[^ "]+$/.test(link.href) && !/^mailto:.+?@.+?\..+/.test(link.href) && !/\*%7C.+?%7C\*/.test(link.href) ) {
                   linkMarker.classList.add("error");
+                  console.error("invalid URL scheme");
                 }
+
+                ////
+                // Every link needs a target attribute.
+                if ( !link.hasAttribute("target") ) {
+                  linkMarker.classList.add("error");
+                  console.error("missing target");
+                }
+
+                ////
+                // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
+                if ( /www\.medbridge(ed|education|massage)\.com/gi.test(link.href) && !/utm_content/gi.test(link.href) && !outsideOrg ) {
+                  linkMarker.classList.add("error");
+                  console.error("missing utm");
+                }
+
+                ////
+                // NO UTM - outsideOrg should not have utms
+                if ( /utm_content/gi.test(link.href) && outsideOrg ) {
+                  linkMarker.classList.add("error");
+                  console.error("remove utm");
+                }
+
+                ////
+                // Check for whitelabeling versus www
+                if ( !/\/blog\//gi.test(link.href) && /\/\/(www\.)?medbridge(ed|education|massage)\.com/gi.test(link.href) ) {
+
+                  if ( emailSubType === "fox" || emailSubType === "hs" || emailSubType === "dr" ) {
+                    linkMarker.classList.add("error");
+                    console.error("missing whitelabeling");
+                  }
+
+                }
+
+                ////
+                // Check for sub=yes
+                ////
+                // Check sub emails
+                if ( emailSubType === "sub" || outsideOrg ) {
+
+                  // sub=yes is required in blog links.
+                  if ( /\/blog\/20\d\d/gi.test(link.href) && !/sub=yes/gi.test(link.href) ) {
+                    linkMarker.classList.add("error");
+                    console.error("add sub=yes");
+                  }
+                  // sub=yes should not be in any other links.
+                  if ( !/\/blog\/20\d\d/gi.test(link.href) && /sub=yes/gi.test(link.href) ) {
+                    linkMarker.classList.add("error");
+                    console.error("remove sub=yes");
+                  }
+                }
+
+                ////
+                // Check all links in non-subscriber emails
+                if ( emailSubType === "ns" && /sub=yes/gi.test(link.href) ) {
+                  linkMarker.classList.add("error");
+                  console.error("remove sub=yes");
+                }
+
+                ////
+                // Check for existence of https in blog links in sub version
+                if ( /\/blog\/20\d\d/gi.test(link.href) && emailSubType === "sub" && /https/gi.test(link.href) ) {
+                  linkMarker.classList.add("error");
+                  console.error("https needs to be changed to http");
+                }
+
+                ////
+                // https required
+                if ( /http:/gi.test(link.href) && !/\/blog\//gi.test(link.href) && /\.medbridge(ed|education|massage)\.com/gi.test(link.href) ) {
+                  linkMarker.classList.add("error");
+                  console.error("https missing");
+                }
+
+
+                ////
+                // Affiliate URL Linkbacks should not be used in subscriber version.
+                if ( emailSubType === "sub" && /after_affiliate_url/gi.test(link.href) ) {
+                  linkMarker.classList.add("error");
+                  console.error("affiliate link");
+                }
+
+                ////
+                // Discipline Check
+                if ( emailDisc !== "slp" && (/#\/?speech-language-pathology/gi.test(link.href) || /-slp-/gi.test(link.href)) ) {
+                  linkMarker.classList.add("error");
+                  console.error("wrong discipline");
+                }
+                if ( emailDisc !== "pt" && (/#\/?physical-therapy/gi.test(link.href) || /-pt-/gi.test(link.href)) ) {
+                  linkMarker.classList.add("error");
+                  console.error("wrong discipline");
+                }
+                if ( emailDisc !== "at" && (/#\/?athletic-training/gi.test(link.href) || /-at-/gi.test(link.href)) ) {
+                  linkMarker.classList.add("error");
+                  console.error("wrong discipline");
+                }
+                if ( emailDisc !== "ot" && (/#\/?occupational-therapy/gi.test(link.href) || /-ot-/gi.test(link.href)) ) {
+                  linkMarker.classList.add("error");
+                  console.error("wrong discipline");
+                }
+
+                ////
+                // NO //support. in outsideOrg
+                if ( /\/support\./gi.test(link.href) && outsideOrg ) {
+                  linkMarker.classList.add("error");
+                  console.error("support. not allowed in outsideOrg");
+                }
+
+
+
+
+
+
+                //
 
                 var linkText = link.innerText;
 
               }
             }
-            console.groupEnd();
+            // console.groupEnd();
 
 
             ////
@@ -1000,6 +1273,21 @@ imgCheckerWrapper.innerHTML = imgCheckerHtml;
 
 
 
+//
+/// URL Querystring settings
+///*************************///
+if ( getParameterByName("img") === "0" ) {
+  toggleImages();
+  console.log("images off");
+}
+
+if ( getParameterByName("mobile") === "0" ) {
+  viewMobile();
+  console.log("mobile view collapsed");
+}
+
+
+
 
 
 // Create
@@ -1008,6 +1296,9 @@ imgCheckerWrapper.innerHTML = imgCheckerHtml;
 //
 //
 //
+
+document.querySelector("html").classList.toggle("errors");
+console.log("// End of script")
 } // END TEST
 //
 //
