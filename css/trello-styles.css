@@ -1,0 +1,27 @@
+
+
+.calendar-content .card-label.mod-card-front {
+  height:4px !important;
+}
+
+.calendar-content .day-cell {
+  width:16.8% !important;
+  height:160px !important;
+}
+.calendar-content .day-cell:last-child, .calendar-content .day-cell:first-child {
+  width:8% !important;
+  opacity:.33 !important;
+}
+
+.calendar-content .list-card {
+  margin-bottom:3px !important;
+  max-height:35px !important;
+}
+
+.calendar-content .list-card-details {
+  padding:4px 6px 0px 8px !important;
+}
+
+.calendar-content .list-card-labels {
+  margin-bottom:0 !important;
+}

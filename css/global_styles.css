@@ -153,3 +153,22 @@
 .mb-paintbucket:before {
   content: "\44";
 }
+.mb-dr:before {
+  content: "\45";
+}
+.mb-dr-1:before {
+  content: "\46";
+}
+.mb-fox:before {
+  content: "\47";
+}
+.mb-hs:before {
+  content: "\48";
+}
+.mb-power-off:before {
+  content: "\49";
+}
+.mb-code-working:before {
+  content: "\4a";
+}
+

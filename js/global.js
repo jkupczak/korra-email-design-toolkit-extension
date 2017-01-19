@@ -18,15 +18,23 @@ function getDisciplineId(string) {
   else if ( /-SLP(\s|-|\.|$)/gi.test(string) )           { var disciplineId = "slp"; }
   else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(string) )   { var disciplineId = "other"; }
   else if ( /-LMT(\s|-|\.|$)/gi.test(string) )           { var disciplineId = "lmt"; }
-  else if ( /-MT(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "mt"; }
-  else if ( /-Enterprise(\s|-|\.|$)/gi.test(string) )    { var disciplineId = "enterprise"; }
+  else if ( /-MT(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "lmt"; }
+  else if ( /-Enterprise(\s|-|\.|$)/gi.test(string) )    { var disciplineId = "ent"; }
   else if ( /-DR(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "dr"; }
   else if ( /-HS(-|\.|$)/gi.test(string) )               { var disciplineId = "hs"; }
-  else { var disciplineId = "undefined" }
+  else { var disciplineId = null }
 
   // console.log("function returned this: " + disciplineId);
 
   return disciplineId;
+}
+
+
+//
+//
+// http://stackoverflow.com/a/2541083/556079
+function getPathFromUrl(url) {
+  return url.split(/[?#]/)[0];
 }
 
 //

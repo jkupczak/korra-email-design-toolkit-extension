@@ -41,7 +41,7 @@ if ( !onMailchimp ) {
 	var disciplineSearch = availableNode.innerText;
 	// console.log("disciplineSearch = " + disciplineSearch)
 }
-var disciplineId = getDisciplineId(disciplineSearch);
+var disciplineId = getDisciplineId(disciplineSearch) || "";
 
 
 ////
@@ -108,6 +108,8 @@ var animatedFavicon
 if ( getSubStatus(disciplineSearch) ) { favicon = favicon + "-sub"; }
 //A/B Test check
 // if ( getABstatus(disciplineSearch) ) { favicon = favicon + "-" + getABstatus(disciplineSearch); }
+// Fox Check
+if ( /\-Fox\-/gi.test(document.URL) ) {	if ( favicon === "" ) { favicon += "fox"; } else { favicon += "-fox"; } };
 //Dropbox check
 if ( onDropbox ) {	favicon = favicon + "-dropbox"; }
 //Middleman check

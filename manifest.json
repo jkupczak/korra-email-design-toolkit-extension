@@ -60,7 +60,7 @@
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/tingle.css", "css/newsletter_styles.css"],
-      "js": ["js/Dropbox-sdk.min.js", "js/tingle.js", "js/newsletter.js"]
+      "js": ["js/Dropbox-sdk.min.js", "js/findAndReplaceDOMText.js", "js/tingle.js", "js/newsletter.js"]
     },
     { //Email-Labeling_Favicons_and_Title_bars
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
@@ -95,7 +95,8 @@
     },
     { // Trello
       "matches": ["*://*.trello.com/*"],
-      "js": ["js/trello.js"]
+      "js": ["js/trello.js"],
+      "css": ["css/trello-styles.css"]
     },
     { //Gmail
       "matches": ["*://mail.google.com/*"],

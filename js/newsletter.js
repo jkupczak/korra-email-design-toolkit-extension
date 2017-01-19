@@ -1,23 +1,14 @@
 console.warn(">>> newsletter.js loaded");
 /////////////////////////////////////////
 /////////////////////////////////////////
-/*
-
-Text to Search For
-
-ASHA (only in SLP)
-AOTA (only in OT)
-
-
-
-
-
-*/
 
 var testing = true;
 var view = getParameterByName("view");
 
 if ( testing && view !== "1" && /\.htm/gi.test(document.URL) ) {
+
+
+
 
 // ERROR CHECKING FOR ENTIRE PAGE
 document.querySelector("html").classList.add("error-status");
@@ -214,19 +205,42 @@ var emailDisc = getDisciplineId(pageUrl);
 ////////////////////
 ////////////////////
 
-  // Remove <body> contents
-  var ogBody = document.body;
-  while (ogBody.firstChild) {
-      ogBody.removeChild(ogBody.firstChild);
+  // Destroy all <style> tags.
+  let styleSheetEle = document.querySelectorAll("style");
+  for (let style of styleSheetEle) {
+    destroy(style);
   }
 
-  // Remove inline styling from <body>
-  ogBody.removeAttribute("style");
+  // Destroy all <body> tags.
+  let bodyEle = document.querySelectorAll("body");
+  for (let body of bodyEle) {
+    destroy(body);
+  }
+  // Create a new <body> tag.
+  var newBody = document.createElement("body");
+  insertAfter(newBody, document.head)
 
-  // Remove <style> tag
-  var ogHead = document.getElementsByTagName('head')[0];
-  var ogStyle = document.getElementsByTagName("style")[0];
-  ogHead.removeChild(ogStyle);
+
+
+
+  // var COMMENT_PSEUDO_COMMENT_OR_LT_BANG = new RegExp(
+  //     '<!--[\\s\\S]*?(?:-->)?'
+  //     + '<!---+>?'  // A comment with no body
+  //     + '|<!(?![dD][oO][cC][tT][yY][pP][eE]|\\[CDATA\\[)[^>]*>?'
+  //     + '|<[?][^>]*>?',  // A pseudo-comment
+  //     'g');
+
+
+
+  // Remove <body> contents
+  // var ogBody = document.body;
+  // while (ogBody.firstChild) {
+  //     ogBody.removeChild(ogBody.firstChild);
+  // }
+
+  // Remove inline styling from <body>
+  // ogBody.removeAttribute("style");
+
 
   // Apply class to the HTML element so that we can activate styles for this new page.
   document.getElementsByTagName('html')[0].classList.add("powered-up");
@@ -339,21 +353,23 @@ var emailDisc = getDisciplineId(pageUrl);
     // Apply the desktop iframes document object to a variable
     var dFrame = desktopIframe.contentDocument;
 
+    // var dFrameScript = document.createElement("script");
+    // dFrameScript.src = chrome.extension.getURL('js/tooltip.min.js');
+    // dFrame.head.appendChild(dFrameScript);
+
     var dFrameStyles = document.createElement("link");
     dFrameStyles.href = chrome.extension.getURL('css/dFrame.css');
     dFrameStyles.rel = "stylesheet";
     dFrameStyles.type = "text/css";
     dFrame.head.appendChild(dFrameStyles);
 
-    // Add contentEditable to the desktop versions HTML tag for future editing capabilites.
-    dFrame.getElementsByTagName('html')[0].contentEditable = 'false';
+    // var toolTipStylesheet = document.createElement("link");
+    // toolTipStylesheet.href = chrome.extension.getURL('css/tooltip.css');
+    // toolTipStylesheet.rel = "stylesheet";
+    // toolTipStylesheet.type = "text/css";
+    // dFrame.head.appendChild(toolTipStylesheet);
 
-    //-----------
-    //SPELL CHECK
-    /////////////
-    //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
-    dFrame.getElementsByTagName('html')[0].contentEditable = 'true';
-    dFrame.getElementsByTagName('html')[0].focus();
+    // Add contentEditable to the desktop versions HTML tag for future editing capabilites.
     dFrame.getElementsByTagName('html')[0].contentEditable = 'false';
 
   var mobileIframeWrapper = document.createElement("div");
@@ -430,15 +446,15 @@ var emailDisc = getDisciplineId(pageUrl);
     // Allow touch events to mimic mobile behavior
     // Pending
 
-    //-----------
-    //SPELL CHECK
-    /////////////
-    //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
-    mFrame.getElementsByTagName('html')[0].contentEditable = 'true';
-    mFrame.getElementsByTagName('html')[0].focus();
-    mFrame.getElementsByTagName('html')[0].contentEditable = 'false';
 
-// Create Newsletter QA Control Bar Wrapper
+
+
+//////////
+////
+////  Create Newsletter QA Control Bar Wrapper
+////
+/////////
+
 var controlBar = document.createElement("div");
 controlBar.className = "control-bar";
 qaWrapper.appendChild(controlBar);
@@ -469,7 +485,12 @@ qaWrapper.appendChild(controlBar);
 // controlBar.appendChild(splitViewOrb);
 
 
-// Create Mobile View Orb
+//////////
+////
+////  Create Mobile View Orb
+////
+/////////
+
 var mobileViewOrb = document.createElement("div");
 mobileViewOrb.className = "mobile-orb orb glyph";
 mobileViewOrb.addEventListener("click", viewMobile, false);
@@ -492,7 +513,12 @@ function viewMobile() {
 }
 
 
-// Create Trello Orb
+//////////
+////
+////  Create Trello Orb
+////
+/////////
+
 var trelloOrb = document.createElement("a");
 trelloOrb.className = "trello-orb orb off";
 trelloOrb.target = "_trello";
@@ -506,7 +532,13 @@ orbsTop.appendChild(trelloOrb);
     }
   });
 
-// Create Dropbox Orb
+
+//////////
+////
+////  Create Dropbox Orb
+////
+/////////
+
 if ( onDropbox ) {
   var localOrb = document.createElement("a");
   localOrb.className = "local-orb orb glyph off";
@@ -541,7 +573,12 @@ if ( onDropbox ) {
 
 
 
-// Create CSS Debug Orb
+//////////
+////
+////  Create CSS Debug Orb
+////
+/////////
+
 var debugOrb = document.createElement("div");
 debugOrb.id = "debug-orb";
 debugOrb.className = "debug-orb orb glyph";
@@ -571,7 +608,12 @@ function debugCss() {
   }
 }
 
-// Create Nav Up/Down Orb
+//////////
+////
+////  Create Nav Up/Down Orb
+////
+/////////
+
 var navOrb = document.createElement("div");
 navOrb.className = "nav-orb orb dual-orb glyph";
 orbsBottom.appendChild(navOrb);
@@ -586,15 +628,89 @@ orbsBottom.appendChild(navOrb);
   navOrbDown.addEventListener("click", navDown, false);
   navOrb.appendChild(navOrbDown);
 
-function navUp() {
-  // var linkPosition = getPosition(link);
+  function navUp() {
+    // var linkPosition = getPosition(link);
+  }
+
+  function navDown() {
+
+  }
+
+
+//////////
+////
+////   Create Power Orb (turn off JavaScript)
+////
+/////////
+
+var powerOrb = document.createElement("a");
+powerOrb.className = "power-orb orb glyph";
+powerOrb.href = document.URL + "?view=1";
+orbsTop.appendChild(powerOrb);
+
+
+
+//////////
+////
+////   Create Style Toggle Orb
+////
+/////////
+
+var styleOrb = document.createElement("div");
+styleOrb.className = "style-orb orb glyph";
+styleOrb.id = "style-orb";
+styleOrb.addEventListener("click", toggleStyles, false);
+orbsBottom.appendChild(styleOrb);
+var styleToggle = false
+
+function toggleStyles() {
+
+  styleToggle = !styleToggle;
+
+  if ( styleToggle ) {
+    history.replaceState(null,null, updateQueryString("style", "0") );
+  } else {
+    history.replaceState(null,null, updateQueryString("style") );
+  }
+
+  if ( styleToggle ) {
+
+    let dStyleSheetEle = dFrame.querySelectorAll("style");
+    for (let style of dStyleSheetEle) {
+      style.disabled = true;
+    }
+
+    let mStyleSheetEle = mFrame.querySelectorAll("style");
+    for (let style of mStyleSheetEle) {
+      style.disabled = true;
+    }
+
+  } else {
+
+    let dStyleSheetEle = dFrame.querySelectorAll("style");
+    for (let style of dStyleSheetEle) {
+      style.disabled = false;
+    }
+
+    let mStyleSheetEle = mFrame.querySelectorAll("style");
+    for (let style of mStyleSheetEle) {
+      style.disabled = false;
+    }
+
+  }
+
+  document.getElementById("style-orb").classList.toggle("on");
+
 }
 
-function navDown() {
 
-}
 
-// Create Share Email Orb
+//////////
+////
+////   Create Share Email Orb
+////
+/////////
+
 var shareOrb = document.createElement("div");
 shareOrb.className = "share-orb orb glyph";
 shareOrb.addEventListener("click", getDropboxLink, false);
@@ -617,7 +733,9 @@ function getDropboxLink() {
 
     } else {
 
-      if ( dropboxTestPattern.test(document.URL) ) {
+      if ( onDropbox ) {
+        copyDpLink(document.URL);
+      } else if ( dropboxTestPattern.test(document.URL) ) {
         console.log("Yes! This file exists in the local DropBox folder. [" + document.URL + "]");
         var dropboxFilePath = document.URL.replace(dropboxTestPattern, "")
         var dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "")
@@ -641,37 +759,19 @@ function getDropboxLink() {
             if (response.links.length > 0) {
               console.log("true: response.links.length > 0 = " + response.links.length);
               var shareableLink = response.links[0].url;
-              modifyDpLink(shareableLink);
+              copyDpLink(shareableLink);
             } else {
               console.log("false: response.links.length > 0 = " + response.links.length);
               dbx.sharingCreateSharedLinkWithSettings({path: dropboxFilePath})
                 .then(function(response) {
                   console.log(response);
                   var shareableLink = response.url;
-                  modifyDpLink(shareableLink);
+                  copyDpLink(shareableLink);
                 })
                 .catch(function(error) {
                   console.log(error);
                   shareOrb.classList.remove("loading");
                 });
-            }
-
-            function modifyDpLink(shareableLink) {
-              if ( shareableLink.length > 0 ) {
-                shareableLink = shareableLink.replace(/www\./i, "dl.");
-                shareableLink = shareableLink.replace(/dropbox\.com/i, "dropboxusercontent.com");
-                shareableLink = shareableLink.replace(/\?dl=0/i, "");
-
-                var shareableLinkHolder = document.createElement("input");
-                shareableLinkHolder.id = "dropbox-link-text"
-                shareableLinkHolder.className = "hidden"
-                shareableLinkHolder.value = shareableLink;
-                document.body.appendChild(shareableLinkHolder);
-
-                shareOrb.classList.remove("loading");
-
-                copyToClipboard(document.querySelector("#dropbox-link-text"));
-              }
             }
 
           })
@@ -691,11 +791,38 @@ function getDropboxLink() {
   }
 }
 
+function copyDpLink(shareableLink) {
+  if ( shareableLink.length > 0 ) {
+
+    if( !/dl\.dropboxusercontent/gi.test(shareableLink) ) {
+      shareableLink = shareableLink.replace(/www\./i, "dl.");
+      shareableLink = shareableLink.replace(/dropbox\.com/i, "dropboxusercontent.com");
+      shareableLink = shareableLink.replace(/\?dl=0/i, "");
+    } else {
+      shareableLink = getPathFromUrl(shareableLink);
+    }
+
+    var shareableLinkHolder = document.createElement("input");
+    shareableLinkHolder.id = "dropbox-link-text"
+    shareableLinkHolder.className = "hidden"
+    shareableLinkHolder.value = shareableLink;
+    document.body.appendChild(shareableLinkHolder);
+
+    copyToClipboard(document.querySelector("#dropbox-link-text"));
+  } else {
+    alert("error!");
+  }
+  shareOrb.classList.remove("loading");
+}
 
 
-//
-// Create Edit Email Orb
-////////////////////////
+
+//////////
+////
+////  Create Edit Email Orb
+////
+/////////
+
 var editOrb = document.createElement("div");
 editOrb.className = "edit-orb orb glyph";
 editOrb.id = "edit-orb";
@@ -708,9 +835,16 @@ function editEmail() {
   var editDesktop = dFrame.getElementsByTagName('html')[0].contentEditable = editToggle;
   document.getElementById("desktop-view").classList.toggle("editing");
   document.getElementById("edit-orb").classList.toggle("on");
+  dFrame.getElementsByTagName('body')[0].focus();
 }
 
-// Create A/B Swap Orb
+
+//////////
+////
+////  Create A/B Swap Orb
+////
+/////////
+
 if ( getABstatus(fileUrl) !== false ) {
   var abOrb = document.createElement("a");
 
@@ -726,7 +860,13 @@ if ( getABstatus(fileUrl) !== false ) {
 
 }
 
-// Create Toggle Images On/Off
+
+//////////
+////
+////  Create Toggle Images On/Off
+////
+/////////
+
 var imagesToggleOrb = document.createElement("div");
 imagesToggleOrb.className = "images-orb orb glyph";
 imagesToggleOrb.id = "images-orb";
@@ -802,7 +942,15 @@ function toggleImages() {
   document.getElementById("images-orb").classList.toggle("on");
 }
 
-// Create Plain-Text Generator
+
+
+
+//////////
+////
+////  Create Plain-Text Generator Orb
+////
+/////////
+
 var plainTextOrb = document.createElement("div");
 plainTextOrb.className = "plain-text-orb orb glyph";
 plainTextOrb.addEventListener("click", plainText, false);
@@ -1025,14 +1173,26 @@ function processModuleText(moduleType) {
 
 
 
-// Create Newsletter QA Info Bar Wrapper
+
+//////////
+////
+////  Create Newsletter QA Info Bar Wrapper
+////
+/////////
+
 var infoBar = document.createElement("div");
 infoBar.className = "info-bar";
 qaWrapper.appendChild(infoBar);
 
 
-// Create Preheader Module
-// https://www.campaignmonitor.com/blog/email-marketing/2015/08/improve-email-open-rates-with-preheader-text/
+
+//////////
+////
+////  Create Preheader Module
+////  https://www.campaignmonitor.com/blog/email-marketing/2015/08/improve-email-open-rates-with-preheader-text/
+////
+/////////
+
 var preheaderWapper = document.createElement("div");
 preheaderWapper.className = "preheader-wrapper mod-wrapper";
 infoBar.appendChild(preheaderWapper);
@@ -1049,7 +1209,12 @@ preheaderWapper.innerHTML = preheader;
 
 
 
-// Create Link Checker Module
+//////////
+////
+////  Create Link Checker Module
+////
+/////////
+
 var linkCheckerWrapper = document.createElement("div");
 linkCheckerWrapper.id = "link-checker";
 linkCheckerWrapper.className = "link-checker-wrapper mod-wrapper";
@@ -1059,7 +1224,13 @@ var linkCheckerHtml = "<div class='mod mod-link-checker'><div class='title'>Link
 linkCheckerWrapper.innerHTML = linkCheckerHtml;
 
 
-// Create Image Checker Module
+
+//////////
+////
+////  Create Image Checker Module
+////
+/////////
+
 var imgCheckerWrapper = document.createElement("div");
 imgCheckerWrapper.id = "img-checker";
 imgCheckerWrapper.className = "img-checker-wrapper mod-wrapper";
@@ -1069,213 +1240,16 @@ var imgCheckerHtml = "<div class='mod mod-img-checker'><div class='title'>Images
 imgCheckerWrapper.innerHTML = imgCheckerHtml;
 
 
-///////
-/////// https://www.kirupa.com/html5/get_element_position_using_javascript.htm
-///////
-
-  // setTimeout( function() {
-
-            //
-            ////
-            // Iterate through ALL LINKS - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-
-            console.log(dFrame);
-            console.log(dFrame.body);
-
-              // var linkMarkerWrapper = document.createElement("div");
-              // linkMarkerWrapper.className = "link-marker-wrapper";
-              // dFrame.body.appendChild(linkMarkerWrapper);
-
-            let linkList = dFrame.querySelectorAll("a");
-            var i = 0
-            console.log("Total Links: " + linkList.length)
-
-            // console.groupCollapsed();
-            for (let link of linkList) {
-
-              i++
-
-              // !isHidden(link) &&
-
-              if ( !/^\*\|/gi.test(link.href) ) { // If this isn't a MailChimp link (eg. *|ARCHIVE|*), continue processing.
-
-
-
-                  console.log(link);
-                  console.log("[" + i + "] " + link.href);
-                  console.log( getPosition(link) );
-
-                var linkPosition = getPosition(link);
-
-                link.classList.add("marked");
-
-                var linkMarker = document.createElement("div");
-                linkMarker.className = "link-marker";
-                linkMarker.style.top = (linkPosition.y - 10) + "px";
-                linkMarker.style.left = (linkPosition.x - 10) + "px";
-                linkMarker.dataset.href = link.href;
-                linkMarker.dataset.number = i;
-                dFrame.body.appendChild(linkMarker);
-
-
-                //////////////////////////////
-                //////////////////////////////
-                //////////////////////////////
-                //////////////////////////////
-
-                ////
-                // Validate URL
-                // Ignore valid URLs, valid mailto:, and valid MailChimp links ( *|text|* converted to *%7Ctext%7C* )
-                // http://stackoverflow.com/a/15734347/556079
-                if ( !/^(http|https):\/\/[^ "]+$/.test(link.href) && !/^mailto:.+?@.+?\..+/.test(link.href) && !/\*%7C.+?%7C\*/.test(link.href) ) {
-                  linkMarker.classList.add("error");
-                  console.error("invalid URL scheme");
-                }
-
-                ////
-                // Every link needs a target attribute.
-                if ( !link.hasAttribute("target") ) {
-                  linkMarker.classList.add("error");
-                  console.error("missing target");
-                }
-
-                ////
-                // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-                if ( /www\.medbridge(ed|education|massage)\.com/gi.test(link.href) && !/utm_content/gi.test(link.href) && !outsideOrg ) {
-                  linkMarker.classList.add("error");
-                  console.error("missing utm");
-                }
-
-                ////
-                // NO UTM - outsideOrg should not have utms
-                if ( /utm_content/gi.test(link.href) && outsideOrg ) {
-                  linkMarker.classList.add("error");
-                  console.error("remove utm");
-                }
-
-                ////
-                // Check for whitelabeling versus www
-                if ( !/\/blog\//gi.test(link.href) && /\/\/(www\.)?medbridge(ed|education|massage)\.com/gi.test(link.href) ) {
-
-                  if ( emailSubType === "fox" || emailSubType === "hs" || emailSubType === "dr" ) {
-                    linkMarker.classList.add("error");
-                    console.error("missing whitelabeling");
-                  }
-
-                }
-
-                ////
-                // Check for sub=yes
-                ////
-                // Check sub emails
-                if ( emailSubType === "sub" || outsideOrg ) {
-
-                  // sub=yes is required in blog links.
-                  if ( /\/blog\/20\d\d/gi.test(link.href) && !/sub=yes/gi.test(link.href) ) {
-                    linkMarker.classList.add("error");
-                    console.error("add sub=yes");
-                  }
-                  // sub=yes should not be in any other links.
-                  if ( !/\/blog\/20\d\d/gi.test(link.href) && /sub=yes/gi.test(link.href) ) {
-                    linkMarker.classList.add("error");
-                    console.error("remove sub=yes");
-                  }
-                }
-
-                ////
-                // Check all links in non-subscriber emails
-                if ( emailSubType === "ns" && /sub=yes/gi.test(link.href) ) {
-                  linkMarker.classList.add("error");
-                  console.error("remove sub=yes");
-                }
-
-                ////
-                // Check for existence of https in blog links in sub version
-                if ( /\/blog\/20\d\d/gi.test(link.href) && emailSubType === "sub" && /https/gi.test(link.href) ) {
-                  linkMarker.classList.add("error");
-                  console.error("https needs to be changed to http");
-                }
-
-                ////
-                // https required
-                if ( /http:/gi.test(link.href) && !/\/blog\//gi.test(link.href) && /\.medbridge(ed|education|massage)\.com/gi.test(link.href) ) {
-                  linkMarker.classList.add("error");
-                  console.error("https missing");
-                }
-
-
-                ////
-                // Affiliate URL Linkbacks should not be used in subscriber version.
-                if ( emailSubType === "sub" && /after_affiliate_url/gi.test(link.href) ) {
-                  linkMarker.classList.add("error");
-                  console.error("affiliate link");
-                }
-
-                ////
-                // Discipline Check
-                if ( emailDisc !== "slp" && (/#\/?speech-language-pathology/gi.test(link.href) || /-slp-/gi.test(link.href)) ) {
-                  linkMarker.classList.add("error");
-                  console.error("wrong discipline");
-                }
-                if ( emailDisc !== "pt" && (/#\/?physical-therapy/gi.test(link.href) || /-pt-/gi.test(link.href)) ) {
-                  linkMarker.classList.add("error");
-                  console.error("wrong discipline");
-                }
-                if ( emailDisc !== "at" && (/#\/?athletic-training/gi.test(link.href) || /-at-/gi.test(link.href)) ) {
-                  linkMarker.classList.add("error");
-                  console.error("wrong discipline");
-                }
-                if ( emailDisc !== "ot" && (/#\/?occupational-therapy/gi.test(link.href) || /-ot-/gi.test(link.href)) ) {
-                  linkMarker.classList.add("error");
-                  console.error("wrong discipline");
-                }
-
-                ////
-                // NO //support. in outsideOrg
-                if ( /\/support\./gi.test(link.href) && outsideOrg ) {
-                  linkMarker.classList.add("error");
-                  console.error("support. not allowed in outsideOrg");
-                }
-
-
-
-
-
-
-                //
-
-                var linkText = link.innerText;
-
-              }
-            }
-            // console.groupEnd();
-
-
-            ////
-            //////
-            // Iterate through ALL IMAGES - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-            let imgList = dFrame.querySelectorAll("img");
-            var i = 0
-            console.log("Total Images: " + imgList.length)
-            for (let img of imgList) {
-
-              i++
-
-              // console.log(img);
-              // console.log("[" + i + "] " + img.src);
-
-              img.classList.add("test");
-
-            }
-
-
-// }, 2000 );
-
-
-
+////////////
+////////////
+////////////
 //
-/// URL Querystring settings
-///*************************///
+//    URL Querystring settings
+//
+////////////
+////////////
+////////////
+
 if ( getParameterByName("img") === "0" ) {
   toggleImages();
   console.log("images off");
@@ -1288,17 +1262,420 @@ if ( getParameterByName("mobile") === "0" ) {
 
 
 
+////////////
+////////////
+////////////
+//
+//    Iterate Through All Links
+//    https://www.kirupa.com/html5/get_element_position_using_javascript.htm
+//    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+//
+////////////
+////////////
+////////////
+
+// console.log(dFrame);
+// console.log(dFrame.body);
+
+// var linkMarkerWrapper = document.createElement("div");
+// linkMarkerWrapper.className = "link-marker-wrapper";
+// dFrame.body.appendChild(linkMarkerWrapper);
+
+let linkList = dFrame.querySelectorAll("a");
+var i = 0
+console.log("Total Links: " + linkList.length)
 
 
-// Create
 
+for (let link of linkList) {
+
+  i++
+
+  if ( !/^\*\|/gi.test(link.href) ) { // If this isn't a MailChimp link (eg. *|ARCHIVE|*), continue processing.
+
+      var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
+
+      var linkRow = document.createElement("div");
+      linkRow.className = "link-row";
+      linkRowsWrapper.appendChild(linkRow);
+
+      var linkRowNum = document.createElement("div");
+      linkRowNum.className = "link-row-num";
+      var textLinkNum = document.createTextNode(i);
+      linkRowNum.appendChild(textLinkNum);
+      linkRow.appendChild(linkRowNum);
+
+      var linkRowHref = document.createElement("div");
+      linkRowHref.className = "link-row-href";
+      var textLinkHref = document.createTextNode(link.href);
+      linkRowHref.appendChild(textLinkHref);
+      linkRow.appendChild(linkRowHref);
+
+      console.log(link);
+      console.log("[" + i + "] " + link.href);
+      console.log( getPosition(link) );
+
+    var linkPosition = getPosition(link);
+
+    link.classList.add("marked");
+
+    var linkMarker = document.createElement("div");
+    linkMarker.className = "link-marker";
+    linkMarker.style.top = (linkPosition.y - 10) + "px";
+    linkMarker.style.left = (linkPosition.x - 10) + "px";
+    linkMarker.dataset.href = link.href;
+    linkMarker.dataset.number = i;
+    dFrame.body.appendChild(linkMarker);
+
+    var linkErrorLog = document.createElement("div");
+    linkErrorLog.className = "link-errors";
+    insertAfter(linkErrorLog, linkMarker);
+    // linkMarker.appendChild(linkErrorLog);
+
+
+    //////////////////////////////
+    //////////////////////////////
+    //    Validate Links
+    //////////////////////////////
+    //////////////////////////////
+
+    ////////////////
+    // TO DO
+    //  - Check for medium=email during sale week. What's the best way?
+    //
+    ////////////////
+
+    ////
+    // Is color present in the style attribute?
+    // Ignore if there's no text, or it's an image (unless that image has alt text).
+    ////
+    if ( elExists(link.getElementsByTagName('img')[0]) ) {
+      var linkedImg = link.getElementsByTagName('img')[0];
+    }
+
+    if ( link.style.color === '' && (link.textContent !== '' || linkedImg.alt !== '' ) ) {
+      linkMarker.classList.add("error");
+      console.error("missing color in style attribute");
+
+      var errorRow = document.createElement("div");
+      var errorRowText = document.createTextNode("missing color in style attribute");
+      errorRow.appendChild(errorRowText);
+      linkErrorLog.appendChild(errorRow);
+    }
+
+    ////
+    // Validate URL
+    // Ignore valid URLs, valid mailto:, and valid MailChimp links ( *|text|* converted to *%7Ctext%7C* )
+    // http://stackoverflow.com/a/15734347/556079
+    ////
+    if ( !/^(http|https):\/\/[^ "]+$/.test(link.href) && !/^mailto:(.+?@.+?\..+|\*\|)/.test(link.href) && !/\*%7C.+?%7C\*/.test(link.href) ) {
+      linkMarker.classList.add("error");
+      console.error("invalid URL scheme");
+
+      var errorRow = document.createElement("div");
+      var errorRowText = document.createTextNode("invalid URL scheme");
+      errorRow.appendChild(errorRowText);
+      linkErrorLog.appendChild(errorRow);
+    }
+
+    ////
+    // Every link needs a target attribute.
+    if ( !link.hasAttribute("target") ) {
+      linkMarker.classList.add("error");
+      console.error("missing target");
+
+      var errorRow = document.createElement("div");
+      var errorRowText = document.createTextNode("missing target attribute");
+      errorRow.appendChild(errorRowText);
+      linkErrorLog.appendChild(errorRow);
+    }
+
+    ////
+    // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
+    if ( /www\.medbridge(ed|education)\.com/gi.test(link.href) && !/utm_content/gi.test(link.href) && !outsideOrg ) {
+
+      linkMarker.classList.add("error");
+      console.error("missing utm");
+
+      var errorRow = document.createElement("div");
+      var errorRowText = document.createTextNode("missing utm");
+      errorRow.appendChild(errorRowText);
+      linkErrorLog.appendChild(errorRow);
+    }
+
+    ////
+    // NO UTM - outsideOrg should not have utms
+    if ( /utm_content/gi.test(link.href) && outsideOrg ) {
+      linkMarker.classList.add("error");
+      console.error("remove utm");
+
+      var errorRow = document.createElement("div");
+      var errorRowText = document.createTextNode("remove utm");
+      errorRow.appendChild(errorRowText);
+      linkErrorLog.appendChild(errorRow);
+    }
+
+    ////
+    // Check for whitelabeling versus www
+    if ( !/\/blog\//gi.test(link.href) && /\/\/(www\.)?medbridge(ed|education|massage)\.com/gi.test(link.href) ) {
+
+      if ( emailSubType === "fox" || emailSubType === "hs" || emailSubType === "dr" ) {
+        linkMarker.classList.add("error");
+        console.error("missing whitelabeling");
+      }
+
+    }
+
+    ////
+    // Check for sub=yes
+    ////
+    // Check sub emails
+    if ( emailSubType === "sub" || outsideOrg ) {
+
+      // sub=yes is required in blog links.
+      if ( /\/blog\/20\d\d/gi.test(link.href) && !/sub=yes/gi.test(link.href) ) {
+        linkMarker.classList.add("error");
+        console.error("add sub=yes");
+      }
+      // sub=yes should not be in any other links.
+      if ( !/\/blog\/20\d\d/gi.test(link.href) && /sub=yes/gi.test(link.href) ) {
+        linkMarker.classList.add("error");
+        console.error("remove sub=yes");
+      }
+    }
+
+    ////
+    // Check all links in non-subscriber emails
+    if ( emailSubType === "ns" && /sub=yes/gi.test(link.href) ) {
+      linkMarker.classList.add("error");
+      console.error("remove sub=yes");
+    }
+
+    ////
+    // Check for existence of https in blog links in sub version
+    if ( /\/blog\/20\d\d/gi.test(link.href) && emailSubType === "sub" && /https/gi.test(link.href) ) {
+      linkMarker.classList.add("error");
+      console.error("https needs to be changed to http");
+    }
+
+    ////
+    // https required
+    if ( /http:/gi.test(link.href) && !/\/blog\//gi.test(link.href) && /\.medbridge(ed|education|massage)\.com/gi.test(link.href) ) {
+      linkMarker.classList.add("error");
+      console.error("https missing");
+    }
+
+
+    ////
+    // Affiliate URL Linkbacks should not be used in subscriber version.
+    if ( emailSubType === "sub" && /after_affiliate_url/gi.test(link.href) ) {
+      linkMarker.classList.add("error");
+      console.error("affiliate link");
+    }
+
+    ////
+    // Discipline Check
+
+    if ( emailDisc !== null ) {
+
+      if ( emailDisc !== "slp" && (/#\/?speech-language-pathology/gi.test(link.href) || /-slp-/gi.test(link.href)) ) {
+        linkMarker.classList.add("error");
+        console.error("wrong discipline");
+      }
+      if ( emailDisc !== "pt" && (/#\/?physical-therapy/gi.test(link.href) || /-pt-/gi.test(link.href)) ) {
+        linkMarker.classList.add("error");
+        console.error("wrong discipline");
+      }
+      if ( emailDisc !== "at" && (/#\/?athletic-training/gi.test(link.href) || /-at-/gi.test(link.href)) ) {
+        linkMarker.classList.add("error");
+        console.error("wrong discipline");
+      }
+      if ( emailDisc !== "ot" && (/#\/?occupational-therapy/gi.test(link.href) || /-ot-/gi.test(link.href)) ) {
+        linkMarker.classList.add("error");
+        console.error("wrong discipline");
+      }
+
+    }
+
+
+
+    ////
+    // NO //support. in outsideOrg
+    if ( /\/support\./gi.test(link.href) && outsideOrg ) {
+      linkMarker.classList.add("error");
+      console.error("support. not allowed in outsideOrg");
+    }
+
+
+
+
+
+
+    //
+
+    var linkText = link.innerText;
+
+  }
+}
+
+
+////
+//////
+// Iterate through ALL IMAGES - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+let imgList = dFrame.querySelectorAll("img");
+var i = 0
+console.log("Total Images: " + imgList.length)
+for (let img of imgList) {
+
+  i++
+
+  // console.log(img);
+  // console.log("[" + i + "] " + img.src);
+
+  img.classList.add("test");
+
+}
+
+
+
+////////////
+////////////
+////////////
+//
+//    Highlight words that may be used in error.
+//
+////////////
+////////////
+////////////
+
+/*
+
+Text to Search For
+
+ASHA (only in SLP)
+AOTA (only in OT)
+
+*/
 
 //
+// DISCIPLINE CHECKS
 //
+if ( emailDisc === "pt" || emailDisc === "other" ) {
+  // Physical Therapy - PT
+
+  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+    find: /(ASHA|AOTA|BOC\-Approved)/g,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+
+} else if ( emailDisc === "at" ) {
+  // Athletic Training - AT
+
+  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+    find: /(ASHA|AOTA)/g,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+
+} else if ( emailDisc === "ot" ) {
+  // Occupational Therapy - OT
+
+  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+    find: /(ASHA|BOC\-Approved)/g,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+
+} else if ( emailDisc === "slp" ) {
+  // Speech Language Pathology - SLP
+
+  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+    find: /(AOTA|BOC\-Approved)/g,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+
+} else if ( emailDisc === "lmt" ) {
+  // Massage
+
+  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+    find: /(ASHA|AOTA|BOC\-Approved)/g,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+
+} else if ( emailDisc === "ent" ) {
+  // Enterprise
+
+  ///
+
+}
+
+
+// All
+findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+  find: /(at no extra cost|[^\u00a0]\u2192)/gi,
+  wrap: 'span',
+  wrapClass: "text-error"
+});
+
+// Sub
+if ( emailSubType === "sub" ) {
+  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+    find: /(Start for Free|in (an|the) annual|Learn More|\bSubscribe)/gi,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+}
+
+// NS
+if ( emailSubType === "ns" ) {
+  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+    find: /(Start Now|in (an|your) annual|Register Now)/gi,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+}
+
+
+
+
+
+
+////////////
+////////////
+////////////
 //
+//    Spell Check
+//
+////////////
+////////////
+////////////
+
+  //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
+  dFrame.getElementsByTagName('html')[0].contentEditable = 'true';
+  dFrame.getElementsByTagName('body')[0].focus();
+  mFrame.getElementsByTagName('html')[0].contentEditable = 'true';
+  mFrame.getElementsByTagName('body')[0].focus();
+
+  // For some reason, if contenteditable is turned off too quickly, the red squiggles are sometimes misaligned with the text they are indicating as incorrectly spelled. For this reason we're using a setTimeout here.
+  setTimeout(function() {
+    dFrame.getElementsByTagName('html')[0].contentEditable = 'false';
+    mFrame.getElementsByTagName('html')[0].contentEditable = 'false';
+  }, 100);
+
+
+
+
+
 
 document.querySelector("html").classList.toggle("errors");
 console.log("// End of script")
+
+
+
+
 } // END TEST
 //
 //
