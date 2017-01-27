@@ -11,6 +11,12 @@ html.powered-up {
   box-sizing: inherit;
 }
 
+body {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: #444;
+}
+
 /* ERROR CHECKING */
 html.error-status:before {
   display:block;
@@ -93,6 +99,7 @@ html.error-status.errors:before {
 
 .control-bar {
   width:80px;  min-width:80px;  max-width:80px;
+  padding-right:20px;
   /*width:128px; min-width:128px; max-width:128px;*/
 
   height:100%;
@@ -160,11 +167,11 @@ html.error-status.errors:before {
 .orb:hover:before { color:#fff; }
 .orb.glyph { font-family: "medbridge-chrome-extension"; }
 
-.orb.on { animation: OrbPulse .75s ease infinite; /* width:110px; border-radius:20px; transition:width .125s; */ }
+.orb.on { animation: OrbPulse .3s ease infinite; /* width:110px; border-radius:20px; transition:width .125s; */ }
   @keyframes OrbPulse {
-    0%   { transform:scale(1.1, 1.1); }
+    0%   { transform:scale(1.2, 1.2); }
     50%  { transform:scale(1, 1); }
-    100% { transform:scale(1.1, 1.1); }
+    100% { transform:scale(1.2, 1.2); }
   }
 .orb.on:before { animation: orbFlash 1.15s infinite; background:rgba(255,255,255,0); }
   @keyframes orbFlash {
@@ -233,25 +240,40 @@ html.error-status.errors:before {
 }
 
 
+.power-orb { order:1; background:#000; font-size:22px; order:1; box-shadow: rgba(255, 255, 255, .4) 0px 0px 0px 2px inset; }
+.power-orb:before { content:"\49"; }
+
+.dropbox-orb {
+  order:2;
+  background:url("chrome-extension://__MSG_@@extension_id__/img/dropbox.png") center center no-repeat #fff;
+  background-size: 55%;
+  align-self: flex-end;
+  box-shadow: inset rgba(0,0,0,.15) 0 0 0 2px, rgba(23, 23, 27, 1) 0px 0px 0px 2px, rgba(23, 23, 27, .75) 0px 0px 0px 4px;
+}
+
+.trello-orb {
+  order:3;
+  background:url("chrome-extension://__MSG_@@extension_id__/img/trello-dog.png") center center no-repeat #0084d1;
+  background-size: 55%;
+  align-self: flex-end;
+}
+
+.share-orb { order:4; background:#77C159; font-size:22px; }
+.share-orb:before { content:"\76"; margin-left:-1px; }
+
+/****/
+
 .mobile-orb { order:2; background:#5d6372; }
 .mobile-orb:before { content:"\73"; }
 
 .split-view-orb { background:#593797; }
 .split-view-orb:before { content:"\74"; }
 
-.power-orb { order:1; background:#000; font-size:22px; order:1; }
-.power-orb:before { content:"\49"; margin-left:-1px; }
 
-.share-orb { order:1; background:#77C159; font-size:22px; }
-.share-orb:before { content:"\76"; margin-left:-1px; }
-
-.style-orb { order:6; background:#dd8631; font-size:26px; }
-.style-orb:before { content:"\4a"; }
 
 .split-view-orb:before { content:"\74"; }
 
-.edit-orb { order:5; background:#bf1d53; font-size:20px; }
-.edit-orb:before { content:"\77"; }
+
 
 .ab-orb { order:1; background:#00b188; font-size:24px; font-weight:700 !important; font-family:Roboto, Helvetica; }
 .ab-orb:before { font-weight:700; }
@@ -260,11 +282,19 @@ html.error-status.errors:before {
 .ab-orb.a:before { content:"A"; }
 /*.ab-orb.a:hover:before { content:"A"; }*/
 
+
+.borders-orb { order:3; background:#d91d1d; font-size:22px; }
+.borders-orb:before { content:"\74"; margin-top:1px; }
+
 .images-orb { order:4; background:#53c586; font-size:20px; }
 .images-orb:before { content:"\79"; }
 
-.debug-orb { order:3; background:#d7bb33; font-size:22px; }
-.debug-orb:before { content:"\44"; }
+.edit-orb { order:5; background:#ce217f; font-size:20px; }
+.edit-orb:before { content:"\77"; }
+
+.style-orb { order:6; background:#dd8631; font-size:26px; }
+.style-orb:before { content:"\4a"; }
+
 
 .nav-orb { order:1; }
 .nav-orb-up { }
@@ -292,22 +322,8 @@ html.error-status.errors:before {
   z-index:10;
 }*/
 
-.trello-orb {
-  order:3;
-  background:url("chrome-extension://__MSG_@@extension_id__/img/trello-dog.png") center center no-repeat #0084d1;
-  background-size: 55%;
-  align-self: flex-end;
-}
-
-.dropbox-orb {
-  order:4;
-  background:url("chrome-extension://__MSG_@@extension_id__/img/dropbox.png") center center no-repeat #fff;
-  background-size: 55%;
-  align-self: flex-end;
-}
-
-.local-orb { order:4; background:#f06c2b; font-size:24px; }
-.local-orb:before { content:"\78"; line-height:40px; color:#fff; }
+.swap-orb { order:4; background:#f06c2b; font-size:24px; }
+.swap-orb:before { content:"\4b"; line-height:40px; color:#fff; }
 
 .mailchimp-orb {
   order:2;
@@ -319,7 +335,9 @@ html.error-status.errors:before {
 
 
 .info-bar {
-  width:350px;
+  max-width:350px;
+  min-width:250px;
+  width:100%;
   height:100%;
   color:#444;
   background:#26272d;
@@ -343,6 +361,7 @@ html.error-status.errors:before {
   font-weight:bold;
   padding:5px 10px;
   font-size:14px;
+  position:relative;
 }
 .mod .mod-body {
   padding:12px 10px 14px 14px;
@@ -376,6 +395,20 @@ html.error-status.errors:before {
  min-width:20px;
  font-size:10px;
 }
+
+.mod-link-checker .title .toggle:before {
+  content:"\4c";
+  font-family: "medbridge-chrome-extension";
+  font-size:18px;
+  display:block;
+  height:26px; width:26px; line-height:26px;
+  color:#444;
+  text-align:center;
+  cursor:pointer;
+  position:absolute;
+  top:0; right:0;
+}
+
 
 /* *********** */
 
@@ -466,8 +499,8 @@ body.split-view-on {
   z-index:1;
 }
 .mobile-view-wrapper.portrait {
-  max-width:406px;
-  min-width:406px;
+  max-width:426px;
+  min-width:426px;
 }
 .mobile-view-wrapper.off {
   /*display:none;*/
@@ -564,9 +597,21 @@ body.split-view-on {
 
 
 @media screen and (max-device-width: 1440px), screen and (max-width: 1440px) {
+
+  .desktop-view-wrapper { min-width:660px; }
+
   /*.control-bar { width:80px; min-width:80px; max-width:80px; }*/
   /*.orb { width:40px; height:40px; line-height:40px; font-size:18px; margin-top:15px; }*/
   /*.qa-orb { margin-bottom:34px; }*/
+}
+
+
+
+@media screen and (max-device-width: 960px), screen and (max-width: 960px) {
+
+  .desktop-view-wrapper { min-width:360px; }
+
+
 }
 
 

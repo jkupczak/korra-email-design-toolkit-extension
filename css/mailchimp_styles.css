@@ -259,6 +259,32 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 /***********/
 /***********/
 
+#campaigns-list > .draft {
+  padding-top:30px !important;
+  padding-bottom:30px !important;
+  background:crimson !important;
+  color:#fff;
+  border-bottom:1px solid #a21c37;
+}
+
+#campaigns-list > .draft a, #campaigns-list > .draft button, #campaigns-list > .draft .button, #campaigns-list > .draft .dijitArrowButtonInner,
+#campaigns-list > .draft .freddicon.edit-circle-large::after {
+  color:#fff !important;
+}
+
+#campaigns-list > .draft .dijitComboButton .dijitDownArrowButton {
+  border-left: 1px solid crimson;
+}
+
+#campaigns-list > .draft .dijitComboButton, #campaigns-list > .draft .dojoxCheckedMultiSelectButton {
+  background:#a21c37 !important;
+}
+
+
+
+
+
+
 /* A/B Testing */
 #campaigns-list li .status > p > span:first-child:before {
   content:"\71";

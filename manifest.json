@@ -17,6 +17,7 @@
     "medbridge-chrome-extension.woff",
     "favicons/*",
     "img/*",
+    "js/*",
     "css/*"
   ],
 
@@ -36,6 +37,7 @@
     "activeTab",
     "storage",
     "tabs",
+    "history",
     "contextMenus",
     "clipboardWrite",
     "clipboardRead",
@@ -59,8 +61,8 @@
     { //Newsletter
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "css": ["css/tingle.css", "css/newsletter_styles.css"],
-      "js": ["js/Dropbox-sdk.min.js", "js/findAndReplaceDOMText.js", "js/tingle.js", "js/newsletter.js"]
+      "css": ["css/normalize.css", "css/alertify.css", "css/alertify.medbridge.css", "css/tingle.css", "css/newsletter_styles.css"],
+      "js": ["js/alertify.js", "js/Dropbox-sdk.min.js", "js/findAndReplaceDOMText.js", "js/tingle.js", "js/newsletter.js"]
     },
     { //Email-Labeling_Favicons_and_Title_bars
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
@@ -79,8 +81,8 @@
     },
     { // MailChimp
       "matches": ["*://*.mailchimp.com/*"],
-      "css": ["css/mailchimp_styles.css"],
-      "js": ["js/mailchimp.js"]
+      "css": ["css/alertify.css", "css/alertify.medbridge.css", "css/mailchimp_styles.css"],
+      "js": ["js/alertify.js", "js/mailchimp.js"]
     },
     { //MedBridge Homepage
       "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*"],

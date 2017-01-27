@@ -1,4 +1,4 @@
-console.warn(">>> global.js loaded");
+// console.warn(">>> global.js loaded");
 
 ////
 ////// Global Functions
@@ -21,6 +21,7 @@ function getDisciplineId(string) {
   else if ( /-MT(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "lmt"; }
   else if ( /-Enterprise(\s|-|\.|$)/gi.test(string) )    { var disciplineId = "ent"; }
   else if ( /-DR(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "dr"; }
+  else if ( /-Fox(-|\.|$)/gi.test(string) )              { var disciplineId = "fox"; }
   else if ( /-HS(-|\.|$)/gi.test(string) )               { var disciplineId = "hs"; }
   else { var disciplineId = null }
 
@@ -242,6 +243,14 @@ function destroy(el) {
 }
 
 //
+function destroyIfExists(el) {
+  if ( elExists(el) ) {
+    el.parentNode.removeChild(el);
+  }
+}
+
+
+//
 function copyToClipboard(el) {
     // Copy the Link - http://www.jstips.co/en/copy-to-clipboard/
     // Select the content
@@ -249,7 +258,7 @@ function copyToClipboard(el) {
     // Copy to the clipboard
     document.execCommand('copy');
     //
-    alert("copied!");
+    alertify.success("Saved to clipboard!<br><span style='display:block;padding-top:4px;font-size:80%;opacity:.85;line-height:16px;word-break:break-all'>" + el.value + "</span>", 20);
 }
 
 // Test if an element exists in the DOM.
@@ -259,6 +268,12 @@ function elExists(el) {
   } else {
     return false;
   }
+}
+
+// http://stackoverflow.com/a/22119674/556079
+function findAncestor (el, cls) {
+    while ((el = el.parentElement) && !el.classList.contains(cls));
+    return el;
 }
 
 // Clean a string to create a nice looking plain text version.

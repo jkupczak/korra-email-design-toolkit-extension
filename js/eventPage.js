@@ -2,7 +2,6 @@
 // NO DOM ACCESS
 // !!!!!!!!!!!!!
 
-
 //
 // If I want to share this extension, I need a way to make it easy to find/keep the Users/<namehere>/ value.
 // Idea: Options page where they enter their mac name. Save that in the extension and use it as a variable.
@@ -21,6 +20,15 @@ chrome.runtime.onMessage.addListener(
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
                 "from the extension");
+
+    // Change tab URL to a local version of this Dropbox file.
+    // Chrome security settings do not allow pages to navigate to local files.
+    // Using eventpages allows you to get around this limitation.
+    if ( /^file:.+\//gi.test(request.greeting) ) { // Check if the message sent is a url beginning with "file:"
+  		chrome.tabs.update({
+  		     url: request.greeting
+  		});
+    }
 
 
     // Get right-click background image message

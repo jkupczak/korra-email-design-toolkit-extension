@@ -1,3 +1,7 @@
+html, body {
+  padding:0;
+  margin:0;
+}
 .link-marker-wrapper {
   position: absolute;
   top:0; left:0;
@@ -9,28 +13,53 @@
   a.marked {
   position:relative;
 }
+
+.link-markers-off .link-marker {
+  display:none !important;
+}
 .link-marker {
   display:none;
   background:#1e78d7;
   position:absolute;
   border-radius:50px;
-  width:12px; height:12px;
+  width:18px; height:18px;
   z-index:100;
   cursor:pointer;
   opacity:1;
-  margin-left:-8px;
-  margin-top:-8px;
+  margin-left:-4px !important;
+  margin-top:-4px !important;
   border:2px solid transparent;
-
+  color:#fff;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  text-align:center;
+  font-size:14px;
+  line-height:18px;
+  font-weight:400;
 }
 .link-marker:hover {
-  transform:scale(1.5,1.5);
+  transform:scale(1.35,1.35);
 }
+
 .link-marker.error {
   display:block;
   background:#d20758;
   box-shadow: 0 0 3px 2px #d20758;
+  animation: linkMarkerColorPulse 1.5s ease infinite;
 }
+
+  @keyframes linkMarkerColorPulse {
+    0%   {  background:#d20758; box-shadow: 0 0 3px 2px #d20758; }
+    50%  {  background:#e43179; box-shadow: 0 0 3px 2px #e43179; }
+    100% {  background:#d20758; box-shadow: 0 0 3px 2px #d20758; }
+  }
+}
+
+  @keyframes linkMarkerSizePulse {
+    0%   {  background:#d20758; box-shadow: 0 0 3px 2px #d20758; }
+    50%  {  background:#e43179; box-shadow: 0 0 3px 2px #e43179; }
+    100% {  background:#d20758; box-shadow: 0 0 3px 2px #d20758; }
+  }
+
 
 .link-errors {
   display:none;
@@ -47,6 +76,7 @@
   box-shadow:0 0 30px rgba(0,0,0,0.3), 0 0 10px rgba(0,0,0,0.1);
   padding:20px 20px 12px 20px;
   transition: margin 3s;
+  z-index:200;
 }
 
 .link-marker:hover + .link-errors {
@@ -95,6 +125,7 @@
   border-radius:12px;
   background:#fff697;
   animation: textError .5s ease infinite;
+  color:#605c31;
 }
 
   @keyframes textError {

@@ -6,6 +6,7 @@ console.log("mailchimp.js loaded");
 // https://hacks.mozilla.org/2012/05/dom-mutationobserver-reacting-to-dom-changes-without-killing-browser-performance/
 //
 
+
 var campaignListExists = document.querySelector('#campaigns-list');
 
 if ( typeof(campaignListExists) != 'undefined' && campaignListExists != null ) {
@@ -151,7 +152,7 @@ if ( mcCampaignName ) {
 }
 
 function applyMcTheme() {
-  if (getDisciplineId(mcCampaignName) !== "undefined") {
+  if ( getDisciplineId(mcCampaignName) ) {
     document.body.classList.add("discipline-ready");
   }
   document.body.classList.add("discipline-" + getDisciplineId(mcCampaignName));
@@ -194,18 +195,91 @@ function applyMcTheme() {
 
 function processCampaignList() {
 
-  // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-  let campaignsList = document.querySelectorAll("#campaigns-list li.selfclear");
-  for (let campaign of campaignsList) {
+  // MailChimp updates #campaigns-list twice on load, the first time it's empty. So we search for a child and then start our script if one exists.
+  var campaignCheck = document.querySelector("#campaigns-list > li:first-child")
+  if (elExists(campaignCheck)) {
 
-    var campaignName = campaign.querySelector('a[title="Campaign Name" i]').innerText;
-    campaign.classList.add("discipline-" + getDisciplineId(campaignName) );
-    console.log(getDisciplineId(campaignName) + " - " + campaignName);
+
+
+      var totalDraftsOnPage = 0;
+
+      // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+      let campaignStatusList = document.querySelectorAll("span.freddicon[title='draft']");
+      for (let pendingCampaign of campaignStatusList) {
+
+        pendingCampaign.closest("li").classList.add("draft");
+        totalDraftsOnPage++
+
+      }
+
+      // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+      let campaignsList = document.querySelectorAll("#campaigns-list li.selfclear");
+      for (let campaign of campaignsList) {
+
+        var campaignName = campaign.querySelector('a[title="Campaign Name" i]').innerText;
+        campaign.classList.add("discipline-" + getDisciplineId(campaignName) );
+        console.log(getDisciplineId(campaignName) + " - " + campaignName);
+
+      }
+
+
+      destroyIfExists( document.querySelector(".total-drafts") );
+
+      // if ( elExists(document.querySelector(".total-drafts")) ) {
+      //
+      //   document.querySelector(".total-drafts-number").innerHTML = totalDraftsOnPage;
+      //
+      // } else {
+
+        // Create menu item to show total drafts
+        var draftsEle = document.createElement("li");
+        draftsEle.className = "total-drafts nav-link small-meta fwb hide-mobile";
+
+        var draftTotalWrapper = document.createElement("div");
+        draftTotalWrapper.className = "total-drafts-number";
+        var draftTotalWrapperText = document.createTextNode(totalDraftsOnPage);
+        draftTotalWrapper.appendChild(draftTotalWrapperText);
+        draftsEle.appendChild(draftTotalWrapper);
+
+        if (totalDraftsOnPage === 1) {
+          var draftPlural = "Draft"
+        } else {
+          var draftPlural = "Drafts"
+        }
+
+        var draftTotalTextWrapper = document.createElement("div");
+        var draftTotalTextWrapperText = document.createTextNode(draftPlural);
+        draftTotalTextWrapper.appendChild(draftTotalTextWrapperText);
+        draftsEle.appendChild(draftTotalTextWrapper);
+
+        var lastMenuItem = document.querySelector("li.nav-link:last-child");
+        insertAfter(draftsEle, lastMenuItem);
+
+      // }
+
+
+
+
+
+
 
   }
-
 }
 
+
+
+
+window.onbeforeunload = function (e) {
+
+  if ( totalDraftsOnPage > 0 ) {
+    return 'There are unsent drafts on this page! Are you sure you want to leave?';
+  }
+
+};
+
+
+
+// alertify.success("Saved to clipboard");
 
 
 // setTimeout(function() {

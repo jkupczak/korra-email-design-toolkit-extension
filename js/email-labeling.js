@@ -1,4 +1,4 @@
-console.warn(">>> email-labeling.js loaded");
+// console.warn(">>> email-labeling.js loaded");
 
 //
 // Remove default favicon
@@ -68,15 +68,15 @@ if ( getABstatus(disciplineSearch) === "a" ) {
 };
 
 if ( !onMailchimp ) {
-	// console.log("disciplineId = " + disciplineId + " | fileName = " + fileName);
-	var re = new RegExp("(^.+" + disciplineId + "-|-(ns|s|sub)-?(a|b)?\.html?)","gi");
-	newTitle = fileName.replace(re, "");
-	newTitle = newTitle.replace(/-/gi, " ");
 
-	// console.log("newTitle = " + newTitle);
-	// console.log("fileTitle = " + finalTitle);
+	var re = new RegExp("(^.+?-" + disciplineId + "|\.html?|-(ns|sub)|-(a|b))","gi");
+	newTitle = fileName.replace(re, "");  		 // Remove date, discipline, A/B test, sub/ns, and extension
+	newTitle = newTitle.replace(/\?.+/gi, ""); // Remove querystring
+	newTitle = newTitle.replace(/-/gi, " ");	 // Remove extra hyphens
 
-	finalTitle = finalTitle + abTestId + newTitle + " <" + fileName + "> (" + currTitle + ")";
+	var newFileName = fileName.replace(/\?.+/gi, "");
+
+	finalTitle = finalTitle + abTestId + newTitle + " <" + newFileName + "> (" + currTitle + ")";
 	document.title = finalTitle;
 
 } else {
@@ -106,14 +106,19 @@ var animatedFavicon
 
 //Sub check
 if ( getSubStatus(disciplineSearch) ) { favicon = favicon + "-sub"; }
+
 //A/B Test check
 // if ( getABstatus(disciplineSearch) ) { favicon = favicon + "-" + getABstatus(disciplineSearch); }
+
 // Fox Check
-if ( /\-Fox\-/gi.test(document.URL) ) {	if ( favicon === "" ) { favicon += "fox"; } else { favicon += "-fox"; } };
+// if ( /\-Fox\-/gi.test(document.URL) ) {	if ( favicon === "" ) { favicon += "fox"; } else { favicon += "-fox"; } };
+
 //Dropbox check
 if ( onDropbox ) {	favicon = favicon + "-dropbox"; }
+
 //Middleman check
-if ( onMiddleman ) {	favicon = favicon + "-mm"; animatedFavicon = true; }
+if ( onMiddleman ) { animatedFavicon = true; }
+
 //Mailchimp check
 if ( !onMailchimp ) {
 
@@ -132,10 +137,10 @@ if ( !onMailchimp ) {
 	if ( animatedFavicon ) {
 		setInterval(function() {
 
-			if ( /\-2/.test(faviconLink.href) ) {
+			if ( /\-inverse/.test(faviconLink.href) ) {
 				faviconLink.href = chrome.extension.getURL("favicons/" + favicon + ".png");
 			} else {
-				faviconLink.href = chrome.extension.getURL("favicons/" + favicon + "-2" + ".png");
+				faviconLink.href = chrome.extension.getURL("favicons/" + favicon + "-inverse" + ".png");
 			}
 		}, 500);
 	}

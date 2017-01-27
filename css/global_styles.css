@@ -171,4 +171,9 @@
 .mb-code-working:before {
   content: "\4a";
 }
-
+.mb-swap-exchage:before {
+  content: "\4b";
+}
+.mb-eye:before {
+  content: "\4c";
+}
