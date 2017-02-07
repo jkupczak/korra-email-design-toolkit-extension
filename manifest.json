@@ -43,7 +43,8 @@
     "clipboardRead",
     "http://*/*",
     "https://*/*",
-    "*://*.google.com/*"
+    "*://*.google.com/*",
+    "notifications"
   ],
   "icons": {
     "16": "icon.png",

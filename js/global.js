@@ -52,9 +52,9 @@ function getSubStatus(string) {
 //
 function getABstatus(string) {
 
-  if ( /-a\.html?$/gi.test(string) ) {
+  if ( /-a\.htm/gi.test(string) ) {
     return "a";
-  } else if ( /-b\.html?$/gi.test(string) ) {
+  } else if ( /-b\.htm/gi.test(string) ) {
     return "b";
   } else {
     return false;

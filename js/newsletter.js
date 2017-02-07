@@ -111,9 +111,17 @@ if ( /\-(HS|DR|Fox)\-/gi.test(pageUrl) ) {
 ///////////
 ///// Determine if this is a sale or presale or neither
 ///////////
+
+var emailAnySale
 var emailSale
-if ( /\-(Presale|Sale)\-/gi.test(pageUrl) ) {
-  emailSale = true
+var emailPresale
+if ( /\-Sale\-/gi.test(pageUrl) ) {
+  emailSale = true;
+  emailAnySale = true;
+} else if ( /\-Presale\-/gi.test(pageUrl) ) {
+  emailPresale = true;
+  emailAnySale = true;
+
 }
 
 ///////////
@@ -601,6 +609,8 @@ orbsTop.appendChild(shareOrb);
 
 function getDbShareLink() {
 
+  console.log("Beginning DropBox share function.");
+
   if ( !this.classList.contains("loading") ) {
 
     shareOrb.classList.add("loading");
@@ -752,6 +762,8 @@ orbsTop.appendChild(swapOrb);
 
 function swapUrl() {
 
+  console.log("Beginning URL swap.");
+
   swapOrb.classList.add("loading");
 
   if ( window.history.length > 1 ) {
@@ -861,7 +873,7 @@ function toggleBorders() {
   bordersToggle = !bordersToggle;
 
   if ( bordersToggle ) {
-    history.replaceState(null,null, updateQueryString("borders", "0") );
+    history.replaceState(null,null, updateQueryString("borders", "1") );
   } else {
     history.replaceState(null,null, updateQueryString("borders") );
   }
@@ -872,16 +884,84 @@ function toggleBorders() {
     destroy(dFrame.getElementById("debug"));
     destroy(mFrame.getElementById("debug"));
   } else {
-    var debugStyling = mFrame.createElement("style");
-    debugStyling.id = "debug";
-    debugStyling.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 2px rgba(255,0,0,.25), 0 0 0 2px rgba(255,0,0,.25); } div { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
+    var debugStylingD = dFrame.createElement("style");
+    debugStylingD.id = "debug";
+    debugStylingD.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 2px rgba(255,0,0,.25), 0 0 0 2px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
 
     var debugStylingM = mFrame.createElement("style");
     debugStylingM.id = "debug";
-    debugStylingM.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 2px rgba(255,0,0,.25), 0 0 0 2px rgba(255,0,0,.25); } div { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
+    debugStylingM.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 2px rgba(255,0,0,.25), 0 0 0 2px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
 
-    dFrame.getElementsByTagName("head")[0].appendChild(debugStyling);
+    dFrame.getElementsByTagName("head")[0].appendChild(debugStylingD);
     mFrame.getElementsByTagName("head")[0].appendChild(debugStylingM);
+  }
+}
+
+
+//////////
+////
+////  Create Guides Orb
+////
+/////////
+
+var guidesOrb = document.createElement("div");
+guidesOrb.id = "guides-orb";
+guidesOrb.className = "guides-orb orb glyph";
+guidesOrb.addEventListener("click", toggleGuides, false);
+orbsBottom.appendChild(guidesOrb);
+var guidesToggle = false;
+
+function toggleGuides() {
+
+  guidesToggle = !guidesToggle;
+
+  if ( guidesToggle ) {
+    history.replaceState(null,null, updateQueryString("guides", "1") );
+  } else {
+    history.replaceState(null,null, updateQueryString("guides") );
+  }
+
+  document.getElementById("guides-orb").classList.toggle("on");
+
+  if ( elExists(dFrame.getElementById("alignment-guides")) ) {
+    destroy(dFrame.getElementById("alignment-guides"));
+  } else {
+
+    var guidesStylingWrapper = dFrame.createElement("div");
+    guidesStylingWrapper.id = "alignment-guides";
+
+      var guidesStyling1 = dFrame.createElement("div");
+      guidesStyling1.classList.add("alignment-guide");
+      guidesStyling1.style.left = "0";
+      guidesStyling1.style.right = "0";
+      guidesStylingWrapper.appendChild(guidesStyling1);
+
+      var guidesStyling2 = dFrame.createElement("div");
+      guidesStyling2.classList.add("alignment-guide");
+      guidesStyling2.style.left = "589px";
+      guidesStyling2.style.right = "0";
+      guidesStylingWrapper.appendChild(guidesStyling2);
+
+      var guidesStyling3 = dFrame.createElement("div");
+      guidesStyling3.classList.add("alignment-guide");
+      guidesStyling3.style.left = "619px";
+      guidesStyling3.style.right = "0";
+      guidesStylingWrapper.appendChild(guidesStyling3);
+
+      var guidesStyling4 = dFrame.createElement("div");
+      guidesStyling4.classList.add("alignment-guide");
+      guidesStyling4.style.left = "0";
+      guidesStyling4.style.right = "589px";
+      guidesStylingWrapper.appendChild(guidesStyling4);
+
+      var guidesStyling5 = dFrame.createElement("div");
+      guidesStyling5.classList.add("alignment-guide");
+      guidesStyling5.style.left = "0";
+      guidesStyling5.style.right = "619px";
+      guidesStylingWrapper.appendChild(guidesStyling5);
+
+
+    dFrame.getElementsByTagName("body")[0].appendChild(guidesStylingWrapper);
   }
 }
 
@@ -1437,31 +1517,6 @@ var imgCheckerHtml = "<div class='mod mod-img-checker'><div class='title'>Images
 imgCheckerWrapper.innerHTML = imgCheckerHtml;
 
 
-////////////
-////////////
-////////////
-//
-//    URL Querystring settings
-//
-////////////
-////////////
-////////////
-
-if ( getParameterByName("img") === "0" ) {
-  toggleImages();
-  console.log("images off");
-}
-
-if ( getParameterByName("mobile") === "0" ) {
-  viewMobile();
-  console.log("mobile view collapsed");
-}
-
-if ( getParameterByName("borders") === "0" ) {
-  toggleBorders();
-  console.log("mobile view collapsed");
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1668,13 +1723,13 @@ for (let link of linkList) {
 
     ////
     // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( medbridgeLink && !/utm_content/gi.test(linkHref) && !outsideOrg ) {
+    if ( medbridgeLink && !/utm_content/gi.test(linkHref) && (!outsideOrg && !emailSale) ) {
       createLinkErrorRow(linkMarker, "missing utm");
     }
 
     ////
-    // DON'T USE UTM - outsideOrg should not have utms
-    if ( /utm_content/gi.test(linkHref) && outsideOrg ) {
+    // DON'T USE UTM - outsideOrg and Sale emails should not have utms
+    if ( /utm_content/gi.test(linkHref) && ( outsideOrg || emailSale ) ) {
       createLinkErrorRow(linkMarker, "remove utm");
     }
 
@@ -1691,16 +1746,26 @@ for (let link of linkList) {
     }
 
     ////
-    // Check for medium=email in Presale emails
+    // Check for medium=email in Sale and Presale emails
     ////
-    if ( emailSale && !outsideOrg && medbridgeLink && ( blogLink || /\-article/gi.test(linkHref) ) ) {
+    if ( !outsideOrg && medbridgeLink && ( blogLink || /\-article/gi.test(linkHref) ) ) {
 
-      if ( emailSubType === "sub" && /medium=email/gi.test(linkHref) ) {
-        createLinkErrorRow(linkMarker, "remove medium=email");
-      }
+      if ( emailAnySale ) { // Any sale email
 
-      if ( emailSubType === "ns" && !/medium=email/gi.test(linkHref) ) {
-        createLinkErrorRow(linkMarker, "add medium=email");
+        if ( emailSubType === "sub" && /medium=email/gi.test(linkHref) ) {
+          createLinkErrorRow(linkMarker, "remove medium=email");
+        }
+
+        if ( emailSubType === "ns" && !/medium=email/gi.test(linkHref) ) {
+          createLinkErrorRow(linkMarker, "add medium=email");
+        }
+
+      } else { // Not a sale email
+
+        if ( /medium=email/gi.test(linkHref) ) {
+          createLinkErrorRow(linkMarker, "remove medium=email");
+        }
+
       }
 
     }
@@ -1839,7 +1904,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Physical Therapy - PT
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|AOTA|BOC\-Approved)/g,
+    find: /(ASHA|\bAOTA|BOC\-Approved)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -1848,7 +1913,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Athletic Training - AT
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|AOTA)/g,
+    find: /(ASHA|\bAOTA)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -1866,7 +1931,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Speech Language Pathology - SLP
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(AOTA|BOC\-Approved)/g,
+    find: /(\bAOTA|BOC\-Approved)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -1875,7 +1940,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Massage
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|AOTA|BOC\-Approved)/g,
+    find: /(ASHA|\bAOTA|BOC\-Approved)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -1920,6 +1985,48 @@ if ( outsideOrg ) {
     wrap: 'span',
     wrapClass: "text-error"
   });
+}
+
+
+
+
+
+////////////
+////////////
+////////////
+//
+//    URL Querystring settings
+//
+//    1/30 - Moved further to the bottom of the code because when it was placed earlier, loading a file with styles off (style=0) cause the desktop view to bug out.
+//    It didn't seem to understand that the iFrame width wasn't mobile sized thus activating unwated styles.
+//
+////////////
+////////////
+////////////
+
+if ( getParameterByName("img") === "0" ) {
+  toggleImages();
+  console.log("images off");
+}
+
+if ( getParameterByName("style") === "0" ) {
+      toggleStyles();
+  console.log("styles off");
+}
+
+if ( getParameterByName("mobile") === "0" ) {
+  viewMobile();
+  console.log("mobile view collapsed");
+}
+
+if ( getParameterByName("borders") === "1" ) {
+  toggleBorders();
+  console.log("box-shadow borders shown");
+}
+
+if ( getParameterByName("guides") === "1" ) {
+  toggleGuides();
+  console.log("guides shown");
 }
 
 

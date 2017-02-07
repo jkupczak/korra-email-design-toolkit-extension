@@ -69,10 +69,21 @@ if ( getABstatus(disciplineSearch) === "a" ) {
 
 if ( !onMailchimp ) {
 
-	var re = new RegExp("(^.+?-" + disciplineId + "|\.html?|-(ns|sub)|-(a|b))","gi");
-	newTitle = fileName.replace(re, "");  		 // Remove date, discipline, A/B test, sub/ns, and extension
+	var re = new RegExp("^.+?-" + disciplineId + "","gi");
+	console.log(fileName);
+	console.log(re);
+
+	newTitle = fileName.replace(re, ""); // Remove date, discipline, A/B test, sub/ns, and extension
+	console.log(newTitle);
+
+	newTitle = newTitle.replace(/\.html?|-(ns|sub)|-(a|b)\./gi, ""); // Remove date, discipline, A/B test, sub/ns, and extension
+	console.log(newTitle);
+
 	newTitle = newTitle.replace(/\?.+/gi, ""); // Remove querystring
-	newTitle = newTitle.replace(/-/gi, " ");	 // Remove extra hyphens
+	console.log(newTitle);
+
+	newTitle = newTitle.replace(/\-/gi, " ");	 // Remove extra hyphens
+	console.log(newTitle);
 
 	var newFileName = fileName.replace(/\?.+/gi, "");
 

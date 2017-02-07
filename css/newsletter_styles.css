@@ -98,8 +98,8 @@ html.error-status.errors:before {
 /*********************/
 
 .control-bar {
-  width:80px;  min-width:80px;  max-width:80px;
-  padding-right:20px;
+  width:100px;  min-width:100px;  max-width:100px;
+  /*padding-right:20px;*/
   /*width:128px; min-width:128px; max-width:128px;*/
 
   height:100%;
@@ -158,8 +158,8 @@ html.error-status.errors:before {
   box-shadow: inset rgba(255,255,255,0.15) 0 0 0 2px, rgba(23, 23, 27, 1) 0px 0px 0px 2px, rgba(23, 23, 27, .75) 0px 0px 0px 4px;
   transition:all .3s;
 }
-.orbs-bottom .orb { margin-top:15px; }
-.orbs-top .orb { margin-bottom:15px; }
+.orbs-bottom .orb { margin-top:12px; }
+.orbs-top .orb { margin-bottom:12px; }
 
 .orb:hover { color:#fff; transform:scale(1.1, 1.1); transition:none; -webkit-transform-style: preserve-3d; }
 .orb:active { color:#fff; transform: scale(1, 1); -webkit-transform-style: preserve-3d; }
@@ -283,8 +283,11 @@ html.error-status.errors:before {
 /*.ab-orb.a:hover:before { content:"A"; }*/
 
 
+.guides-orb { order:2; background:#13bfbf; font-size:22px; }
+.guides-orb:before { content:"\4d"; margin-top:0px; }
+
 .borders-orb { order:3; background:#d91d1d; font-size:22px; }
-.borders-orb:before { content:"\74"; margin-top:1px; }
+.borders-orb:before { content:"\74"; margin-top:0px; }
 
 .images-orb { order:4; background:#53c586; font-size:20px; }
 .images-orb:before { content:"\79"; }
@@ -499,8 +502,8 @@ body.split-view-on {
   z-index:1;
 }
 .mobile-view-wrapper.portrait {
-  max-width:426px;
-  min-width:426px;
+  max-width:406px;
+  min-width:406px;
 }
 .mobile-view-wrapper.off {
   /*display:none;*/

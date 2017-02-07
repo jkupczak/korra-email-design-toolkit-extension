@@ -1,5 +1,7 @@
 console.log("mailchimp.js loaded");
 
+
+
 //
 // Apply check tool to each campaign as it loads in
 //
@@ -222,6 +224,26 @@ function processCampaignList() {
 
       }
 
+      // Set it to chrome.storage if it's recent.
+      // Only set it if we're on the main Campaigns page. Olders drafts on past pages are irrelvant.
+      if ( /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
+
+        // Save to localStorage (do not use)
+        // localStorage.setItem('pendingDrafts', totalDraftsOnPage);
+
+        // Save it using the Chrome extension storage API.
+        // http://stackoverflow.com/a/14533446/556079
+        chrome.storage.sync.set({'pendingDrafts': totalDraftsOnPage}, function() {
+          // Notify that we saved.
+          // message('Settings saved');
+          // console.log('Saved', key, testPrefs);
+          // console.log('Saved', 'pendingDrafts', totalDraftsOnPage);
+          // console.log('Saved', 'pendingDrafts');
+        });
+      }
+
+
+
 
       destroyIfExists( document.querySelector(".total-drafts") );
 
@@ -233,24 +255,34 @@ function processCampaignList() {
 
         // Create menu item to show total drafts
         var draftsEle = document.createElement("li");
-        draftsEle.className = "total-drafts nav-link small-meta fwb hide-mobile";
-
-        var draftTotalWrapper = document.createElement("div");
-        draftTotalWrapper.className = "total-drafts-number";
-        var draftTotalWrapperText = document.createTextNode(totalDraftsOnPage);
-        draftTotalWrapper.appendChild(draftTotalWrapperText);
-        draftsEle.appendChild(draftTotalWrapper);
-
-        if (totalDraftsOnPage === 1) {
-          var draftPlural = "Draft"
-        } else {
-          var draftPlural = "Drafts"
+        draftsEle.className = "total-drafts nav-link small-meta fwb hide-mobile"
+        if ( totalDraftsOnPage > 0 ) {
+          draftsEle.classList.add("drafts-exist");
         }
 
+        var totalDraftsNumber = document.createElement("div");
+        totalDraftsNumber.className = "total-drafts-number"
+        var draftTotalWrapperText = document.createTextNode(totalDraftsOnPage);
+        totalDraftsNumber.appendChild(draftTotalWrapperText);
+
+
         var draftTotalTextWrapper = document.createElement("div");
-        var draftTotalTextWrapperText = document.createTextNode(draftPlural);
-        draftTotalTextWrapper.appendChild(draftTotalTextWrapperText);
+        draftTotalTextWrapper.className = "alignc padding--lv3 gray-link !padding-top-bottom--lv0"
+
+        draftTotalTextWrapper.appendChild(totalDraftsNumber);
+
+        if (totalDraftsOnPage === 1) {
+          var draftPlural = "Draft Pending"
+        } else {
+          var draftPlural = "Drafts Pending"
+        }
+        var draftPluralTextNode = document.createTextNode(draftPlural);
+        var draftPluralWrapper = document.createElement("div");
+        draftPluralWrapper.appendChild(draftPluralTextNode);
+        draftTotalTextWrapper.appendChild(draftPluralWrapper);
+
         draftsEle.appendChild(draftTotalTextWrapper);
+
 
         var lastMenuItem = document.querySelector("li.nav-link:last-child");
         insertAfter(draftsEle, lastMenuItem);
@@ -258,6 +290,60 @@ function processCampaignList() {
       // }
 
 
+
+      //////////////
+      //////////////
+      //////////////
+      //////////////
+      //
+      //  NOTIFICATIONS
+      //
+      //  request permission on page load
+      //
+      // !!! - THe notify function exists here and in mailchimp.js. Can I have it in just one place?
+      //
+      //////////////
+      //////////////
+      //////////////
+      document.addEventListener('DOMContentLoaded', function () {
+        if (!Notification) {
+          alert('Desktop notifications not available in your browser. Try Chromium.');
+          return;
+        }
+
+        if (Notification.permission !== "granted")
+          Notification.requestPermission();
+      });
+
+      function notifyMe() {
+        if (Notification.permission !== "granted")
+          Notification.requestPermission();
+        else {
+          var notification = new Notification(totalDraftsOnPage + ' Pending Drafts', {
+            icon: chrome.extension.getURL('img/mailchimp-notification.png'),
+            body: "Hey there! You have pending drafts in MailChimp, get on it!",
+          });
+
+          // Automatically close after 3 minutes.
+          setTimeout(notification.close.bind(notification), 180000);
+
+          notification.onclick = function () {
+            // window.open("https://us2.admin.mailchimp.com/campaigns/");
+            notification.close();
+          };
+
+        }
+
+      }
+
+      // On page load (once the observer picks up the DOM)
+      if ( totalDraftsOnPage > 0 ) {
+        notifyMe();
+      }
+
+      ////////////////////////////////////
+      ////////////////////////////////////
+      ////////////////////////////////////
 
 
 
@@ -268,14 +354,14 @@ function processCampaignList() {
 
 
 
+// window.onbeforeunload = function (e) {
+//
+//   // if ( totalDraftsOnPage > 0 ) {
+//     return 'There are unsent drafts on this page! Are you sure you want to leave?';
+//   // }
+//
+// };
 
-window.onbeforeunload = function (e) {
-
-  if ( totalDraftsOnPage > 0 ) {
-    return 'There are unsent drafts on this page! Are you sure you want to leave?';
-  }
-
-};
 
 
 

@@ -280,9 +280,38 @@ body.discipline-ready .line.selfclear li.hover-item > a {
   background:#a21c37 !important;
 }
 
-
-
-
+.nav-link.total-drafts {
+  height:60px;
+}
+.nav-link.total-drafts > div {
+  display: block;
+  line-height: inherit;
+  height: inherit;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  /*align-items: stretch;*/
+}
+.nav-link.total-drafts > div > div {
+  height:auto;
+  align-self: center;
+}
+.nav-link.total-drafts .total-drafts-number {
+  font-size:28px;
+  font-weight:bold;
+  padding-right:6px;
+}
+.nav-link.drafts-exist {
+  background:#da2756;
+}
+.nav-link.drafts-exist:hover, .nav-link.drafts-exist:hover > div {
+  background:#c01944 !important;
+  cursor:default;
+}
+.nav-link.drafts-exist > div {
+  color:#fff;
+}
 
 
 /* A/B Testing */

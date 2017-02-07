@@ -2,6 +2,10 @@ html, body {
   padding:0;
   margin:0;
 }
+.alignment-guide {
+  width:1px; background:cyan; height:100%; position:fixed; top:0; bottom:0; margin:auto !important; z-index:9999;
+}
+
 .link-marker-wrapper {
   position: absolute;
   top:0; left:0;
