@@ -1,4 +1,10 @@
 # mb-companion
-A Chrome extension designed to help automate daily Marketing tasks
 
-Pending...
+Designed to help automate everyday tasks and provide additional styling and visual clues that can assist designers at a glance. Upgrades the user experience on:
+
+- Dropbox.com
+- MedBridgeeducation.com
+- MailChimp
+- Amazon Web Services
+- Gmail
+- and with files saved to the local hard drive.

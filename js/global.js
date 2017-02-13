@@ -255,10 +255,13 @@ function copyToClipboard(el) {
     // Copy the Link - http://www.jstips.co/en/copy-to-clipboard/
     // Select the content
     el.select();
+
     // Copy to the clipboard
-    document.execCommand('copy');
-    //
-    alertify.success("Saved to clipboard!<br><span style='display:block;padding-top:4px;font-size:80%;opacity:.85;line-height:16px;word-break:break-all'>" + el.value + "</span>", 20);
+    setTimeout( function() {
+      document.execCommand('copy');
+      alertify.success("Saved to clipboard!<br><span style='display:block;padding-top:4px;font-size:80%;opacity:.85;line-height:16px;word-break:break-all'>" + el.value + "</span>", 20);
+      document.execCommand('copy');
+    }, 1000);
 }
 
 // Test if an element exists in the DOM.

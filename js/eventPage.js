@@ -19,26 +19,42 @@ function mailchimpDraftsNotification(draftsFromStorage) {
   if (Notification.permission !== "granted")
     Notification.requestPermission();
   else {
+    console.log("Notification opened via eventPage.js.");
     var notification = new Notification(draftsFromStorage + ' Pending Drafts', {
       icon: chrome.extension.getURL('img/mailchimp-notification.png'),
       body: "Hey there! You have " + draftsFromStorage + " pending drafts in MailChimp, get on it!",
+      requireInteraction: true
     });
 
     // Automatically close after 3 minutes.
-    setTimeout(notification.close.bind(notification), 180000);
+    setTimeout( function() {
+      // notification.close.bind(notification);
+      console.log(notification);
+      notification.close();
+      console.log("Notification scheduled for automatic dismissal right now. Dismissing if still present.");
+    }, 180000);
+    // }, 1800);
+
+    // setTimeout(notification.close.bind(notification), 180000);
 
     notification.onclick = function () {
       // window.open("https://us2.admin.mailchimp.com/campaigns/");
       notification.close();
+      console.log("Notification closed via click.");
     };
 
   }
 
 }
 
+
+
 // chrome.storage - http://stackoverflow.com/a/14533446/556079
 // Notifications - http://stackoverflow.com/a/13328513/556079
 // Every 10 minutes check chrome.storage for the amount of pending drafts on MailChimp. If it's greater than 0, push a desktop notification.
+
+var totalNotificationsSent = 0;
+
 setInterval( function() {
 
   logChromeStorage();
@@ -48,7 +64,16 @@ setInterval( function() {
     var draftsFromStorage = obj.pendingDrafts;
 
     if ( draftsFromStorage > 0 ) {
+      
       mailchimpDraftsNotification(draftsFromStorage);
+      totalNotificationsSent++
+      console.log("Notifications Sent: " + totalNotificationsSent);
+
+      console.log("10 minutes remaining until the next notification.");
+      setTimeout( function() {
+        console.log("5 minutes remaining until the next notification.")
+      }, 300000);
+
     }
 
   });
@@ -68,7 +93,7 @@ setInterval( function() {
 //
 
 var bkg = chrome.extension.getBackgroundPage();
-bkg.console.log('foo');
+// bkg.console.log('foo');
 
 
 

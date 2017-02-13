@@ -4,6 +4,13 @@ html.powered-up, html.powered-up body {
   background:#fff;
 }
 
+#dropbox-link-text {
+  display:block !important;
+  position:absolute;
+  top:0; left:0;
+  width:100%;
+}
+
 html.powered-up {
   box-sizing: border-box;
 }
@@ -376,7 +383,7 @@ html.error-status.errors:before {
 
 .mod.mod-link-checker .mod-body {
   padding:0;
-  max-height:300px;
+  max-height:700px;
   overflow:scroll;
 }
 .mod-link-checker .link-row {
@@ -412,8 +419,45 @@ html.error-status.errors:before {
   top:0; right:0;
 }
 
+/* ***********
+   ***********
+
+    ALERTIFY
+
+  ***********
+  *********** */
+
+.ajs-message > div {
+  font-size:12px;line-height:18px;font-weight:300; padding-top:10px;
+}
+
+
+
 
 /* *********** */
+
+.preheader-wrapper.mod-wrapper {
+  position:relative;
+}
+
+.preheader-match-rating {
+    /*display:none;*/
+    position:absolute;
+    top:-8px;
+    right:10px;
+    width:40px; height:40px; line-height:40px;
+    color:#fff;
+    text-align:center;
+    border-radius:40px;
+    background:#b3b3b3;
+    font-size:12px;
+}
+
+.preheader-match-rating.ready { display:block; background:#35bd75; transition:all 3s; }
+
+.preheader-match-rating.ready.warning { font-size:14px; background: #bd9535; }
+.preheader-match-rating.ready.error { font-size:14px; background: rgb(217, 92, 92); }
+
 
 .preheader-back { display:inline; color:rgba(0,0,0,0.4); }
 .preheader-back:before { content:"90"; background:#c2cde2; color:#444; margin:0 4px; }
@@ -601,7 +645,50 @@ body.split-view-on {
 
 @media screen and (max-device-width: 1440px), screen and (max-width: 1440px) {
 
+
+  .info-bar {
+    max-width: 300px;
+    min-width: 300px;
+  }
+
+
   .desktop-view-wrapper { min-width:660px; }
+
+  .control-bar {
+    width:70px; min-width:70px; max-width:70px;
+  }
+
+  .orbs-top {
+      padding-top: 18px;
+  }
+  .orbs-bottom {
+      padding-bottom: 18px;
+  }
+
+  .orb {
+    /*width:35px;
+    height:35px;
+    line-height:35px;
+    min-height:35px;*/
+    transform:scale(.85,.85);
+  }
+  .mobile-view-wrapper {
+    padding-top:20px;
+    padding-bottom:20px;
+    padding-left:23px;
+  }
+  .mobile-view-wrapper.portrait:not(.off) {
+      max-width: 389px;
+      min-width: 389px;
+  }
+
+  .orbs-top .orb {
+      margin-bottom: 6px;
+  }
+
+  .orbs-bottom .orb {
+      margin-top: 6px;
+  }
 
   /*.control-bar { width:80px; min-width:80px; max-width:80px; }*/
   /*.orb { width:40px; height:40px; line-height:40px; font-size:18px; margin-top:15px; }*/

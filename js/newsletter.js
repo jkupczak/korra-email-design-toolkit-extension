@@ -1362,7 +1362,7 @@ function plainText() {
 
       }
 
-      if (moduleType === "bbanner") {
+      if (moduleType === "bbanner" || moduleType === "tbanner" || moduleType === "banner") {
 
         var insertText = ""
 
@@ -1461,19 +1461,61 @@ qaWrapper.appendChild(infoBar);
 ////
 /////////
 
+
 var preheaderWapper = document.createElement("div");
 preheaderWapper.className = "preheader-wrapper mod-wrapper";
 infoBar.appendChild(preheaderWapper);
 
-// preheader = preheader.replace(/(\&nbsp\;|\n|\t|\r|\u00a0)/gi, " "); // http://stackoverflow.com/a/1496863/556079
-// preheader = preheader.replace(/   +/gi, " ");
-// preheader = preheader.replace(/(^ +?| +?$)/gi, "");
-preheader = preheader.substring(0, 149);
-preheader = preheader.trim();
 
-preheader = "<div class='mod mod-preheader'><div class='title'>Preheader</div><div class='mod-body'>" + [preheader.slice(0, 89), "<span class='preheader-back'>", preheader.slice(89)].join('') + "</span></div></div>"; // http://stackoverflow.com/a/4364902/556079
+var preheader150 = preheader.substring(0, 149).trim();
+preheader150 = "<div class='mod mod-preheader'><div class='title'>Preheader</div><div class='mod-body'>" + [preheader150.slice(0, 89), "<span class='preheader-back'>", preheader150.slice(89)].join('') + "</span></div></div>"; // http://stackoverflow.com/a/4364902/556079
 
-preheaderWapper.innerHTML = preheader;
+preheaderWapper.innerHTML = preheader150;
+
+
+
+////
+//// Evaluate the preheader to see if it's been updated
+////
+//// Match the words in the first 90 characters against the rest of the email. Return the total matches as a percentage and throw an error if it's below a certain threshold.
+////
+////
+
+var preheader90 = preheader.substring(0, 89).trim();
+
+var textMinusPreheader = preheader.replace(preheader90,"");
+
+var preheader90 = preheader90.split(" ");
+
+var preheaderTotalWords = preheader90.length;
+
+var totalPreheaderWordsMatched = 0;
+
+for (var i = 0; i < preheaderTotalWords; i++) {
+  var matcher = new RegExp(preheader90[i], "gi");
+  if ( matcher.test(textMinusPreheader) ) {
+    totalPreheaderWordsMatched++
+  }
+}
+
+var matchRating = Math.round(totalPreheaderWordsMatched/preheaderTotalWords*100);
+
+var preheaderMatchDiv = document.createElement("div");
+    preheaderMatchDiv.className = "preheader-match-rating";
+var preheaderMatchTextNode = document.createTextNode(matchRating + "%");
+preheaderMatchDiv.appendChild(preheaderMatchTextNode);
+preheaderWapper.appendChild(preheaderMatchDiv);
+
+setTimeout(function() {
+  if ( matchRating < 80 && matchRating > 69  ) {
+    alertify.warning("Preheader text may not be updated!", 20);
+    preheaderMatchDiv.classList.add("warning");
+  } else if ( matchRating < 70 ) {
+    alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the words in the preheader match the rest of the email.", 0);
+    preheaderMatchDiv.classList.add("error");
+  }
+  preheaderMatchDiv.classList.add("ready");
+}, 500);
 
 
 
@@ -1544,6 +1586,40 @@ alertify.set('notifier','position', 'bottom-left');
 
 
 
+//
+
+if ( !elExists(dFrame.querySelector("[data-module-wrapper]")) ) {
+  alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
+}
+
+
+
+////////////
+////////////
+////////////
+//
+//    Iterate Through All Modules
+//    https://www.kirupa.com/html5/get_element_position_using_javascript.htm
+//    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+//
+////////////
+////////////
+////////////
+
+let moduleList = dFrame.querySelectorAll("[data-module-wrapper] > table");
+var i = 0
+
+console.groupCollapsed("Modules Group - Total Modules Found: " + moduleList.length);
+
+for (let module of moduleList) {
+
+  i++
+  module.dataset.moduleCount = i;
+
+}
+
+console.groupEnd();
+
 ////////////
 ////////////
 ////////////
@@ -1572,36 +1648,38 @@ for (let link of linkList) {
 
   i++
 
-  // Set link and clean it if it's local.
+  // Set link to a variable and clean it if it's local.
   var linkHref = link.href;
   if ( /^file:.+\//gi.test(linkHref) ) {
     linkHref = linkHref.replace(/^file:.+\//gi, "");
   }
 
+  // Create link module in left column.
   if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
 
-      var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
+    var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
 
-      var linkRow = document.createElement("div");
-      linkRow.className = "link-row";
-      linkRowsWrapper.appendChild(linkRow);
+    var linkRow = document.createElement("div");
+    linkRow.className = "link-row";
+    linkRowsWrapper.appendChild(linkRow);
 
-      var linkRowNum = document.createElement("div");
-      linkRowNum.className = "link-row-num";
-      var textLinkNum = document.createTextNode(i);
-      linkRowNum.appendChild(textLinkNum);
-      linkRow.appendChild(linkRowNum);
+    var linkRowNum = document.createElement("div");
+    linkRowNum.className = "link-row-num";
+    var textLinkNum = document.createTextNode(i);
+    linkRowNum.appendChild(textLinkNum);
+    linkRow.appendChild(linkRowNum);
 
-      var linkRowHref = document.createElement("div");
-      linkRowHref.className = "link-row-href";
-      var textLinkHref = document.createTextNode(linkHref);
-      linkRowHref.appendChild(textLinkHref);
-      linkRow.appendChild(linkRowHref);
+    var linkRowHref = document.createElement("div");
+    linkRowHref.className = "link-row-href";
 
-      console.groupCollapsed("[" + i + "] " + linkHref);
-      console.log(link);
-      console.log( getPosition(link) );
-      console.groupEnd();
+    var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\./gi, ""));
+    linkRowHref.appendChild(textLinkHref);
+    linkRow.appendChild(linkRowHref);
+
+    console.groupCollapsed("[" + i + "] " + linkHref);
+    console.log(link);
+    console.log( getPosition(link) );
+    console.groupEnd();
 
     var linkPosition = getPosition(link);
 
@@ -1619,6 +1697,16 @@ for (let link of linkList) {
     linkErrorLog.className = "link-errors";
     insertAfter(linkErrorLog, linkMarker);
     // linkMarker.appendChild(linkErrorLog);
+
+    var linkErrorLogURL = document.createElement("div");
+    linkErrorLogURL.className = "link-errors-url";
+    var linkErrorLogURLTextNode = document.createTextNode(linkHref);
+    linkErrorLogURL.appendChild(linkErrorLogURLTextNode);
+    linkErrorLog.appendChild(linkErrorLogURL);
+
+    var linkErrorLogNoticeWrapper = document.createElement("div");
+    linkErrorLogNoticeWrapper.className = "link-errors-wrapper";
+    linkErrorLog.appendChild(linkErrorLogNoticeWrapper);
 
 
     //////////////////////////////
@@ -1639,7 +1727,7 @@ for (let link of linkList) {
       console.error(msg);
       var errorRowText = document.createTextNode(msg);
       errorRow.appendChild(errorRowText);
-      linkErrorLog.appendChild(errorRow);
+      linkErrorLogNoticeWrapper.appendChild(errorRow);
 
       totalLinkErrors++
 
@@ -1664,14 +1752,21 @@ for (let link of linkList) {
 
     // Global link testing variables
 
-    var medbridgeLink
+    var medbridgeDomainLink
+    var medbridgeWwwLink
     var medbridgeOrMassageLink
 
+    if ( /\/\/.+?\.?medbridge(ed|education)\.com/gi.test(linkHref) ) {
+      medbridgeDomainLink = true;
+    } else {
+      medbridgeDomainLink = false;
+    }
+
     if ( /\/\/(www\.)?medbridge(ed|education)\.com/gi.test(linkHref) ) {
-      medbridgeLink = true;
+      medbridgeWwwLink = true;
       medbridgeOrMassageLink = true;
     } else {
-      medbridgeLink = false;
+      medbridgeWwwLink = false;
       medbridgeOrMassageLink = false;
     }
 
@@ -1690,6 +1785,36 @@ for (let link of linkList) {
     } else {
       blogLink = false;
     }
+
+
+
+    ////
+    // Is the module # in the utm correct?
+    ////
+    if ( (emailSubType === "ns" || emailSubType === "sub") && !outsideOrg && medbridgeDomainLink ) {
+
+      var moduleNumber = link.closest("[data-module-count]");
+
+      if ( elExists(moduleNumber) ) {
+
+        var moduleNumber = moduleNumber.getAttribute("data-module-count");
+        var moduleNumberMatch = new RegExp(moduleNumber, "gi");
+
+        if ( /mod\d/gi.test(linkHref) ) {
+
+          if ( !moduleNumberMatch.test(linkHref) ) {
+            console.log( "no match: " + !moduleNumberMatch.test(linkHref) );
+            createLinkErrorRow(linkMarker, "wrong mod #, use " + "mod" + moduleNumber);
+          }
+
+        } else {
+
+          createLinkErrorRow(linkMarker, "missing mod #, use " + "mod" + moduleNumber);
+
+        }
+      }
+    }
+
 
 
     ////
@@ -1723,7 +1848,7 @@ for (let link of linkList) {
 
     ////
     // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( medbridgeLink && !/utm_content/gi.test(linkHref) && (!outsideOrg && !emailSale) ) {
+    if ( medbridgeWwwLink && !/utm_content/gi.test(linkHref) && (!outsideOrg && !emailSale) ) {
       createLinkErrorRow(linkMarker, "missing utm");
     }
 
@@ -1735,9 +1860,17 @@ for (let link of linkList) {
 
     ////
     // Check for whitelabeling versus www
-    if ( outsideOrg && !blogLink && medbridgeLink && /\/www\./gi.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "missing whitelabeling");
+    if ( outsideOrg && !blogLink && medbridgeDomainLink ) {
+
+      if ( medbridgeWwwLink ) {
+        createLinkErrorRow(linkMarker, "missing whitelabeling");
+      }
+      else if ( (emailSubType === "hs" && !/\/healthsouth\./i.test(linkHref)) || (emailSubType === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailSubType === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
+        createLinkErrorRow(linkMarker, "incorrect whitelabeling");
+      }
+
     }
+    if ( emailSubType === "hs" )
 
     ////
     // Check for old fashioned marketing URLS in sub or outsideOrg
@@ -1748,7 +1881,7 @@ for (let link of linkList) {
     ////
     // Check for medium=email in Sale and Presale emails
     ////
-    if ( !outsideOrg && medbridgeLink && ( blogLink || /\-article/gi.test(linkHref) ) ) {
+    if ( !outsideOrg && medbridgeDomainLink && ( blogLink || /\-article/gi.test(linkHref) ) ) {
 
       if ( emailAnySale ) { // Any sale email
 
@@ -1807,8 +1940,9 @@ for (let link of linkList) {
 
     ////
     // outsideOrg should not link to home-exercise-program.
+    // Use /patient_care/programs/create
     if ( outsideOrg && /\home-exercise-program/gi.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "don't link to /home-exercise-program");
+      createLinkErrorRow(linkMarker, "outsideOrg uses /patient_care/programs/create instead");
     }
 
     ////
