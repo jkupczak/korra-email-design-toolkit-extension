@@ -96,14 +96,15 @@ console.warn("medbridge.js loaded");
 
         }
 
-
         setTimeout(function() {
-          var approvalElem = course.querySelector('[ng-include*="catalog_display_accreditation"] [ng-if*="unapproved"]');
+          var unapprovedElem = course.querySelector('[ng-include*="catalog_display_accreditation"] [ng-if*="unapproved"]');
+          var pendingElem = course.querySelector('[ng-include*="catalog_display_accreditation"] [ng-if*="pending"]');
           var complianceElem = course.querySelector('[ng-include*="catalog_display_accreditation"] [ng-if*="compliance"]');
-          if ( (typeof(approvalElem) != 'undefined' && approvalElem != null) || (typeof(complianceElem) != 'undefined' && complianceElem != null) ) {
+          if ( (typeof(unapprovedElem) != 'undefined' && unapprovedElem != null) || (typeof(pendingElem) != 'undefined' && pendingElem != null) || (typeof(complianceElem) != 'undefined' && complianceElem != null) ) {
             course.classList.add("unapproved");
           }
-        }, 100);
+        }, 500);
+
 
       }
     };
@@ -199,7 +200,7 @@ function courseOptions() {
   // Create Options Modal
   var courseOptionsElem = document.createElement("div");
   courseOptionsElem.className = "course-options";
-  courseOptionsElem.innerHTML = '<div class="course-options"> <div class="option-wrapper"> <div class="option-title">Target Audience</div><div class="options-columns"><div class="label-wrapper"> <label for="course-opt-ns"><input name="audience" value="ns" id="course-opt-ns" type="radio" checked> Non-Subscribers</label> </div><div class="label-wrapper"> <label for="course-opt-sub"><input name="audience" value="sub" id="course-opt-sub" type="radio"> Subscribers</label> </div></div></div><div class="option-wrapper"> <div class="option-title">Whitelabeling</div><div class="label-wrapper"> <label for="course-opt-medbridge"><input name="whitelabel" value="www" id="course-opt-medbridge" type="radio" checked> MedBridge <span>(www.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-healthsouth"><input name="whitelabel" value="healthsouth" id="course-opt-healthsouth" type="radio"> HealthSouth <span>(healthsouth.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-fox"><input name="whitelabel" value="foxrehab" id="course-opt-fox" type="radio"> Fox <span>(foxrehab.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-drayer"><input name="whitelabel" value="drayerpt" id="course-opt-drayer" type="radio"> Drayer <span>(drayerpt.)</span></label> </div><div class="label-wrapper"> <label name="whitelabel" value="" for="course-opt-other"><input name="whitelabel" value="other" id="course-opt-other" type="radio"> Other</label> <input id="course-opt-other-text" type="text"> </div></div><div class="option-wrapper"> <div class="option-title">Tracking Code</div><div class="label-wrapper"> <input name="tracking" value="" id="course-opt-tracking" type="text" placeholder="Module # (?utm_content=mod2-conted-course)"> </div></div><div class="option-wrapper"> <div class="option-title">Exported Code</div><div class="options-columns"><div class="label-wrapper"> <label for="course-opt-html"><input name="code" value="html" id="course-opt-html" type="radio" checked> HTML</label> </div><div class="label-wrapper"> <label for="course-opt-json"><input name="code" value="json" id="course-opt-json" type="radio"> JSON</label> </div><div class="label-wrapper"> <label for="course-opt-yaml"><input name="code" value="yaml" id="course-opt-yaml" type="radio"> YAML</label> </div></div></div><div class="course-confirm"> <button id="course-options-cancel" class="btn-cancel">Cancel</button> <button id="course-options-confirm" class="btn-confirm">Confirm</button> </div></div>';
+  courseOptionsElem.innerHTML = '<div class="course-options"> <div class="option-wrapper"> <div class="option-title">Target Audience</div><div class="options-columns"><div class="label-wrapper"> <label for="course-opt-ns"><input name="audience" value="ns" id="course-opt-ns" type="radio" checked> Non-Subscribers</label> </div><div class="label-wrapper"> <label for="course-opt-sub"><input name="audience" value="sub" id="course-opt-sub" type="radio"> Subscribers</label> </div></div></div><div class="option-wrapper"> <div class="option-title">Whitelabeling</div><div class="label-wrapper"> <label for="course-opt-medbridge"><input name="whitelabel" value="www" id="course-opt-medbridge" type="radio" checked> MedBridge <span>(www.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-healthsouth"><input name="whitelabel" value="healthsouth" id="course-opt-healthsouth" type="radio"> HealthSouth <span>(healthsouth.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-fox"><input name="whitelabel" value="foxrehab" id="course-opt-fox" type="radio"> Fox <span>(foxrehab.)</span></label> </div><div class="label-wrapper"> <label for="course-opt-drayer"><input name="whitelabel" value="drayerpt" id="course-opt-drayer" type="radio"> Drayer <span>(drayerpt.)</span></label> </div><div class="label-wrapper"> <label name="whitelabel" value="" for="course-opt-other"><input name="whitelabel" value="other" id="course-opt-other" type="radio"> Other</label> <input id="course-opt-other-text" type="text"> </div></div>  <div class="option-wrapper"> <div class="option-title">Tracking URL</div><div class="options-columns"><div class="label-wrapper"> <label for="course-opt-affiliate"><input name="tracking-url-type" value="affiliate" id="course-opt-affiliate" type="radio" checked> Affiliate Linkback</label> </div><div class="label-wrapper"> <label for="course-opt-legacy"><input name="tracking-url-type" value="legacy" id="course-opt-legacy" type="radio"> Legacy</label> </div></div><div class="options-columns"><div class="label-wrapper"> <input name="tracking-url-value" value="" type="text" placeholder="trk-feb-17..."> </div></div></div>  <div class="option-wrapper"> <div class="option-title">Google Analytics Module #</div><div class="label-wrapper"> <input name="tracking-mod" value="" id="course-opt-tracking-mod" type="text" placeholder="Module # (?utm_content=mod2-conted-course)"> </div></div><div class="option-wrapper"> <div class="option-title">Exported Code</div><div class="options-columns"><div class="label-wrapper"> <label for="course-opt-html"><input name="code" value="html" id="course-opt-html" type="radio" checked> HTML</label> </div><div class="label-wrapper"> <label for="course-opt-json"><input name="code" value="json" id="course-opt-json" type="radio"> JSON</label> </div><div class="label-wrapper"> <label for="course-opt-yaml"><input name="code" value="yaml" id="course-opt-yaml" type="radio"> YAML</label> </div></div></div><div class="course-confirm"> <button id="course-options-cancel" class="btn-cancel">Cancel</button> <button id="course-options-confirm" class="btn-confirm">Confirm</button> </div></div>';
 
   // instanciate new modal
   var createOptionsModal = new tingle.modal({
@@ -244,15 +245,18 @@ function courseOptions() {
     var audience = document.querySelector('input[name="audience"]:checked').value;
     var codeType = document.querySelector('input[name="code"]:checked').value;
 
-    var tracking = document.querySelector('input[name="tracking"]').value;
-    if ( tracking === "" && whiteLabel === "www" ) {
-      tracking = "2"
+    var trackingUrlType = document.querySelector('input[name="tracking-url-type"]:checked').value;
+    var trackingUrlValue = document.querySelector('input[name="tracking-url-value"]').value;
+
+    var trackingMod = document.querySelector('input[name="tracking-mod"]').value;
+    if ( trackingMod === "" && whiteLabel === "www" ) {
+      trackingMod = "2"
     }
-    if ( tracking !== "" ) {
-      tracking = "?utm_content=mod" + tracking + "-conted-course"
+    if ( trackingMod !== "" ) {
+      trackingMod = "utm_content=mod" + trackingMod + "-conted-course"
     }
 
-    generateCode(codeType, audience, whiteLabel, tracking);
+    generateCode(codeType, audience, whiteLabel, trackingMod, trackingUrlType, trackingUrlValue);
     createOptionsModal.close();
   }
 
@@ -268,18 +272,27 @@ function courseOptions() {
 ///
 //
 
-function generateCode(codeType, audience, whiteLabel, tracking) {
+function generateCode(codeType, audience, whiteLabel, trackingMod, trackingUrlType, trackingUrlValue) {
 
   console.log("function generateCode()");
-  console.log(codeType);
-  console.log(audience);
-  console.log(whiteLabel);
+  console.log("codeType = " + codeType);
+  console.log("audience = " + audience);
+  console.log("whiteLabel = " + whiteLabel);
+  console.log("trackingMod = " + trackingMod);
+  console.log("trackingUrlType = " + trackingUrlType);
+  console.log("trackingUrlValue = " + trackingUrlValue);
 
   var exportedHtml = "";
 
   let selectedCourses = document.querySelectorAll(".course-copy");
   var lastCourse = selectedCourses[selectedCourses.length-1];
-  for (let exportCourse of selectedCourses) {
+
+  // for (let exportCourse of selectedCourses) {
+  // http://stackoverflow.com/a/41189297/556079
+  for (let i = 0; i < selectedCourses.length; i++) {
+
+    var exportCourse = selectedCourses[i];
+    var exportCourseNumber = i + 1;
 
     if ( exportCourse == lastCourse ) {
       var tdPadding = "padding: 15px 0px 0px 0px;"
@@ -291,7 +304,24 @@ function generateCode(codeType, audience, whiteLabel, tracking) {
     console.log(selectedCourses);
 
     var courseLink = exportCourse.dataset.href.trim();
-        courseLink = courseLink.replace(/www/gi, whiteLabel) + tracking;
+        courseLink = courseLink.replace(/www/gi, whiteLabel);
+
+    // Modify course link if this is for ns.
+    if ( audience === "ns" ) {
+      if ( trackingUrlType === "affiliate" ) {
+        courseLink = courseLink.replace(/\.com\//gi, ".com/" + trackingUrlValue + "/?after_affiliate_url=");
+        courseLink = courseLink + "&" + trackingMod;
+      } else if ( trackingUrlType === "legacy" ) {
+        courseLink = courseLink.replace(/\/courses\/.+/gi, "/" + trackingUrlValue + "-" + exportCourseNumber + "/?" + trackingMod);
+      } else {
+        courseLink += "?" + trackingMod;
+      }
+    } else {
+      if ( trackingMod !== "" ) {
+        courseLink += "?" + trackingMod;
+      }
+    }
+
     var courseTitle = exportCourse.dataset.title;
     var courseAuthor = exportCourse.dataset.author;
     var courseThumbnail = exportCourse.dataset.courseThumbnail;

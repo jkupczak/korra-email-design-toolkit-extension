@@ -13,6 +13,15 @@
     "persistent": false
   },
 
+  "options_ui": {
+    "page": "options.html",
+    // Recommended.
+    //"chrome_style": true
+    // Not recommended; only provided for backwards compatibility,
+    // and will be unsupported in a future version of Chrome (TBD).
+    "open_in_tab": true
+  },
+
   "web_accessible_resources": [
     "medbridge-chrome-extension.woff",
     "favicons/*",
@@ -104,6 +113,18 @@
     { //Gmail
       "matches": ["*://mail.google.com/*"],
       "css": ["css/gmail-styles.css"]
+    },
+    { //miasf
+      "matches": ["*://miasf-member-mgt-center.wildapricot.org/widget/directory/*"],
+      "js": ["tonya/miasf-1.js"]
+    },
+    { //miasf
+      "matches": ["*://miasf-member-mgt-center.wildapricot.org/widget/Sys/*"],
+      "js": ["tonya/miasf-2.js"]
+    },
+    { //NMDA
+      "matches": ["*://www.nmdaonline.com/member-directory/*"],
+      "js": ["tonya/nmda.js"]
     }
   ]
 

@@ -195,6 +195,20 @@ function applyMcTheme() {
 // }
 
 
+var totalDraftsOnPage;
+
+chrome.storage.sync.get("pendingDrafts", function (obj) {
+
+  console.error(obj.pendingDrafts);
+  console.error(totalDraftsOnPage);
+
+  totalDraftsOnPage = obj.pendingDrafts;
+
+  console.error(totalDraftsOnPage);
+
+});
+
+
 function processCampaignList() {
 
   // MailChimp updates #campaigns-list twice on load, the first time it's empty. So we search for a child and then start our script if one exists.
@@ -202,31 +216,34 @@ function processCampaignList() {
   if (elExists(campaignCheck)) {
 
 
-
-      var totalDraftsOnPage = 0;
-
-      // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-      let campaignStatusList = document.querySelectorAll("span.freddicon[title='draft']");
-      for (let pendingCampaign of campaignStatusList) {
-
-        pendingCampaign.closest("li").classList.add("draft");
-        totalDraftsOnPage++
-
-      }
-
+      console.groupCollapsed("Campaign Disciplines");
       // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
       let campaignsList = document.querySelectorAll("#campaigns-list li.selfclear");
       for (let campaign of campaignsList) {
 
         var campaignName = campaign.querySelector('a[title="Campaign Name" i]').innerText;
         campaign.classList.add("discipline-" + getDisciplineId(campaignName) );
+
         console.log(getDisciplineId(campaignName) + " - " + campaignName);
 
       }
+      console.groupEnd();
+
 
       // Set it to chrome.storage if it's recent.
       // Only set it if we're on the main Campaigns page. Olders drafts on past pages are irrelvant.
       if ( /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
+
+        totalDraftsOnPage = 0;
+        
+        // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+        let campaignStatusList = document.querySelectorAll("span.freddicon[title='draft']");
+        for (let pendingCampaign of campaignStatusList) {
+
+          pendingCampaign.closest("li").classList.add("draft");
+          totalDraftsOnPage++
+
+        }
 
         // Save to localStorage (do not use)
         // localStorage.setItem('pendingDrafts', totalDraftsOnPage);
@@ -337,7 +354,7 @@ function processCampaignList() {
       }
 
       // On page load (once the observer picks up the DOM)
-      if ( totalDraftsOnPage > 0 ) {
+      if ( totalDraftsOnPage > 0 && /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
         notifyMe();
       }
 

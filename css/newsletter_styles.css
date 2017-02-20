@@ -4,6 +4,10 @@ html.powered-up, html.powered-up body {
   background:#fff;
 }
 
+[contenteditable]:focus {
+  outline:0;
+}
+
 #dropbox-link-text {
   display:block !important;
   position:absolute;
@@ -106,15 +110,13 @@ html.error-status.errors:before {
 
 .control-bar {
   width:100px;  min-width:100px;  max-width:100px;
-  /*padding-right:20px;*/
-  /*width:128px; min-width:128px; max-width:128px;*/
 
   height:100%;
   background:#26272d;
-  /*padding:0 0 34px 0;*/
+
   font-family:Helvetica;
   color:#fff;
-  /*font-weight:bold;*/
+
   text-align:center;
 
   box-sizing:border-box;
@@ -128,31 +130,30 @@ html.error-status.errors:before {
 }
 
 .orbs-bottom, .orbs-top {
+  width:40px;
   display:flex;
   align-items:center;
 }
 .orbs-bottom {
   flex-direction: column-reverse;
   justify-content: flex-end;
-  padding-bottom:37px;
+  padding-bottom:36px;
 }
 .orbs-top {
   flex-direction: column;
-  padding-top:37px;
+  padding-top:36px;
 }
 
 
 
 .orb {
-  width:40px; height:40px; line-height:40px;
-  min-height:40px;
+  width:34px; height:34px; line-height:34px;
+  min-height:34px;
 
-  font-size:18px;
+  font-size:20px;
   -webkit-font-smoothing: antialiased;
   color:#fff;
   text-decoration:none;
-
-  /*width:60px; height:60px; line-height:60px; font-size:24px; margin-top:15px;*/
 
   border-radius:40px;
   background:#474d5c;
@@ -165,8 +166,8 @@ html.error-status.errors:before {
   box-shadow: inset rgba(255,255,255,0.15) 0 0 0 2px, rgba(23, 23, 27, 1) 0px 0px 0px 2px, rgba(23, 23, 27, .75) 0px 0px 0px 4px;
   transition:all .3s;
 }
-.orbs-bottom .orb { margin-top:12px; }
-.orbs-top .orb { margin-bottom:12px; }
+.orbs-bottom .orb { margin-top:14px; }
+.orbs-top .orb { margin-bottom:14px; }
 
 .orb:hover { color:#fff; transform:scale(1.1, 1.1); transition:none; -webkit-transform-style: preserve-3d; }
 .orb:active { color:#fff; transform: scale(1, 1); -webkit-transform-style: preserve-3d; }
@@ -196,7 +197,7 @@ html.error-status.errors:before {
 }
 
 .dual-orb {
-  height:80px;
+  height:68px;
   box-shadow:rgba(23, 23, 27, 1) 0px 0px 0px 2px, rgba(23, 23, 27, .75) 0px 0px 0px 4px;
 }
 .dual-orb .orb {
@@ -246,15 +247,20 @@ html.error-status.errors:before {
           animation: orb-spin .7s infinite linear;
 }
 
+.orb-divider { margin-top:14px; width:100%; height:1px; min-height:1px; max-height:1px; background:rgba(255,255,255,.25); }
+
+/****/
+/* Top Orbs */
+/****/
 
 .power-orb { order:1; background:#000; font-size:22px; order:1; box-shadow: rgba(255, 255, 255, .4) 0px 0px 0px 2px inset; }
 .power-orb:before { content:"\49"; }
+
 
 .dropbox-orb {
   order:2;
   background:url("chrome-extension://__MSG_@@extension_id__/img/dropbox.png") center center no-repeat #fff;
   background-size: 55%;
-  align-self: flex-end;
   box-shadow: inset rgba(0,0,0,.15) 0 0 0 2px, rgba(23, 23, 27, 1) 0px 0px 0px 2px, rgba(23, 23, 27, .75) 0px 0px 0px 4px;
 }
 
@@ -265,21 +271,62 @@ html.error-status.errors:before {
   align-self: flex-end;
 }
 
-.share-orb { order:4; background:#77C159; font-size:22px; }
+.share-orb { order:4; background:#77C159; }
 .share-orb:before { content:"\76"; margin-left:-1px; }
 
+.mailchimp-orb {
+  order:2;
+  background:url("chrome-extension://__MSG_@@extension_id__/img/mailchimp.png") center center no-repeat #52bad5;
+  background-size: 65%;
+  align-self: flex-end;
+}
+
+.swap-orb { order:4; background:#f06c2b; }
+.swap-orb:before { content:"\4b"; font-size:110%; }
+
+
 /****/
+/* Bottom Orbs */
+/****/
+
+
+.custom-orb { order:12; background:#1b3b84; }
+.custom-orb:before { content:"\70"; }
+
+.orb-divider-1 { order:11; }
+
+.plain-text-orb { order:10; background:#90407e;}
+.plain-text-orb:before { content:"\75"; font-size:85%; margin-top:1px; }
+
+.orb-divider-2 { order:9; }
+
+.edit-orb { order:8; background:#ce217f; }
+.edit-orb:before { content:"\77"; }
+
+.style-orb { order:7; background:#dd8631; }
+.style-orb:before { content:"\4a"; font-size:125%; }
+
+.images-orb { order:6; background:#53c586; }
+.images-orb:before { content:"\79"; }
+
+.borders-orb { order:5; background:#d91d1d; }
+.borders-orb:before { content:"\74"; margin-top:0px; }
+
+.guides-orb { order:4; background:#13bfbf; }
+.guides-orb:before { content:"\4d"; margin-top:0px; }
+
+
+.orb-divider-3 { order:3; }
+
 
 .mobile-orb { order:2; background:#5d6372; }
 .mobile-orb:before { content:"\73"; }
 
-.split-view-orb { background:#593797; }
-.split-view-orb:before { content:"\74"; }
-
-
-
-.split-view-orb:before { content:"\74"; }
-
+.nav-orb { order:1; }
+.nav-orb-up { }
+.nav-orb-up:before { content:"\42"; }
+.nav-orb-down { }
+.nav-orb-down:before { content:"\43"; }
 
 
 .ab-orb { order:1; background:#00b188; font-size:24px; font-weight:700 !important; font-family:Roboto, Helvetica; }
@@ -290,57 +337,15 @@ html.error-status.errors:before {
 /*.ab-orb.a:hover:before { content:"A"; }*/
 
 
-.guides-orb { order:2; background:#13bfbf; font-size:22px; }
-.guides-orb:before { content:"\4d"; margin-top:0px; }
-
-.borders-orb { order:3; background:#d91d1d; font-size:22px; }
-.borders-orb:before { content:"\74"; margin-top:0px; }
-
-.images-orb { order:4; background:#53c586; font-size:20px; }
-.images-orb:before { content:"\79"; }
-
-.edit-orb { order:5; background:#ce217f; font-size:20px; }
-.edit-orb:before { content:"\77"; }
-
-.style-orb { order:6; background:#dd8631; font-size:26px; }
-.style-orb:before { content:"\4a"; }
 
 
-.nav-orb { order:1; }
-.nav-orb-up { }
-.nav-orb-up:before { content:"\42"; }
-.nav-orb-down { }
-.nav-orb-down:before { content:"\43"; }
 
-.plain-text-orb { order:6; background:#90407e; }
-.plain-text-orb:before { content:"\75"; }
 
-/*.plain-text-modal {
-  width:80%;
-  height:80%;
-  background:#fff;
-  border-radius:8px;
-  box-shadow:0 0 0 10px rgba(0,0,0,0.75);
-  position:fixed;
-  top:0; right:0; bottom:0; left:0;
-  margin:auto;
-  font-size:14px;
-  color:#444;
-  font-family:monospace;
-  padding:40px;
-  box-sizing:border-box;
-  z-index:10;
-}*/
 
-.swap-orb { order:4; background:#f06c2b; font-size:24px; }
-.swap-orb:before { content:"\4b"; line-height:40px; color:#fff; }
 
-.mailchimp-orb {
-  order:2;
-  background:url("chrome-extension://__MSG_@@extension_id__/img/mailchimp.png") center center no-repeat #52bad5;
-  background-size: 65%;
-  align-self: flex-end;
-}
+
+
+
 
 
 
@@ -450,10 +455,11 @@ html.error-status.errors:before {
     text-align:center;
     border-radius:40px;
     background:#b3b3b3;
+    cursor:default;
     font-size:12px;
 }
 
-.preheader-match-rating.ready { display:block; background:#35bd75; transition:all 3s; }
+.preheader-match-rating.ready { display:block; background:#35bd75; transition: background 3s; }
 
 .preheader-match-rating.ready.warning { font-size:14px; background: #bd9535; }
 .preheader-match-rating.ready.error { font-size:14px; background: rgb(217, 92, 92); }
@@ -654,24 +660,9 @@ body.split-view-on {
 
   .desktop-view-wrapper { min-width:660px; }
 
-  .control-bar {
-    width:70px; min-width:70px; max-width:70px;
-  }
 
-  .orbs-top {
-      padding-top: 18px;
-  }
-  .orbs-bottom {
-      padding-bottom: 18px;
-  }
 
-  .orb {
-    /*width:35px;
-    height:35px;
-    line-height:35px;
-    min-height:35px;*/
-    transform:scale(.85,.85);
-  }
+
   .mobile-view-wrapper {
     padding-top:20px;
     padding-bottom:20px;
@@ -682,17 +673,6 @@ body.split-view-on {
       min-width: 389px;
   }
 
-  .orbs-top .orb {
-      margin-bottom: 6px;
-  }
-
-  .orbs-bottom .orb {
-      margin-top: 6px;
-  }
-
-  /*.control-bar { width:80px; min-width:80px; max-width:80px; }*/
-  /*.orb { width:40px; height:40px; line-height:40px; font-size:18px; margin-top:15px; }*/
-  /*.qa-orb { margin-bottom:34px; }*/
 }
 
 
@@ -703,19 +683,3 @@ body.split-view-on {
 
 
 }
-
-
-/*@media screen and (max-device-width: 1280px), screen and (max-width: 1280px) {
-  .info-bar { width:200px }
-}
-
-
-@media screen and (max-device-width: 1080px), screen and (max-width: 1080px) {
-  .info-bar { width:150px; padding:0; font-size:12px; }
-  .mod { border-radius:0; box-shadow:none; border-bottom:1px solid rgba(0,0,0,.2); border-right:1px solid rgba(0,0,0,.2); }
-}
-
-
-@media screen and (max-device-width: 480px), screen and (max-width: 480px) {
-  .info-bar, .control-bar { display:none; }
-}*/

@@ -33,7 +33,7 @@
   padding:30px;
 }*/
 .course-options .option-wrapper {
-  padding:0 0 20px;
+  padding:0 0 15px;
 }
 .course-options input[type="text"] {
   border-radius:3px;
@@ -51,11 +51,11 @@
   flex-grow:1;
 }
 .course-options .label-wrapper {
-  padding:5px;
+  padding:3px;
 }
 .course-options .option-title {
   font-weight:bold;
-  padding:0 0 10px
+  padding:0 0 8px
 }
 .course-options input[type="radio"] { margin-right: 5px; }
 .course-options label span {
@@ -234,7 +234,7 @@
 }
 
 .course-listing.unapproved {
-  opacity:.6;
+  opacity:.4;
 }
 
 .course-listing.unapproved:hover {

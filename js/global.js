@@ -19,7 +19,7 @@ function getDisciplineId(string) {
   else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(string) )   { var disciplineId = "other"; }
   else if ( /-LMT(\s|-|\.|$)/gi.test(string) )           { var disciplineId = "lmt"; }
   else if ( /-MT(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "lmt"; }
-  else if ( /-Enterprise(\s|-|\.|$)/gi.test(string) )    { var disciplineId = "ent"; }
+  else if ( /-(ENT|Enterprise)(\s|-|\.|$)/gi.test(string) )    { var disciplineId = "ent"; }
   else if ( /-DR(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "dr"; }
   else if ( /-Fox(-|\.|$)/gi.test(string) )              { var disciplineId = "fox"; }
   else if ( /-HS(-|\.|$)/gi.test(string) )               { var disciplineId = "hs"; }
@@ -211,18 +211,23 @@ function updateQueryString(key, value, url) {
 
 
 // Helper function to get an element's exact position
-function getPosition(el) {
+function getPosition(el, frame) {
+
   var xPos = 0;
   var yPos = 0;
 
   while (el) {
     if (el.tagName == "BODY") {
       // deal with browser quirks with body/window/document and page scroll
+      // document.documentElement.scrollTop always returns 0 on Chrome. This is because WebKit uses body for keeping track of scrolling, whereas Firefox and IE use html.
+
       var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
       var yScroll = el.scrollTop || document.documentElement.scrollTop;
 
       xPos += (el.offsetLeft - xScroll + el.clientLeft);
       yPos += (el.offsetTop - yScroll + el.clientTop);
+
+
     } else {
       // for all other non-BODY elements
       xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
@@ -231,6 +236,9 @@ function getPosition(el) {
 
     el = el.offsetParent;
   }
+
+  yPos += frame.body.scrollTop;
+
   return {
     x: xPos,
     y: yPos
@@ -261,7 +269,9 @@ function copyToClipboard(el) {
       document.execCommand('copy');
       alertify.success("Saved to clipboard!<br><span style='display:block;padding-top:4px;font-size:80%;opacity:.85;line-height:16px;word-break:break-all'>" + el.value + "</span>", 20);
       document.execCommand('copy');
+      document.execCommand('copy');
     }, 1000);
+    document.execCommand('copy');
 }
 
 // Test if an element exists in the DOM.

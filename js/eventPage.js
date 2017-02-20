@@ -53,6 +53,14 @@ function mailchimpDraftsNotification(draftsFromStorage) {
 // Notifications - http://stackoverflow.com/a/13328513/556079
 // Every 10 minutes check chrome.storage for the amount of pending drafts on MailChimp. If it's greater than 0, push a desktop notification.
 
+
+console.warn("10 minutes remaining until the next notification.");
+
+setTimeout( function() {
+  console.warn("5 minutes remaining until the next notification.")
+}, 300000);
+
+
 var totalNotificationsSent = 0;
 
 setInterval( function() {
@@ -64,14 +72,13 @@ setInterval( function() {
     var draftsFromStorage = obj.pendingDrafts;
 
     if ( draftsFromStorage > 0 ) {
-      
+
       mailchimpDraftsNotification(draftsFromStorage);
       totalNotificationsSent++
       console.log("Notifications Sent: " + totalNotificationsSent);
 
-      console.log("10 minutes remaining until the next notification.");
       setTimeout( function() {
-        console.log("5 minutes remaining until the next notification.")
+        console.warn("5 minutes remaining until the next notification.")
       }, 300000);
 
     }

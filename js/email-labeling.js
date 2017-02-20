@@ -69,21 +69,27 @@ if ( getABstatus(disciplineSearch) === "a" ) {
 
 if ( !onMailchimp ) {
 
+	// Check for legacy labels, like Enterprise instead ENT.
+	if ( disciplineId === "ent" && /\-Enterprise\-/gi.test(fileName) ) {
+		disciplineId = "Enterprise";
+	}
+
+
 	var re = new RegExp("^.+?-" + disciplineId + "","gi");
-	console.log(fileName);
-	console.log(re);
+	// console.log(fileName);
+	// console.log(re);
 
 	newTitle = fileName.replace(re, ""); // Remove date, discipline, A/B test, sub/ns, and extension
-	console.log(newTitle);
+	// console.log(newTitle);
 
 	newTitle = newTitle.replace(/\.html?|-(ns|sub)|-(a|b)\./gi, ""); // Remove date, discipline, A/B test, sub/ns, and extension
-	console.log(newTitle);
+	// console.log(newTitle);
 
 	newTitle = newTitle.replace(/\?.+/gi, ""); // Remove querystring
-	console.log(newTitle);
+	// console.log(newTitle);
 
 	newTitle = newTitle.replace(/\-/gi, " ");	 // Remove extra hyphens
-	console.log(newTitle);
+	// console.log(newTitle);
 
 	var newFileName = fileName.replace(/\?.+/gi, "");
 

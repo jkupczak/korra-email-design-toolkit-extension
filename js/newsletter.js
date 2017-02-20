@@ -497,6 +497,7 @@ var emailDisc = getDisciplineId(pageUrl);
     var mFrame = mobileIframe.contentDocument;
 
     // Remove scrollbar from mobile view while still allowing scrolling
+    // We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the  styles aren't applied yet.
     // http://stackoverflow.com/a/33079951/556079
     var styleElement = mFrame.createElement("style");
     styleElement.appendChild(mFrame.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } ") );
@@ -518,6 +519,15 @@ var emailDisc = getDisciplineId(pageUrl);
     var mFrameScript = document.createElement("script");
     mFrameScript.src = chrome.extension.getURL('js/mFrame.js');
     insertAfter(mFrameScript, mFrame.body);
+
+
+    // Add allFrames.css
+    var allFramesStyles = document.createElement("link");
+    allFramesStyles.href = chrome.extension.getURL('css/allFrames.css');
+    allFramesStyles.rel = "stylesheet";
+    allFramesStyles.type = "text/css";
+    dFrame.head.appendChild(allFramesStyles);
+    mFrame.head.appendChild(allFramesStyles.cloneNode(true));
 
 
     // Allow touch events to mimic mobile behavior
@@ -579,18 +589,18 @@ function viewMobile() {
 ////
 /////////
 
-var trelloOrb = document.createElement("a");
-trelloOrb.className = "trello-orb orb off";
-trelloOrb.target = "_trello";
-orbsTop.appendChild(trelloOrb);
-  chrome.storage.promise.sync.get(key).then(function(result) {
-    if(typeof result[key] !== "undefined") {
-      if(result[key].hasOwnProperty(["t"])){
-        trelloOrb.href = "https://www.trello.com/c/" + result[key]["t"];
-        trelloOrb.classList.remove("off");
-      }
-    }
-  });
+// var trelloOrb = document.createElement("a");
+// trelloOrb.className = "trello-orb orb off";
+// trelloOrb.target = "_trello";
+// orbsTop.appendChild(trelloOrb);
+//   chrome.storage.promise.sync.get(key).then(function(result) {
+//     if(typeof result[key] !== "undefined") {
+//       if(result[key].hasOwnProperty(["t"])){
+//         trelloOrb.href = "https://www.trello.com/c/" + result[key]["t"];
+//         trelloOrb.classList.remove("off");
+//       }
+//     }
+//   });
 
 
 
@@ -746,6 +756,23 @@ function processDbLink(shareableLink, action) {
 
 }
 
+//////////
+////
+////  Create Orb Dividers
+////
+/////////
+
+var orbDivider1 = document.createElement("div");
+orbDivider1.className = "orb-divider orb-divider-1";
+orbsBottom.appendChild(orbDivider1);
+
+var orbDivider2 = document.createElement("div");
+orbDivider2.className = "orb-divider orb-divider-2";
+orbsBottom.appendChild(orbDivider2);
+
+var orbDivider3 = document.createElement("div");
+orbDivider3.className = "orb-divider orb-divider-3";
+orbsBottom.appendChild(orbDivider3);
 
 
 //////////
@@ -886,15 +913,112 @@ function toggleBorders() {
   } else {
     var debugStylingD = dFrame.createElement("style");
     debugStylingD.id = "debug";
-    debugStylingD.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 2px rgba(255,0,0,.25), 0 0 0 2px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
+    debugStylingD.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 1px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
 
     var debugStylingM = mFrame.createElement("style");
     debugStylingM.id = "debug";
-    debugStylingM.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 2px rgba(255,0,0,.25), 0 0 0 2px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
+    debugStylingM.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 1px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
 
     dFrame.getElementsByTagName("head")[0].appendChild(debugStylingD);
     mFrame.getElementsByTagName("head")[0].appendChild(debugStylingM);
   }
+
+  //
+  // Find <td> dimensions
+  //
+
+  // Destory the td markers if they exist, create the wrapper for them if they do not.
+  if ( elExists(dFrame.getElementById("td-marker-wrapper")) ) {
+
+    destroy(dFrame.getElementById("td-marker-wrapper"));
+    destroy(mFrame.getElementById("td-marker-wrapper"));
+
+  } else {
+
+    let dFrameTdList = dFrame.querySelectorAll("td");
+    var tdCount = 0
+
+    console.groupCollapsed("<td> Group (dFrame) - Total <td>'s Processed: " + dFrameTdList.length);
+
+    var tdMarkerWrapper = document.createElement("div");
+    tdMarkerWrapper.className = "debug";
+    tdMarkerWrapper.id = "td-marker-wrapper";
+    dFrame.body.appendChild(tdMarkerWrapper);
+    mFrame.body.appendChild(tdMarkerWrapper.cloneNode(true));
+
+
+    for (let tdEle of dFrameTdList) {
+      if ( (tdEle.clientWidth !== 0 && tdEle.clientHeight !== 0) && (tdEle.clientWidth < 650) ) {
+
+        tdCount++
+
+        var tdPos = getPosition(tdEle, dFrame);
+
+        var tdMarker = document.createElement("div");
+        tdMarker.className = "td-marker";
+        tdMarker.style.top = (tdPos.y) + "px";
+        tdMarker.style.left = (tdPos.x) + "px";
+        tdMarker.dataset.number = tdCount;
+
+        var tdTextNode = document.createTextNode(tdEle.clientWidth + " x " + tdEle.clientHeight);
+
+        // tdMarker.style.width = (tdEle.clientWidth) + "px";
+        // tdMarker.style.height = (tdEle.clientHeight) + "px";
+        // var tdTextPos = document.createElement("div");
+        // tdTextPos.className = "td-dims";
+        // tdTextPos.appendChild(tdTextNode);
+        // tdMarker.appendChild(tdTextPos);
+
+        tdMarker.appendChild(tdTextNode);
+        dFrame.getElementById("td-marker-wrapper").appendChild(tdMarker);
+
+      }
+    }
+
+    console.groupEnd();
+
+
+    let mFrameTdList = mFrame.querySelectorAll("td");
+    var tdCount = 0
+
+    console.groupCollapsed("<td> Group (mFrame) - Total <td>'s Processed: " + mFrameTdList.length);
+
+    for (let tdEle of mFrameTdList) {
+      if ( (tdEle.clientWidth !== 0 && tdEle.clientHeight !== 0) && (tdEle.clientWidth < 650) ) {
+
+        console.log(tdEle);
+        console.log(tdEle.clientHeight);
+        console.log(tdEle.clientWidth);
+
+        tdCount++
+
+        var tdPos = getPosition(tdEle, mFrame);
+
+        var tdMarker = document.createElement("div");
+        tdMarker.className = "td-marker";
+        tdMarker.style.top = (tdPos.y) + "px";
+        tdMarker.style.left = (tdPos.x) + "px";
+        tdMarker.dataset.number = tdCount;
+
+        var tdTextNode = document.createTextNode(tdEle.clientWidth + " x " + tdEle.clientHeight);
+
+        // tdMarker.style.width = (tdEle.clientWidth) + "px";
+        // tdMarker.style.height = (tdEle.clientHeight) + "px";
+        // var tdTextPos = document.createElement("div");
+        // tdTextPos.className = "td-dims";
+        // tdTextPos.appendChild(tdTextNode);
+        // tdMarker.appendChild(tdTextPos);
+
+        tdMarker.appendChild(tdTextNode);
+        mFrame.getElementById("td-marker-wrapper").appendChild(tdMarker);
+
+      }
+    }
+
+    console.groupEnd();
+
+  }
+
 }
 
 
@@ -928,6 +1052,7 @@ function toggleGuides() {
   } else {
 
     var guidesStylingWrapper = dFrame.createElement("div");
+    guidesStylingWrapper.className = "debug";
     guidesStylingWrapper.id = "alignment-guides";
 
       var guidesStyling1 = dFrame.createElement("div");
@@ -972,27 +1097,39 @@ function toggleGuides() {
 /////////
 
 
-// var navOrb = document.createElement("div");
-// navOrb.className = "nav-orb orb dual-orb glyph";
-// orbsBottom.appendChild(navOrb);
-//
-//   var navOrbUp = document.createElement("div");
-//   navOrbUp.className = "nav-orb-up orb glyph";
-//   navOrbUp.addEventListener("click", navUp, false);
-//   navOrb.appendChild(navOrbUp);
-//
-//   var navOrbDown = document.createElement("div");
-//   navOrbDown.className = "nav-orb-down orb glyph";
-//   navOrbDown.addEventListener("click", navDown, false);
-//   navOrb.appendChild(navOrbDown);
-//
-//   function navUp() {
-//     // var linkPosition = getPosition(link);
-//   }
-//
-//   function navDown() {
-//
-//   }
+var navOrb = document.createElement("div");
+navOrb.className = "nav-orb orb dual-orb glyph";
+orbsBottom.appendChild(navOrb);
+
+  var navOrbUp = document.createElement("div");
+  navOrbUp.className = "nav-orb-up orb glyph";
+  navOrbUp.addEventListener("click", navUp, false);
+  navOrb.appendChild(navOrbUp);
+
+  var navOrbDown = document.createElement("div");
+  navOrbDown.className = "nav-orb-down orb glyph";
+  navOrbDown.addEventListener("click", navDown, false);
+  navOrb.appendChild(navOrbDown);
+
+  function navUp() {
+
+    var dFrameScroll = document.getElementById('desktop-view');
+    dFrameScroll.contentWindow.scrollTo(0,0);
+
+    var mFrameScroll = document.getElementById('mobile-view');
+    mFrameScroll.contentWindow.scrollTo(0,0);
+
+  }
+
+  function navDown() {
+
+    var dFrameScroll = document.getElementById('desktop-view');
+    dFrameScroll.contentWindow.scrollTo(0,dFrame.body.scrollHeight);
+
+    var mFrameScroll = document.getElementById('mobile-view');
+    mFrameScroll.contentWindow.scrollTo(0,mFrame.body.scrollHeight);
+
+  }
 
 
 //////////
@@ -1005,6 +1142,28 @@ var powerOrb = document.createElement("a");
 powerOrb.className = "power-orb orb glyph";
 powerOrb.href = document.URL + "?view=1";
 orbsTop.appendChild(powerOrb);
+
+
+//////////
+////
+////   Custom Orb
+////
+/////////
+
+var customOrb = document.createElement("div");
+customOrb.className = "custom-orb orb glyph";
+customOrb.id = "style-orb";
+customOrb.addEventListener("click", toggleCustom, false);
+orbsBottom.appendChild(customOrb);
+// var customToggle = false
+
+function toggleCustom() {
+  console.log(dFrame.body);
+  console.log(dFrame.getElementsByTagName("body")[0]);
+
+  console.log(dFrame.body.scrollTop);
+  console.log(dFrame.getElementsByTagName("body")[0].scrollTop);
+}
 
 
 
@@ -1243,7 +1402,7 @@ function plainText() {
 
         var insertText = "\""
 
-        insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText.replace(/(\t+|\n+)/gi, "")) + "\"\n\n";
+        insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText.replace(/(\t+|\n+)/gi, " ")) + "\"\n\n";
         insertText += module.querySelector("[data-sub-mod='author']").innerText.trim();
         insertText += grabText(module.querySelector("[data-sub-mod='profession']"));
 
@@ -1480,25 +1639,50 @@ preheaderWapper.innerHTML = preheader150;
 //// Match the words in the first 90 characters against the rest of the email. Return the total matches as a percentage and throw an error if it's below a certain threshold.
 ////
 ////
+console.groupCollapsed("Preheader Matching Log");
 
 var preheader90 = preheader.substring(0, 89).trim();
 
 var textMinusPreheader = preheader.replace(preheader90,"");
 
-var preheader90 = preheader90.split(" ");
+var preheader90Pattern = escapeRegExp(preheader90.replace(/\..+/gi, "."));
+    preheader90Pattern = new RegExp(preheader90Pattern, "gi");
 
-var preheaderTotalWords = preheader90.length;
+if ( !preheader90Pattern.test(textMinusPreheader) ) {
+  console.log("No exact match found, looking for individual matches. (failed regex: " + preheader90Pattern + ")");
 
-var totalPreheaderWordsMatched = 0;
+  preheader90 = preheader90.replace(/\b(in|and|a|the|of|or|is|to)\b/gi, "");
+  preheader90 = preheader90.replace(/(\!|\,|\.|\:)\s/gi, " ");
+  preheader90 = preheader90.trim();
+  preheader90 = preheader90.replace(/ +/gi, " ");
 
-for (var i = 0; i < preheaderTotalWords; i++) {
-  var matcher = new RegExp(preheader90[i], "gi");
-  if ( matcher.test(textMinusPreheader) ) {
-    totalPreheaderWordsMatched++
+  preheader90 = preheader90.split(" ");
+
+  var preheaderTotalWords = preheader90.length;
+
+  var totalPreheaderWordsMatched = 0;
+
+  console.log("Total words: " + preheaderTotalWords + " - Word list: " + preheader90);
+
+  for (var i = 0; i < preheaderTotalWords; i++) {
+
+    var matcher = escapeRegExp(preheader90[i]);
+        matcher = new RegExp("\\b" + preheader90[i] + "\\b"); // double escape special characters
+
+    if ( matcher.test(textMinusPreheader) ) {
+      totalPreheaderWordsMatched++;
+      console.log("Matched (" + totalPreheaderWordsMatched + "): " + preheader90[i] + " (regex: " + matcher + ")");
+    }
+
   }
+
+  var matchRating = Math.round(totalPreheaderWordsMatched/preheaderTotalWords*100);
+
+} else {
+  console.log("exact match! (successful regex: " + preheader90Pattern + ")");
+  var matchRating = 100;
 }
 
-var matchRating = Math.round(totalPreheaderWordsMatched/preheaderTotalWords*100);
 
 var preheaderMatchDiv = document.createElement("div");
     preheaderMatchDiv.className = "preheader-match-rating";
@@ -1507,16 +1691,16 @@ preheaderMatchDiv.appendChild(preheaderMatchTextNode);
 preheaderWapper.appendChild(preheaderMatchDiv);
 
 setTimeout(function() {
-  if ( matchRating < 80 && matchRating > 69  ) {
-    alertify.warning("Preheader text may not be updated!", 20);
-    preheaderMatchDiv.classList.add("warning");
-  } else if ( matchRating < 70 ) {
-    alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the words in the preheader match the rest of the email.", 0);
+
+  if ( matchRating < 95 ) {
+    alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.", 0);
     preheaderMatchDiv.classList.add("error");
   }
   preheaderMatchDiv.classList.add("ready");
+
 }, 500);
 
+console.groupEnd();
 
 
 //////////
@@ -1644,6 +1828,13 @@ var i = 0
 
 console.groupCollapsed("Links Group - Total Links Processed: " + linkList.length);
 
+// Create the wrapper for the link-markers.
+
+var linkMarkerWrapper = document.createElement("div");
+linkMarkerWrapper.className = "debug";
+linkMarkerWrapper.id = "link-marker-wrapper";
+dFrame.body.appendChild(linkMarkerWrapper);
+
 for (let link of linkList) {
 
   i++
@@ -1678,10 +1869,10 @@ for (let link of linkList) {
 
     console.groupCollapsed("[" + i + "] " + linkHref);
     console.log(link);
-    console.log( getPosition(link) );
+    console.log( getPosition(link, dFrame) );
     console.groupEnd();
 
-    var linkPosition = getPosition(link);
+    var linkPosition = getPosition(link, dFrame);
 
     link.classList.add("marked");
 
@@ -1691,7 +1882,7 @@ for (let link of linkList) {
     linkMarker.style.left = (linkPosition.x - 10) + "px";
     linkMarker.dataset.href = linkHref;
     linkMarker.dataset.number = i;
-    dFrame.body.appendChild(linkMarker);
+    dFrame.getElementById("link-marker-wrapper").appendChild(linkMarker);
 
     var linkErrorLog = document.createElement("div");
     linkErrorLog.className = "link-errors";
@@ -1756,7 +1947,7 @@ for (let link of linkList) {
     var medbridgeWwwLink
     var medbridgeOrMassageLink
 
-    if ( /\/\/.+?\.?medbridge(ed|education)\.com/gi.test(linkHref) ) {
+    if ( /\/\/.+?\.?medbridge(ed|education|massage)\.com/gi.test(linkHref) ) {
       medbridgeDomainLink = true;
     } else {
       medbridgeDomainLink = false;
@@ -1787,56 +1978,22 @@ for (let link of linkList) {
     }
 
 
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
 
-    ////
-    // Is the module # in the utm correct?
-    ////
-    if ( (emailSubType === "ns" || emailSubType === "sub") && !outsideOrg && medbridgeDomainLink ) {
-
-      var moduleNumber = link.closest("[data-module-count]");
-
-      if ( elExists(moduleNumber) ) {
-
-        var moduleNumber = moduleNumber.getAttribute("data-module-count");
-        var moduleNumberMatch = new RegExp(moduleNumber, "gi");
-
-        if ( /mod\d/gi.test(linkHref) ) {
-
-          if ( !moduleNumberMatch.test(linkHref) ) {
-            console.log( "no match: " + !moduleNumberMatch.test(linkHref) );
-            createLinkErrorRow(linkMarker, "wrong mod #, use " + "mod" + moduleNumber);
-          }
-
-        } else {
-
-          createLinkErrorRow(linkMarker, "missing mod #, use " + "mod" + moduleNumber);
-
-        }
-      }
-    }
-
-
-
-    ////
-    // Is color present in the style attribute?
-    // Ignore if there's no text, or it's an image (unless that image has alt text).
-    ////
-
-        // Get the img child first.
-        if ( elExists(link.getElementsByTagName('img')[0]) ) {
-          var linkedImg = link.getElementsByTagName('img')[0];
-        }
-
-    if ( link.style.color === '' && (link.textContent !== '' || linkedImg.alt !== '' ) ) {
-      createLinkErrorRow(linkMarker, "missing color in style attribute");
-    }
 
     ////
     // Validate URL
     // Ignore valid URLs, valid mailto:, and valid MailChimp links ( *|text|* converted to *%7Ctext%7C* )
     // http://stackoverflow.com/a/15734347/556079
+    // http://stackoverflow.com/a/3809435/556079
+    // Unused - http://stackoverflow.com/questions/161738/what-is-the-best-regular-expression-to-check-if-a-string-is-a-valid-url
     ////
-    if ( !/^(http|https):\/\/[^ "]+$/.test(linkHref) && !/^mailto:(.+?@.+?\..+|\*\|)/.test(linkHref) && !/\*%7C.+?%7C\*/.test(linkHref) ) {
+    // WTF IS THIS ===  !/^(http|https):\/\/[^ "]+$/.test(linkHref)
+
+    if ( !/^mailto:(.+?@.+?\..+|\*\|)/.test(linkHref) && !/\*%7C.+?%7C\*/.test(linkHref) && !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(linkHref) ) {
       createLinkErrorRow(linkMarker, "invalid URL scheme");
     }
 
@@ -1853,8 +2010,8 @@ for (let link of linkList) {
     }
 
     ////
-    // DON'T USE UTM - outsideOrg and Sale emails should not have utms
-    if ( /utm_content/gi.test(linkHref) && ( outsideOrg || emailSale ) ) {
+    // DON'T USE UTM - outsideOrg, off domain urls, and Sale emails should not have utms
+    if ( /utm_content/gi.test(linkHref) && ( !medbridgeDomainLink || outsideOrg || emailSale ) ) {
       createLinkErrorRow(linkMarker, "remove utm");
     }
 
@@ -1870,12 +2027,71 @@ for (let link of linkList) {
       }
 
     }
-    if ( emailSubType === "hs" )
+
+
+
+
+    ////
+    // Is the module # in the utm correct?
+    ////
+
+    // console.error("0");
+    //
+    // console.log("emailSubType: " + emailSubType);
+    // console.log("outsideOrg: " + outsideOrg);
+    // console.log("medbridgeDomainLink: " + medbridgeDomainLink);
+
+    if ( (emailSubType === "ns" || emailSubType === "sub") && !outsideOrg && medbridgeDomainLink ) {
+
+      var moduleNumber = link.closest("[data-module-count]");
+
+      if ( elExists(moduleNumber) ) {
+
+        var moduleNumber = moduleNumber.getAttribute("data-module-count");
+        var moduleNumberMatch = new RegExp("utm_content=mod" + moduleNumber, "gi");
+
+        if ( /utm_content=mod\d/gi.test(linkHref) ) {
+
+          if ( !moduleNumberMatch.test(linkHref) ) {
+            // console.log( "no match: " + !moduleNumberMatch.test(linkHref) );
+            createLinkErrorRow(linkMarker, "wrong mod #, use " + "mod" + moduleNumber);
+          } else {
+            // console.log( "match: " + !moduleNumberMatch.test(linkHref) );
+          }
+
+        } else {
+
+          createLinkErrorRow(linkMarker, "missing mod #, use " + "mod" + moduleNumber);
+
+        }
+      }
+    }
+
+    ////
+    // Is color present in the style attribute?
+    // Ignore if there's no text, or it's an image (unless that image has alt text).
+    ////
+
+        // Get the img child first.
+        if ( elExists(link.getElementsByTagName('img')[0]) ) {
+          var linkedImg = link.getElementsByTagName('img')[0];
+        }
+
+    if ( link.style.color === '' && (link.textContent !== '' || linkedImg.alt !== '' ) ) {
+      createLinkErrorRow(linkMarker, "missing color in style attribute");
+    }
+
+
+    ////
+    // Links to MedBridge in -ns emails need to use a marketing URL
+    if ( (emailSubType === "ns" && !outsideOrg && emailDisc !== "ent") && medbridgeDomainLink && ( !/\.com\/trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) )  ) {
+      createLinkErrorRow(linkMarker, "use a marketing URL");
+    }
 
     ////
     // Check for old fashioned marketing URLS in sub or outsideOrg
-    if ( (outsideOrg || emailSubType === "sub" ) && /\.com\/(jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)-.+?(-(pt|at|ot|slp|fox|dr|hs)?)?.+\//gi.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "marketing url used");
+    if ( (outsideOrg || emailSubType === "sub" ) && medbridgeDomainLink && /\.com\/trk\-/gi.test(linkHref) ) {
+      createLinkErrorRow(linkMarker, "do not use marketing url");
     }
 
     ////
@@ -1954,12 +2170,12 @@ for (let link of linkList) {
     ////
     // Discipline Check
 
-    if ( emailDisc !== null ) {
+    if ( emailDisc !== null && medbridgeDomainLink && !blogLink && !/\/courses\/details\//gi.test(linkHref) ) {
 
       if ( emailDisc !== "slp" && (/#\/?speech-language-pathology/gi.test(linkHref) || /-slp(\-|\/|\?)/gi.test(linkHref)) ) {
         createLinkErrorRow(linkMarker, "wrong discipline");
       }
-      if ( emailDisc !== "pt" && (/#\/?physical-therapy/gi.test(linkHref) || /-pt(\-|\/|\?)/gi.test(linkHref)) ) {
+      if ( ( emailDisc !== "pt" && emailDisc !== "other" && emailDisc !== "dr" ) && (/#\/?physical-therapy/gi.test(linkHref) || /-pt(\-|\/|\?)/gi.test(linkHref)) ) {
         createLinkErrorRow(linkMarker, "wrong discipline");
       }
       if ( emailDisc !== "at" && (/#\/?athletic-training/gi.test(linkHref) || /-at(\-|\/|\?)/gi.test(linkHref)) ) {
@@ -2047,7 +2263,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Athletic Training - AT
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA)/g,
+    find: /(ASHA|\bAOTA|Physical Therapy)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -2056,7 +2272,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Occupational Therapy - OT
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|BOC\-Approved)/g,
+    find: /(ASHA|BOC\-Approved|Physical Therapy)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -2065,7 +2281,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Speech Language Pathology - SLP
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(\bAOTA|BOC\-Approved)/g,
+    find: /(\bAOTA|BOC\-Approved|Physical Therapy)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -2074,7 +2290,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Massage
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|BOC\-Approved)/g,
+    find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -2094,6 +2310,13 @@ findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
   wrapClass: "text-error"
 });
 
+// All (case sensitive)
+findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+  find: /\b[Mm]edbridge( |\.|\!)/g,
+  wrap: 'span',
+  wrapClass: "text-error"
+});
+
 // Sub
 if ( emailSubType === "sub" ) {
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
@@ -2106,7 +2329,7 @@ if ( emailSubType === "sub" ) {
 // NS
 if ( emailSubType === "ns" ) {
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(Start Now|in (an|your) annual|Register Now)/gi,
+    find: /(Start Now|in (an|your) annual|Register Now|Refer(\-| )a(\-| )Friend)/gi,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -2115,13 +2338,47 @@ if ( emailSubType === "ns" ) {
 // outsideOrg
 if ( outsideOrg ) {
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /additional cost/gi,
+    find: /additional cost|Refer(\-| )a(\-| )Friend/gi,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+}
+
+// emailAnySale
+if ( !emailAnySale ) {
+  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+    find: /\$200/gi,
     wrap: 'span',
     wrapClass: "text-error"
   });
 }
 
 
+////////////
+////////////
+////////////
+//
+//    Alerts!!
+//
+////////////
+////////////
+////////////
+
+if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrame.body.textContent) ) {
+  alertify.error("Refer a Friend<div>Remember update the MailChimp database and use conditional statements to only show Refer a Friend content to eligible contacts.</div>", 0);
+}
+
+
+// if ( !elExists(dFrame.querySelector("[data-module-wrapper]")) ) {
+//   alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
+// }
+// if ( emailSubType === "ns" && ) {
+//   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+//     find: /(Start Now|in (an|your) annual|Register Now|Refer(\-| )a(\-| )Friend)/gi,
+//     wrap: 'span',
+//     wrapClass: "text-error"
+//   });
+// }
 
 
 
@@ -2180,14 +2437,25 @@ if ( getParameterByName("guides") === "1" ) {
   //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
   dFrame.getElementsByTagName('html')[0].contentEditable = 'true';
   dFrame.getElementsByTagName('body')[0].focus();
-  mFrame.getElementsByTagName('html')[0].contentEditable = 'true';
-  mFrame.getElementsByTagName('body')[0].focus();
 
   // For some reason, if contenteditable is turned off too quickly, the red squiggles are sometimes misaligned with the text they are indicating as incorrectly spelled. For this reason we're using a setTimeout here.
   setTimeout(function() {
     dFrame.getElementsByTagName('html')[0].contentEditable = 'false';
+
+    mFrame.getElementsByTagName('html')[0].contentEditable = 'true';
+    mFrame.getElementsByTagName('body')[0].focus();
+  }, 200);
+
+  setTimeout(function() {
     mFrame.getElementsByTagName('html')[0].contentEditable = 'false';
-  }, 100);
+
+    document.querySelector('.mod-preheader .mod-body').contentEditable = 'true';
+    document.querySelector('.mod-preheader .mod-body').focus();
+  }, 400);
+
+  setTimeout(function() {
+    document.querySelector('.mod-preheader .mod-body').contentEditable = 'false';
+  }, 600);
 
 
 
