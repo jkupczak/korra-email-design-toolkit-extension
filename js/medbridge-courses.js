@@ -1,4 +1,4 @@
-console.warn("medbridge.js loaded");
+console.warn("medbridge-courses.js loaded");
 
 // function cancelClick() {
 //   return false;
@@ -39,7 +39,10 @@ console.warn("medbridge.js loaded");
     var observerLoad = new MutationObserver(function(mutations) {
         console.log("observerLoad activated");
         applyCourseTool();
+
+        console.groupCollapsed("Observer Findings");
         mutations.forEach(function(mutation) { console.log("observer found this: " + mutation.type); });
+        console.groupEnd();
     });
     // pass in the target node, as well as the observer options
     observerLoad.observe(targetLoad, config);
@@ -62,6 +65,8 @@ console.warn("medbridge.js loaded");
 
     // Run this function to check each relevant div in the code and then add the proper html to it
     function applyCourseTool() {
+
+      console.groupCollapsed("applyCourseTool() function");
 
       let courseList = document.querySelectorAll('.row > .ng-scope > .ng-scope > .ng-scope .course-listing');
       for (let course of courseList) {
@@ -107,6 +112,7 @@ console.warn("medbridge.js loaded");
 
 
       }
+      console.groupEnd();
     };
 
 

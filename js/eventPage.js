@@ -2,6 +2,27 @@
 // NO DOM ACCESS
 // !!!!!!!!!!!!!
 
+// ================================================================
+//
+// Event Pages: https://developer.chrome.com/extensions/event_pages
+//
+// ================================================================
+//
+// Event pages go 'inactive' after about 15 seconds (approx. based on my tests) if "persistent": false is set in the manifest.
+// Becoming inactive is what separates event pages from background pages, the idea is to free up memory so that Chrome doesn't chug.
+//
+// An event page will become active when any of these things happen:
+//
+//   - The app or extension is first installed or is updated to a new version (in order to register for events).
+//   - The event page was listening for an event, and the event is dispatched.
+//   - A content script or other extension sends a message.
+//   - Another view in the extension (for example, a popup) calls runtime.getBackgroundPage.
+//
+// Code that runs at regular intervals using setInterval() will not work in an eventpage once it has gone inactive.
+// Instead, it's best to use the Chrome Alarms API: https://developer.chrome.com/extensions/alarms.html
+//
+//
+
 
 
 // Log all data from chrome.storage.sync
@@ -13,6 +34,82 @@ function logChromeStorage() {
 }
 
 logChromeStorage();
+
+
+
+//==============================
+//
+// MailChimp Alert Notifications
+//
+// Every 10 minutes check chrome.storage for the amount of pending drafts on MailChimp. If it's greater than 0, push a desktop notification.
+//
+//==============================
+//
+// chrome.storage - http://stackoverflow.com/a/14533446/556079
+// Notifications - http://stackoverflow.com/a/13328513/556079
+// Alarms - https://developer.chrome.com/extensions/alarms
+//
+//==============================
+
+// Check the time. Display alerts more frequently after 12 PM.
+function getCurrentHour() {
+
+  var currentHour = new Date().getHours();
+
+  if ( currentHour >= 12 ) {
+    var alarmTime = 5;
+  } else {
+    var alarmTime = 15;
+  }
+
+  console.log("The current hour is " + currentHour + ".");
+
+  // Create the alarm:
+  chrome.alarms.create('mailchimp-draft-reminder', {
+    periodInMinutes: alarmTime
+  });
+}
+
+getCurrentHour();
+
+
+
+
+chrome.alarms.onAlarm.addListener(function(alarm) {
+  if (alarm.name == 'mailchimp-draft-reminder') {
+    mailchimpCheckAndAlert();
+  }
+});
+
+
+var totalNotificationsSent;
+
+function mailchimpCheckAndAlert() {
+
+  logChromeStorage();
+
+  getCurrentHour();
+
+  chrome.storage.sync.get("pendingDrafts", function (obj) {
+
+    var draftsFromStorage = obj.pendingDrafts;
+
+    if ( draftsFromStorage > 0 ) {
+
+      mailchimpDraftsNotification(draftsFromStorage);
+      totalNotificationsSent++
+      console.log("Notifications Sent: " + totalNotificationsSent);
+
+    }
+
+  });
+
+  console.warn("10 minutes remaining until the next notification.");
+
+}
+
+// Attempt to fire a notification when the browser or extension are first loaded.
+// mailchimpCheckAndAlert();
 
 
 function mailchimpDraftsNotification(draftsFromStorage) {
@@ -49,49 +146,10 @@ function mailchimpDraftsNotification(draftsFromStorage) {
 
 
 
-// chrome.storage - http://stackoverflow.com/a/14533446/556079
-// Notifications - http://stackoverflow.com/a/13328513/556079
-// Every 10 minutes check chrome.storage for the amount of pending drafts on MailChimp. If it's greater than 0, push a desktop notification.
-
-
-console.warn("10 minutes remaining until the next notification.");
-
-setTimeout( function() {
-  console.warn("5 minutes remaining until the next notification.")
-}, 300000);
-
-
-var totalNotificationsSent = 0;
-
-setInterval( function() {
-
-  logChromeStorage();
-
-  chrome.storage.sync.get("pendingDrafts", function (obj) {
-
-    var draftsFromStorage = obj.pendingDrafts;
-
-    if ( draftsFromStorage > 0 ) {
-
-      mailchimpDraftsNotification(draftsFromStorage);
-      totalNotificationsSent++
-      console.log("Notifications Sent: " + totalNotificationsSent);
-
-      setTimeout( function() {
-        console.warn("5 minutes remaining until the next notification.")
-      }, 300000);
-
-    }
-
-  });
-
-// }, 9000); // 9 seconds
-  //  }, 90000); // 90 seconds
-}, 600000); // 10 minutes
-
-
-
-
+// =================================
+// =================================
+// =================================
+// =================================
 
 
 //
@@ -100,8 +158,6 @@ setInterval( function() {
 //
 
 var bkg = chrome.extension.getBackgroundPage();
-// bkg.console.log('foo');
-
 
 
 chrome.runtime.onMessage.addListener(
@@ -113,13 +169,27 @@ chrome.runtime.onMessage.addListener(
                 "from a content script:" + sender.tab.url :
                 "from the extension");
 
-    // Change tab URL to a local version of this Dropbox file.
+
+    // Check if the message sent is a url beginning with "file:"
+    // Change current tab URL to a local version of this Dropbox file.
     // Chrome security settings do not allow pages to navigate to local files.
     // Using eventpages allows you to get around this limitation.
-    if ( /^file:.+\//gi.test(request.greeting) ) { // Check if the message sent is a url beginning with "file:"
+    if ( /^file:.+\//gi.test(request.greeting) ) {
   		chrome.tabs.update({
   		     url: request.greeting
   		});
+    }
+
+    if ( /^blogStatus/gi.test(request.greeting) ) {
+
+      console.log(request.greeting);
+
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {greeting: request.greeting}, function(response) {
+          console.log(response.farewell);
+        });
+      });
+
     }
 
 

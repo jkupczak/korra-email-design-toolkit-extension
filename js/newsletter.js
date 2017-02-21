@@ -1163,6 +1163,25 @@ function toggleCustom() {
 
   console.log(dFrame.body.scrollTop);
   console.log(dFrame.getElementsByTagName("body")[0].scrollTop);
+
+  var articleNumber = "1";
+  sessionStorage.setItem('article' + articleNumber + "status", "protected");
+  sessionStorage.setItem('article' + articleNumber + "type", "pearl");
+
+  console.log(+ new Date());
+
+  var currentdate = new Date();
+  var datetime = "Last Sync: " + currentdate.getDate() + "/"
+                  + (currentdate.getMonth()+1)  + "/"
+                  + currentdate.getFullYear() + " @ "
+                  + currentdate.getHours() + ":"
+                  + currentdate.getMinutes() + ":"
+                  + currentdate.getSeconds();
+
+  console.log(currentdate);
+  console.log(datetime);
+  console.log(currentdate.getHours());
+  console.log(new Date().getHours());
 }
 
 
@@ -1977,12 +1996,18 @@ for (let link of linkList) {
       blogLink = false;
     }
 
+    var gaLink
+    if ( medbridgeDomainLink && !outsideOrg && !emailSale ) {
+      gaLink = true;
+    } else {
+      gaLink = false;
+    }
+
 
     ///////////////////////
     ///////////////////////
     ///////////////////////
     ///////////////////////
-
 
     ////
     // Validate URL
@@ -1997,21 +2022,131 @@ for (let link of linkList) {
       createLinkErrorRow(linkMarker, "invalid URL scheme");
     }
 
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+
+
+    ////-----------------------------////
+    ////
+    // Check if it's a link to the blog.
+    // Get its "Protected" status and ifs type (pearl or blog).
+
+    // To-Do Notes:
+    //
+    // Should I modify so that it only re-checks if I click something?
+    // Should I consider looking the date in this files URL to help decide IF I should check?
+    // Run the check again AFTER the postMessage comes back.
+    // Do not fire alerts until I've determined that no more postMessages are comeing in from the blog.
+    // Alerts should reference which article is protected.
+    // What if when I land on the blog page and it's protected, and I haven't logged in yet to view the article?
+    //  - Return a message where the authorType is ambiguous. Deal with it when you read it back.
+    //
+    // Definitely create a button to FORCE a recheck of all linked articles. Just in case!
+    //
+    // Reminders:
+    // A blog's author type should never change. As long as it's been set in sessionstorage, I don't need to check the blog more than once for this data.
+    // Once unprotected, articles should never go protected. So I don't think I need to bother checking.
+    //
+
+    if ( medbridgeDomainLink && /(blog\/2|\-article)/gi.test(linkHref) ) {
+
+      var isBlogLoaded = false;
+
+
+      if ( /after_affiliate_url/gi.test(linkHref) ) {
+        var blogLinkToCheck = linkHref.replace(/\&.+/gi, "");
+            blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?after_affiliate_url\=\/?/gi, "");
+      } else {
+        var blogLinkToCheck = linkHref.replace(/\/?\?.+/gi, "");
+            blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?\//gi, "");
+      }
+
+      console.log(blogLinkToCheck);
+
+      // Check if this URL is already in sessionStorage
+      blogStatus = sessionStorage.getItem(blogLinkToCheck);
+
+      // Run a check on this link using the object we found in sessionStorage.
+      if ( blogStatus ) {
+
+        // blogStatus exists in sessionStorage. Check the link using data from sessionStorage.
+        var blogStatusFromStorage = sessionStorage.getItem(blogLinkToCheck).split(",");
+        console.log(blogStatusFromStorage);
+
+        checkArticleLink(blogStatusFromStorage);
+
+        if ( blogStatusFromStorage[2] === "protected" ) {
+          // Article is still protected, open an iframe and check again.
+          checkTheBlog(linkHref);
+        }
+
+      } else {
+        console.error("blog status object not found in sessionStorage");
+        checkTheBlog(linkHref);
+      }
+
+    }
+
+
+    ///////////
+    //
+    //  Function to check the blog for data on an article.
+    //
+    ///////////
+    function checkTheBlog(linkHref) {
+
+      // Check if an iframe already exists with this URL by iterating through all relevant iframes in the DOM.
+      let blogCheckList = document.querySelectorAll("iframe.blog-check");
+      for (let blogIframe of blogCheckList) {
+
+        console.log("blogIframe.getAttribute('src') = " + blogIframe.getAttribute("src"));
+        console.log("isBlogLoaded = " + isBlogLoaded);
+
+        if ( blogIframe.getAttribute("src").replace(/[?&]blog\-check\=.+/gi, "") === linkHref ) {
+          isBlogLoaded = true;
+          console.log("if isBlogLoaded = " + isBlogLoaded);
+        } else {
+          console.log("else isBlogLoaded = " + isBlogLoaded);
+        }
+
+      }
+
+      if ( isBlogLoaded === false ) {
+        console.log("if isBlogLoaded = " + isBlogLoaded);
+
+        // Create an iframe for this link
+        console.log("Creating iframe for link " + i);
+        var blogCheck = document.createElement("iframe");
+            blogCheck.src = linkHref + "&blog-check=" + i;
+            blogCheck.className = "blog-check blog-check-" + i;
+            blogCheck.id = "iframe-" + i;
+        document.body.appendChild(blogCheck);
+
+      } else {
+        console.log("else isBlogLoaded = " + isBlogLoaded);
+      }
+    }
+
+    ////-----------------------------////
     ////
     // Every link needs a target attribute.
     if ( !link.hasAttribute("target") ) {
       createLinkErrorRow(linkMarker, "missing target attribute");
     }
 
+    ////-----------------------------////
     ////
     // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( medbridgeWwwLink && !/utm_content/gi.test(linkHref) && (!outsideOrg && !emailSale) ) {
+    if ( gaLink && !/utm_content/gi.test(linkHref) ) {
       createLinkErrorRow(linkMarker, "missing utm");
     }
 
+    ////-----------------------------////
     ////
     // DON'T USE UTM - outsideOrg, off domain urls, and Sale emails should not have utms
-    if ( /utm_content/gi.test(linkHref) && ( !medbridgeDomainLink || outsideOrg || emailSale ) ) {
+    if ( /utm_content/gi.test(linkHref) && !gaLink ) {
       createLinkErrorRow(linkMarker, "remove utm");
     }
 
@@ -2041,7 +2176,7 @@ for (let link of linkList) {
     // console.log("outsideOrg: " + outsideOrg);
     // console.log("medbridgeDomainLink: " + medbridgeDomainLink);
 
-    if ( (emailSubType === "ns" || emailSubType === "sub") && !outsideOrg && medbridgeDomainLink ) {
+    if ( gaLink ) {
 
       var moduleNumber = link.closest("[data-module-count]");
 
@@ -2460,7 +2595,56 @@ if ( getParameterByName("guides") === "1" ) {
 
 
 
+    //////////
 
+    chrome.runtime.onMessage.addListener(
+      function(request, sender, sendResponse) {
+        console.log(request.greeting);
+
+        var blogStatusReply = request.greeting.split("|");
+        console.log(blogStatusReply);
+
+        var blogUrlChecked = document.querySelector("#iframe-" + blogStatusReply[4]).getAttribute("src").replace(/[?&]blog\-check.+/gi, "");
+
+        if ( /after_affiliate_url/gi.test(blogUrlChecked) ) {
+          blogUrlChecked = blogUrlChecked.replace(/\&.+/gi, "");
+        } else {
+          blogUrlChecked = blogUrlChecked.replace(/\?.+/gi, "");
+        }
+        blogUrlChecked = blogUrlChecked.replace(/^https?\:\/\/.+?\//i, "");
+        blogUrlChecked = blogUrlChecked.replace(/\/$/i, "");
+
+        console.log(blogUrlChecked);
+        console.log(blogStatusReply[1] + "|" + blogUrlChecked);
+
+        sessionStorage.setItem(blogUrlChecked, blogStatusReply);
+
+        destroy(document.querySelector("#iframe-" + blogStatusReply[4]));
+
+      }
+    );
+
+
+    function checkArticleLink(obj) {
+      var blogStatusFromStorage = obj;
+      // Check Protects/Unprotected
+      if ( blogStatusFromStorage[2] === "protected" ) {
+        createLinkErrorRow(linkMarker, "article is protected");
+        alertify.error("An Article is Protected<div>Remember to unprotect all articles before sending out the newsletter.</div>", 0);
+      }
+      // Check Pearl vs Blog
+      if ( gaLink ) {
+        if ( blogStatusFromStorage[3] === "blogger" && !/\-blog/i.test(linkHref) ) {
+          createLinkErrorRow(linkMarker, "add 'blog' to utm");
+        } else if ( blogStatusFromStorage[3] === "pearl" && !/\-pearl/i.test(linkHref) ) {
+          createLinkErrorRow(linkMarker, "add 'pearl' to utm");
+        }
+      }
+    }
+
+
+
+///////
 
 document.querySelector("html").classList.toggle("errors");
 console.log("// End of script")

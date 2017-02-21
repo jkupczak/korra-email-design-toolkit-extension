@@ -1,3 +1,15 @@
+.blog-check {
+  z-index:-1;
+  width:1px;
+  height:1px;
+  position:absolute;
+  top:0;
+  left:0;
+  border:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
 html.powered-up, html.powered-up body {
   overflow:hidden;
   /*background:#26272d;*/

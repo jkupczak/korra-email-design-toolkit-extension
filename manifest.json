@@ -53,7 +53,8 @@
     "http://*/*",
     "https://*/*",
     "*://*.google.com/*",
-    "notifications"
+    "notifications",
+    "alarms"
   ],
   "icons": {
     "16": "icon.png",
@@ -73,6 +74,11 @@
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/normalize.css", "css/alertify.css", "css/alertify.medbridge.css", "css/tingle.css", "css/newsletter_styles.css"],
       "js": ["js/alertify.js", "js/Dropbox-sdk.min.js", "js/findAndReplaceDOMText.js", "js/tingle.js", "js/newsletter.js"]
+    },
+    { //Newsletter-Blog
+      "matches": ["*://*.medbridgeeducation.com/blog/*"],
+      "js": ["js/medbridge-blog.js"],
+      "all_frames": true
     },
     { //Email-Labeling_Favicons_and_Title_bars
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
@@ -94,11 +100,11 @@
       "css": ["css/alertify.css", "css/alertify.medbridge.css", "css/mailchimp_styles.css"],
       "js": ["js/alertify.js", "js/mailchimp.js"]
     },
-    { //MedBridge Homepage
-      "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*"],
-      "exclude_matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
+    { //MedBridge-Courses
+      "matches": ["*://*.medbridgeeducation.com/courses/*"],
+      "exclude_globs": ["*://*.medbridgeeducation.com/courses/details/*"],
       "css": ["css/tingle.css", "css/medbridge_styles.css"],
-      "js": ["js/tingle.js", "js/medbridge.js"]
+      "js": ["js/tingle.js", "js/medbridge-courses.js"]
     },
     { // MedBridge Admin Panel
       "matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
@@ -116,15 +122,15 @@
     },
     { //miasf
       "matches": ["*://miasf-member-mgt-center.wildapricot.org/widget/directory/*"],
-      "js": ["tonya/miasf-1.js"]
+      "js": ["js/tonya/miasf-1.js"]
     },
     { //miasf
       "matches": ["*://miasf-member-mgt-center.wildapricot.org/widget/Sys/*"],
-      "js": ["tonya/miasf-2.js"]
+      "js": ["js/tonya/miasf-2.js"]
     },
     { //NMDA
       "matches": ["*://www.nmdaonline.com/member-directory/*"],
-      "js": ["tonya/nmda.js"]
+      "js": ["js/tonya/nmda.js"]
     }
   ]
 
