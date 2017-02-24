@@ -24,6 +24,7 @@
 
   "web_accessible_resources": [
     "medbridge-chrome-extension.woff",
+    "fonts/*",
     "favicons/*",
     "img/*",
     "js/*",
@@ -31,7 +32,7 @@
   ],
 
   "description": "Designed to help automate everyday tasks and provide additional styling and visual clues that can assist designers at a glance. Upgrades the user experience on Dropbox.com, MedBridgeEducation.com, MailChimp, Amazon Web Services, Gmail, and with files saved to the local harddrive.",
-  "version": "1.3",
+  "version": "1.4",
 
   "browser_action": {
     "default_icon": "icon.png",
@@ -73,7 +74,7 @@
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/normalize.css", "css/alertify.css", "css/alertify.medbridge.css", "css/tingle.css", "css/newsletter_styles.css"],
-      "js": ["js/alertify.js", "js/Dropbox-sdk.min.js", "js/findAndReplaceDOMText.js", "js/tingle.js", "js/newsletter.js"],
+      "js": ["js/libs/alertify.js", "js/libs/Dropbox-sdk.min.js", "js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/newsletter.js"],
       "run_at": "document_end"
     },
     { //Newsletter-Blog
@@ -99,13 +100,13 @@
     { //MailChimp
       "matches": ["*://*.mailchimp.com/*"],
       "css": ["css/alertify.css", "css/alertify.medbridge.css", "css/mailchimp_styles.css"],
-      "js": ["js/alertify.js", "js/mailchimp.js"]
+      "js": ["js/libs/alertify.js", "js/mailchimp.js"]
     },
     { //MedBridge-Courses
       "matches": ["*://*.medbridgeeducation.com/courses/*"],
       "exclude_globs": ["*://*.medbridgeeducation.com/courses/details/*"],
       "css": ["css/tingle.css", "css/medbridge_styles.css"],
-      "js": ["js/tingle.js", "js/medbridge-courses.js"]
+      "js": ["js/libs/tingle.js", "js/medbridge-courses.js"]
     },
     { // MedBridge Admin Panel
       "matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],

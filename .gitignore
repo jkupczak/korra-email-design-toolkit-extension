@@ -1,0 +1,4 @@
+/node_modules
+/dist
+.idea
+secrets.txt

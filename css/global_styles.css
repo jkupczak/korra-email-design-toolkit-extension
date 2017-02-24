@@ -2,7 +2,8 @@
 
 @font-face {
   font-family: "medbridge-chrome-extension";
-  src: url(chrome-extension://__MSG_@@extension_id__/medbridge-chrome-extension.woff);
+  src: url(chrome-extension://__MSG_@@extension_id__/fonts/medbridge-chrome-extension.woff);
+  /*src: url(chrome-extension://__MSG_@@extension_id__/medbridge-chrome-extension.woff);*/
   font-weight: normal;
   font-style: normal;
 }

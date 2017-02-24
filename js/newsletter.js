@@ -8,72 +8,83 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  TO-DO
+//  TO-DO LIST
+//  ==========
 //
-//  Use https://github.com/CodeSeven/toastr
+//  ## Toggle View - Padding and Margin ---
+//    - Can I generate divs that show margin and padding?
 //
-//  Can I generate divs that show margin and padding?
+//  ## Mobile View ---
+//    - Add multiple width options for the mFrame. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
+//    - Remove "Portrait" and "Landscape", replace with just the width names (and/or device names)
+//    - 320px | 360px | 480px | More
 //
-//  Mobile View ---
-//  Add multiple width options for the mFrame. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
-//  Remove "Portrait" and "Landscape", replace with just the width names (and/or device names)
-//  320px | 360px | 480px | More
+//  ## Link Markers ---
+//    - Create a 'warning' class in addition to the 'error' class for link-markers. If an email is very old, mark link errors as warnings.
+//    - Unlike errors, warnings should be hidden until you hover over the link.
+//    - Create a button that will toggle/show all link-markers regardless of error/warning status.
 //
-//  Link Markers ---
-//  Create a 'warning' class in addition to the 'error' class for link-markers. If an email is very old, mark link errors as warnings.
-//  Unlike errors, warnings should be hidden until you hover over the link.
-//  Create a button that will toggle/show all link-markers regardless of error/warning status.
+//  ## TD Markers ---
+//    - Give them "levels" to show how deep they are.
+//    - Create a toggle that cycles through the different levels so that you can see more clearly.
+//    - Hide all inactive markers, or simply make them very low opacity.
 //
-//  TD Markers ---
-//  Give them "levels" to show how deep they are.
-//  Create a toggle that cycles through the different levels so that you can see more clearly.
-//  Hide all inactive markers, or simply make them very low opacity.
+//  ## Investigate Using the WordPress API ---
+//    - The current method of checking for protected status is hacky. Considering changing it in the future.
 //
-//  Investigate Using the WordPress API ---
-//  The current method of checking for protected status is hacky. Considering changing it in the future.
+//  ## Image Guidelines ---
+//    - Create toggle that will add PhotoShop-esque guidelines to all or individual images in the email.
+//    - This will help show any alignment issues that may exist.
 //
-//  Image Guidelines ---
-//  Create toggle that will add PhotoShop-esque guidelines to all or individual images in the email.
-//  This will help show any alignment issues that may exist.
+//  ## Swap Font Stack ---
+//    - Simulate what the email will look like in email clients that do not support @font-face or have Helvetica.
+//    - Remove all instances of "Roboto" from font-family: declarations, and then Helvetica.
 //
-//  Swap Font Stack ---
-//  Simulate what the email will look like in email clients that do not support @font-face or have Helvetica.
-//  Remove all instances of "Roboto" from font-family: declarations, and then Helvetica.
+//  ## Modules Menu ---
+//    - Give each module its own mini-menu to hide, duplicate, re-order and edit.
 //
-//  Modules Menu ---
-//  Give each module its own mini-menu to hide, duplicate, re-order and edit.
+//  ## Tag Checker ---
+//    - Search for unsupported tags like <strong> and recommend replacements like <b>.
 //
-//  Tag Checker ---
-//  Search for unsupported tags like <strong> and recommend replacements like <b>.
-//
-//  Link Checker --
+//  ## Link Checker --
 //    - Add support for link status Like how mail-tester.com does it.
 //        -They show a status report for each link like [302 - Redirection : Found] and [200 - Success : OK].
 //    - Throw an error if a URL shortener is being used.
 //
-//  Calculate page weight ---
-//  Determined the size of the HTML (in kb) and the percentage of text (eg. 29% text).
+//  ## Calculate page weight ---
+//    - Determined the size of the HTML (in kb) and the percentage of text (eg. 29% text).
 //
-//  Remove Comments for Production ---
-//  This should be added to MailChimp. When HTML is pasted it, run a script that removes <!-- --> comments.
+//  ## Remove Comments for Production ---
+//    - This should be added to MailChimp. When HTML is pasted it, run a script that removes <!-- --> comments.
 //
-//  Image Checker ---
-//  Check that all images have alt="" attributes.
-//  Check that all images are hosted on a CDN.
+//  ## Image Checker ---
+//    - Check that all images have alt="" attributes.
+//    - Check that all images are hosted on a CDN.
+//
+//  ## Alerts ---
+//    - Consider using Toastr instead of Alertifyjs.com
+//    - https://github.com/CodeSeven/toastr
+//
+//  ## Fix positioned elements moving on resize (like link-markers) ---
+//    - https://www.kirupa.com/html5/get_element_position_using_javascript.htm
+//
+//  ## Learn async ---
+//    - http://stackoverflow.com/questions/23667086/why-is-my-variable-unaltered-after-i-modify-it-inside-of-a-function-asynchron
+//
+//  ## Create an options menu ---
+//    - Ref: https://developer.chrome.com/extensions/optionsV2
+//    - Add input for Dropbox access token
 //
 //
 //
 //
 //
-//
-//
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 
