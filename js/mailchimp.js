@@ -1,6 +1,22 @@
 console.log("mailchimp.js loaded");
 
+// Updated Drafts Total
+// Update the total when the "finshed-scheduled" page is loaded.
+if ( /finished\-scheduled/gi.test(document.URL) ) {
+  
+  console.error("it works!");
 
+  chrome.storage.sync.get("pendingDrafts", function (obj) {
+
+    var updateDrafts = obj.pendingDrafts - 1;
+
+    console.error(updateDrafts);
+
+    chrome.storage.sync.set({'pendingDrafts': updateDrafts}, function() {  });
+
+  });
+
+}
 
 //
 // Apply check tool to each campaign as it loads in
@@ -235,7 +251,7 @@ function processCampaignList() {
       if ( /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
 
         totalDraftsOnPage = 0;
-        
+
         // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
         let campaignStatusList = document.querySelectorAll("span.freddicon[title='draft']");
         for (let pendingCampaign of campaignStatusList) {

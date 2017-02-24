@@ -118,6 +118,7 @@ function mailchimpDraftsNotification(draftsFromStorage) {
   else {
     console.log("Notification opened via eventPage.js.");
     var notification = new Notification(draftsFromStorage + ' Pending Drafts', {
+      tag: "mailchimp", // Notifications with the same tag will replace each other instead of all showing up. - https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API#Replacing_existing_notifications
       icon: chrome.extension.getURL('img/mailchimp-notification.png'),
       body: "Hey there! You have " + draftsFromStorage + " pending drafts in MailChimp, get on it!",
       requireInteraction: true

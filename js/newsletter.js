@@ -1,6 +1,5 @@
 // console.warn(">>> newsletter.js loaded");
 
-
 /////////////////////////////////////////
 /////////////////////////////////////////
 /////////////////////////////////////////
@@ -10,7 +9,35 @@
 /////////////////////////////////////////
 //
 //  TO-DO
+//
 //  Use https://github.com/CodeSeven/toastr
+//
+//  Can I generate divs that show margin and padding?
+//
+//  Mobile View ---
+//  Add multiple width options for the mFrame. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
+//  Remove "Portrait" and "Landscape", replace with just the width names (and/or device names)
+//  320px | 360px | 480px | More
+//
+//  Link Markers ---
+//  Create a 'warning' class in addition to the 'error' class for link-markers. If an email is very old, mark link errors as warnings.
+//  Unlike errors, warnings should be hidden until you hover over the link.
+//  Create a button that will toggle/show all link-markers regardless of error/warning status.
+//
+//  TD Markers ---
+//  Give them "levels" to show how deep they are.
+//  Create a toggle that cycles through the different levels so that you can see more clearly.
+//  Hide all inactive markers, or simply make them very low opacity.
+//
+//  Investigate Using the WordPress API ---
+//  The current method of checking for protected status is hacky. Considering changing it in the future.
+//
+//
+//
+//
+//
+//
+//
 //
 /////////////////////////////////////////
 /////////////////////////////////////////
@@ -49,7 +76,7 @@ document.querySelector("html").classList.toggle("errors");
 
 // Dropbox
   dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
-  dbx = new Dropbox({ accessToken: '9elIkCDq3zAAAAAAAAACPkVRrNch9EUklN5tkyJfFwegX-T01NnOOIXA9nSuRoy9' });
+  // dbx = new Dropbox({ accessToken: '#' });
 
 var localUserPath = "file:///Users/jameskupczak";
 
@@ -425,6 +452,16 @@ var emailDisc = getDisciplineId(pageUrl);
     // Apply the desktop iframes document object to a variable
     var dFrame = desktopIframe.contentDocument;
 
+    // Quick <style> Injection
+    // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the  styles aren't applied yet.
+    // http://stackoverflow.com/a/33079951/556079
+    //
+    // - Prevent flash of contenteditable cursor when spell check is activated.
+    //
+    var dStyleElement = dFrame.createElement("style");
+    dStyleElement.appendChild(dFrame.createTextNode("html { overflow-y: scroll; } .spellcheck body { color:transparent; }") );
+    dFrame.getElementsByTagName("head")[0].appendChild(dStyleElement);
+
     // Add dFrame.css
     var dFrameStyles = document.createElement("link");
     dFrameStyles.href = chrome.extension.getURL('css/dFrame.css');
@@ -443,7 +480,7 @@ var emailDisc = getDisciplineId(pageUrl);
     insertAfter(dFrameFrameScript, dFrame.body);
 
   var mobileIframeWrapper = document.createElement("div");
-  mobileIframeWrapper.className = "mobile-view-wrapper portrait";
+  mobileIframeWrapper.className = "mobile-view-wrapper";
   iframeWrapper.appendChild(mobileIframeWrapper);
 
     var mobileDeviceWrapper = document.createElement("div");
@@ -462,30 +499,104 @@ var emailDisc = getDisciplineId(pageUrl);
     var mobileIframeSetting = document.createElement("div");
     mobileIframeSetting.className = "mobile-iframe-settings";
 
-    var showPortrait = document.createElement("div");
-    showPortrait.className = "show-portrait";
-    var showPortraitText = document.createTextNode("Portrait");
-    showPortrait.appendChild(showPortraitText);
-    showPortrait.addEventListener("click", togglePerspective, false);
-    mobileIframeSetting.appendChild(showPortrait);
+    var mWidth1 = document.createElement("div");
+    mWidth1.id = "mobile-320";
+    mWidth1.dataset.mobileWidth = "320";
+    var mWidth1Text = document.createTextNode("320");
+    mWidth1.appendChild(mWidth1Text);
+    mWidth1.addEventListener("click", togglePerspective, false);
+    mobileIframeSetting.appendChild(mWidth1);
 
-    var showLandscape = document.createElement("div");
-    showLandscape.className = "show-landscape";
-    var showLandscapeText = document.createTextNode("Landscape");
-    showLandscape.appendChild(showLandscapeText);
-    showLandscape.addEventListener("click", togglePerspective, false);
-    mobileIframeSetting.appendChild(showLandscape);
+    var mWidth2 = document.createElement("div");
+    mWidth2.id = "mobile-360";
+    mWidth2.id = "mobile-360";
+    mWidth2.dataset.mobileWidth = "360";
+    mWidth2.className = "show-landscape";
+    var mWidth2Text = document.createTextNode("360");
+    mWidth2.appendChild(mWidth2Text);
+    mWidth2.addEventListener("click", togglePerspective, false);
+    mobileIframeSetting.appendChild(mWidth2);
 
-      function togglePerspective() {
-        mobileIframeWrapper.classList.toggle('portrait');
+    var mWidth3 = document.createElement("div");
+    mWidth3.id = "mobile-480";
+    mWidth3.id = "mobile-480";
+    mWidth3.dataset.mobileWidth = "480";
+    var mWidth3Text = document.createTextNode("480");
+    mWidth3.appendChild(mWidth3Text);
+    mWidth3.addEventListener("click", togglePerspective, false);
+    mobileIframeSetting.appendChild(mWidth3);
+
+    var mWidth4 = document.createElement("div");
+    mWidth4.id = "mobile-custom";
+    mWidth4.className = "show-landscape";
+    var mWidth4Text = document.createTextNode("Custom");
+    mWidth4.appendChild(mWidth4Text);
+    mWidth4.addEventListener("click", toggleCustomMobileWidths, false);
+    mobileIframeSetting.appendChild(mWidth4);
+
+    var mWidthExtraOptionsWrapper = document.createElement("div");
+    mWidthExtraOptionsWrapper.id = "extra-mobile-widths";
+    mWidthExtraOptionsWrapper.className = "extra-mobile-widths-wrapper";
+    mobileDeviceWrapper.appendChild(mWidthExtraOptionsWrapper);
+
+    function toggleCustomMobileWidths() {
+      mWidthExtraOptionsWrapper.style.display = "flex";
+      mWidthCustomInput.autofocus = "true";
+      console.log(mWidthExtraOptionsWrapper);
+    }
+
+    var mWidthCustomInputWrapper = document.createElement("div");
+    mWidthCustomInputWrapper.id = "custom-mobile-width";
+
+    var mWidthCustomInput = document.createElement("input");
+    mWidthCustomInput.type = "number";
+    mWidthCustomInput.placeholder = "Custom Width";
+    mWidthCustomInput.max = "480";
+    mWidthCustomInput.maxLength = "3";
+    mWidthCustomInput.pattern = "[0-9]";
+
+    mWidthCustomInputWrapper.appendChild(mWidthCustomInput);
+    mWidthExtraOptionsWrapper.appendChild(mWidthCustomInputWrapper);
+
+      var mWidthExtra1 = document.createElement("div");
+      mWidthExtra1.className = "extra-width";
+      mWidthExtra1.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
+      mWidthExtraOptionsWrapper.appendChild(mWidthExtra1);
+
+      var mWidthExtra2 = document.createElement("div");
+      mWidthExtra2.className = "extra-width";
+      mWidthExtra2.innerHTML = "<div>477</div><div>iPhone 6</div>"
+      mWidthExtraOptionsWrapper.appendChild(mWidthExtra2);
+
+      var mWidthExtra3 = document.createElement("div");
+      mWidthExtra3.className = "extra-width";
+      mWidthExtra3.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
+      mWidthExtraOptionsWrapper.appendChild(mWidthExtra3);
+
+      var mWidthExtra4 = document.createElement("div");
+      mWidthExtra4.className = "extra-width";
+      mWidthExtra4.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
+      mWidthExtraOptionsWrapper.appendChild(mWidthExtra4);
+
+      var mWidthExtra5 = document.createElement("div");
+      mWidthExtra5.className = "extra-width";
+      mWidthExtra5.innerHTML = "<div><div>375</div><div>iPhone 6</div></div>"
+      mWidthExtraOptionsWrapper.appendChild(mWidthExtra5);
+
+      var mWidthExtra6 = document.createElement("div");
+      mWidthExtra6.className = "extra-width";
+      mWidthExtra6.innerHTML = "<div><div>414</div><div>iPhone 6 Plus</div></div>"
+      mWidthExtraOptionsWrapper.appendChild(mWidthExtra6);
+
+
+
+
+      function togglePerspective(test) {
+        console.error(this);
+        console.error(this.id);
+        console.error(this.dataset.mobileWidth);
+        mobileDeviceWrapper.style.width = this.dataset.mobileWidth + "px";
       }
-
-    var hideMobile = document.createElement("div");
-    hideMobile.className = "hide";
-    var hideMobileText = document.createTextNode("Hide");
-    hideMobile.appendChild(hideMobileText);
-    hideMobile.addEventListener("click", hideMobileWrapper, false);
-    mobileIframeSetting.appendChild(hideMobile);
 
       function hideMobileWrapper() {
         mobileIframeWrapper.classList.toggle('off');
@@ -496,12 +607,16 @@ var emailDisc = getDisciplineId(pageUrl);
     // Apply the mobile iframes document object to a variable
     var mFrame = mobileIframe.contentDocument;
 
-    // Remove scrollbar from mobile view while still allowing scrolling
-    // We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the  styles aren't applied yet.
+    // Quick <style> Injection
+    // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the  styles aren't applied yet.
     // http://stackoverflow.com/a/33079951/556079
-    var styleElement = mFrame.createElement("style");
-    styleElement.appendChild(mFrame.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } ") );
-    mFrame.getElementsByTagName("head")[0].appendChild(styleElement);
+    //
+    // - Remove scrollbar from mobile view while still allowing scrolling
+    // - Prevent flash of contenteditable cursor when spell check is activated.
+    //
+    var mStyleElement = mFrame.createElement("style");
+    mStyleElement.appendChild(mFrame.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } .spellcheck body { color:transparent; }") );
+    mFrame.getElementsByTagName("head")[0].appendChild(mStyleElement);
 
     // Add mFrame.css
         // var mFrameStyles = document.createElement("link");
@@ -561,22 +676,63 @@ qaWrapper.appendChild(controlBar);
 ////
 /////////
 
-var mobileViewOrb = document.createElement("div");
-mobileViewOrb.className = "mobile-orb orb glyph";
-mobileViewOrb.addEventListener("click", viewMobile, false);
-orbsBottom.appendChild(mobileViewOrb);
+var paneToggleOrb = document.createElement("div");
+paneToggleOrb.className = "pane-orb orb glyph";
+paneToggleOrb.addEventListener("click", paneToggle, false);
+orbsBottom.appendChild(paneToggleOrb);
 
-var viewMobileBoolean = false
+var infobarPaneStatus = 1;
+var mobilePaneStatus = 1;
 
-function viewMobile() {
+function paneToggle(infobar, mobile) {
 
-  viewMobileBoolean = !viewMobileBoolean;
+  console.log("infobarPaneStatus: " + infobarPaneStatus);
+  console.log("mobilePaneStatus: " + mobilePaneStatus);
 
-  mobileIframeWrapper.classList.toggle('off');
+  // If we got some data from the querystring on page load, process it.
+  if ( infobar >= 0 || mobile >= 0 ) {
 
-  if ( viewMobileBoolean ) {
-    history.replaceState(null,null, updateQueryString("mobile", "0") ); // http://stackoverflow.com/a/32171354/556079
+    if ( infobar === null ) {
+      infobarPaneStatus = 1;
+    } else {
+      infobarPaneStatus = parseInt(infobar);
+    }
+
+    if ( mobile === null ) {
+      mobilePaneStatus = 1;
+    } else {
+      mobilePaneStatus = parseInt(mobile);
+    }
+
+  // No querystring data found, update the values based on what we know.
   } else {
+
+    if ( infobarPaneStatus === 1 && mobilePaneStatus === 1 ) {
+      infobarPaneStatus = 0;
+    }
+    else if ( infobarPaneStatus === 0 && mobilePaneStatus === 1 ) {
+      mobilePaneStatus = 0;
+    }
+    else if ( infobarPaneStatus === 0 && mobilePaneStatus === 0 ) {
+      infobarPaneStatus = 1;
+      mobilePaneStatus = 1;
+    }
+
+  }
+
+  // Update the css based on our values calculated above.
+  if ( infobarPaneStatus === 0 ) {
+    infoBar.classList.add("off");
+    history.replaceState(null,null, updateQueryString("infobar", "0") ); // http://stackoverflow.com/a/32171354/556079
+  } else {
+    infoBar.classList.remove("off");
+    history.replaceState(null,null, updateQueryString("infobar") );
+  }
+  if ( mobilePaneStatus === 0 ) {
+    mobileIframeWrapper.classList.add("off");
+    history.replaceState(null,null, updateQueryString("mobile", "0") );
+  } else {
+    mobileIframeWrapper.classList.remove("off");
     history.replaceState(null,null, updateQueryString("mobile") );
   }
 
@@ -884,7 +1040,7 @@ orbsTop.appendChild(dropboxOrb);
 
 //////////
 ////
-////  Create CSS Debug Orb
+////  Create Borders/Dimensions Orb
 ////
 /////////
 
@@ -907,31 +1063,34 @@ function toggleBorders() {
 
   document.getElementById("borders-orb").classList.toggle("on");
 
-  if ( elExists(dFrame.getElementById("debug")) ) {
-    destroy(dFrame.getElementById("debug"));
-    destroy(mFrame.getElementById("debug"));
-  } else {
-    var debugStylingD = dFrame.createElement("style");
-    debugStylingD.id = "debug";
-    debugStylingD.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 1px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
+  dFrame.documentElement.classList.toggle("debug-borders-highlight");
+  mFrame.documentElement.classList.toggle("debug-borders-highlight");
 
-    var debugStylingM = mFrame.createElement("style");
-    debugStylingM.id = "debug";
-    debugStylingM.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 1px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
-
-    dFrame.getElementsByTagName("head")[0].appendChild(debugStylingD);
-    mFrame.getElementsByTagName("head")[0].appendChild(debugStylingM);
-  }
+  // if ( elExists(dFrame.getElementById("debug")) ) {
+  //   destroy(dFrame.getElementById("debug"));
+  //   destroy(mFrame.getElementById("debug"));
+  // } else {
+  //   var debugStylingD = dFrame.createElement("style");
+  //   debugStylingD.id = "debug";
+  //   debugStylingD.appendChild(dFrame.createTextNode("") );
+  //
+  //   var debugStylingM = mFrame.createElement("style");
+  //   debugStylingM.id = "debug";
+  //   debugStylingM.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 1px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
+  //
+  //   dFrame.getElementsByTagName("head")[0].appendChild(debugStylingD);
+  //   mFrame.getElementsByTagName("head")[0].appendChild(debugStylingM);
+  // }
 
   //
   // Find <td> dimensions
   //
 
   // Destory the td markers if they exist, create the wrapper for them if they do not.
-  if ( elExists(dFrame.getElementById("td-marker-wrapper")) ) {
+  if ( elExists(dFrame.getElementById("td-markers")) ) {
 
-    destroy(dFrame.getElementById("td-marker-wrapper"));
-    destroy(mFrame.getElementById("td-marker-wrapper"));
+    destroy(dFrame.getElementById("td-markers"));
+    destroy(mFrame.getElementById("td-markers"));
 
   } else {
 
@@ -940,9 +1099,9 @@ function toggleBorders() {
 
     console.groupCollapsed("<td> Group (dFrame) - Total <td>'s Processed: " + dFrameTdList.length);
 
-    var tdMarkerWrapper = document.createElement("div");
-    tdMarkerWrapper.className = "debug";
-    tdMarkerWrapper.id = "td-marker-wrapper";
+    var tdMarkerWrapper = document.createElement("section");
+    tdMarkerWrapper.id = "td-markers";
+    tdMarkerWrapper.className = "debug td-markers-wrapper";
     dFrame.body.appendChild(tdMarkerWrapper);
     mFrame.body.appendChild(tdMarkerWrapper.cloneNode(true));
 
@@ -954,7 +1113,7 @@ function toggleBorders() {
 
         var tdPos = getPosition(tdEle, dFrame);
 
-        var tdMarker = document.createElement("div");
+        var tdMarker = document.createElement("section");
         tdMarker.className = "td-marker";
         tdMarker.style.top = (tdPos.y) + "px";
         tdMarker.style.left = (tdPos.x) + "px";
@@ -964,13 +1123,13 @@ function toggleBorders() {
 
         // tdMarker.style.width = (tdEle.clientWidth) + "px";
         // tdMarker.style.height = (tdEle.clientHeight) + "px";
-        // var tdTextPos = document.createElement("div");
+        // var tdTextPos = document.createElement("section");
         // tdTextPos.className = "td-dims";
         // tdTextPos.appendChild(tdTextNode);
         // tdMarker.appendChild(tdTextPos);
 
         tdMarker.appendChild(tdTextNode);
-        dFrame.getElementById("td-marker-wrapper").appendChild(tdMarker);
+        dFrame.getElementById("td-markers").appendChild(tdMarker);
 
       }
     }
@@ -986,15 +1145,15 @@ function toggleBorders() {
     for (let tdEle of mFrameTdList) {
       if ( (tdEle.clientWidth !== 0 && tdEle.clientHeight !== 0) && (tdEle.clientWidth < 650) ) {
 
-        console.log(tdEle);
-        console.log(tdEle.clientHeight);
-        console.log(tdEle.clientWidth);
+        // console.log(tdEle);
+        // console.log(tdEle.clientHeight);
+        // console.log(tdEle.clientWidth);
 
         tdCount++
 
         var tdPos = getPosition(tdEle, mFrame);
 
-        var tdMarker = document.createElement("div");
+        var tdMarker = document.createElement("section");
         tdMarker.className = "td-marker";
         tdMarker.style.top = (tdPos.y) + "px";
         tdMarker.style.left = (tdPos.x) + "px";
@@ -1004,13 +1163,13 @@ function toggleBorders() {
 
         // tdMarker.style.width = (tdEle.clientWidth) + "px";
         // tdMarker.style.height = (tdEle.clientHeight) + "px";
-        // var tdTextPos = document.createElement("div");
+        // var tdTextPos = document.createElement("section");
         // tdTextPos.className = "td-dims";
         // tdTextPos.appendChild(tdTextNode);
         // tdMarker.appendChild(tdTextPos);
 
         tdMarker.appendChild(tdTextNode);
-        mFrame.getElementById("td-marker-wrapper").appendChild(tdMarker);
+        mFrame.getElementById("td-markers").appendChild(tdMarker);
 
       }
     }
@@ -1051,35 +1210,35 @@ function toggleGuides() {
     destroy(dFrame.getElementById("alignment-guides"));
   } else {
 
-    var guidesStylingWrapper = dFrame.createElement("div");
-    guidesStylingWrapper.className = "debug";
+    var guidesStylingWrapper = dFrame.createElement("section");
     guidesStylingWrapper.id = "alignment-guides";
+    guidesStylingWrapper.className = "debug alignment-guides-wrapper";
 
-      var guidesStyling1 = dFrame.createElement("div");
+      var guidesStyling1 = dFrame.createElement("section");
       guidesStyling1.classList.add("alignment-guide");
       guidesStyling1.style.left = "0";
       guidesStyling1.style.right = "0";
       guidesStylingWrapper.appendChild(guidesStyling1);
 
-      var guidesStyling2 = dFrame.createElement("div");
+      var guidesStyling2 = dFrame.createElement("section");
       guidesStyling2.classList.add("alignment-guide");
       guidesStyling2.style.left = "589px";
       guidesStyling2.style.right = "0";
       guidesStylingWrapper.appendChild(guidesStyling2);
 
-      var guidesStyling3 = dFrame.createElement("div");
+      var guidesStyling3 = dFrame.createElement("section");
       guidesStyling3.classList.add("alignment-guide");
       guidesStyling3.style.left = "619px";
       guidesStyling3.style.right = "0";
       guidesStylingWrapper.appendChild(guidesStyling3);
 
-      var guidesStyling4 = dFrame.createElement("div");
+      var guidesStyling4 = dFrame.createElement("section");
       guidesStyling4.classList.add("alignment-guide");
       guidesStyling4.style.left = "0";
       guidesStyling4.style.right = "589px";
       guidesStylingWrapper.appendChild(guidesStyling4);
 
-      var guidesStyling5 = dFrame.createElement("div");
+      var guidesStyling5 = dFrame.createElement("section");
       guidesStyling5.classList.add("alignment-guide");
       guidesStyling5.style.left = "0";
       guidesStyling5.style.right = "619px";
@@ -1152,12 +1311,28 @@ orbsTop.appendChild(powerOrb);
 
 var customOrb = document.createElement("div");
 customOrb.className = "custom-orb orb glyph";
-customOrb.id = "style-orb";
+customOrb.id = "custom-orb";
 customOrb.addEventListener("click", toggleCustom, false);
 orbsBottom.appendChild(customOrb);
 // var customToggle = false
 
 function toggleCustom() {
+
+  console.error(Notification.permission);
+
+  if ( Notification.permission !== "granted" ) {
+    Notification.requestPermission();
+    console.error(Notification.permission);
+  } else {
+    console.error(Notification.permission);
+    var notification = new Notification('Pending Drafts', {
+      body: "Hey there! You have pending drafts in MailChimp, get on it!",
+      requireInteraction: true
+    });
+  }
+
+  console.error(Notification.permission);
+
   console.log(dFrame.body);
   console.log(dFrame.getElementsByTagName("body")[0]);
 
@@ -1438,8 +1613,12 @@ function plainText() {
         }
 
         insertText +=  cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
-        insertText +=  module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
-        insertText +=  module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
+
+        if ( elExists(module.querySelector("[data-sub-mod='cta']")) ) {
+          insertText +=  module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
+          insertText +=  module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
+        }
+
       }
 
       if (moduleType === "did-you-know") {
@@ -1505,21 +1684,27 @@ function plainText() {
           insertText += module.querySelectorAll("[data-sub-mod='all-courses-cta']")[0].innerText.trim() + " (";
           insertText += module.querySelectorAll("[data-sub-mod='all-courses-cta'] a")[0].getAttribute("href").trim() + ")" + "\n\n* * *\n\n";
         }
-
+        ////
         insertText += module.querySelectorAll("[data-sub-mod='course-title']")[0].innerText.trim() + "\n"
-        insertText += module.querySelectorAll("[data-sub-mod='author']")[0].innerText.trim() + "\n\n";
+        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[0]) ) {
+          insertText += module.querySelectorAll("[data-sub-mod='author']")[0].innerText.trim() + "\n\n";
+        }
         insertText += module.querySelectorAll("[data-sub-mod='cta']")[0].innerText.trim() + " ";
         insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[0].getAttribute("href").trim();
         insertText += "\n\n* * *\n\n";
-
+        ////
         insertText += module.querySelectorAll("[data-sub-mod='course-title']")[1].innerText.trim() + "\n"
-        insertText += module.querySelectorAll("[data-sub-mod='author']")[1].innerText.trim() + "\n\n";
+        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[1]) ) {
+          insertText += module.querySelectorAll("[data-sub-mod='author']")[1].innerText.trim() + "\n\n";
+        }
         insertText += module.querySelectorAll("[data-sub-mod='cta']")[1].innerText.trim() + " ";
         insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[1].getAttribute("href").trim();
         insertText += "\n\n* * *\n\n";
-
+        ////
         insertText += module.querySelectorAll("[data-sub-mod='course-title']")[2].innerText.trim() + "\n"
-        insertText += module.querySelectorAll("[data-sub-mod='author']")[2].innerText.trim() + "\n\n";
+        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[2]) ) {
+          insertText += module.querySelectorAll("[data-sub-mod='author']")[2].innerText.trim() + "\n\n";
+        }
         insertText += module.querySelectorAll("[data-sub-mod='cta']")[2].innerText.trim() + " ";
         insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[2].getAttribute("href").trim();
 
@@ -1617,7 +1802,13 @@ function processModuleText(moduleType) {
 }
 
 
-
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 //////////
@@ -1645,8 +1836,8 @@ preheaderWapper.className = "preheader-wrapper mod-wrapper";
 infoBar.appendChild(preheaderWapper);
 
 
-var preheader150 = preheader.substring(0, 149).trim();
-preheader150 = "<div class='mod mod-preheader'><div class='title'>Preheader</div><div class='mod-body'>" + [preheader150.slice(0, 89), "<span class='preheader-back'>", preheader150.slice(89)].join('') + "</span></div></div>"; // http://stackoverflow.com/a/4364902/556079
+var preheader150 = preheader.substring(0, 150).trim();
+preheader150 = "<div class='mod mod-preheader'><div class='title'>Preheader</div><div class='mod-body'>" + [preheader150.slice(0, 90), "<span class='preheader-back'>", preheader150.slice(90)].join('') + "</span></div></div>"; // http://stackoverflow.com/a/4364902/556079
 
 preheaderWapper.innerHTML = preheader150;
 
@@ -1660,7 +1851,7 @@ preheaderWapper.innerHTML = preheader150;
 ////
 console.groupCollapsed("Preheader Matching Log");
 
-var preheader90 = preheader.substring(0, 89).trim();
+var preheader90 = cut(preheader, 90);
 
 var textMinusPreheader = preheader.replace(preheader90,"");
 
@@ -1742,7 +1933,15 @@ modLinkToggle.addEventListener("click", toggleLinkMarkers, false);
 document.querySelector(".mod-link-checker .title").appendChild(modLinkToggle);
 
 function toggleLinkMarkers() {
-  dFrame.getElementsByTagName("html")[0].classList.toggle("link-markers-off");
+
+  if ( this.nodeType !== 1 ) {
+    dFrame.getElementById("link-markers").classList.add("on-page-load");
+  } else if ( dFrame.querySelector(".on-page-load") ) {
+    dFrame.getElementById("link-markers").classList.remove("on-page-load");
+  } else {
+    dFrame.getElementById("link-markers").classList.toggle("hidden");
+  }
+  history.replaceState(null,null, updateQueryString("links", "0") );
 }
 
 
@@ -1762,6 +1961,23 @@ var imgCheckerHtml = "<div class='mod mod-img-checker'><div class='title'>Images
 imgCheckerWrapper.innerHTML = imgCheckerHtml;
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+//
+// Modify our page view/style/css based on the querystring before we start modifying dFrame and mFrame.
+//
+
+if ( getParameterByName("infobar") || getParameterByName("mobile") ) {
+  paneToggle(getParameterByName("infobar"), getParameterByName("mobile"));
+  console.log("panes modified on page load via querystring");
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1795,7 +2011,13 @@ if ( !elExists(dFrame.querySelector("[data-module-wrapper]")) ) {
   alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
 }
 
-
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 ////////////
 ////////////
@@ -1809,6 +2031,12 @@ if ( !elExists(dFrame.querySelector("[data-module-wrapper]")) ) {
 ////////////
 ////////////
 
+var moduleSettingsWrapper = document.createElement("section");
+    moduleSettingsWrapper.id = "module-settings";
+    moduleSettingsWrapper.className = "debug module-settings-wrapper";
+    dFrame.body.appendChild(moduleSettingsWrapper);
+
+
 let moduleList = dFrame.querySelectorAll("[data-module-wrapper] > table");
 var i = 0
 
@@ -1818,10 +2046,38 @@ for (let module of moduleList) {
 
   i++
   module.dataset.moduleCount = i;
+  console.log(i);
+
+  var moduleSettingsMenu = document.createElement("section");
+      moduleSettingsMenu.className = "module-menu module-menu-" + i;
+
+  var moduleSettingsMenuEdit = document.createElement("section");
+      moduleSettingsMenuEdit.className = "edit";
+
+  var moduleSettingsMenuHide = document.createElement("section");
+      moduleSettingsMenuHide.className = "hide";
+
+      moduleSettingsMenu.appendChild(moduleSettingsMenuEdit);
+      moduleSettingsMenu.appendChild(moduleSettingsMenuHide);
+      moduleSettingsWrapper.appendChild(moduleSettingsMenu);
+
 
 }
 
 console.groupEnd();
+
+// Check if it exists first. If there were no modules to iterate through than this will be an undefined variable and throw an error.
+if (typeof moduleSettingsMenu != 'undefined') {
+  moduleSettingsWrapper.appendChild(moduleSettingsMenu);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 ////////////
 ////////////
@@ -1835,13 +2091,6 @@ console.groupEnd();
 ////////////
 ////////////
 
-// console.log(dFrame);
-// console.log(dFrame.body);
-
-// var linkMarkerWrapper = document.createElement("div");
-// linkMarkerWrapper.className = "link-marker-wrapper";
-// dFrame.body.appendChild(linkMarkerWrapper);
-
 let linkList = dFrame.querySelectorAll("a");
 var i = 0
 
@@ -1849,9 +2098,9 @@ console.groupCollapsed("Links Group - Total Links Processed: " + linkList.length
 
 // Create the wrapper for the link-markers.
 
-var linkMarkerWrapper = document.createElement("div");
-linkMarkerWrapper.className = "debug";
-linkMarkerWrapper.id = "link-marker-wrapper";
+var linkMarkerWrapper = document.createElement("section");
+linkMarkerWrapper.id = "link-markers";
+linkMarkerWrapper.className = "debug link-markers-wrapper";
 dFrame.body.appendChild(linkMarkerWrapper);
 
 for (let link of linkList) {
@@ -1895,26 +2144,26 @@ for (let link of linkList) {
 
     link.classList.add("marked");
 
-    var linkMarker = document.createElement("div");
+    var linkMarker = document.createElement("section");
     linkMarker.className = "link-marker";
     linkMarker.style.top = (linkPosition.y - 10) + "px";
     linkMarker.style.left = (linkPosition.x - 10) + "px";
     linkMarker.dataset.href = linkHref;
     linkMarker.dataset.number = i;
-    dFrame.getElementById("link-marker-wrapper").appendChild(linkMarker);
+    dFrame.getElementById("link-markers").appendChild(linkMarker);
 
-    var linkErrorLog = document.createElement("div");
+    var linkErrorLog = document.createElement("section");
     linkErrorLog.className = "link-errors";
     insertAfter(linkErrorLog, linkMarker);
     // linkMarker.appendChild(linkErrorLog);
 
-    var linkErrorLogURL = document.createElement("div");
+    var linkErrorLogURL = document.createElement("section");
     linkErrorLogURL.className = "link-errors-url";
     var linkErrorLogURLTextNode = document.createTextNode(linkHref);
     linkErrorLogURL.appendChild(linkErrorLogURLTextNode);
     linkErrorLog.appendChild(linkErrorLogURL);
 
-    var linkErrorLogNoticeWrapper = document.createElement("div");
+    var linkErrorLogNoticeWrapper = document.createElement("section");
     linkErrorLogNoticeWrapper.className = "link-errors-wrapper";
     linkErrorLog.appendChild(linkErrorLogNoticeWrapper);
 
@@ -1933,7 +2182,7 @@ for (let link of linkList) {
 
       linkMarker.classList.add("error");
 
-      var errorRow = document.createElement("div");
+      var errorRow = document.createElement("section");
       console.error(msg);
       var errorRowText = document.createTextNode(msg);
       errorRow.appendChild(errorRowText);
@@ -2034,6 +2283,22 @@ for (let link of linkList) {
     // Get its "Protected" status and ifs type (pearl or blog).
 
     // To-Do Notes:
+    // ============
+    //
+    // Dropbox
+    //  - Broken on Dropbox: Although we can load blog articles with https into the iframe, they eventually redirect (in ns emails) to an http address. When viewing the email on Dropbox the iframes get blocked because Dropbox can only be loaded with https. The http content gets blocked because it's an insecure resource. Sigh.
+    //  - And since sessionsStorage we setup on file:/// doesn't transfer over to files viewed on Dropbox, it's always going to try to check the blog.
+    //
+    // ---
+    //
+    // sessionsStorage isn't good enough. I need to minimize my calls to the blog. chrome.storage.local might be necessary.
+    // Can I periodically purge chrome.storage.local so that it doesn't get too big?
+    //
+    // After the affiliate linkback is fixed, I can switch over to uses the actual blog URL. This will allow me the -sub version to not recheck each article because it will be able to look at the same object as -ns does in sessionsStorage.
+    //
+    // If the tracking link (or any article link) doesn't load the article properly (or at all), a message is never sent to the eventpage and in turn nothing is sent back to the newsletter.
+    //
+    // Display an indicator that tells me the iframes are still processing. Give the green light once they've all been destroyed.
     //
     // Should I modify so that it only re-checks if I click something?
     // Should I consider looking the date in this files URL to help decide IF I should check?
@@ -2046,6 +2311,8 @@ for (let link of linkList) {
     // Definitely create a button to FORCE a recheck of all linked articles. Just in case!
     //
     // Reminders:
+    // ==========
+    //
     // A blog's author type should never change. As long as it's been set in sessionstorage, I don't need to check the blog more than once for this data.
     // Once unprotected, articles should never go protected. So I don't think I need to bother checking.
     //
@@ -2223,9 +2490,10 @@ for (let link of linkList) {
       createLinkErrorRow(linkMarker, "use a marketing URL");
     }
 
+
     ////
     // Check for old fashioned marketing URLS in sub or outsideOrg
-    if ( (outsideOrg || emailSubType === "sub" ) && medbridgeDomainLink && /\.com\/trk\-/gi.test(linkHref) ) {
+    if ( (outsideOrg || emailSubType === "sub" ) && (medbridgeDomainLink && /\.com\/trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
       createLinkErrorRow(linkMarker, "do not use marketing url");
     }
 
@@ -2265,7 +2533,7 @@ for (let link of linkList) {
         createLinkErrorRow(linkMarker, "add sub=yes");
       }
       // sub=yes should not be in any other links.
-      if ( !blogLink && /sub=yes/gi.test(linkHref) ) {
+      if ( ( !blogLink && !/\-article/gi.test(linkHref) ) && /sub=yes/gi.test(linkHref) ) {
         createLinkErrorRow(linkMarker, "remove sub=yes");
       }
     }
@@ -2288,7 +2556,6 @@ for (let link of linkList) {
       createLinkErrorRow(linkMarker, "https missing");
     }
 
-
     ////
     // outsideOrg should not link to home-exercise-program.
     // Use /patient_care/programs/create
@@ -2297,20 +2564,14 @@ for (let link of linkList) {
     }
 
     ////
-    // Affiliate URL Linkbacks should not be used in subscriber version.
-    if ( emailSubType === "sub" && /after_affiliate_url/gi.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "affiliate link");
-    }
-
-    ////
     // Discipline Check
 
-    if ( emailDisc !== null && medbridgeDomainLink && !blogLink && !/\/courses\/details\//gi.test(linkHref) ) {
+    if ( emailDisc !== "multi" && emailDisc !== null && medbridgeDomainLink && !blogLink && !/\/courses\/details\//gi.test(linkHref) ) {
 
       if ( emailDisc !== "slp" && (/#\/?speech-language-pathology/gi.test(linkHref) || /-slp(\-|\/|\?)/gi.test(linkHref)) ) {
         createLinkErrorRow(linkMarker, "wrong discipline");
       }
-      if ( ( emailDisc !== "pt" && emailDisc !== "other" && emailDisc !== "dr" ) && (/#\/?physical-therapy/gi.test(linkHref) || /-pt(\-|\/|\?)/gi.test(linkHref)) ) {
+      if ( ( emailDisc !== "pt" && emailDisc !== "dr" ) && (/#\/?physical-therapy/gi.test(linkHref) || /-pt(\-|\/|\?)/gi.test(linkHref)) ) {
         createLinkErrorRow(linkMarker, "wrong discipline");
       }
       if ( emailDisc !== "at" && (/#\/?athletic-training/gi.test(linkHref) || /-at(\-|\/|\?)/gi.test(linkHref)) ) {
@@ -2342,6 +2603,14 @@ for (let link of linkList) {
 }
 console.groupEnd();
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 ////
 //////
 // Iterate through ALL IMAGES - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
@@ -2359,7 +2628,13 @@ for (let img of imgList) {
 
 }
 
-
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 ////////////
 ////////////
@@ -2440,7 +2715,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
 // All
 findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-  find: /(at no extra cost|[^\u00a0]\u2192)/gi, // Update to add "word &nbsp;&rarr;" as an error
+  find: /(certification|at no extra cost|[^\u00a0]\u2192)/gi, // Update to add "word &nbsp;&rarr;" as an error
   wrap: 'span',
   wrapClass: "text-error"
 });
@@ -2515,7 +2790,13 @@ if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrame.body.textContent) ) {
 //   });
 // }
 
-
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 ////////////
 ////////////
@@ -2536,13 +2817,8 @@ if ( getParameterByName("img") === "0" ) {
 }
 
 if ( getParameterByName("style") === "0" ) {
-      toggleStyles();
+  toggleStyles();
   console.log("styles off");
-}
-
-if ( getParameterByName("mobile") === "0" ) {
-  viewMobile();
-  console.log("mobile view collapsed");
 }
 
 if ( getParameterByName("borders") === "1" ) {
@@ -2555,8 +2831,19 @@ if ( getParameterByName("guides") === "1" ) {
   console.log("guides shown");
 }
 
+if ( getParameterByName("links") === "0" ) {
+  toggleLinkMarkers();
+  console.log("links hidden");
+}
 
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 ////////////
@@ -2571,18 +2858,22 @@ if ( getParameterByName("guides") === "1" ) {
 
   //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
   dFrame.getElementsByTagName('html')[0].contentEditable = 'true';
+  dFrame.getElementsByTagName('html')[0].classList.add("spellcheck");
   dFrame.getElementsByTagName('body')[0].focus();
 
   // For some reason, if contenteditable is turned off too quickly, the red squiggles are sometimes misaligned with the text they are indicating as incorrectly spelled. For this reason we're using a setTimeout here.
   setTimeout(function() {
     dFrame.getElementsByTagName('html')[0].contentEditable = 'false';
+    dFrame.getElementsByTagName('html')[0].classList.remove("spellcheck");
 
     mFrame.getElementsByTagName('html')[0].contentEditable = 'true';
+    mFrame.getElementsByTagName('html')[0].classList.add("spellcheck");
     mFrame.getElementsByTagName('body')[0].focus();
   }, 200);
 
   setTimeout(function() {
     mFrame.getElementsByTagName('html')[0].contentEditable = 'false';
+    mFrame.getElementsByTagName('html')[0].classList.remove("spellcheck");
 
     document.querySelector('.mod-preheader .mod-body').contentEditable = 'true';
     document.querySelector('.mod-preheader .mod-body').focus();
@@ -2593,7 +2884,13 @@ if ( getParameterByName("guides") === "1" ) {
   }, 600);
 
 
-
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
     //////////
 
@@ -2620,11 +2917,13 @@ if ( getParameterByName("guides") === "1" ) {
         sessionStorage.setItem(blogUrlChecked, blogStatusReply);
 
         destroy(document.querySelector("#iframe-" + blogStatusReply[4]));
+        console.log("#iframe-" + blogStatusReply[4] + " destroyed.")
 
       }
     );
 
 
+    // Need to use this during link checking and again once the postMessages come back. Figure that out.
     function checkArticleLink(obj) {
       var blogStatusFromStorage = obj;
       // Check Protects/Unprotected
@@ -2643,6 +2942,14 @@ if ( getParameterByName("guides") === "1" ) {
     }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 ///////
 

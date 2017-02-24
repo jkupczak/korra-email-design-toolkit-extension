@@ -23,6 +23,7 @@ function getDisciplineId(string) {
   else if ( /-DR(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "dr"; }
   else if ( /-Fox(-|\.|$)/gi.test(string) )              { var disciplineId = "fox"; }
   else if ( /-HS(-|\.|$)/gi.test(string) )               { var disciplineId = "hs"; }
+  else if ( /-Multi(-|\.|$)/gi.test(string) )               { var disciplineId = "multi"; }
   else { var disciplineId = null }
 
   // console.log("function returned this: " + disciplineId);
@@ -263,16 +264,18 @@ function copyToClipboard(el) {
     // Copy the Link - http://www.jstips.co/en/copy-to-clipboard/
     // Select the content
     el.select();
+    document.execCommand('copy');
 
     // Copy to the clipboard
     setTimeout( function() {
+
+      alertify.success("Saved to clipboard!<div><span class='url'>" + el.value + "</span></div>", 20);
       document.execCommand('copy');
-      alertify.success("Saved to clipboard!<br><span style='display:block;padding-top:4px;font-size:80%;opacity:.85;line-height:16px;word-break:break-all'>" + el.value + "</span>", 20);
-      document.execCommand('copy');
-      document.execCommand('copy');
-    }, 1000);
-    document.execCommand('copy');
+
+    }, 500);
+
 }
+
 
 // Test if an element exists in the DOM.
 function elExists(el) {
@@ -283,11 +286,27 @@ function elExists(el) {
   }
 }
 
+
+// Cut a string after X characters, but if it's in the middle of a word cut the whole word
+// http://stackoverflow.com/a/10755510/556079
+function cut(text, length) {
+
+  var cutat = text.lastIndexOf(' ', length);
+
+  if ( cutat != -1 ) {
+    text = text.substring(0, cutat);
+  }
+  return text;
+
+}
+
+
 // http://stackoverflow.com/a/22119674/556079
 function findAncestor (el, cls) {
     while ((el = el.parentElement) && !el.classList.contains(cls));
     return el;
 }
+
 
 // Clean a string to create a nice looking plain text version.
 function cleanPlainTxt(text) {

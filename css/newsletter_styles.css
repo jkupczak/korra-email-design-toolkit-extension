@@ -21,10 +21,11 @@ html.powered-up, html.powered-up body {
 }
 
 #dropbox-link-text {
-  display:block !important;
+  display:inline-block;
+  z-index:-100;
   position:absolute;
-  top:0; left:0;
-  width:100%;
+  top:-100px; left:-100px;
+  /*width:0;*/
 }
 
 html.powered-up {
@@ -178,8 +179,8 @@ html.error-status.errors:before {
   box-shadow: inset rgba(255,255,255,0.15) 0 0 0 2px, rgba(23, 23, 27, 1) 0px 0px 0px 2px, rgba(23, 23, 27, .75) 0px 0px 0px 4px;
   transition:all .3s;
 }
-.orbs-bottom .orb { margin-top:14px; }
-.orbs-top .orb { margin-bottom:14px; }
+.orbs-bottom .orb { margin-top:12px; }
+.orbs-top .orb { margin-bottom:12px; }
 
 .orb:hover { color:#fff; transform:scale(1.1, 1.1); transition:none; -webkit-transform-style: preserve-3d; }
 .orb:active { color:#fff; transform: scale(1, 1); -webkit-transform-style: preserve-3d; }
@@ -331,8 +332,8 @@ html.error-status.errors:before {
 .orb-divider-3 { order:3; }
 
 
-.mobile-orb { order:2; background:#5d6372; }
-.mobile-orb:before { content:"\73"; }
+.pane-orb { order:2; background:#5d6372; }
+.pane-orb:before { content:"\73"; }
 
 .nav-orb { order:1; }
 .nav-orb-up { }
@@ -369,8 +370,22 @@ html.error-status.errors:before {
   color:#444;
   background:#26272d;
   font-size:14px;
-  font-family:Helvetica;
+  font-family: Roboto, Helvetica;
   padding:20px;
+  transition:all .35s;
+  z-index:1;
+}
+.info-bar.off {
+  width:0px;
+  max-width:0px;
+  min-width:0px;
+  padding-left:0; padding-right:0;
+  z-index:-10;
+  opacity:0;
+  transition:all .35s;
+}
+.info-bar.quick-off {
+  display:none;
 }
 
 .mod-wrapper {
@@ -378,7 +393,7 @@ html.error-status.errors:before {
 }
 
 .mod {
-  border-radius:6px;
+  border-radius:4px;
   background:#fff;
   overflow:hidden;
   box-shadow: 0 6px 20px 0 rgba(0,0,0,.2);
@@ -446,6 +461,9 @@ html.error-status.errors:before {
 
 .ajs-message > div {
   font-size:12px;line-height:18px;font-weight:300; padding-top:10px;
+}
+.ajs-message > div .url {
+  word-break:break-all;
 }
 
 
@@ -547,7 +565,10 @@ body.split-view-on {
 }
 
 .mobile-view-wrapper {
-  /*width:100%;*/
+  /*max-width:480px;
+  min-width:320px;
+  width:320px;*/
+  width:auto;
   /*max-width:520px;*/
   /*min-width:360px;*/
   /*padding:40px 0;*/
@@ -558,14 +579,10 @@ body.split-view-on {
   background:#26272d;
   display:flex;
   padding:40px 0 40px 40px;
-  max-width:540px;
-  min-width:540px;
+  /*max-width:540px;
+  min-width:540px;*/
   transition:all .35s;
   z-index:1;
-}
-.mobile-view-wrapper.portrait {
-  max-width:406px;
-  min-width:406px;
 }
 .mobile-view-wrapper.off {
   /*display:none;*/
@@ -576,6 +593,9 @@ body.split-view-on {
   z-index:-10;
   transition:all .35s;
 }
+.mobile-view-wrapper.quick-off {
+  display: none;
+}
 .mobile-view-wrapper.off .mobile-device-view {
   opacity:0;
   transition:all .35s;
@@ -583,8 +603,6 @@ body.split-view-on {
 
 .mobile-view-wrapper .iframe-mobile-view {
   width:100%;
-  max-width:480px;
-  min-width:360px;
   margin: auto;
   height:100%;
   box-sizing: border-box;
@@ -594,10 +612,83 @@ body.split-view-on {
   border-radius:0 0 8px 8px;
 }
 
+.extra-mobile-widths-wrapper {
+  display:none;
+  padding:20px;
+  width:100%;
+  height:100%;
+  position:absolute;
+  top:0;
+  left:0;
+
+  background: linear-gradient(to bottom,  rgba(0,0,0,0.75) 0%,rgba(0,0,0,1) 80%,rgba(0,0,0,1) 100%);
+
+  z-index:2;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  align-content:flex-end;
+}
+.extra-mobile-widths-wrapper input {
+  background:rgba(50,50,50,.9);
+  color:#fff;
+  border-radius:6px;
+  height:60px;
+  line-height:60px;
+  padding:10px 4px;
+  font-size:36px;
+  text-align:center;
+  outline:none;
+  border:none;
+  width:100%;
+  letter-spacing: 2px;
+}
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+      /* display: none; <- Crashes Chrome on hover */
+      -webkit-appearance: none;
+      margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  }
+  ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: rgba(40,40,40);
+    font-size:24px;
+    letter-spacing:0;
+  }
+
+.extra-width {
+  width:33%;
+  text-align:center;
+  color:#fff;
+  background:rgba(50,50,50,.9);
+  padding:15px 0;
+  border-radius:4px;
+  margin-top:10px;
+  margin-right:10px;
+  font-size:32px;
+  font-weight:bold;
+  user-select: none;
+}
+.extra-width div + div {
+  font-size:12px;
+  font-weight:normal;
+  margin-top:5px;
+}
+.extra-width:hover {
+  transform: scale(1.05,1.05);
+  cursor:pointer;
+  background:rgb(35, 94, 244);
+}
+.extra-width:active {
+  transform: scale(1,1);
+}
+
+
 .mobile-device-view {
   /*max-width:480px;*/
-  width:360px;
-  min-width:360px;
+  width:100%;
+  /*min-width:320px;
+  max-width:480px;*/
   height:100%;
   display:flex;
   flex-direction:column;
@@ -605,18 +696,25 @@ body.split-view-on {
   box-shadow:0 0px 0px 6px #17171b;
   overflow:hidden;
   transition:all .35s;
+  position:relative;
 }
-.mobile-view-wrapper:not(.portrait) .mobile-device-view {
-  width:480px;
-  min-width:480px;
+.mobile-view-wrapper .mobile-device-view {
+  width:320px;
+  max-width:480px;
+  min-width:320px;
 }
 
 .mobile-iframe-settings {
   display:flex;
+  width:320px;
+  max-width:320px;
+  margin-left:auto;
+  margin-right:0;
   /*border-radius:0 0 10px 10px;*/
   background:#18171d;
-  height:50px;
+  height:70px;
   overflow:hidden;
+  padding:6px;
   border-top:6px solid #17171b;
 }
 .mobile-iframe-settings > div {
@@ -666,7 +764,8 @@ body.split-view-on {
 
   .info-bar {
     max-width: 300px;
-    min-width: 300px;
+    min-width: 50px;
+    padding:10px;
   }
 
 
@@ -680,10 +779,10 @@ body.split-view-on {
     padding-bottom:20px;
     padding-left:23px;
   }
-  .mobile-view-wrapper.portrait:not(.off) {
+  /*.mobile-view-wrapper.portrait:not(.off) {
       max-width: 389px;
       min-width: 389px;
-  }
+  }*/
 
 }
 
@@ -691,7 +790,7 @@ body.split-view-on {
 
 @media screen and (max-device-width: 960px), screen and (max-width: 960px) {
 
-  .desktop-view-wrapper { min-width:360px; }
+  .desktop-view-wrapper { min-width:320px; }
 
 
 }

@@ -6,7 +6,7 @@
 
 .calendar-content .day-cell {
   width:16.8% !important;
-  height:160px !important;
+  height:200px !important;
 }
 .calendar-content .day-cell:last-child, .calendar-content .day-cell:first-child {
   width:8% !important;
@@ -15,7 +15,7 @@
 
 .calendar-content .list-card {
   margin-bottom:3px !important;
-  max-height:35px !important;
+  /*max-height:35px !important;*/
 }
 
 .calendar-content .list-card-details {
@@ -24,4 +24,8 @@
 
 .calendar-content .list-card-labels {
   margin-bottom:0 !important;
+}
+
+.calendar-content .day-cell a {
+  font-size:12px;
 }

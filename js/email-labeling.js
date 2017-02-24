@@ -136,6 +136,11 @@ if ( onDropbox ) {	favicon = favicon + "-dropbox"; }
 //Middleman check
 if ( onMiddleman ) { animatedFavicon = true; }
 
+// Final favicon filename check
+if ( favicon === "" || /^\-/.test(favicon) ) {
+	favicon = "unknown"
+}
+
 //Mailchimp check
 if ( !onMailchimp ) {
 

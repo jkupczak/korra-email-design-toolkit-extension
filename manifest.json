@@ -62,8 +62,8 @@
     "128": "icon.png"
   },
   "content_scripts": [
-    // https://developer.chrome.com/extensions/content_scripts
-    { // Global
+    //https://developer.chrome.com/extensions/content_scripts
+    { //Global
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/global_styles.css"],
@@ -73,7 +73,8 @@
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/normalize.css", "css/alertify.css", "css/alertify.medbridge.css", "css/tingle.css", "css/newsletter_styles.css"],
-      "js": ["js/alertify.js", "js/Dropbox-sdk.min.js", "js/findAndReplaceDOMText.js", "js/tingle.js", "js/newsletter.js"]
+      "js": ["js/alertify.js", "js/Dropbox-sdk.min.js", "js/findAndReplaceDOMText.js", "js/tingle.js", "js/newsletter.js"],
+      "run_at": "document_end"
     },
     { //Newsletter-Blog
       "matches": ["*://*.medbridgeeducation.com/blog/*"],
@@ -90,12 +91,12 @@
       "css": ["css/middleman_styles.css"],
       "js": ["js/middleman.js"]
     },
-    { // Dropbox & Local
+    { //Dropbox-&-Local
       "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/*"],
       "css": ["css/dropbox_styles.css"],
       "js": ["js/dropbox.js"]
     },
-    { // MailChimp
+    { //MailChimp
       "matches": ["*://*.mailchimp.com/*"],
       "css": ["css/alertify.css", "css/alertify.medbridge.css", "css/mailchimp_styles.css"],
       "js": ["js/alertify.js", "js/mailchimp.js"]
@@ -111,7 +112,7 @@
       "css": ["css/admin_styles.css"],
       "js": ["js/medbridge-admin.js"]
     },
-    { // Trello
+    { //Trello
       "matches": ["*://*.trello.com/*"],
       "js": ["js/trello.js"],
       "css": ["css/trello-styles.css"]
