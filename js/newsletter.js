@@ -1,12 +1,12 @@
-// console.warn(">>> newsletter.js loaded");
-
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////                         ///////////////////////////
+///////////////////////////      NEWSLETTER.JS      ///////////////////////////
+///////////////////////////                         ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //
 //  TO-DO
 //
@@ -32,6 +32,34 @@
 //  Investigate Using the WordPress API ---
 //  The current method of checking for protected status is hacky. Considering changing it in the future.
 //
+//  Image Guidelines ---
+//  Create toggle that will add PhotoShop-esque guidelines to all or individual images in the email.
+//  This will help show any alignment issues that may exist.
+//
+//  Swap Font Stack ---
+//  Simulate what the email will look like in email clients that do not support @font-face or have Helvetica.
+//  Remove all instances of "Roboto" from font-family: declarations, and then Helvetica.
+//
+//  Modules Menu ---
+//  Give each module its own mini-menu to hide, duplicate, re-order and edit.
+//
+//  Tag Checker ---
+//  Search for unsupported tags like <strong> and recommend replacements like <b>.
+//
+//  Link Checker --
+//    - Add support for link status Like how mail-tester.com does it.
+//        -They show a status report for each link like [302 - Redirection : Found] and [200 - Success : OK].
+//    - Throw an error if a URL shortener is being used.
+//
+//  Calculate page weight ---
+//  Determined the size of the HTML (in kb) and the percentage of text (eg. 29% text).
+//
+//  Remove Comments for Production ---
+//  This should be added to MailChimp. When HTML is pasted it, run a script that removes <!-- --> comments.
+//
+//  Image Checker ---
+//  Check that all images have alt="" attributes.
+//  Check that all images are hosted on a CDN.
 //
 //
 //
