@@ -1,3 +1,5 @@
+console.info(">>> newsletter.js loaded");
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -8,74 +10,133 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  TO-DO LIST
-//  ==========
-//
-//  ## Toggle View - Padding and Margin ---
-//    - Can I generate divs that show margin and padding?
+//  TO-DO LIST ✓ ■
+//  ==============
 //
 //  ## Mobile View ---
-//    - Add multiple width options for the mFrame. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
-//    - Remove "Portrait" and "Landscape", replace with just the width names (and/or device names)
-//    - 320px | 360px | 480px | More
+//    ■ - Add multiple width options for the mFrame. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
+//    ✓ - Remove "Portrait" and "Landscape", replace with just the width names (and/or device names)
+//    ■ - 320px | 360px | 480px | More
 //
 //  ## Link Markers ---
-//    - Create a 'warning' class in addition to the 'error' class for link-markers. If an email is very old, mark link errors as warnings.
-//    - Unlike errors, warnings should be hidden until you hover over the link.
-//    - Create a button that will toggle/show all link-markers regardless of error/warning status.
+//    ■ - Create a 'warning' class in addition to the 'error' class for link-markers. If an email is very old, mark link errors as warnings.
+//    ■ - Unlike errors, warnings should be hidden until you hover over the link.
+//    ■ - Create a button that will toggle/show all link-markers regardless of error/warning status.
+//    ■ - [Pinning] Clicking on markers will pin the info div to the bottom of the screen. Clicking the same or any other marker will unpin it.
 //
-//  ## TD Markers ---
-//    - Give them "levels" to show how deep they are.
-//    - Create a toggle that cycles through the different levels so that you can see more clearly.
-//    - Hide all inactive markers, or simply make them very low opacity.
+//  ## [ORB] TD Markers ---
+//    ■ - Give them "levels" to show how deep they are.
+//    ■ - Create a toggle that cycles through the different levels so that you can see more clearly.
+//        - Show a toolbar at the bottom of the page to achieve this.
+//    ■ - Hide all inactive markers, or simply make them very low opacity.
+//
+//  ## Upgrades to WordPress Blog Checker ---
+//    ✓ - Only auto-check on page load if the newsletter date is in the present, future, or within the last day.
 //
 //  ## Investigate Using the WordPress API ---
-//    - The current method of checking for protected status is hacky. Considering changing it in the future.
-//
-//  ## Image Guidelines ---
-//    - Create toggle that will add PhotoShop-esque guidelines to all or individual images in the email.
-//    - This will help show any alignment issues that may exist.
-//
-//  ## Swap Font Stack ---
-//    - Simulate what the email will look like in email clients that do not support @font-face or have Helvetica.
-//    - Remove all instances of "Roboto" from font-family: declarations, and then Helvetica.
+//    ■ - The current method of checking for protected status is hacky. Considering changing it in the future.
+//    ■ - https://css-tricks.com/using-the-wp-api-to-fetch-posts/
+//    ■ - https://www.cloudways.com/blog/setup-basic-authentication-in-wordpress-rest-api/
+//    ■ - https://code.tutsplus.com/tutorials/wp-rest-api-setting-up-and-using-oauth-10a-authentication--cms-24797
+//    ■ - http://wp-api.org/node-wpapi/
 //
 //  ## Modules Menu ---
-//    - Give each module its own mini-menu to hide, duplicate, re-order and edit.
+//    ■ - Give each module its own mini-menu to hide, duplicate, re-order and edit.
 //
-//  ## Tag Checker ---
-//    - Search for unsupported tags like <strong> and recommend replacements like <b>.
+//  ## HTML Tag Checker ---
+//    ■ - Search for unsupported tags like <strong> and recommend replacements like <b>.
 //
 //  ## Link Checker --
-//    - Add support for link status Like how mail-tester.com does it.
+//    ■ - Add support for link status Like how mail-tester.com does it.
 //        -They show a status report for each link like [302 - Redirection : Found] and [200 - Success : OK].
-//    - Throw an error if a URL shortener is being used.
+//    ■ - Throw an error if a URL shortener is being used.
 //
 //  ## Calculate page weight ---
-//    - Determined the size of the HTML (in kb) and the percentage of text (eg. 29% text).
+//    ■ - Determined the size of the HTML (in kb) and the percentage of text (eg. 29% text).
 //
 //  ## Remove Comments for Production ---
-//    - This should be added to MailChimp. When HTML is pasted it, run a script that removes <!-- --> comments.
+//    ■ - This should be added to MailChimp. When HTML is pasted it, run a script that removes <!-- --> comments.
 //
 //  ## Image Checker ---
-//    - Check that all images have alt="" attributes.
-//    - Check that all images are hosted on a CDN.
+//    ■ - Check that all images have alt="" attributes.
+//    ■ - Check that all images are hosted on a CDN.
 //
 //  ## Alerts ---
-//    - Consider using Toastr instead of Alertifyjs.com
-//    - https://github.com/CodeSeven/toastr
+//    ■ - Consider using Toastr instead of Alertifyjs.com - https://github.com/CodeSeven/toastr
 //
 //  ## Fix positioned elements moving on resize (like link-markers) ---
-//    - https://www.kirupa.com/html5/get_element_position_using_javascript.htm
+//    ■ - https://www.kirupa.com/html5/get_element_position_using_javascript.htm
 //
 //  ## Learn async ---
-//    - http://stackoverflow.com/questions/23667086/why-is-my-variable-unaltered-after-i-modify-it-inside-of-a-function-asynchron
+//    ■ - http://stackoverflow.com/questions/23667086/why-is-my-variable-unaltered-after-i-modify-it-inside-of-a-function-asynchron
 //
-//  ## Create an options menu ---
-//    - Ref: https://developer.chrome.com/extensions/optionsV2
-//    - Add input for Dropbox access token
+//  ## Create an options menu (for entire extension) ---
+//    ■ - Ref: https://developer.chrome.com/extensions/optionsV2
+//    ✓ - Add input for Dropbox access token
+//
+//  ## Create an options menu (for newsletter) ---
+//    ■ - Slides out from the right, provides a larger menu of "orbs" to modify the page
+//    ■ - Additional orb ideas
+//        - Middleman Sitemap
+//        - Blog Checker Controls (autorun on this page, autorun on all pages, run again right now)
+//
+//  ## Tips
+//    ■ - A runnng log of "tips/did you know"s based on various factors.
+//    ■ - For example, if the word "certification" is detected in the copy, provide a tip that reminds you that MedBridge does not offer certification.
+//    ■ - Refer A Friend rules
+//    ■ - "Steer clear of "get your ceus" since this represents somewhat of a commoditized value representation of our courses."
+//    ■ - .... (pending)
+//
+//  ## Errors log
+//    ■ - Hidden panel that expands to show a listing of all errors (sorted by category).
+//    ■ - Similar in look and functionality to the planned Tools Panel
+//    ■ - Activate the panel by clicking an orb.
+//    ■ - The orb should be flashing red with a number if there's at least 1 error
+//      - Yellow and still if only warnings are available
+//      - Green with a checkmark if everything is awesome.
+//
+//    ## Ideas for errors
+//      - If NPS verbiage is detected, remind me to add the fine print. - https://drive.google.com/open?id=0B_swaeZ9mgUMVERsZmlkNHJRak9XWVdSU3NDM2ZMdFh2V0Fv
+//      - If a scrollbar exists in the mobile version at 320px wide.
+//
+//  ## Get local user path automatically ---
+//    ■ - After the user loads their first local file, grab the URL and save it to chrome.storage.sync.
+//    ■ - Only do this if it's NOT already set. So check for it first, if it's null, find it automatically and save it.
+//    ■ - Figure out the difference between mac/windows/linux and make sure it works for all 3
+//    ■ - Maybe don't save the "file:///" part?
+//
+//  ## Add minimum animation time to "loading" orbs
+//    - If an orb is instant, the loading animation never plays. Fix that so that it feels like something happened.
 //
 //
+//////////////
+//////////////
+//  ORB IDEAS
+//////////////
+//////////////
+//
+//  ## [ORB] Toggle View - Padding and Margin ---
+//    ■ - Can I generate divs that show margin and padding?
+//
+//  ## [ORB] Image Guidelines ---
+//    ■ - Create toggle that will add PhotoShop-esque guidelines to all or individual images in the email.
+//    ■ - This will help show any alignment issues that may exist.
+//
+//  ## [ORB] Image Dimensions ---
+//    ■ - Overlay a div on all images that shows their current size as well as their original size.
+//
+//  ## [ORB] Swap Font Stack ---
+//    ■ - Simulate what the email will look like in email clients that do not support @font-face or have Helvetica.
+//    ■ - Remove all instances of "Roboto" from font-family: declarations, and then Helvetica.
+//
+//
+//////////////
+//////////////
+//  BUGS !!!
+//////////////
+//////////////
+//
+//  ## dFrame's scrollbar changes size on page load very briefly. Why?
 //
 //
 //
@@ -87,113 +148,40 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-
-var testing = true;
 var view = getParameterByName("view");
 
-if ( testing && view !== "1" && /\.htm/gi.test(document.URL) ) {
-
-
-
-// ERROR CHECKING FOR ENTIRE PAGE
-document.querySelector("html").classList.add("error-status");
-document.querySelector("html").classList.toggle("errors");
-//
-
-
-//////////////////////////////////////
-//////////////////////////////////////
-//////////////////////////////////////
-//////////////////////////////////////
-
-//////
-//////
-////// Global variables
-//////
-//////
-
-
-// Dropbox
-  dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
-  // dbx = new Dropbox({ accessToken: '#' });
-
-var localUserPath = "file:///Users/jameskupczak";
-
-//
-var pageUrl = document.URL;
-
-var fileUrl = pageUrl.replace(/.+\//gi, "");
+if ( view !== "1" && /\.htm/gi.test(document.URL) ) {
 
 ///////////
-///// Determine location of the file you're currently viewing.
+///////////
+///////////
+//// async
+///////////
+///////////
 ///////////
 
-if ( /dropboxusercontent/gi.test(pageUrl) ) {
-  var onDropbox = true;
-} else if ( /file:\/\/\//gi.test(pageUrl) ) {
-  var onLocal = true;
-} else if ( /\/\/localhost\:/gi.test(pageUrl) ) {
-  var onLocalServer = true;
-  if ( /localhost\:4567/gi.test(pageUrl) ) {
-    var onMiddleman = true;
-  }
-}
+// .onload is crap, if an image is having trouble being loaded in the DOM, this thing never fires. Not even after the image fully fails to load.
+// What was I waitng for the body to finish loading ANYWAY?
 
-if ( /a/gi.test(pageUrl) ) {
-  var inLocalDbFolder = true;
-}
+// THIS HAS BEEN MOVED TO ITS OWN SCRIPT THAT LOADS AT document_start
 
-///////////
-///// Determine type of email - Non-Subscriber versus Subscriber, fox, hs, etc.
-///////////
+// document.body.onload = function() {
 
-var emailSubType;
-if ( /\-ns[\.\-]/gi.test(pageUrl) ) {
-  emailSubType = "ns"
-} else if ( /\-sub[\.\-]/gi.test(pageUrl) ) {
-  emailSubType = "sub"
-}
-if ( /\-Fox\-/gi.test(pageUrl) ) {
-  emailSubType = "fox"
-}
-if ( /\-HS\-/gi.test(pageUrl) ) {
-  emailSubType = "hs"
-}
-if ( /\-DR\-/gi.test(pageUrl) ) {
-  emailSubType = "dr"
-}
+  // // Get dropbox access token from chrome.storage.
+  // chrome.storage.sync.get("dpToken", function(items) {
+  //   if (!chrome.runtime.error) {
+  //     // console.log(items);
+  //     dbx = new Dropbox({ accessToken: items.dpToken });
+  //     console.warn("Dropbox access token retrieved.")
+  //   } else {
+  //     console.warn("Could not retrieve Dropbox access token from chrome.storage.sync.")
+  //   }
+  // });
 
-///////////
-///// Determine audience - MedBridge versus Outside Organization
-///// Healthsouth, Drayer PT, Fox Rehab
-///////////
-
-var outsideOrg = false;
-if ( /\-(HS|DR|Fox)\-/gi.test(pageUrl) ) {
-  outsideOrg = true;
-}
+// }
 
 
-///////////
-///// Determine if this is a sale or presale or neither
-///////////
 
-var emailAnySale
-var emailSale
-var emailPresale
-if ( /\-Sale\-/gi.test(pageUrl) ) {
-  emailSale = true;
-  emailAnySale = true;
-} else if ( /\-Presale\-/gi.test(pageUrl) ) {
-  emailPresale = true;
-  emailAnySale = true;
-
-}
-
-///////////
-///// Get Discipline
-///////////
-var emailDisc = getDisciplineId(pageUrl);
 
 
 
@@ -230,15 +218,15 @@ var emailDisc = getDisciplineId(pageUrl);
 //
 //
 //       // Get the local path
-//       var localPath = pageUrl.replace(fileUrl, "");
+//       var localPath = pageUrl.replace(fileName, "");
 //       // console.log("localPath = " + localPath);
 //
 //       // Is this sub or non-sub
 //       if ( /-ns(\.|-)/gi.test(pageUrl) ) {
-//         localIdNs = fileUrl
+//         localIdNs = fileName
 //         // console.log("localIdNs = " + localIdNs);
 //       } else if ( /-ns(\.|-)/gi.test(pageUrl) ) {
-//         localIdSub = fileUrl
+//         localIdSub = fileName
 //         // console.log("localIdSub = " + localIdSub);
 //       }
 //
@@ -313,25 +301,58 @@ var emailDisc = getDisciplineId(pageUrl);
   //// Get the page's HTML and Doctype
   //////
 
-  var cleanedOriginalHtml = "";
+  var savedDocType = "";
 
   // We need a doctype first. Reassemble the doctype if there is one in the code.
   if (document.doctype && document.doctype.name) {
-    cleanedOriginalHtml = "<!doctype " + document.doctype.name;
+    savedDocType = "<!doctype " + document.doctype.name;
     if (document.doctype.publicId) {
-      cleanedOriginalHtml += " PUBLIC \"" + document.doctype.publicId;
+      savedDocType += " PUBLIC \"" + document.doctype.publicId;
     }
     if (document.doctype.systemId) {
-      cleanedOriginalHtml += "\" \"" + document.doctype.systemId + '">';
+      savedDocType += "\" \"" + document.doctype.systemId + '">';
     }
   }
 
-  // Next add in the document's markup. Everything inside the <html> tag and including the <html> tag.
-  cleanedOriginalHtml +=  document.documentElement.outerHTML;
+  // Create a copy of the original HTML
+  var cleanedOriginalHtml = savedDocType;
+  cleanedOriginalHtml += document.documentElement.outerHTML;
+
+  // Create the desktop and mobile versions
+  var cleanedDesktopHtml = savedDocType;
+  var cleanedMobileHtml = savedDocType;
+
+    // Add dFrame.css/mFrame.css
+    var toolkitStyle = document.createElement("link");
+    toolkitStyle.href = chrome.extension.getURL('css/dFrame.css');
+    toolkitStyle.id = "debug-unique-style-block";
+    toolkitStyle.className = "debug";
+    toolkitStyle.rel = "stylesheet";
+    toolkitStyle.type = "text/css";
+    document.head.appendChild(toolkitStyle);
+
+    // Add allFrames.css
+    var globalToolkitStyle = document.createElement("link");
+    globalToolkitStyle.href = chrome.extension.getURL('css/allFrames.css');
+    globalToolkitStyle.id = "debug-global-style-block";
+    globalToolkitStyle.className = "debug";
+    globalToolkitStyle.rel = "stylesheet";
+    globalToolkitStyle.type = "text/css";
+    document.head.appendChild(globalToolkitStyle);
+
+    // Next add in the document's markup. Everything inside the <html> tag and including the <html> tag.
+    cleanedDesktopHtml += document.documentElement.outerHTML;
+
+    document.getElementById("debug-unique-style-block").setAttribute("href", chrome.extension.getURL('css/mFrame.css'))
+    cleanedMobileHtml += document.documentElement.outerHTML;
 
   // Remove all <script> tags. HTML emails cannot have them. We don't design them in there, but if you're viewing this page with Middleman then there will be some injected <script> tags that can cause us issues. These <script> tags allow Middleman to reload the page when changes to the file are made. We don't need them in our dFrame or mFrame potentially mucking things up.
   // Also removes <object> tags. Which is also injected by Middleman (and MM sometimes tries to remove it itself and fails)
+  // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+
   cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+  cleanedDesktopHtml  = cleanedDesktopHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+  cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
 
 
 ////////////////////
@@ -397,70 +418,9 @@ var emailDisc = getDisciplineId(pageUrl);
 
   var domCopy = domCopy.contentWindow.document;
 
-////////////////////
-////////////////////
-////////////////////
-///
-///    Check chrome.storage for saved link IDs
-///
-////////////////////
-////////////////////
-////////////////////
-
-//
-// var promise = new Promise(function(resolve, reject) {
-//   // do a thing, possibly async, then…
- var key = pageUrl.replace(/(.+\/)/gi, "");
-//   chrome.storage.sync.get(key,function(result){
-//     console.log("key");
-//
-//     var dropboxId = result[key]["d"];
-//     console.log(result[key]["d"]);
-//
-//     var trelloId = result[key]["t"];
-//     console.log(result[key]["t"]);
-//   });
-//
-//   return trelloId
-//
-//   if ( trelloId ) {
-//     resolve("Stuff worked!");
-//     console.log("Stuff worked!");
-//   }
-//   else {
-//     reject(Error("It broke"));
-//     console.log("It broke");
-//   }
-// });
-//
-// promise.then(function(result) {
-//   console.log("success"); // "Stuff worked!"
-//   console.log(result); // "Stuff worked!"
-// }, function(err) {
-//   console.log("error"); // Error: "It broke"
-//   console.log(err); // Error: "It broke"
-// });
-
-
-
-// get
-// var key = pageUrl.replace(/(.+\/)/gi, "");
-// chrome.storage.promise.sync.get(key).then(function(result) {
-//   // resolved
-//   console.log("resolved")
-//   console.log(result); // => {'foo': 'bar'}
-//   console.log(result[key]["t"]); // => {'foo': 'bar'}
-//   var trelloId = result[key]["t"];
-// }, function(error) {
-//   // rejected
-//   console.log("rejected");
-//   console.log(error);
-// });
-
-
-
 
 //////////
+
 
   // Create QA Wrapper
   var qaWrapper = document.createElement("div");
@@ -485,7 +445,7 @@ var emailDisc = getDisciplineId(pageUrl);
     desktopIframeWrapper.appendChild(desktopIframe)
 
     desktopIframe.contentWindow.document.open();
-    desktopIframe.contentWindow.document.write(cleanedOriginalHtml);
+    desktopIframe.contentWindow.document.write(cleanedDesktopHtml);
     desktopIframe.contentWindow.document.close();
 
     // Apply the desktop iframes document object to a variable
@@ -498,15 +458,11 @@ var emailDisc = getDisciplineId(pageUrl);
     // - Prevent flash of contenteditable cursor when spell check is activated.
     //
     var dStyleElement = dFrame.createElement("style");
-    dStyleElement.appendChild(dFrame.createTextNode("html { overflow-y: scroll; } .spellcheck body { color:transparent; }") );
+    // Experimenting with position .debug on page load to prevent the scrollbar from jumping around while the HTML waits for dFrame.css to load.
+    dStyleElement.appendChild(dFrame.createTextNode("html { overflow-y: scroll; } .spellcheck body { color:transparent; } ") );
     dFrame.getElementsByTagName("head")[0].appendChild(dStyleElement);
 
-    // Add dFrame.css
-    var dFrameStyles = document.createElement("link");
-    dFrameStyles.href = chrome.extension.getURL('css/dFrame.css');
-    dFrameStyles.rel = "stylesheet";
-    dFrameStyles.type = "text/css";
-    dFrame.head.appendChild(dFrameStyles);
+    //////////////
 
     // Add allFrames.js
         // var dFrameAllFramesScript = document.createElement("script");
@@ -517,6 +473,11 @@ var emailDisc = getDisciplineId(pageUrl);
     var dFrameFrameScript = document.createElement("script");
     dFrameFrameScript.src = chrome.extension.getURL('js/dFrame.js');
     insertAfter(dFrameFrameScript, dFrame.body);
+
+  /////////
+  /////////
+  /////////
+  /////////
 
   var mobileIframeWrapper = document.createElement("div");
   mobileIframeWrapper.className = "mobile-view-wrapper";
@@ -532,11 +493,26 @@ var emailDisc = getDisciplineId(pageUrl);
     mobileDeviceWrapper.appendChild(mobileIframe)
 
     mobileIframe.contentWindow.document.open();
-    mobileIframe.contentWindow.document.write(cleanedOriginalHtml);
+    mobileIframe.contentWindow.document.write(cleanedMobileHtml);
     mobileIframe.contentWindow.document.close();
+
+    // Apply the mobile iframes document object to a variable
+    var mFrame = mobileIframe.contentDocument;
+
+    ////////
+    ////////
+    ////////
 
     var mobileIframeSetting = document.createElement("div");
     mobileIframeSetting.className = "mobile-iframe-settings";
+
+    var mWidth4 = document.createElement("div");
+    mWidth4.id = "mobile-custom";
+    mWidth4.className = "show-landscape";
+    var mWidth4Text = document.createTextNode("Custom");
+    mWidth4.appendChild(mWidth4Text);
+    mWidth4.addEventListener("click", toggleCustomMobileWidths, false);
+    mobileIframeSetting.appendChild(mWidth4);
 
     var mWidth1 = document.createElement("div");
     mWidth1.id = "mobile-320";
@@ -564,14 +540,6 @@ var emailDisc = getDisciplineId(pageUrl);
     mWidth3.appendChild(mWidth3Text);
     mWidth3.addEventListener("click", togglePerspective, false);
     mobileIframeSetting.appendChild(mWidth3);
-
-    var mWidth4 = document.createElement("div");
-    mWidth4.id = "mobile-custom";
-    mWidth4.className = "show-landscape";
-    var mWidth4Text = document.createTextNode("Custom");
-    mWidth4.appendChild(mWidth4Text);
-    mWidth4.addEventListener("click", toggleCustomMobileWidths, false);
-    mobileIframeSetting.appendChild(mWidth4);
 
     var mWidthExtraOptionsWrapper = document.createElement("div");
     mWidthExtraOptionsWrapper.id = "extra-mobile-widths";
@@ -627,9 +595,6 @@ var emailDisc = getDisciplineId(pageUrl);
       mWidthExtra6.innerHTML = "<div><div>414</div><div>iPhone 6 Plus</div></div>"
       mWidthExtraOptionsWrapper.appendChild(mWidthExtra6);
 
-
-
-
       function togglePerspective(test) {
         console.error(this);
         console.error(this.id);
@@ -643,10 +608,9 @@ var emailDisc = getDisciplineId(pageUrl);
 
     mobileDeviceWrapper.appendChild(mobileIframeSetting);
 
-    // Apply the mobile iframes document object to a variable
-    var mFrame = mobileIframe.contentDocument;
 
     // Quick <style> Injection
+    //
     // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the  styles aren't applied yet.
     // http://stackoverflow.com/a/33079951/556079
     //
@@ -654,15 +618,10 @@ var emailDisc = getDisciplineId(pageUrl);
     // - Prevent flash of contenteditable cursor when spell check is activated.
     //
     var mStyleElement = mFrame.createElement("style");
+        mStyleElement.className = "debug";
     mStyleElement.appendChild(mFrame.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } .spellcheck body { color:transparent; }") );
     mFrame.getElementsByTagName("head")[0].appendChild(mStyleElement);
 
-    // Add mFrame.css
-        // var mFrameStyles = document.createElement("link");
-        // mFrameStyles.href = chrome.extension.getURL('css/mFrame.css');
-        // mFrameStyles.rel = "stylesheet";
-        // mFrameStyles.type = "text/css";
-        // mFrame.head.appendChild(mFrameStyles);
 
     // Add allFrames.js
         // var mFrameAllFramesScript = document.createElement("script");
@@ -676,12 +635,12 @@ var emailDisc = getDisciplineId(pageUrl);
 
 
     // Add allFrames.css
-    var allFramesStyles = document.createElement("link");
-    allFramesStyles.href = chrome.extension.getURL('css/allFrames.css');
-    allFramesStyles.rel = "stylesheet";
-    allFramesStyles.type = "text/css";
-    dFrame.head.appendChild(allFramesStyles);
-    mFrame.head.appendChild(allFramesStyles.cloneNode(true));
+    // var allFramesStyles = document.createElement("link");
+    // allFramesStyles.href = chrome.extension.getURL('css/allFrames.css');
+    // allFramesStyles.rel = "stylesheet";
+    // allFramesStyles.type = "text/css";
+    // dFrame.head.appendChild(allFramesStyles);
+    // mFrame.head.appendChild(allFramesStyles.cloneNode(true));
 
 
     // Allow touch events to mimic mobile behavior
@@ -690,11 +649,137 @@ var emailDisc = getDisciplineId(pageUrl);
 
 
 
-//////////
-////
-////  Create Newsletter QA Control Bar Wrapper
-////
-/////////
+//////////////////////
+//////////////////////
+//////////////////////
+//////////////////////
+
+
+// ERROR CHECKING FOR ENTIRE PAGE
+document.querySelector("html").classList.add("error-status");
+document.querySelector("html").classList.toggle("errors");
+//
+
+
+
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+////                                              ////
+////           Create Global Variables            ////
+////                                              ////
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// Dropbox
+dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
+
+var localUserPath = "file:///Users/jameskupczak";
+
+var pageUrl = document.URL;
+
+///////////
+///// Get the filename.
+///////////
+
+var fileName = getFilename(pageUrl);
+
+///////////
+///// Determine location of the file you're currently viewing.
+///////////
+
+if ( /dropboxusercontent/gi.test(pageUrl) ) {
+  var onDropbox = true;
+} else if ( /file:\/\/\//gi.test(pageUrl) ) {
+  var onLocal = true;
+} else if ( /\/\/localhost\:/gi.test(pageUrl) ) {
+  var onLocalServer = true;
+  if ( /localhost\:4567/gi.test(pageUrl) ) {
+    var onMiddleman = true;
+  }
+}
+
+if ( /a/gi.test(pageUrl) ) {
+  var inLocalDbFolder = true;
+}
+
+///////////
+///// Determine type of email - Non-Subscriber versus Subscriber, fox, hs, etc.
+///////////
+
+var emailSubType;
+if ( /\-ns[\.\-]/gi.test(pageUrl) ) {
+  emailSubType = "ns"
+} else if ( /\-sub[\.\-]/gi.test(pageUrl) ) {
+  emailSubType = "sub"
+}
+if ( /\-Fox\-/gi.test(pageUrl) ) {
+  emailSubType = "fox"
+}
+if ( /\-HS\-/gi.test(pageUrl) ) {
+  emailSubType = "hs"
+}
+if ( /\-DR\-/gi.test(pageUrl) ) {
+  emailSubType = "dr"
+}
+
+///////////
+///// Determine audience - MedBridge versus Outside Organization
+///// Healthsouth, Drayer PT, Fox Rehab
+///////////
+
+var outsideOrg = false;
+if ( /\-(HS|DR|Fox)\-/gi.test(pageUrl) ) {
+  outsideOrg = true;
+}
+
+
+///////////
+///// Determine if this is a sale or presale or neither
+///////////
+
+var emailAnySale
+var emailSale
+var emailPresale
+if ( /\-Sale\-/gi.test(pageUrl) ) {
+  emailSale = true;
+  emailAnySale = true;
+} else if ( /\-Presale\-/gi.test(pageUrl) ) {
+  emailPresale = true;
+  emailAnySale = true;
+
+}
+
+///////////
+///// Get Discipline
+///////////
+var emailDisc = getDisciplineId(pageUrl);
+
+
+
+///////////
+///// Get Date of Email
+///////////
+var emailDate = getEmailDate(fileName);
+
+
+
+///////////
+///// Is this a recent email?
+///////////
+var isRecentEmail = isRecentEmail(emailDate);
+
+
+console.log("Email Date: " + emailDate + " (isRecentEmail = " + isRecentEmail + ")");
+
+
+
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+////                                              ////
+////  Create Newsletter QA Control Bar Wrapper    ////
+////                                              ////
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 
 var controlBar = document.createElement("div");
 controlBar.className = "control-bar";
@@ -711,7 +796,7 @@ qaWrapper.appendChild(controlBar);
 
 //////////
 ////
-////  Create Mobile View Orb
+////  Create Pane Toggle Orb
 ////
 /////////
 
@@ -723,12 +808,29 @@ orbsBottom.appendChild(paneToggleOrb);
 var infobarPaneStatus = 1;
 var mobilePaneStatus = 1;
 
+  // console.error("---");
+
 function paneToggle(infobar, mobile) {
 
-  console.log("infobarPaneStatus: " + infobarPaneStatus);
-  console.log("mobilePaneStatus: " + mobilePaneStatus);
+    if (infoBar.classList.contains('off')) {
+      infobarPaneStatus = 0;
+    } else {
+      infobarPaneStatus = 1;
+    }
+    if (mobileIframeWrapper.classList.contains('off')) {
+      mobilePaneStatus = 0;
+    } else {
+      mobilePaneStatus = 1;
+    }
 
-  // If we got some data from the querystring on page load, process it.
+  // console.error("---");
+  //
+  // console.log("1: infobar: " + infobar);
+  // console.log("1: infobarPaneStatus: " + infobarPaneStatus);
+  // console.log("1: mobile: " + mobile);
+  // console.log("1: mobilePaneStatus: " + mobilePaneStatus);
+
+  // If we got some data, process it.
   if ( infobar >= 0 || mobile >= 0 ) {
 
     if ( infobar === null ) {
@@ -743,7 +845,7 @@ function paneToggle(infobar, mobile) {
       mobilePaneStatus = parseInt(mobile);
     }
 
-  // No querystring data found, update the values based on what we know.
+  // No data found, update the values based on what we know.
   } else {
 
     if ( infobarPaneStatus === 1 && mobilePaneStatus === 1 ) {
@@ -758,25 +860,67 @@ function paneToggle(infobar, mobile) {
     }
 
   }
+  //
+  // console.error("---");
+  //
+  // console.log("2: infobar: " + infobar);
+  // console.log("2: infobarPaneStatus: " + infobarPaneStatus);
+  // console.log("2: mobile: " + mobile);
+  // console.log("2: mobilePaneStatus: " + mobilePaneStatus);
 
   // Update the css based on our values calculated above.
-  if ( infobarPaneStatus === 0 ) {
-    infoBar.classList.add("off");
-    history.replaceState(null,null, updateQueryString("infobar", "0") ); // http://stackoverflow.com/a/32171354/556079
-  } else {
-    infoBar.classList.remove("off");
-    history.replaceState(null,null, updateQueryString("infobar") );
-  }
-  if ( mobilePaneStatus === 0 ) {
-    mobileIframeWrapper.classList.add("off");
-    history.replaceState(null,null, updateQueryString("mobile", "0") );
-  } else {
-    mobileIframeWrapper.classList.remove("off");
-    history.replaceState(null,null, updateQueryString("mobile") );
-  }
+  // if ( infobarPaneStatus !== 2 ) {
+    if ( infobarPaneStatus === 0 ) {
+      infoBar.classList.add("off");
+      history.replaceState(null,null, updateQueryString("infobar", "0") ); // http://stackoverflow.com/a/32171354/556079
+    } else {
+      infoBar.classList.remove("off");
+      history.replaceState(null,null, updateQueryString("infobar") );
+    }
+  // }
+
+  // if ( mobilePaneStatus !== 2 ) {
+    if ( mobilePaneStatus === 0 ) {
+      mobileIframeWrapper.classList.add("off");
+      history.replaceState(null,null, updateQueryString("mobile", "0") );
+    } else {
+      mobileIframeWrapper.classList.remove("off");
+      history.replaceState(null,null, updateQueryString("mobile") );
+    }
+  // }
+
+  // if ( infobarPaneStatus = 2 ) {
+  //   if (infoBar.classList.contains('off')) {
+  //     infobarPaneStatus = 0;
+  //   }
+  // }
+  // if ( mobilePaneStatus = 2 ) {
+  //   if (mobileIframeWrapper.classList.contains('off')) {
+  //     mobilePaneStatus = 0;
+  //   }
+  // }
 
 }
 
+// window.addEventListener('resize', function(event){
+//
+//   console.log(document.documentElement.clientWidth);
+//
+//   if ( document.documentElement.clientWidth > 960 && ( globalpaneStatusMobile === 0 || globalpaneStatusMobile === null || globalpaneStatusInfobar === 0 || globalpaneStatusInfobar === null ) ) {
+//     // console.log("fire function (> 960)");
+//     paneToggle(1, 1);
+//   }
+//
+//   if ( document.documentElement.clientWidth <= 960 && ( globalpaneStatusMobile === 1 || globalpaneStatusMobile === null) ) {
+//     // console.log(globalpaneStatusMobile + ":fire function (<= 960)");
+//     paneToggle(2, 0);
+//   }
+//
+//   if ( document.documentElement.clientWidth <= 580 && ( globalpaneStatusInfobar === 1 || globalpaneStatusInfobar === null) ) {
+//     // console.log(globalpaneStatusInfobar + ": fire function (<= 580)");
+//     paneToggle(0, 2);
+//   }
+// });
 
 //////////
 ////
@@ -1060,10 +1204,12 @@ dropboxOrb.className = "dropbox-orb orb";
 if ( onLocalServer ) { dropboxOrb.classList.add("off") };
 dropboxOrb.href = "https://www.dropbox.com/home/" + pageUrl.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, "");
 orbsTop.appendChild(dropboxOrb);
-  chrome.storage.promise.sync.get(key).then(function(result) {
-    if(typeof result[key] !== "undefined") {
-      if(result[key].hasOwnProperty(["d"])){
-        dropboxOrb.href = "https://dl.dropboxusercontent.com/s/" + result[key]["d"];
+
+
+  chrome.storage.promise.sync.get(fileName).then(function(result) {
+    if(typeof result[fileName] !== "undefined") {
+      if(result[fileName].hasOwnProperty(["d"])){
+        dropboxOrb.href = "https://dl.dropboxusercontent.com/s/" + result[fileName]["d"];
       }
     }
   });
@@ -1425,24 +1571,24 @@ function toggleStyles() {
 
   if ( styleToggle ) {
 
-    let dStyleSheetEle = dFrame.querySelectorAll("style:not(#debug)");
+    let dStyleSheetEle = dFrame.querySelectorAll("style:not(.debug)");
     for (let style of dStyleSheetEle) {
       style.disabled = true;
     }
 
-    let mStyleSheetEle = mFrame.querySelectorAll("style:not(#debug)");
+    let mStyleSheetEle = mFrame.querySelectorAll("style:not(.debug)");
     for (let style of mStyleSheetEle) {
       style.disabled = true;
     }
 
   } else {
 
-    let dStyleSheetEle = dFrame.querySelectorAll("style:not(#debug)");
+    let dStyleSheetEle = dFrame.querySelectorAll("style:not(.debug)");
     for (let style of dStyleSheetEle) {
       style.disabled = false;
     }
 
-    let mStyleSheetEle = mFrame.querySelectorAll("style:not(#debug)");
+    let mStyleSheetEle = mFrame.querySelectorAll("style:not(.debug)");
     for (let style of mStyleSheetEle) {
       style.disabled = false;
     }
@@ -1482,10 +1628,10 @@ function editEmail() {
 ////
 /////////
 
-if ( getABstatus(fileUrl) !== false ) {
+if ( getABstatus(fileName) !== false ) {
   var abOrb = document.createElement("a");
 
-  if ( getABstatus(fileUrl) === "a" ) {
+  if ( getABstatus(fileName) === "a" ) {
     abOrb.className = "ab-orb orb a";
     abOrb.href = document.URL.replace(/\-a\./gi, "-b.");
   } else {
@@ -2356,43 +2502,52 @@ for (let link of linkList) {
     // Once unprotected, articles should never go protected. So I don't think I need to bother checking.
     //
 
-    if ( medbridgeDomainLink && /(blog\/2|\-article)/gi.test(linkHref) ) {
 
-      var isBlogLoaded = false;
-
-
-      if ( /after_affiliate_url/gi.test(linkHref) ) {
-        var blogLinkToCheck = linkHref.replace(/\&.+/gi, "");
-            blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?after_affiliate_url\=\/?/gi, "");
+    if ( medbridgeDomainLink && /(blog\/2|\-article)/gi.test(linkHref) && isRecentEmail ) {
+      if ( onDropbox ) {
+        createLinkErrorRow(linkMarker, "cannot check blog while on dropbox.com");
       } else {
-        var blogLinkToCheck = linkHref.replace(/\/?\?.+/gi, "");
-            blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?\//gi, "");
-      }
 
-      console.log(blogLinkToCheck);
+        console.groupCollapsed(" - Blog Link Check");
 
-      // Check if this URL is already in sessionStorage
-      blogStatus = sessionStorage.getItem(blogLinkToCheck);
+        console.warn("This blog link is a being published in a recent email.");
 
-      // Run a check on this link using the object we found in sessionStorage.
-      if ( blogStatus ) {
+        var isBlogLoaded = false;
 
-        // blogStatus exists in sessionStorage. Check the link using data from sessionStorage.
-        var blogStatusFromStorage = sessionStorage.getItem(blogLinkToCheck).split(",");
-        console.log(blogStatusFromStorage);
+        if ( /after_affiliate_url/gi.test(linkHref) ) {
+          var blogLinkToCheck = linkHref.replace(/\&.+/gi, "");
+              blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?after_affiliate_url\=\/?/gi, "");
+        } else {
+          var blogLinkToCheck = linkHref.replace(/\/?\?.+/gi, "");
+              blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?\//gi, "");
+        }
 
-        checkArticleLink(blogStatusFromStorage);
+        // Check if this URL is already in sessionStorage
+        blogStatus = sessionStorage.getItem(blogLinkToCheck);
 
-        if ( blogStatusFromStorage[2] === "protected" ) {
-          // Article is still protected, open an iframe and check again.
+        // Run a check on this link using the object we found in sessionStorage.
+        if ( blogStatus ) {
+
+          console.log("Found blog data in sessionStorage.");
+
+          // blogStatus exists in sessionStorage. Check the link using data from sessionStorage.
+          var blogStatusFromStorage = sessionStorage.getItem(blogLinkToCheck).split(",");
+          console.log(blogStatusFromStorage);
+
+          checkArticleLink(blogStatusFromStorage);
+
+          if ( blogStatusFromStorage[2] === "protected" ) {
+            // Article is still protected, open an iframe and check again.
+            checkTheBlog(linkHref);
+          }
+
+        } else {
+          console.error("Could not find data in storage for this blog link, checking the blog for data.");
           checkTheBlog(linkHref);
         }
 
-      } else {
-        console.error("blog status object not found in sessionStorage");
-        checkTheBlog(linkHref);
+        console.groupEnd();
       }
-
     }
 
 
@@ -2605,18 +2760,18 @@ for (let link of linkList) {
     ////
     // Discipline Check
 
-    if ( emailDisc !== "multi" && emailDisc !== null && medbridgeDomainLink && !blogLink && !/\/courses\/details\//gi.test(linkHref) ) {
+    if ( emailDisc !== "multi" && emailDisc !== null && medbridgeDomainLink && !blogLink && !/\/courses\/details\//g.test(linkHref) ) {
 
-      if ( emailDisc !== "slp" && (/#\/?speech-language-pathology/gi.test(linkHref) || /-slp(\-|\/|\?)/gi.test(linkHref)) ) {
+      if ( emailDisc !== "slp" && (/#\/?speech-language-pathology/gi.test(linkHref) || /-slp(\-|\/|\?)/g.test(linkHref)) ) {
         createLinkErrorRow(linkMarker, "wrong discipline");
       }
-      if ( ( emailDisc !== "pt" && emailDisc !== "dr" ) && (/#\/?physical-therapy/gi.test(linkHref) || /-pt(\-|\/|\?)/gi.test(linkHref)) ) {
+      if ( ( emailDisc !== "pt" && emailDisc !== "dr" ) && (/#\/?physical-therapy/gi.test(linkHref) || /-pt(\-|\/|\?)/g.test(linkHref)) ) {
         createLinkErrorRow(linkMarker, "wrong discipline");
       }
-      if ( emailDisc !== "at" && (/#\/?athletic-training/gi.test(linkHref) || /-at(\-|\/|\?)/gi.test(linkHref)) ) {
+      if ( emailDisc !== "at" && (/#\/?athletic-training/gi.test(linkHref) || /-at(\-|\/|\?)/g.test(linkHref)) ) {
         createLinkErrorRow(linkMarker, "wrong discipline");
       }
-      if ( emailDisc !== "ot" && (/#\/?occupational-therapy/gi.test(linkHref) || /-ot(\-|\/|\?)/gi.test(linkHref)) ) {
+      if ( emailDisc !== "ot" && (/#\/?occupational-therapy/gi.test(linkHref) || /-ot(\-|\/|\?)/g.test(linkHref)) ) {
         createLinkErrorRow(linkMarker, "wrong discipline");
       }
 
@@ -2739,7 +2894,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Massage
 
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy)/g,
+    find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy|patient engagement tool)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -2754,7 +2909,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
 // All
 findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-  find: /(certification|at no extra cost|[^\u00a0]\u2192)/gi, // Update to add "word &nbsp;&rarr;" as an error
+  find: /(certification(\.| |$)[^p]|at no extra cost|[^\u00a0]\u2192|get your ceu|ceu's)/gi, // Update to add "word &nbsp;&rarr;" as an error
   wrap: 'span',
   wrapClass: "text-error"
 });
@@ -2801,6 +2956,7 @@ if ( !emailAnySale ) {
     wrapClass: "text-error"
   });
 }
+
 
 
 ////////////

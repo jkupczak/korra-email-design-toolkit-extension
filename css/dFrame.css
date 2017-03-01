@@ -138,11 +138,14 @@ html, body {
 
 .link-errors .link-errors-url {
   font-family: 'Courier New';
-  /*font-size:12px;*/
+  font-size:14px;
+  line-height:22px;
   color:#fff;
   padding:15px 15px 15px 25px;
   display:block;
-  width:100%;
+  /*width:100%;*/
+  word-break: break-word;
+  word-wrap: break-word;
   background:rgba(255,255,255,0.2);
 }
 
@@ -175,3 +178,6 @@ html, body {
     50%  {  box-shadow:0 0 0 8px #fff373; background:#fff373; }
     100% {  box-shadow:0 0 0 4px #fff697; background:#fff697; }
   }
+
+
+/* ================= */

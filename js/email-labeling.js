@@ -1,4 +1,4 @@
-// console.warn(">>> email-labeling.js loaded");
+console.info(">>> email-labeling.js loaded");
 
 //
 // Remove default favicon
@@ -29,20 +29,23 @@ if ( /dropbox(.+)?\.com\/(s|home|content_link)/gi.test(pageUrl) ) {
 //
 // Get Filename
 //
-var fileName = pageUrl.replace(/^.+\//gi, "");
+// var fileName = getFilename(pageUrl);
+// console.log(fileName);
+
 
 //
 // Discipline Identifier
 //
 if ( !onMailchimp ) {
-	var disciplineSearch = pageUrl.replace(/^.+\//gi, "");
+	var fileName = getFilename(pageUrl);
+	var disciplineSearch = fileName;
 } else {
 	var availableNode = document.querySelector(".wizard-header") || document.querySelector("h1");
 	var disciplineSearch = availableNode.innerText;
 	// console.log("disciplineSearch = " + disciplineSearch)
 }
 var disciplineId = getDisciplineId(disciplineSearch) || "";
-
+// console.log(disciplineId);
 
 ////
 //// MODIFY PAGE TITLE
@@ -154,7 +157,7 @@ if ( !onMailchimp ) {
 	faviconWrapper.insertBefore(faviconLink, faviconWrapper.firstChild); // Add it to the <head> tag.
 	faviconWrapper.appendChild(faviconLink); // Move it around inside the <head> to fix font issues with the page.
 
-	// console.log("Favicon = " + favicon);
+	console.log("Favicon = " + favicon);
 
 	if ( animatedFavicon ) {
 		setInterval(function() {

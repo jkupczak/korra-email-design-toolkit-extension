@@ -57,9 +57,9 @@ function getCurrentHour() {
   var currentHour = new Date().getHours();
 
   if ( currentHour >= 12 ) {
-    var alarmTime = 5;
-  } else {
     var alarmTime = 15;
+  } else {
+    var alarmTime = 30;
   }
 
   console.log("The current hour is " + currentHour + ".");

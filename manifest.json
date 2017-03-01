@@ -1,46 +1,47 @@
 {
 
-  // Can I add a shortcut key?
-  // I need to figure out how to copy to clipboard.
-  // Only allow clicking/activation when the current URL is relevant?
+  //_Can I add a shortcut key?
+  //_I need to figure out how to copy to clipboard.
+  //_Only allow clicking/activation when the current URL is relevant?
 
   "manifest_version": 2,
 
-  "name": "Marketing Bridge",
+  "name": "MedBridge Marketing Toolkit",
 
-  "background": { // https://developer.chrome.com/extensions/event_pages
+  "background": { //_https://developer.chrome.com/extensions/event_pages
     "scripts": ["js/eventPage.js"],
     "persistent": false
   },
 
   "options_ui": {
     "page": "options.html",
-    // Recommended.
+    //_Recommended.
     //"chrome_style": true
-    // Not recommended; only provided for backwards compatibility,
-    // and will be unsupported in a future version of Chrome (TBD).
+    //_Below_is_not recommended; only provided for backwards compatibility,
+    //_and will be unsupported in a future version of Chrome (TBD).
     "open_in_tab": true
   },
 
   "web_accessible_resources": [
-    "medbridge-chrome-extension.woff",
     "fonts/*",
     "favicons/*",
     "img/*",
     "js/*",
-    "css/*"
+    "css/*",
+    "icons/*"
   ],
 
   "description": "Designed to help automate everyday tasks and provide additional styling and visual clues that can assist designers at a glance. Upgrades the user experience on Dropbox.com, MedBridgeEducation.com, MailChimp, Amazon Web Services, Gmail, and with files saved to the local harddrive.",
-  "version": "1.4",
+  "version": "1.5",
 
   "browser_action": {
-    "default_icon": "icon.png",
+    "default_icon": "icons/128-wrench.png",
 
-    // "default_popup": "popup.html",
-    // "default_script": "scripts.js",
+    //_"default_popup": "popup.html",
+    //_"default_script": "scripts.js",
 
-    "default_title": "Marketing Bridge"
+    //_Title_that_appears_when_hovering_over_tray_icon
+    "default_title": "Toolkit Options"
   },
   "permissions": [
     "cookies",
@@ -58,9 +59,9 @@
     "alarms"
   ],
   "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
+    "16": "icons/16-wrench.png",
+    "48": "icons/48-wrench.png",
+    "128": "icons/128-wrench.png"
   },
   "content_scripts": [
     //https://developer.chrome.com/extensions/content_scripts
@@ -68,9 +69,16 @@
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/global_styles.css"],
-      "js": ["js/global.js"]
+      "js": ["js/global.js"],
+      "run_at": "document_end"
     },
-    { //Newsletter
+    { //Newsletter_run_at_doc_start
+      "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
+      "exclude_matches": ["http://localhost:4567/__middleman/*"],
+      "js": ["js/newsletter-async.js"],
+      "run_at": "document_start"
+    },
+    { //Newsletter_run_at_doc_end
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/normalize.css", "css/alertify.css", "css/alertify.medbridge.css", "css/tingle.css", "css/newsletter_styles.css"],
@@ -108,7 +116,7 @@
       "css": ["css/tingle.css", "css/medbridge_styles.css"],
       "js": ["js/libs/tingle.js", "js/medbridge-courses.js"]
     },
-    { // MedBridge Admin Panel
+    { //_MedBridge Admin Panel
       "matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
       "css": ["css/admin_styles.css"],
       "js": ["js/medbridge-admin.js"]
@@ -117,6 +125,10 @@
       "matches": ["*://*.trello.com/*"],
       "js": ["js/trello.js"],
       "css": ["css/trello-styles.css"]
+    },
+    { //WordPress
+      "matches": ["*://*.washingtonenergy.com/wp-admin/*"],
+      "css": ["css/wordpress.css"]
     },
     { //Gmail
       "matches": ["*://mail.google.com/*"],

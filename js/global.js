@@ -1,8 +1,54 @@
-// console.warn(">>> global.js loaded");
+console.info(">>> global.js loaded");
 
 ////
 ////// Global Functions
 ////
+
+
+//
+// Get Filename
+//
+function getFilename(url) {
+  var filename = url.match(/.+?\.html?/gi);
+      filename = filename[0].replace(/.+\//gi, "");
+
+  return filename
+}
+
+//
+// Process string to find disciplineId
+//
+function getEmailDate(filename) {
+
+  var year = filename.substring(0, 2);
+  var month = filename.substring(4, 5);
+  var day = filename.substring(6, 8);
+
+  var emailDate = "20" + year + "-" + month + "-" + day;
+  emailDate = new Date(emailDate);
+
+  return emailDate
+
+}
+
+
+//
+// Is this a recent email?
+//
+function isRecentEmail(emailDate) {
+
+  var todaysDate = new Date();
+      yesterdaysDate = new Date(todaysDate.setDate(todaysDate.getDate()-1));
+
+  if ( emailDate > yesterdaysDate ) {
+    // console.error("emailDate (" + emailDate + ") is greater than yesterdaysDate (" + yesterdaysDate + ")");
+    return true;
+  } else {
+    // console.error("yesterdaysDate (" + yesterdaysDate + ") is greater than emailDate (" + emailDate + ")");
+    return false;
+  }
+}
+
 
 //
 // Process string to find disciplineId
