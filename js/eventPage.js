@@ -82,6 +82,14 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 });
 
 
+  chrome.storage.sync.get( function(result) {
+    console.error("!");
+    console.log(result);
+    console.log(result.pendingDrafts);
+    console.log(result.urgentDrafts);
+    console.error("#");
+  });
+
 var totalNotificationsSent;
 
 function mailchimpCheckAndAlert() {
@@ -90,18 +98,18 @@ function mailchimpCheckAndAlert() {
 
   getCurrentHour();
 
-  chrome.storage.sync.get("pendingDrafts", function (obj) {
+  chrome.storage.sync.get( function(result) {
 
-    var draftsFromStorage = obj.pendingDrafts;
+    var pendingDraftsFromStorage = obj.pendingDrafts;
+    var urgentDraftsFromSotrage = obj.urgentDrafts;
 
-    if ( draftsFromStorage > 0 ) {
+    if ( urgentDraftsFromSotrage > 0 ) {
 
-      mailchimpDraftsNotification(draftsFromStorage);
+      mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromStorage);
       totalNotificationsSent++
       console.log("Notifications Sent: " + totalNotificationsSent);
 
     }
-
   });
 
   console.warn("10 minutes remaining until the next notification.");
@@ -112,15 +120,15 @@ function mailchimpCheckAndAlert() {
 // mailchimpCheckAndAlert();
 
 
-function mailchimpDraftsNotification(draftsFromStorage) {
+function mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromStorage) {
   if (Notification.permission !== "granted")
     Notification.requestPermission();
   else {
     console.log("Notification opened via eventPage.js.");
-    var notification = new Notification(draftsFromStorage + ' Pending Drafts', {
+    var notification = new Notification(urgentDraftsFromSotrage + ' Urgent Drafts', {
       tag: "mailchimp", // Notifications with the same tag will replace each other instead of all showing up. - https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API#Replacing_existing_notifications
       icon: chrome.extension.getURL('img/mailchimp-notification.png'),
-      body: "Hey there! You have " + draftsFromStorage + " pending drafts in MailChimp, get on it!",
+      body: "Hey there! You have " + urgentDraftsFromSotrage + " urgent drafts in MailChimp (and " + pendingDraftsFromStorage + " total pending drafts), get on it!",
       requireInteraction: true
     });
 

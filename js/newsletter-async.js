@@ -1,3 +1,5 @@
+// console.error( "newsletter-async.js - " + document.documentElement.clientWidth );
+
 console.warn(">>> newsletter-async.js loaded");
 
 //
@@ -12,6 +14,8 @@ console.warn(">>> newsletter-async.js loaded");
 
 
 // Get dropbox access token from chrome.storage.
+
+var dbx;
 
 chrome.storage.sync.get("dpToken", function(items) {
   if (!chrome.runtime.error) {

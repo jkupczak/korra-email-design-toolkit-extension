@@ -1,23 +1,47 @@
+/**************
+ **************
 
-.debug-borders-highlight td {
+  Grid View
+
+***************
+***************/
+
+
+/* Taken from https://litmus.com/builder/045a56e */
+.debug-borders-highlight body *:not(section) {
+    box-shadow: inset 0 0 0 1px white, 0 0 0 1px rgb(37, 167, 253);
+}
+.debug-borders-highlight body *:not(section):hover {
+    box-shadow: 0 0 0 2px rgb(37, 167, 253);
+}
+
+/*.debug-borders-highlight td {
   box-shadow: inset 0 0 0 1px rgba(255,0,0,.25);
 }
 
 .debug-borders-highlight div {
   box-shadow: inset 0 0 0 1px rgba(0,0,255,.25), 0 0 0 1px rgba(0,0,255,.25);
-}
+}*/
 
 
-.td-marker-wrapper {
+/**************
+ **************
+
+  <td> Markers
+
+***************
+***************/
+
+.td-markers-wrapper {
   height:0; width:0;
   box-shadow:none;
 }
 .td-marker {
   position:absolute;
   box-shadow:none !important;
-  pointer-events:none;
-  z-index:999;
-  background:rgba(255,0,0,0.75);
+  /*pointer-events:none;*/
+  z-index:998;
+  background:rgba(255,0,0,0.65);
   color:#fff;
   border-radius:4px 4px 0 0px;
   padding:0px 4px 0px 4px;
@@ -27,4 +51,43 @@
   max-height:15px;
   min-height:15px;
   line-height:15px;
+  cursor:default;
+}
+
+.td-marker:hover {
+  background: rgba(0,0,255,1);
+  z-index:999;
+}
+
+/* */
+
+.img-dims-marker-wrapper {
+  height:0; width:0;
+  box-shadow:none;
+}
+
+/* Flex to center */
+
+.img-dims-marker {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+
+  position: absolute;
+  box-sizing: border-box;
+  /*padding-top:20px;*/
+  box-shadow: inset 0 0 0 3px rgba(12, 126, 54, 1);
+  pointer-events: none;
+  z-index: 999;
+  background: rgba(10, 182, 74, 0.92);
+  color: #fff;
+  /*font-size: 22px;*/
+  /*font-weight:bold;*/
+  text-align:center;
+  font-family:Roboto, 'Courier New', monospace;
+  text-shadow: 0 0 6px rgba(12, 126, 54, 1);
+}
+.img-dims-marker section:nth-child(2) {
+  /*font-size:60%;*/
 }

@@ -257,11 +257,13 @@ function processCampaignList() {
 
   // MailChimp updates #campaigns-list twice on load, the first time it's empty. So we search for a child and then start our script if one exists.
   var campaignCheck = document.querySelector("#campaigns-list > li:first-child")
+
   if (elExists(campaignCheck)) {
 
-
       console.groupCollapsed("Campaign Disciplines");
+
       // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
+      // Add a class to allow custom styling based on discipline.
       let campaignsList = document.querySelectorAll("#campaigns-list li.selfclear");
       for (let campaign of campaignsList) {
 
@@ -278,14 +280,57 @@ function processCampaignList() {
       // Only set it if we're on the main Campaigns page. Olders drafts on past pages are irrelvant.
       if ( /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
 
+
+////
+////
+////
+////  Doesn't work sometimes! Fix!
+////
+////
+////
+
+
         totalDraftsOnPage = 0;
+        totalUrgentDrafts = 0;
 
         // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
         let campaignStatusList = document.querySelectorAll("span.freddicon[title='draft']");
         for (let pendingCampaign of campaignStatusList) {
 
-          pendingCampaign.closest("li").classList.add("draft");
+          // console.error("!");
+
+          // console.log(pendingCampaign);
+          // console.log(pendingCampaign.nextElementSibling);
+          // console.log(pendingCampaign.nextElementSibling.children);
+          // console.log(pendingCampaign.nextElementSibling.querySelector("a").textContent);
+
+          var draftName = pendingCampaign.nextElementSibling.querySelector("a").textContent.trim();
+          draftName = draftName.replace(/[^\d]/gi, "");
+
+          if ( draftName !== "" ) {
+
+            console.log( draftName.substring(0,2) );
+            console.log( draftName.substring(2,4) );
+
+            // Use / and not - http://stackoverflow.com/a/31732581/556079
+            var draftDate = new Date(new Date().getFullYear() + "/" + draftName.substring(0,2) + "/" + draftName.substring(2,4));
+            console.log(draftDate);
+
+            console.log("Draft: " + draftName + " - Draft Date: " + draftDate);
+
+            var draftDeadline = calcWorkingDays(new Date(), 2);
+
+            if ( draftDate <= draftDeadline ) {
+              totalUrgentDrafts++
+              pendingCampaign.closest("li").classList.add("urgent");
+              console.log("totalUrgentDrafts: " + totalUrgentDrafts);
+            }
+
+          }
+
           totalDraftsOnPage++
+          pendingCampaign.closest("li").classList.add("draft");
+          console.log("totalDraftsOnPage: " + totalDraftsOnPage);
 
         }
 
@@ -295,6 +340,13 @@ function processCampaignList() {
         // Save it using the Chrome extension storage API.
         // http://stackoverflow.com/a/14533446/556079
         chrome.storage.sync.set({'pendingDrafts': totalDraftsOnPage}, function() {
+          // Notify that we saved.
+          // message('Settings saved');
+          // console.log('Saved', key, testPrefs);
+          // console.log('Saved', 'pendingDrafts', totalDraftsOnPage);
+          // console.log('Saved', 'pendingDrafts');
+        });
+        chrome.storage.sync.set({'urgentDrafts': totalUrgentDrafts}, function() {
           // Notify that we saved.
           // message('Settings saved');
           // console.log('Saved', key, testPrefs);
@@ -332,12 +384,7 @@ function processCampaignList() {
 
         draftTotalTextWrapper.appendChild(totalDraftsNumber);
 
-        if (totalDraftsOnPage === 1) {
-          var draftPlural = "Draft Pending"
-        } else {
-          var draftPlural = "Drafts Pending"
-        }
-        var draftPluralTextNode = document.createTextNode(draftPlural);
+        var draftPluralTextNode = document.createTextNode("Pending Drafts");
         var draftPluralWrapper = document.createElement("div");
         draftPluralWrapper.appendChild(draftPluralTextNode);
         draftTotalTextWrapper.appendChild(draftPluralWrapper);
@@ -380,10 +427,10 @@ function processCampaignList() {
         if (Notification.permission !== "granted")
           Notification.requestPermission();
         else {
-          var notification = new Notification(totalDraftsOnPage + ' Pending Drafts', {
+          var notification = new Notification(totalUrgentDrafts + ' Urgent Drafts', {
             tag: "mailchimp",
             icon: chrome.extension.getURL('img/mailchimp-notification.png'),
-            body: "Hey there! You have pending drafts in MailChimp, get on it!",
+            body: "Hey there! You have " + totalUrgentDrafts + " urgent drafts in MailChimp (and " + totalDraftsOnPage + " total pending drafts), get on it!",
           });
 
           // Automatically close after 3 minutes.
@@ -399,7 +446,7 @@ function processCampaignList() {
       }
 
       // On page load (once the observer picks up the DOM)
-      if ( totalDraftsOnPage > 0 && /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
+      if ( totalUrgentDrafts > 0 && /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
         notifyMe();
       }
 

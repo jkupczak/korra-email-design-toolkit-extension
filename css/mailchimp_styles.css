@@ -1,3 +1,8 @@
+* {
+  user-select: initial !important;
+  cursor:auto !important;
+}
+
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
@@ -259,10 +264,19 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 /***********/
 /***********/
 
+
 #campaigns-list > .draft {
-  padding-top:30px !important;
-  padding-bottom:30px !important;
-  background:crimson !important;
+  padding-top:10px !important;
+  padding-bottom:10px !important;
+  background:rgba(220,20,60, 0.6) !important;
+  color:#fff;
+  border-bottom:1px solid #a21c37;
+}
+
+#campaigns-list > .urgent {
+  padding-top:20px !important;
+  padding-bottom:20px !important;
+  background:#dc143c !important;
   color:#fff;
   border-bottom:1px solid #a21c37;
 }

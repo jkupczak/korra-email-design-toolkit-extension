@@ -1,4 +1,4 @@
-console.info(">>> email-labeling.js loaded");
+console.warn(">>> email-labeling.js loaded");
 
 //
 // Remove default favicon
@@ -71,6 +71,8 @@ if ( getABstatus(disciplineSearch) === "a" ) {
 };
 
 if ( !onMailchimp ) {
+
+	// getEmailTitle(fileName);
 
 	// Check for legacy labels, like Enterprise instead ENT.
 	if ( disciplineId === "ent" && /\-Enterprise\-/gi.test(fileName) ) {
@@ -157,7 +159,7 @@ if ( !onMailchimp ) {
 	faviconWrapper.insertBefore(faviconLink, faviconWrapper.firstChild); // Add it to the <head> tag.
 	faviconWrapper.appendChild(faviconLink); // Move it around inside the <head> to fix font issues with the page.
 
-	console.log("Favicon = " + favicon);
+	// console.log("Favicon = " + favicon);
 
 	if ( animatedFavicon ) {
 		setInterval(function() {

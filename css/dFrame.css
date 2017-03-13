@@ -15,7 +15,7 @@ html, body {
 /* ********** */
 
 .alignment-guide {
-  width:1px; background:cyan; height:100%; position:fixed; top:0; bottom:0; margin:auto !important; z-index:9999;
+  width:1px; background:cyan; height:100%; position:fixed; top:0; bottom:0; margin:auto !important; z-index:5000;
 }
 
 .link-marker-wrapper {
@@ -37,7 +37,7 @@ html, body {
   position:absolute;
   border-radius:50px;
   width:18px; height:18px;
-  z-index:698;
+  z-index:6000;
   cursor:default;
   user-select: none;
   opacity:1;
@@ -53,7 +53,7 @@ html, body {
 }
 .link-marker:hover {
   transform:scale(1.35,1.35);
-  z-index:700;
+  z-index:9001;
 }
 
 .link-marker.error {
@@ -91,7 +91,7 @@ html, body {
   background:#d20758;
   box-shadow:0 0 30px rgba(0,0,0,0.3), 0 0 10px rgba(0,0,0,0.1);
   transition: margin 3s;
-  z-index:699;
+  z-index:9000;
 }
 
 .link-marker:hover + .link-errors {

@@ -34,6 +34,9 @@
   --enterprise:      #565e61;
   --enterprise-dark: #3f474a;
 
+  --drayer:      #1caa90;
+  --drayer-dark: #0b856f;
+
   --newsletter-bg: #eaedee;
 }
 
@@ -180,4 +183,10 @@
 }
 .mb-pause-2:before {
   content: "\4d";
+}
+.mb-dropbox:before {
+  content: "\4e";
+}
+.mb-gear-a:before {
+  content: "\4f";
 }

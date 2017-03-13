@@ -29,3 +29,13 @@
 .calendar-content .day-cell a {
   font-size:12px;
 }
+/*
+
+.iframe-calendar {
+  position:fixed;
+  z-index:100;
+  bottom:0;
+  left:0;
+  width:200px;
+  height:200px;
+}*/

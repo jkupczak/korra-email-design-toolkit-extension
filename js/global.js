@@ -1,9 +1,41 @@
-console.info(">>> global.js loaded");
+// console.error( "global.js - " + document.documentElement.clientWidth );
+
+console.warn(">>> global.js loaded");
 
 ////
 ////// Global Functions
 ////
 
+
+//
+// Format Date
+//
+function formatDate(date) {
+
+  var monthNames = [
+    "January", "February", "March",
+    "April", "May", "June", "July",
+    "August", "September", "October",
+    "November", "December"
+  ];
+  var dayNames = [
+    "Sunday", "Monday", "Tuesday",
+    "Wednesday", "Thursday", "Friday", "Saturday"
+  ];
+
+  var dayIndex = date.getDay();
+  var dayNumber = date.getDate();
+  var monthIndex = date.getMonth();
+  var year = date.getFullYear();
+
+  // console.log(date);
+  // console.log(dayIndex);
+  // console.log(dayNumber);
+  // console.log(monthIndex);
+  // console.log(year);
+
+  return dayNames[dayIndex] + ', ' + monthNames[monthIndex] + ' ' + dayNumber + ', ' + year;
+}
 
 //
 // Get Filename
@@ -16,19 +48,72 @@ function getFilename(url) {
 }
 
 //
-// Process string to find disciplineId
+// Process filename to find email date
 //
 function getEmailDate(filename) {
 
   var year = filename.substring(0, 2);
-  var month = filename.substring(4, 5);
+  var month = filename.substring(3, 5);
   var day = filename.substring(6, 8);
 
-  var emailDate = "20" + year + "-" + month + "-" + day;
+  // console.error(filename);
+  // console.error(year);
+  // console.error(month);
+  // console.error(day);
+
+  // Use / and not - http://stackoverflow.com/a/31732581/556079
+  var emailDate = "20" + year + "/" + month + "/" + day;
   emailDate = new Date(emailDate);
+
+
+  // if ( isNaN(emailDate) == false ) {
+  //   console.error(emailDate);
+  //   console.error("if");
+  // } else {
+  //     console.error(emailDate);
+  //     console.error("else");
+  //   }
 
   return emailDate
 
+
+
+}
+
+//
+// Get Email Title
+//
+function getEmailTitle(fileName, disciplineId) {
+
+	var re = new RegExp("^.+?-" + disciplineId + "","gi");
+
+  // console.error(fileName);
+
+	var emailTitle = fileName.replace(re, "");
+
+      emailTitle = emailTitle.replace(/\-(ns|sub)|-(a|b)\./gi, "");
+
+      emailTitle = emailTitle.replace(/\.?html?/gi, "");
+
+      emailTitle = emailTitle.replace(/\-/gi, " ");
+
+  return emailTitle;
+
+}
+
+
+
+//
+// Calculate Working days
+//
+function calcWorkingDays(fromDate, days) {
+    var count = 0;
+    while (count < days) {
+        fromDate.setDate(fromDate.getDate() + 1);
+        if (fromDate.getDay() != 0 && fromDate.getDay() != 6) // Skip weekends
+            count++;
+    }
+    return fromDate;
 }
 
 
@@ -54,27 +139,74 @@ function isRecentEmail(emailDate) {
 // Process string to find disciplineId
 //
 function getDisciplineId(string) {
-  // console.log("running function on string: " + string);
 
-  var string = string.trim();
+  var trimmedString = string.trim();
 
-       if ( /-(PT|Physical)(\s|-|\.|$)/gi.test(string) ) { var disciplineId = "pt"; }
-  else if ( /-(AT|Athletic)(\s|-|\.|$)/gi.test(string) ) { var disciplineId = "at"; }
-  else if ( /-OT(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "ot"; }
-  else if ( /-SLP(\s|-|\.|$)/gi.test(string) )           { var disciplineId = "slp"; }
-  else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(string) )   { var disciplineId = "other"; }
-  else if ( /-LMT(\s|-|\.|$)/gi.test(string) )           { var disciplineId = "lmt"; }
-  else if ( /-MT(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "lmt"; }
-  else if ( /-(ENT|Enterprise)(\s|-|\.|$)/gi.test(string) )    { var disciplineId = "ent"; }
-  else if ( /-DR(\s|-|\.|$)/gi.test(string) )            { var disciplineId = "dr"; }
-  else if ( /-Fox(-|\.|$)/gi.test(string) )              { var disciplineId = "fox"; }
-  else if ( /-HS(-|\.|$)/gi.test(string) )               { var disciplineId = "hs"; }
-  else if ( /-Multi(-|\.|$)/gi.test(string) )               { var disciplineId = "multi"; }
+       if ( /-(PT|Physical)(\s|-|\.|$)/gi.test(trimmedString) )    { var disciplineId = "pt";    }
+  else if ( /-(AT|Athletic)(\s|-|\.|$)/gi.test(trimmedString) )    { var disciplineId = "at";    }
+  else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "ot";    }
+  else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { var disciplineId = "slp";   }
+  else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { var disciplineId = "other"; }
+  else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "lmt";   }
+  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "dr";    }
+  else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { var disciplineId = "fox";   }
+  else if ( /-HS(-|\.|$)/gi.test(trimmedString) )                  { var disciplineId = "hs";    }
+  else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "multi"; }
+  else if ( /-(ENT|Enterprise)(\s|-|\.|$)/gi.test(trimmedString) ) { var disciplineId = "ent";   }
   else { var disciplineId = null }
 
-  // console.log("function returned this: " + disciplineId);
+
+  ////
+  console.groupCollapsed("getDisciplineId - " + disciplineId);
+
+    console.log("running function on trimmedString: " + trimmedString);
+    console.log("function returned this: " + disciplineId);
+    console.log(this);
+
+  console.groupEnd();
+  ////
 
   return disciplineId;
+
+}
+
+//
+// Process string to find disciplineId
+//
+function getDisciplineName(id) {
+  if (id === "pt") {
+    return "Physical Therapy"
+  }
+  else if (id === "at") {
+    return "Athletic Training"
+  }
+  else if (id === "ot") {
+    return "Occupational Therapy"
+  }
+  else if (id === "slp") {
+    return "Speech-Language Pathology"
+  }
+  else if (id === "other") {
+    return "Other"
+  }
+  else if (id === "lmt") {
+    return "Massage"
+  }
+  else if (id === "ent") {
+    return "Enterprise"
+  }
+  else if (id === "dr") {
+    return "Drayer"
+  }
+  else if (id === "fox") {
+    return "Fox Rehab"
+  }
+  else if (id === "hs") {
+    return "HealthSouth"
+  }
+  else if (id === "multi") {
+    return "Multi-Discipline"
+  }
 }
 
 
@@ -166,7 +298,12 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-
+//
+// Convert a string to title case (ignore letters after the first letter)
+//
+function toTitleCaseRestricted(str) {
+  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)});
+}
 
 //
 // OPEN BACKGROUND-IMAGE ON AWS

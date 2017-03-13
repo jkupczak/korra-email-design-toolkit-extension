@@ -1,0 +1,28 @@
+.tg-gutter [class*="mod-"] *:not(.resizer) {
+  background: transparent !important;
+}
+
+.tg-gutter div.chip {
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.15) !important;
+  border-radius: 2px !important;
+  overflow: hidden;
+}
+
+.tg-gutter div.chip > dl {
+  border: none !important;
+}
+
+.tg-gutter div.chip .mask {
+  display:none;
+}
+
+/****/
+
+.mod-build      { background: #809bd7 !important; }
+.mod-edits      { background: #c5699f !important; }
+.mod-testing    { background: #b0c569 !important; }
+.mod-schedule   { background: #fbd75b !important; }
+.mod-special    { background: #e76f6f !important; }
+.mod-reporting  { background: #f18657 !important; }
+.mod-planning   { background: #9ce4e1 !important; }
+.mod-list       { background: #fba7d7 !important; }

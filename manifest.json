@@ -75,14 +75,14 @@
     { //Newsletter_run_at_doc_start
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "js": ["js/newsletter-async.js"],
+      "css": ["css/normalize.css", "css/newsletter_styles.css", "css/alertify.css", "css/alertify.medbridge.css", "css/tingle.css"],
+      "js": ["js/libs/Dropbox-sdk.min.js", "js/newsletter-async.js"],
       "run_at": "document_start"
     },
     { //Newsletter_run_at_doc_end
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropboxusercontent.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "css": ["css/normalize.css", "css/alertify.css", "css/alertify.medbridge.css", "css/tingle.css", "css/newsletter_styles.css"],
-      "js": ["js/libs/alertify.js", "js/libs/Dropbox-sdk.min.js", "js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/newsletter.js"],
+      "js": ["js/libs/alertify.js", "js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/newsletter.js"],
       "run_at": "document_end"
     },
     { //Newsletter-Blog
@@ -93,7 +93,8 @@
     { //Email-Labeling_Favicons_and_Title_bars
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "js": ["js/email-labeling.js"]
+      "js": ["js/email-labeling.js"],
+      "run_at": "document_end"
     },
     { //Middleman
       "matches": ["http://localhost:4567/*"],
@@ -133,6 +134,11 @@
     { //Gmail
       "matches": ["*://mail.google.com/*"],
       "css": ["css/gmail-styles.css"]
+    },
+    { //Google-Calendar
+      "matches": ["*://calendar.google.com/*"],
+      "css": ["css/google-calendar-styles.css"],
+      "js": ["js/libs/arrive.js", "js/google-calendar.js"]
     },
     { //miasf
       "matches": ["*://miasf-member-mgt-center.wildapricot.org/widget/directory/*"],
