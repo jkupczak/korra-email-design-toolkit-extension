@@ -40,14 +40,15 @@ console.warn(">>> newsletter.js loaded");
 //
 //  ## Upgrades to WordPress Blog Checker ---
 //    ✓ - [COMPLETE] Only auto-check on page load if the emailDate is in the present, future, or within the last day.
-//    ■ - Do not auto-check on page load if there's data in storage already. Force myself to manually click to initiate a recheck to cut down on excessive page loads.
+//    ✓ - [COMPLETE] Do not auto-check on page load if there's data in storage already. Force myself to manually click to initiate a recheck to cut down on excessive page loads.
+//    ■ - Throw an error if the blog url doesn't actually take us to the blog, or if a page never loads at all.
 //
-//  ## Investigate Using the WordPress API ---
-//    ■ - The current method of checking for protected status is hacky. Considering changing it in the future.
-//    ■ - https://css-tricks.com/using-the-wp-api-to-fetch-posts/
-//    ■ - https://www.cloudways.com/blog/setup-basic-authentication-in-wordpress-rest-api/
-//    ■ - https://code.tutsplus.com/tutorials/wp-rest-api-setting-up-and-using-oauth-10a-authentication--cms-24797
-//    ■ - http://wp-api.org/node-wpapi/
+//    ## Investigate Using the WordPress API ---
+//       ■ - The current method of checking for protected status is hacky. Considering changing it in the future.
+//       ■ - https://css-tricks.com/using-the-wp-api-to-fetch-posts/
+//       ■ - https://www.cloudways.com/blog/setup-basic-authentication-in-wordpress-rest-api/
+//       ■ - https://code.tutsplus.com/tutorials/wp-rest-api-setting-up-and-using-oauth-10a-authentication--cms-24797
+//       ■ - http://wp-api.org/node-wpapi/
 //
 //  ## Modules Menu ---
 //    ■ - Give each module its own mini-menu to hide, duplicate, re-order and edit.
@@ -576,93 +577,115 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
     var mobileIframeSetting = document.createElement("div");
     mobileIframeSetting.className = "mobile-iframe-settings";
 
-    var mWidth4 = document.createElement("div");
-    mWidth4.id = "mobile-custom";
-    var mWidth4Text = document.createTextNode("Custom");
-    mWidth4.appendChild(mWidth4Text);
-    mWidth4.addEventListener("click", toggleCustomMobileWidths, false);
-    mobileIframeSetting.appendChild(mWidth4);
+    // var mWidth4 = document.createElement("div");
+    // mWidth4.id = "mobile-custom";
+    // var mWidth4Text = document.createTextNode("Custom");
+    // mWidth4.appendChild(mWidth4Text);
+    // mWidth4.addEventListener("click", toggleCustomMobileWidths, false);
+    // mobileIframeSetting.appendChild(mWidth4);
 
-    var mWidth1 = document.createElement("div");
-    mWidth1.id = "mobile-320";
-    mWidth1.dataset.mobileWidth = "320";
-    mWidth1.className = "active";
-    var mWidth1Text = document.createTextNode("320");
-    mWidth1.appendChild(mWidth1Text);
-    mWidth1.addEventListener("click", togglePerspective, false);
-    mobileIframeSetting.appendChild(mWidth1);
+    // var mWidth1 = document.createElement("div");
+    // mWidth1.id = "mobile-320";
+    // mWidth1.dataset.mobileWidth = "320";
+    // mWidth1.className = "active";
+    // var mWidth1Text = document.createTextNode("320");
+    // mWidth1.appendChild(mWidth1Text);
+    // mWidth1.addEventListener("click", changeMobileSize, false);
+    // mobileIframeSetting.appendChild(mWidth1);
+    //
+    // var mWidth2 = document.createElement("div");
+    // mWidth2.id = "mobile-360";
+    // mWidth2.id = "mobile-360";
+    // mWidth2.dataset.mobileWidth = "360";
+    // var mWidth2Text = document.createTextNode("360");
+    // mWidth2.appendChild(mWidth2Text);
+    // mWidth2.addEventListener("click", changeMobileSize, false);
+    // mobileIframeSetting.appendChild(mWidth2);
+    //
+    // var mWidth3 = document.createElement("div");
+    // mWidth3.id = "mobile-414";
+    // mWidth3.id = "mobile-414";
+    // mWidth3.dataset.mobileWidth = "414";
+    // var mWidth3Text = document.createTextNode("414");
+    // mWidth3.appendChild(mWidth3Text);
+    // mWidth3.addEventListener("click", changeMobileSize, false);
+    // mobileIframeSetting.appendChild(mWidth3);
+    //
+    // var mWidth3 = document.createElement("div");
+    // mWidth3.id = "mobile-414";
+    // mWidth3.id = "mobile-414";
+    // mWidth3.dataset.mobileWidth = "414";
+    // var mWidth3Text = document.createTextNode("414");
+    // mWidth3.appendChild(mWidth3Text);
+    // mWidth3.addEventListener("click", changeMobileSize, false);
+    // mobileIframeSetting.appendChild(mWidth3);
+    //
+    // var mWidth4 = document.createElement("div");
+    // mWidth4.id = "mobile-480";
+    // mWidth4.id = "mobile-480";
+    // mWidth4.dataset.mobileWidth = "480";
+    // var mWidth4Text = document.createTextNode("480");
+    // mWidth4.appendChild(mWidth4Text);
+    // mWidth4.addEventListener("click", changeMobileSize, false);
+    // mobileIframeSetting.appendChild(mWidth4);
 
-    var mWidth2 = document.createElement("div");
-    mWidth2.id = "mobile-360";
-    mWidth2.id = "mobile-360";
-    mWidth2.dataset.mobileWidth = "360";
-    var mWidth2Text = document.createTextNode("360");
-    mWidth2.appendChild(mWidth2Text);
-    mWidth2.addEventListener("click", togglePerspective, false);
-    mobileIframeSetting.appendChild(mWidth2);
+    mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim active" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>'
 
-    var mWidth3 = document.createElement("div");
-    mWidth3.id = "mobile-480";
-    mWidth3.id = "mobile-480";
-    mWidth3.dataset.mobileWidth = "480";
-    var mWidth3Text = document.createTextNode("480");
-    mWidth3.appendChild(mWidth3Text);
-    mWidth3.addEventListener("click", togglePerspective, false);
-    mobileIframeSetting.appendChild(mWidth3);
+    mobileIframeSetting.addEventListener("click", changeMobileSize, false);
 
-    var mWidthExtraOptionsWrapper = document.createElement("div");
-    mWidthExtraOptionsWrapper.id = "extra-mobile-widths";
-    mWidthExtraOptionsWrapper.className = "extra-mobile-widths-wrapper";
-    mobileDeviceWrapper.appendChild(mWidthExtraOptionsWrapper);
+    // var mWidthExtraOptionsWrapper = document.createElement("div");
+    // mWidthExtraOptionsWrapper.id = "extra-mobile-widths";
+    // mWidthExtraOptionsWrapper.className = "extra-mobile-widths-wrapper";
+    // mobileDeviceWrapper.appendChild(mWidthExtraOptionsWrapper);
+    //
+    // function toggleCustomMobileWidths() {
+    //   mWidthExtraOptionsWrapper.style.display = "flex";
+    //   mWidthCustomInput.autofocus = "true";
+    //   console.log(mWidthExtraOptionsWrapper);
+    // }
+    //
+    // var mWidthCustomInputWrapper = document.createElement("div");
+    // mWidthCustomInputWrapper.id = "custom-mobile-width";
+    //
+    // var mWidthCustomInput = document.createElement("input");
+    // mWidthCustomInput.type = "number";
+    // mWidthCustomInput.placeholder = "Custom Width";
+    // mWidthCustomInput.max = "480";
+    // mWidthCustomInput.maxLength = "3";
+    // mWidthCustomInput.pattern = "[0-9]";
+    //
+    // mWidthCustomInputWrapper.appendChild(mWidthCustomInput);
+    // mWidthExtraOptionsWrapper.appendChild(mWidthCustomInputWrapper);
 
-    function toggleCustomMobileWidths() {
-      mWidthExtraOptionsWrapper.style.display = "flex";
-      mWidthCustomInput.autofocus = "true";
-      console.log(mWidthExtraOptionsWrapper);
-    }
-
-    var mWidthCustomInputWrapper = document.createElement("div");
-    mWidthCustomInputWrapper.id = "custom-mobile-width";
-
-    var mWidthCustomInput = document.createElement("input");
-    mWidthCustomInput.type = "number";
-    mWidthCustomInput.placeholder = "Custom Width";
-    mWidthCustomInput.max = "480";
-    mWidthCustomInput.maxLength = "3";
-    mWidthCustomInput.pattern = "[0-9]";
-
-    mWidthCustomInputWrapper.appendChild(mWidthCustomInput);
-    mWidthExtraOptionsWrapper.appendChild(mWidthCustomInputWrapper);
-
-      var mWidthExtra1 = document.createElement("div");
-      mWidthExtra1.className = "extra-width";
-      mWidthExtra1.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
-      mWidthExtraOptionsWrapper.appendChild(mWidthExtra1);
-
-      var mWidthExtra2 = document.createElement("div");
-      mWidthExtra2.className = "extra-width";
-      mWidthExtra2.innerHTML = "<div>477</div><div>iPhone 6</div>"
-      mWidthExtraOptionsWrapper.appendChild(mWidthExtra2);
-
-      var mWidthExtra3 = document.createElement("div");
-      mWidthExtra3.className = "extra-width";
-      mWidthExtra3.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
-      mWidthExtraOptionsWrapper.appendChild(mWidthExtra3);
-
-      var mWidthExtra4 = document.createElement("div");
-      mWidthExtra4.className = "extra-width";
-      mWidthExtra4.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
-      mWidthExtraOptionsWrapper.appendChild(mWidthExtra4);
-
-      var mWidthExtra5 = document.createElement("div");
-      mWidthExtra5.className = "extra-width";
-      mWidthExtra5.innerHTML = "<div><div>375</div><div>iPhone 6</div></div>"
-      mWidthExtraOptionsWrapper.appendChild(mWidthExtra5);
-
-      var mWidthExtra6 = document.createElement("div");
-      mWidthExtra6.className = "extra-width";
-      mWidthExtra6.innerHTML = "<div><div>414</div><div>iPhone 6 Plus</div></div>"
-      mWidthExtraOptionsWrapper.appendChild(mWidthExtra6);
+      // var mWidthExtra1 = document.createElement("div");
+      // mWidthExtra1.className = "extra-width";
+      // mWidthExtra1.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
+      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra1);
+      //
+      // var mWidthExtra2 = document.createElement("div");
+      // mWidthExtra2.className = "extra-width";
+      // mWidthExtra2.innerHTML = "<div>477</div><div>iPhone 6</div>"
+      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra2);
+      //
+      // var mWidthExtra3 = document.createElement("div");
+      // mWidthExtra3.className = "extra-width";
+      // mWidthExtra3.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
+      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra3);
+      //
+      // var mWidthExtra4 = document.createElement("div");
+      // mWidthExtra4.className = "extra-width";
+      // mWidthExtra4.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
+      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra4);
+      //
+      // var mWidthExtra5 = document.createElement("div");
+      // mWidthExtra5.className = "extra-width";
+      // mWidthExtra5.innerHTML = "<div><div>375</div><div>iPhone 6</div></div>"
+      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra5);
+      //
+      // var mWidthExtra6 = document.createElement("div");
+      // mWidthExtra6.className = "extra-width";
+      // mWidthExtra6.innerHTML = "<div><div>414</div><div>iPhone 6 Plus</div></div>"
+      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra6);
 
       function hideMobileWrapper() {
         mobileIframeWrapper.classList.toggle('off');
@@ -671,34 +694,39 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
     mobileDeviceWrapper.appendChild(mobileIframeSetting);
 
 
-      function togglePerspective(width) {
-        if ( typeof width === 'string' || width instanceof String ) {
-          console.error(width);
-          var widthToSet = width + "px";
-          console.log("if");
+    function changeMobileSize(width) {
 
-          document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
-          document.querySelector(".mobile-iframe-settings [data-mobile-width='"+ width + "']").classList.add("active");
+      if ( typeof width === 'string' || width instanceof String ) {
+        console.error(width);
+        var widthToSet = width + "px";
+        console.log("if");
 
-        } else {
-          var widthToSet = this.dataset.mobileWidth + "px";
-          history.replaceState(null,null, updateQueryString("mobilewidth", this.dataset.mobileWidth) );
+        document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
+        document.querySelector(".mobile-iframe-settings [data-mobile-width='"+ width + "']").classList.add("active");
 
-          document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
-          this.classList.add("active");
+      } else {
 
-          console.log(this);
-          console.log(this.id);
-          console.log(this.dataset.mobileWidth);
+        if (typeof(event) !== "undefined") {
+          if (event.target.dataset.mobileWidth !== undefined) {
+            var clickedSize = event.target;
+            var selectedSize = event.target.dataset.mobileWidth;
 
+            var widthToSet = selectedSize + "px";
+            history.replaceState(null,null, updateQueryString("mobilewidth", selectedSize) );
+
+            document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
+            clickedSize.classList.add("active");
+          }
         }
-        mobileDeviceWrapper.style.width = widthToSet
-      }
 
-      if ( typeof getParameterByName("mobilewidth") === 'string' || getParameterByName("mobilewidth") instanceof String ) {
-        togglePerspective(getParameterByName("mobilewidth"));
-        console.log("mobile width change");
       }
+      mobileDeviceWrapper.style.width = widthToSet
+    }
+
+    if ( typeof getParameterByName("mobilewidth") === 'string' || getParameterByName("mobilewidth") instanceof String ) {
+      changeMobileSize(getParameterByName("mobilewidth"));
+      console.log("mobile width change");
+    }
 
 
     // Quick <style> Injection
@@ -899,6 +927,7 @@ var emailTitle = getEmailTitle(fileName, emailDisc);
 ///// Get Date of Email
 ///////////
 var emailDate = getEmailDate(fileName);
+var emailMonthAbbr = getMonthAbbr(emailDate);
 
 
 ///////////
@@ -912,6 +941,7 @@ var isRecentEmail = isRecentEmail(emailDate);
 ///////////
 var totalErrors = 0;
 var totalLinkErrors = 0;
+var totalLinkWarnings = 0;
 var totalTextErrors = 0;
 
 ///////////
@@ -937,6 +967,7 @@ console.groupCollapsed("Global variables based on filename");
 
   console.group("Date");
     console.log("emailDate = " + emailDate);
+    console.log("emailDate (month) = " + emailDate.getMonth() + " | " + getMonthAbbr(emailDate));
     console.log("isRecentEmail = " + isRecentEmail);
   console.groupEnd();
 
@@ -1520,6 +1551,22 @@ function swapUrl() {
 
 //////////
 ////
+////  Check to Blog
+////
+/////////
+
+var blogOrb = document.createElement("div");
+blogOrb.id = "blog-orb";
+blogOrb.className = "blog-orb orb glyph";
+blogOrb.addEventListener("click", runCheckTheBlog, false);
+orbsBottom.appendChild(blogOrb);
+
+function runCheckTheBlog() {
+  checkTheBlog();
+}
+
+//////////
+////
 ////  Create Borders/Dimensions Orb
 ////
 /////////
@@ -2038,10 +2085,10 @@ function toggleImgDims() {
   //
 
   // Destory the td markers if they exist, create the wrapper for them if they do not.
-  if ( elExists(dFrame.getElementById("img-dims")) ) {
+  if ( elExists(dFrame.getElementById("img-dims-markers")) ) {
 
-    destroy(dFrame.getElementById("img-dims"));
-    destroy(mFrame.getElementById("img-dims"));
+    destroy(dFrame.getElementById("img-dims-markers"));
+    destroy(mFrame.getElementById("img-dims-markers"));
 
   } else {
 
@@ -2080,13 +2127,13 @@ function toggleImgDims() {
       var imgDimsFontSizeLarge = imgClientWidth * 0.176;
       if ( imgDimsFontSizeLarge > 60 ) {
         imgDimsFontSizeLarge = 60;
-      } else if ( imgDimsFontSizeLarge < 10 ) {
-        imgDimsFontSizeLarge = 10;
+      } else if ( imgDimsFontSizeLarge < 12 ) {
+        imgDimsFontSizeLarge = 12;
       }
 
       var imgDimsFontSizeSmall = imgDimsFontSizeLarge * 0.6;
-      if ( imgDimsFontSizeSmall < 8 ) {
-        imgDimsFontSizeSmall = 8;
+      if ( imgDimsFontSizeSmall < 10 ) {
+        imgDimsFontSizeSmall = 10;
       }
 
       imgDimsMarker.style.fontSize = imgDimsFontSizeLarge + "px";
@@ -2098,7 +2145,7 @@ function toggleImgDims() {
         if ( imgDimsFontSizeSmall > 18 ) {
           imgDimsFontSizeSmall = 18;
         }
-        naturalWidthText = "<section style='font-size:" + imgDimsFontSizeSmall + "px'>natural dims not found</section>";
+        naturalWidthText = "<section style='font-size:" + imgDimsFontSizeSmall + "px'>?x?</section>";
 
       } else if ( imgNaturalWidth === imgClientWidth && imgNaturalHeight === imgClientHeight ) {
 
@@ -2181,6 +2228,8 @@ function toggleImgDims() {
 
 
 function plainText() {
+
+  console.error("totalProtectedArticles: " + totalProtectedArticles);
 
   if ( typeof(plainTextTingle) == 'undefined' || plainTextTingle == null ) {
 
@@ -2339,12 +2388,20 @@ function plainText() {
 
         var insertText = ""
 
-        insertText += toTitleCase(module.querySelector("[data-sub-mod='category-title']").innerText.trim()) + "\n\n"
+        if ( elExists(module.querySelector("[data-sub-mod='category-title']")) ) {
+          insertText += toTitleCase(module.querySelector("[data-sub-mod='category-title']").innerText.trim()) + "\n\n"
+        }
+
         insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n";
+
         if ( elExists(module.querySelector("[data-sub-mod='sub-title']")) ) {
           insertText += module.querySelector("[data-sub-mod='sub-title']").innerText.trim() + "\n";
         }
-        insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
+
+        if ( elExists(module.querySelector("[data-sub-mod='summary']")) ) {
+          insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
+        }
+
         insertText += module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
         insertText += module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
 
@@ -2546,6 +2603,8 @@ modLinkToggle.className = "toggle";
 modLinkToggle.addEventListener("click", toggleLinkMarkers, false);
 document.querySelector(".mod-link-checker .title").appendChild(modLinkToggle);
 
+var linkMarkersToggle = false;
+
 function toggleLinkMarkers() {
 
   if ( this.nodeType !== 1 ) {
@@ -2555,7 +2614,15 @@ function toggleLinkMarkers() {
   } else {
     dFrame.getElementById("link-markers").classList.toggle("hidden");
   }
-  history.replaceState(null,null, updateQueryString("links", "0") );
+
+  linkMarkersToggle = !linkMarkersToggle;
+
+  if ( linkMarkersToggle ) {
+    history.replaceState(null,null, updateQueryString("links", "0") );
+  } else {
+    history.replaceState(null,null, updateQueryString("links") );
+  }
+
 }
 
 
@@ -2705,6 +2772,151 @@ if (typeof moduleSettingsMenu != 'undefined') {
 ////////////
 ////////////
 
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+
+    var totalProtectedArticles = 0;
+
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+
+    function pinLinkMarker() {
+      // http://stackoverflow.com/a/8454104/556079
+      this.nextSibling.style.display = this.nextSibling.style.display === 'block' ? '' : 'block';
+    }
+
+    ////////
+    ////////
+    ////////
+
+    function unpinLinkMarker() {
+      // http://stackoverflow.com/a/6042235/556079
+      var flag = 0;
+
+      this.addEventListener("mousemove", function(){
+        flag = 1;
+      }, false);
+
+      this.addEventListener("mouseup", function(){
+        if(flag === 0){
+          this.style.display = "";
+        }
+      }, false);
+    }
+
+    ////////
+    ////////
+    ////////
+
+    // Function to handle creating error markers, error tags (that explain the error), and incrementing the error counter.
+    function createLinkErrorRow(link, msg, warning) {
+
+      console.log("[" + link.dataset.number + "] " + link);
+      console.error("Error Found: " + msg);
+
+      var linkMarker = dFrame.querySelector("#link-markers .link-marker[data-number='" + link.dataset.number + "']")
+      console.log(linkMarker);
+
+      var errorRow = document.createElement("section");
+      var errorRowText = document.createTextNode(msg);
+      errorRow.appendChild(errorRowText);
+      linkErrorLogNoticeWrapper.appendChild(errorRow);
+
+      if ( warning ) {
+
+        errorRow.classList.add("warning");
+        totalLinkWarnings++
+
+      } else {
+
+        errorRow.classList.add("error");
+
+        link.dataset.error = "true";
+        linkMarker.classList.add("error");
+
+        totalLinkErrors++
+        linkErrors++
+        totalErrors++
+
+        linkMarker.innerHTML = linkErrors;
+
+      }
+
+    }
+
+    ////////
+    ////////
+    ////////
+
+    ///////////
+    //
+    //  Function to check the blog for data on an article.
+    //
+    ///////////
+    function checkTheBlog(linkHref) {
+
+      if ( linkHref ) {
+
+        console.groupCollapsed("linkHref found, checking blog - " + linkHref);
+
+        // Check if an iframe already exists with this URL by iterating through all relevant iframes in the DOM.
+        let blogCheckList = document.querySelectorAll("iframe.blog-check");
+        for (let blogIframe of blogCheckList) {
+
+          console.log("blogIframe.getAttribute('src') = " + blogIframe.getAttribute("src"));
+          console.log("isBlogLoaded = " + isBlogLoaded);
+
+          if ( blogIframe.getAttribute("src").replace(/[?&]blog\-check\=.+/gi, "") === linkHref ) {
+            isBlogLoaded = true;
+          }
+
+        }
+
+        if ( isBlogLoaded === false ) {
+          console.log("if isBlogLoaded = " + isBlogLoaded);
+
+          // Create an iframe for this link
+          totalBlogIframesOpen++
+          console.log("Creating iframe for link " + i + " | totalBlogIframesOpen = " + totalBlogIframesOpen);
+
+          var blogCheck = document.createElement("iframe");
+              blogCheck.src = linkHref + "&blog-check=" + i;
+              blogCheck.className = "blog-check blog-check-" + i;
+              blogCheck.id = "iframe-" + i;
+          document.body.appendChild(blogCheck);
+
+        } else {
+          console.log("else isBlogLoaded = " + isBlogLoaded);
+        }
+
+        console.info("totalBlogIframesOpen = " + totalBlogIframesOpen);
+
+        console.groupEnd();
+
+      } else {
+
+        console.log("No linkHref found. Looping through all links.");
+
+        let freshBlogCheck = dFrame.querySelectorAll("a");
+        for (let link of freshBlogCheck) {
+
+          if ( /(blog\/2|\-article)/gi.test(link.href) ) {
+            checkTheBlog(link.href);
+          }
+
+        }
+      }
+    }
+
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+
 let linkList = dFrame.querySelectorAll("a");
 var i = 0
 
@@ -2719,6 +2931,7 @@ dFrame.body.appendChild(linkMarkerWrapper);
 
 for (let link of linkList) {
 
+  var linkErrors = 0;
   i++
 
   // Set link to a variable and clean it if it's local.
@@ -2728,7 +2941,7 @@ for (let link of linkList) {
   }
 
   // Create link module in left column.
-  if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) && /\.medbridgeeducation\.com/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
+  if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
 
     var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
 
@@ -2762,6 +2975,7 @@ for (let link of linkList) {
     var linkPosition = getPosition(link, dFrame);
 
     link.classList.add("marked");
+    link.dataset.number = i;
 
     var linkMarker = document.createElement("section");
     linkMarker.className = "link-marker";
@@ -2769,15 +2983,22 @@ for (let link of linkList) {
     linkMarker.style.left = (linkPosition.x - 10) + "px";
     linkMarker.dataset.href = linkHref;
     linkMarker.dataset.number = i;
+    linkMarker.addEventListener("click", pinLinkMarker, false);
     dFrame.getElementById("link-markers").appendChild(linkMarker);
+
 
     var linkErrorLog = document.createElement("section");
     linkErrorLog.className = "link-errors";
+    linkErrorLog.dataset.number = i;
+    linkErrorLog.addEventListener("mousedown", unpinLinkMarker, false);
     insertAfter(linkErrorLog, linkMarker);
-    // linkMarker.appendChild(linkErrorLog);
+
 
     var linkErrorLogURL = document.createElement("section");
     linkErrorLogURL.className = "link-errors-url";
+
+    linkErrorLogURL.innerHTML = "<div class='link-number'>" + i + "</div>"
+
     var linkErrorLogURLTextNode = document.createTextNode(linkHref);
     linkErrorLogURL.appendChild(linkErrorLogURLTextNode);
     linkErrorLog.appendChild(linkErrorLogURL);
@@ -2792,24 +3013,6 @@ for (let link of linkList) {
     //    Validate Links
     //////////////////////////////
     //////////////////////////////
-
-    // Function to handle creating error markers, error tags (that explain the error), and incrementing the error counter.
-    function createLinkErrorRow(linkMarker, msg) {
-
-      linkMarker.classList.add("error");
-
-      var errorRow = document.createElement("section");
-      console.log(msg);
-      var errorRowText = document.createTextNode(msg);
-      errorRow.appendChild(errorRowText);
-      linkErrorLogNoticeWrapper.appendChild(errorRow);
-
-      totalLinkErrors++
-      totalErrors++
-
-      linkMarker.innerHTML = totalLinkErrors;
-
-    }
 
 
     ////////////////
@@ -2862,13 +3065,19 @@ for (let link of linkList) {
       blogLink = false;
     }
 
-    var gaLink
+    var needsGoogleTracking
     if ( medbridgeDomainLink && !outsideOrg && !emailSale ) {
-      gaLink = true;
+      needsGoogleTracking = true;
     } else {
-      gaLink = false;
+      needsGoogleTracking = false;
     }
 
+    var needsPromoCode
+    if ( (emailSubType === "ns" && !outsideOrg && emailDisc !== "ent") && medbridgeDomainLink ) {
+      needsPromoCode = true;
+    } else {
+      needsPromoCode = false;
+    }
 
     ///////////////////////
     ///////////////////////
@@ -2884,8 +3093,23 @@ for (let link of linkList) {
     ////
     // WTF IS THIS ===  !/^(http|https):\/\/[^ "]+$/.test(linkHref)
 
-    if ( !/^mailto:(.+?@.+?\..+|\*\|)/.test(linkHref) && !/\*%7C.+?%7C\*/.test(linkHref) && !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "invalid URL scheme");
+
+  ///////
+  //// Begin Link Check ////
+  ///////
+  if ( !/^mailto/.test(linkHref) ) {
+  ///////
+  ///////
+  ///////
+
+    if ( !/\*%7C.+?%7C\*/.test(linkHref) && !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(linkHref) ) {
+      createLinkErrorRow(link, "invalid URL scheme [1]");
+    }
+
+    // http://stackoverflow.com/a/9284473/556079
+
+    else if ( !/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(linkHref) ) {
+      createLinkErrorRow(link, "invalid URL scheme [2]");
     }
 
 
@@ -2941,7 +3165,7 @@ for (let link of linkList) {
 
     if ( medbridgeDomainLink && /(blog\/2|\-article)/gi.test(linkHref) && isRecentEmail ) {
       if ( onDropbox ) {
-        createLinkErrorRow(linkMarker, "cannot check blog while on dropbox.com");
+        createLinkErrorRow(link, "cannot check blog while on dropbox.com");
       } else {
 
         console.groupCollapsed(" - Blog Link Check");
@@ -2971,19 +3195,21 @@ for (let link of linkList) {
           var blogStatusFromStorage = sessionStorage.getItem(blogLinkToCheck).split(",");
           console.log(blogStatusFromStorage);
 
-          checkArticleLink(blogStatusFromStorage);
+          checkArticleLink(link, blogStatusFromStorage);
 
           if ( blogStatusFromStorage[2] === "protected" ) {
-            // Article is still protected, open an iframe and check again.
 
-            if ( getParameterByName("checkblog") !== "0" ) {
-              checkTheBlog(linkHref);
-            }
+            createLinkErrorRow(link, "run a blog check when ready", "warning");
+
+            // //Article is still protected, open an iframe and check again.
+            // if ( getParameterByName("checkblog") !== "0" ) {
+            //   checkTheBlog(linkHref);
+            // }
           }
 
         } else {
           console.log("Could not find data in storage for this blog link, checking the blog for data.");
-          createLinkErrorRow(linkMarker, "blog data could not be retrieved, try again");
+          createLinkErrorRow(link, "blog data not found in storage, refresh to try again");
 
           if ( getParameterByName("checkblog") !== "0" ) {
             checkTheBlog(linkHref);
@@ -2995,67 +3221,25 @@ for (let link of linkList) {
       }
     }
 
-
-    ///////////
-    //
-    //  Function to check the blog for data on an article.
-    //
-    ///////////
-    function checkTheBlog(linkHref) {
-
-      // Check if an iframe already exists with this URL by iterating through all relevant iframes in the DOM.
-
-      let blogCheckList = document.querySelectorAll("iframe.blog-check");
-      for (let blogIframe of blogCheckList) {
-
-        console.log("blogIframe.getAttribute('src') = " + blogIframe.getAttribute("src"));
-        console.log("isBlogLoaded = " + isBlogLoaded);
-
-        if ( blogIframe.getAttribute("src").replace(/[?&]blog\-check\=.+/gi, "") === linkHref ) {
-          isBlogLoaded = true;
-        }
-
-      }
-
-      if ( isBlogLoaded === false ) {
-        console.log("if isBlogLoaded = " + isBlogLoaded);
-
-        // Create an iframe for this link
-        totalBlogIframesOpen++
-        console.log("Creating iframe for link " + i + " | totalBlogIframesOpen = " + totalBlogIframesOpen);
-
-        var blogCheck = document.createElement("iframe");
-            blogCheck.src = linkHref + "&blog-check=" + i;
-            blogCheck.className = "blog-check blog-check-" + i;
-            blogCheck.id = "iframe-" + i;
-        document.body.appendChild(blogCheck);
-
-      } else {
-        console.log("else isBlogLoaded = " + isBlogLoaded);
-      }
-
-      console.info("totalBlogIframesOpen = " + totalBlogIframesOpen);
-    }
-
     ////-----------------------------////
     ////
     // Every link needs a target attribute.
     if ( !link.hasAttribute("target") ) {
-      createLinkErrorRow(linkMarker, "missing target attribute");
+      createLinkErrorRow(link, "missing target attribute");
     }
 
     ////-----------------------------////
     ////
     // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( gaLink && !/utm_content/gi.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "missing utm");
+    if ( needsGoogleTracking && !/utm_content/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "missing utm");
     }
 
     ////-----------------------------////
     ////
     // DON'T USE UTM - outsideOrg, off domain urls, and Sale emails should not have utms
-    if ( /utm_content/gi.test(linkHref) && !gaLink ) {
-      createLinkErrorRow(linkMarker, "remove utm");
+    if ( /utm_content/gi.test(linkHref) && !needsGoogleTracking ) {
+      createLinkErrorRow(link, "remove utm");
     }
 
     ////
@@ -3063,10 +3247,10 @@ for (let link of linkList) {
     if ( outsideOrg && !blogLink && medbridgeDomainLink ) {
 
       if ( medbridgeWwwLink ) {
-        createLinkErrorRow(linkMarker, "missing whitelabeling");
+        createLinkErrorRow(link, "missing whitelabeling");
       }
       else if ( (emailSubType === "hs" && !/\/healthsouth\./i.test(linkHref)) || (emailSubType === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailSubType === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
-        createLinkErrorRow(linkMarker, "incorrect whitelabeling");
+        createLinkErrorRow(link, "incorrect whitelabeling");
       }
 
     }
@@ -3076,21 +3260,47 @@ for (let link of linkList) {
     if ( /[^#]+\&.+\=/.test(linkHref) || /[^#]+\?.+\=/.test(linkHref) ) {
 
       if ( /\&.+\=/.test(linkHref) && !/\?./.test(linkHref) ) {
-        createLinkErrorRow(linkMarker, "missing ? in query string");
+        createLinkErrorRow(link, "missing ? in query string");
       }
 
       if ( /\?[^#]+\?.+\=/.test(linkHref) ) {
-        createLinkErrorRow(linkMarker, "replace ? with & in query string");
+        createLinkErrorRow(link, "replace ? with & in query string");
       }
 
       // http://stackoverflow.com/a/23959662/556079
-      if ( !/\?([\w-]+(=[\/\w-]*)?(&[\w-]+(=[\/\w-]*)?)*)?$/.test(linkHref) ) {
-        createLinkErrorRow(linkMarker, "invalid query string");
-      }
+      // http://rubular.com/r/kyiKS9OlsM
 
+      // Check the query string without any ending hash
+      var linkHrefNoHash = linkHref.replace(/#.+/, "");
+
+      if ( !/\?([\.\w-]+(=[\.\/\w-]*)?(&[\.\w-]+(=[\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
+        createLinkErrorRow(link, "invalid query string");
+      }
 
     }
 
+
+
+    ////-----------------------------////
+    ////
+    if ( needsPromoCode ) {
+
+      // Links to MedBridge in -ns emails need to use a marketing URL
+      if ( !/\.com\/trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "use a marketing URL");
+      }
+
+      // Spell after_affiliate_url correctly!
+      if ( !/\-article/gi.test(linkHref) && !/after_affiliate_url/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "missing after_affiliate_url");
+      }
+
+      // Check the date in a tracking URL
+      var monthPattern = new RegExp("trk\-" + emailMonthAbbr + "\-", "gi");
+      if ( !monthPattern.test(linkHref) ) {
+        createLinkErrorRow(link, "link should begin with 'trk-" + emailMonthAbbr + "-' to match current month");
+      }
+    }
 
 
 
@@ -3104,7 +3314,7 @@ for (let link of linkList) {
     // console.log("outsideOrg: " + outsideOrg);
     // console.log("medbridgeDomainLink: " + medbridgeDomainLink);
 
-    if ( gaLink ) {
+    if ( needsGoogleTracking ) {
 
       var moduleNumber = link.closest("[data-module-count]");
 
@@ -3117,14 +3327,14 @@ for (let link of linkList) {
 
           if ( !moduleNumberMatch.test(linkHref) ) {
             // console.log( "no match: " + !moduleNumberMatch.test(linkHref) );
-            createLinkErrorRow(linkMarker, "wrong mod #, use " + "mod" + moduleNumber);
+            createLinkErrorRow(link, "wrong mod #, use " + "mod" + moduleNumber);
           } else {
             // console.log( "match: " + !moduleNumberMatch.test(linkHref) );
           }
 
         } else {
 
-          createLinkErrorRow(linkMarker, "missing mod #, use " + "mod" + moduleNumber);
+          createLinkErrorRow(link, "missing mod #, use " + "mod" + moduleNumber);
 
         }
       }
@@ -3141,21 +3351,15 @@ for (let link of linkList) {
         }
 
     if ( link.style.color === '' && (link.textContent !== '' || linkedImg.alt !== '' ) ) {
-      createLinkErrorRow(linkMarker, "missing color in style attribute");
+      createLinkErrorRow(link, "missing color in style attribute");
     }
 
-
-    ////
-    // Links to MedBridge in -ns emails need to use a marketing URL
-    if ( (emailSubType === "ns" && !outsideOrg && emailDisc !== "ent") && medbridgeDomainLink && ( !/\.com\/trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) )  ) {
-      createLinkErrorRow(linkMarker, "use a marketing URL");
-    }
 
 
     ////
     // Check for old fashioned marketing URLS in sub or outsideOrg
     if ( (outsideOrg || emailSubType === "sub" ) && (medbridgeDomainLink && /\.com\/trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
-      createLinkErrorRow(linkMarker, "do not use marketing url");
+      createLinkErrorRow(link, "do not use marketing url");
     }
 
     ////
@@ -3166,17 +3370,17 @@ for (let link of linkList) {
       if ( emailAnySale ) { // Any sale email
 
         if ( emailSubType === "sub" && /medium=email/gi.test(linkHref) ) {
-          createLinkErrorRow(linkMarker, "remove medium=email");
+          createLinkErrorRow(link, "remove medium=email");
         }
 
         if ( emailSubType === "ns" && !/medium=email/gi.test(linkHref) ) {
-          createLinkErrorRow(linkMarker, "add medium=email");
+          createLinkErrorRow(link, "add medium=email");
         }
 
       } else { // Not a sale email
 
         if ( /medium=email/gi.test(linkHref) ) {
-          createLinkErrorRow(linkMarker, "remove medium=email");
+          createLinkErrorRow(link, "remove medium=email");
         }
 
       }
@@ -3191,37 +3395,38 @@ for (let link of linkList) {
 
       // sub=yes is required in blog links.
       if ( blogLink && !/sub=yes/gi.test(linkHref) ) {
-        createLinkErrorRow(linkMarker, "add sub=yes");
+        createLinkErrorRow(link, "add sub=yes");
       }
       // sub=yes should not be in any other links.
       if ( ( !blogLink && !/\-article/gi.test(linkHref) ) && /sub=yes/gi.test(linkHref) ) {
-        createLinkErrorRow(linkMarker, "remove sub=yes");
+        createLinkErrorRow(link, "remove sub=yes");
       }
+
     }
 
     ////
     // Check all links in non-subscriber emails for sub=yes, never use it in ns.
     if ( emailSubType === "ns" && /sub=yes/gi.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "remove sub=yes");
+      createLinkErrorRow(link, "remove sub=yes");
     }
 
     ////
     // Check for existence of https in blog links in sub version
     if ( blogLink && emailSubType === "sub" && /https:\/\//gi.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "blog links cannot be https");
+      createLinkErrorRow(link, "blog links cannot be https");
     }
 
     ////
     // https required
     if ( /http:/gi.test(linkHref) && !/\/blog\//gi.test(linkHref) && medbridgeOrMassageLink ) {
-      createLinkErrorRow(linkMarker, "https missing");
+      createLinkErrorRow(link, "https missing");
     }
 
     ////
     // outsideOrg should not link to home-exercise-program.
     // Use /patient_care/programs/create
     if ( outsideOrg && /\home-exercise-program/gi.test(linkHref) ) {
-      createLinkErrorRow(linkMarker, "outsideOrg uses /patient_care/programs/create instead");
+      createLinkErrorRow(link, "outsideOrg uses /patient_care/programs/create instead");
     }
 
     ////
@@ -3230,16 +3435,16 @@ for (let link of linkList) {
     if ( emailDisc !== "multi" && emailDisc !== null && medbridgeDomainLink && !blogLink && !/\/courses\/details\//g.test(linkHref) ) {
 
       if ( emailDisc !== "slp" && (/#?\/?speech-language-pathology/gi.test(linkHref) || /-slp(\-|\/|\?)/g.test(linkHref)) ) {
-        createLinkErrorRow(linkMarker, "wrong discipline");
+        createLinkErrorRow(link, "wrong discipline");
       }
       if ( ( emailDisc !== "pt" && emailDisc !== "dr" ) && (/#?\/?physical-therapy[^\-]/gi.test(linkHref) || /-pt(\-|\/|\?)/g.test(linkHref)) ) {
-        createLinkErrorRow(linkMarker, "wrong discipline");
+        createLinkErrorRow(link, "wrong discipline");
       }
       if ( emailDisc !== "at" && (/#?\/?athletic-training/gi.test(linkHref) || /-at(\-|\/|\?)/g.test(linkHref)) ) {
-        createLinkErrorRow(linkMarker, "wrong discipline");
+        createLinkErrorRow(link, "wrong discipline");
       }
       if ( emailDisc !== "ot" && (/#?\/?occupational-therapy/gi.test(linkHref) || /-ot(\-|\/|\?)/g.test(linkHref)) ) {
-        createLinkErrorRow(linkMarker, "wrong discipline");
+        createLinkErrorRow(link, "wrong discipline");
       }
 
 
@@ -3248,12 +3453,16 @@ for (let link of linkList) {
     ////
     // NO //support. in outsideOrg
     if ( /\/support\./gi.test(linkHref) && outsideOrg ) {
-      createLinkErrorRow(linkMarker, "://support. not allowed in outsideOrg");
+      createLinkErrorRow(link, "://support. not allowed in outsideOrg");
     }
 
-
-
-
+  ///////
+  //// End Link Check ////
+  ///////
+  }
+  ///////
+  ///////
+  ///////
 
 
     // unused... what was I doing?
@@ -3390,7 +3599,7 @@ findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
 });
 
 // Sub
-if ( emailSubType === "sub" ) {
+if ( emailSubType === "sub" && emailDisc !== "ent" ) {
   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
     find: /(Start for Free|in (an|the) (annual|MedBridge)|Learn More|\bSubscribe)/gi,
     wrap: 'span',
@@ -3461,6 +3670,9 @@ if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrame.body.textContent) ) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+function toggleHelpers() {
+  dFrame.documentElement.classList.toggle("all-helpers-off");
+}
 ////////////
 ////////////
 ////////////
@@ -3473,6 +3685,11 @@ if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrame.body.textContent) ) {
 ////////////
 ////////////
 ////////////
+
+if ( getParameterByName("helpers") === "0" ) {
+  toggleHelpers();
+  console.log("jelpers off");
+}
 
 if ( getParameterByName("img") === "0" ) {
   toggleImages();
@@ -3603,23 +3820,31 @@ if ( getParameterByName("imgdims") === "1" ) {
 
 
     // Need to use this during link checking and again once the postMessages come back. Figure that out.
-    function checkArticleLink(obj) {
+    function checkArticleLink(link, obj) {
       var blogStatusFromStorage = obj;
       // Check Protects/Unprotected
       if ( blogStatusFromStorage[2] === "protected" ) {
-        createLinkErrorRow(linkMarker, "article is protected");
-        alertify.error("An Article is Protected<div>Remember to unprotect all articles before sending out the newsletter.</div>", 0);
+        createLinkErrorRow(link, "article is protected");
+        totalProtectedArticles++;
       }
       // Check Pearl vs Blog
-      if ( gaLink ) {
+      if ( needsGoogleTracking ) {
         if ( blogStatusFromStorage[3] === "blogger" && !/\-blog/i.test(linkHref) ) {
-          createLinkErrorRow(linkMarker, "add 'blog' to utm");
+          createLinkErrorRow(link, "add 'blog' to utm");
         } else if ( blogStatusFromStorage[3] === "pearl" && !/\-pearl/i.test(linkHref) ) {
-          createLinkErrorRow(linkMarker, "add 'pearl' to utm");
+          createLinkErrorRow(link, "add 'pearl' to utm");
         }
       }
+
+      console.error(totalProtectedArticles);
     }
 
+    console.error(totalProtectedArticles);
+
+    if ( totalProtectedArticles > 0 ) {
+      console.error(totalProtectedArticles);
+      alertify.error("1 or more articles are protected<div>Remember to unprotect all articles and re-check their status before sending out the newsletter.</div>", 0);
+    }
 
 
 ///////////////////////////////////////////////////////////////////////////////

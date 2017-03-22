@@ -69,6 +69,7 @@
 /* Flex to center */
 
 .img-dims-marker {
+  padding:2px;
   display:flex;
   align-items: center;
   justify-content: center;

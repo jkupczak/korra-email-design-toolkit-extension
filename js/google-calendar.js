@@ -58,7 +58,7 @@ function colorizer(el, string) {
     el.closest("div.chip").classList.add("mod-list");
   }
 
-  else if ( /Schedule\:/i.test(string) ) {
+  else if ( /Schedul(e|ing)\:/i.test(string) ) {
     el.closest("div.chip").classList.add("mod-schedule");
   }
 

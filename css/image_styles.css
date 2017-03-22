@@ -1,0 +1,271 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+/* Hide scrollbars */
+html::-webkit-scrollbar { width:0px; height:0; background: transparent; }
+
+body {
+
+  font-size:24px;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  color:#fff;
+
+  background-position: 0px 0px, 10px 10px !important;
+  background-size: 20px 20px !important;
+  background-color: white !important;
+  background-image: linear-gradient(45deg, rgb(238, 238, 238) 25%, transparent 25%, transparent 75%, rgb(238, 238, 238) 75%, rgb(238, 238, 238) 100%),linear-gradient(45deg, rgb(238, 238, 238) 25%, transparent 25%, transparent 75%, rgb(238, 238, 238) 75%, rgb(238, 238, 238) 100%) !important;
+
+}
+
+body.dark {
+  background-color: black !important;
+  background-image: linear-gradient(45deg, rgb(17, 17, 17) 25%, transparent 25%, transparent 75%, rgb(17, 17, 17) 75%, rgb(17, 17, 17) 100%),linear-gradient(45deg, rgb(17, 17, 17) 25%, transparent 25%, transparent 75%, rgb(17, 17, 17) 75%, rgb(17, 17, 17) 100%) !important;
+}
+
+img {
+  background: none !important;
+}
+img:hover, .res-media-dragging img {
+  cursor:move;
+  box-shadow: 0 0 0 4px rgb(47, 90, 245);
+  border-radius:2px;
+}
+
+
+.container {
+  display:flex;
+  flex-wrap:wrap;
+  position:fixed;
+  bottom:10px; right:20px;
+}
+.container > div {
+  cursor:default;
+  background:rgba(119, 119, 119, .75);
+  border-radius:3px;
+  height:40px;
+  line-height:40px;
+  margin-left:6px; margin-bottom:10px;
+  text-align: center;
+  user-select:none;
+}
+.container > div:hover, .container > .focused {
+  background:rgb(47, 90, 245);
+}
+
+/* */
+
+.percentage {
+  display:flex;
+  align-items: center;
+  overflow:hidden;
+}
+.percentage:hover {
+  cursor:pointer;
+}
+
+.percentage .perc-control {
+  width:40px;
+  height:40px;
+}
+
+.percentage .percentage-number {
+  font-size:16px;
+  width:50px;
+  min-width:50px;
+  word-wrap: normal;
+  overflow: hidden;
+}
+.percentage .percentage-number:after {
+  content:"%";
+  display: inline;
+}
+
+.percentage > div:hover {
+  /*background:rgb(47, 90, 245);*/
+  background:rgba(0,0,0,0.3);
+}
+
+
+/* */
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  padding:0 5px;
+}
+.wrapper .sizer {
+  display: flex;
+  align-items: center;
+  height:calc(100% - 10px);
+  padding:0 6px;
+  border-radius:2px;
+  /*background:rgba(0,0,0,0.15);*/
+  margin:0 2px;
+  font-size:16px;
+}
+.wrapper .sizer.active {
+  background:rgba(0,0,0,0.3);
+}
+.wrapper .sizer:first-child {
+  margin-left:0;
+}
+.wrapper .sizer:last-child {
+  margin-right:0;
+}
+.wrapper:hover .sizer {
+  background: transparent;
+}
+.wrapper .sizer:hover {
+  box-shadow: 0 0 0 1px rgb(22, 63, 210), inset 0 0 0 3px rgb(22, 63, 210);
+}
+.wrapper:hover .sizer.active {
+  background: rgb(22, 63, 210);
+}
+.wrapper .sizer.active:hover {
+  background: rgb(10, 46, 173);
+  box-shadow: 0 0 0 1px rgb(10, 46, 173), inset 0 0 0 3px rgb(10, 46, 173);
+  cursor:default;
+}
+
+/* */
+
+.dims {
+  /*padding:5px 10px;*/
+  text-align:center;
+  display: flex;
+  align-items: center;
+  padding: 0px 0 0px 4px;
+}
+.dims div {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  border:0;
+  background:transparent;
+  color:#fff;
+  text-align:center;
+  font-size:22px;
+  width:auto;
+  border-radius:2px;
+}
+  .dims .input {
+    padding:2px 6px 0 6px;
+    height:calc(100% - 8px);
+    min-width:50px;
+    justify-content: center;
+    line-height:30px;
+  }
+    .thousand .dims .input { min-width:65px; }
+  .dims .input * {
+    display: none;
+  }
+  .dims .width {
+    margin-right:3px;
+  }
+  .dims .height {
+    margin-left:3px;
+  }
+.dims:hover .input, .dims.focused .input {
+  background:rgb(22, 63, 210);
+}
+div:hover > .input { cursor: pointer; }
+div:hover > .input:focus { cursor: text; }
+
+[contenteditable].input:focus {
+  box-shadow: none;
+  outline:0;
+  background:rgba(0,0,0,0.3);
+}
+
+
+/* */
+
+.dims .reset-to-natural {
+  padding:0;
+  display: flex;
+  cursor:pointer;
+  padding:0 10px 0 7px;
+}
+.dims .reset-to-natural:hover {
+  cursor:pointer;
+}
+.dims .reset-to-natural:not(.disabled):hover svg {
+  animation:spin .2s linear 1 forwards;
+}
+@keyframes spin {
+  0% { transform:rotate(0deg) scale(1.2,1.2); }
+  100% { transform:rotate(360deg) scale(1.2,1.2); }
+}
+
+.dims .reset-to-natural:active {
+  transform: scale(1,1);
+}
+
+.dims .reset-to-natural.disabled {
+  opacity:.35;
+  cursor:default;
+}
+.dims .reset-to-natural.disabled:hover {
+  cursor:default;
+  transform:scale(1,1);
+}
+
+.dims .reset-to-natural svg {
+  width:16px;
+  max-width: 16px;
+  height:16px;
+  max-height: 16px;
+}
+
+
+
+
+
+.text {
+  font-size:16px;
+  padding:0 6px;
+}
+.half-size {
+  cursor:pointer;
+}
+
+.action:hover {
+  cursor:pointer;
+}
+
+.background {
+  width:40px;
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  position: relative;
+}
+.background:hover {
+  cursor: pointer;
+}
+.background:active {
+  bottom:-2px;
+}
+.background:before {
+
+  content:"";
+  display:block;
+  width:34px;
+  height:34px;
+  border-radius:2px;
+
+  background-position: 0px 0px, 10px 10px !important;
+  background-size: 20px 20px !important;
+  background-color: black !important;
+  background-image: linear-gradient(45deg, rgb(45, 45, 45) 25%, transparent 25%, transparent 75%, rgb(45, 45, 45) 75%, rgb(45, 45, 45) 100%),linear-gradient(45deg, rgb(45, 45, 45) 25%, transparent 25%, transparent 75%, rgb(45, 45, 45) 75%, rgb(45, 45, 45) 100%) !important;
+}
+
+.dark .background:before {
+  background-color: white !important;
+  background-image: linear-gradient(45deg, rgb(200, 200, 200) 25%, transparent 25%, transparent 75%, rgb(200, 200, 200) 75%, rgb(200, 200, 200) 100%),linear-gradient(45deg, rgb(200, 200, 200) 25%, transparent 25%, transparent 75%, rgb(200, 200, 200) 75%, rgb(200, 200, 200) 100%) !important;
+}

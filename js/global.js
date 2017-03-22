@@ -6,6 +6,23 @@ console.warn(">>> global.js loaded");
 ////// Global Functions
 ////
 
+//
+// Get Date MMM Month
+//
+function getMonthAbbr(date) {
+
+  var monthNames = [
+    "jan", "feb", "mar",
+    "apr", "may", "jun", "jul",
+    "aug", "sep", "oct",
+    "nov", "dec"
+  ];
+
+  var monthIndex = date.getMonth();
+
+  return monthNames[monthIndex];
+
+}
 
 //
 // Format Date
@@ -79,6 +96,45 @@ function getEmailDate(filename) {
 
 
 }
+
+//
+// Wrap wrapper around nodes
+// Just pass a collection of nodes, and a wrapper element
+// http://stackoverflow.com/a/41391872/556079
+//
+function wrapAll(nodes, wrapper) {
+    // Cache the current parent and previous sibling of the first node.
+    var parent = nodes[0].parentNode;
+    var previousSibling = nodes[0].previousSibling;
+
+    // Place each node in wrapper.
+    //  - If nodes is an array, we must increment the index we grab from
+    //    after each loop.
+    //  - If nodes is a NodeList, each node is automatically removed from
+    //    the NodeList when it is removed from its parent with appendChild.
+    for (var i = 0; nodes.length - i; wrapper.firstChild === nodes[0] && i++) {
+        wrapper.appendChild(nodes[i]);
+    }
+
+    // Place the wrapper just after the cached previousSibling
+    parent.insertBefore(wrapper, previousSibling.nextSibling);
+
+    return wrapper;
+}
+
+
+//
+// Access window variable from Content Script
+// http://stackoverflow.com/a/20513730/556079
+//
+function injectScript(file, node) {
+    var th = document.getElementsByTagName(node)[0];
+    var s = document.createElement('script');
+    s.setAttribute('type', 'text/javascript');
+    s.setAttribute('src', file);
+    th.appendChild(s);
+}
+
 
 //
 // Get Email Title
@@ -441,21 +497,25 @@ function destroyIfExists(el) {
   }
 }
 
+// http://stackoverflow.com/a/6150060/556079
+function selectElementContents(el) {
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
 
 //
 function copyToClipboard(el) {
-    // Copy the Link - http://www.jstips.co/en/copy-to-clipboard/
-    // Select the content
-    el.select();
-    document.execCommand('copy');
 
-    // Copy to the clipboard
-    setTimeout( function() {
+  // Copy the Link - http://www.jstips.co/en/copy-to-clipboard/
+  // Select the content
+  el.select();
+  document.execCommand('copy');
 
-      alertify.success("Saved to clipboard!<div><span class='url'>" + el.value + "</span></div>", 20);
-      document.execCommand('copy');
-
-    }, 500);
+  alertify.success("Saved to clipboard!<div><span class='url'>" + el.value + "</span></div>", 20);
 
 }
 

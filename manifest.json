@@ -101,6 +101,12 @@
       "css": ["css/middleman_styles.css"],
       "js": ["js/middleman.js"]
     },
+    { //Images
+      "matches": ["*://*/*.png", "*://*/*.png?*", "*://*/*.jpg", "file:///*/*.jpg", "*://*/*.jpg?*", "*://*/*.jpeg", "*://*/*.jpeg?*", "*://*/*.gif", "*://*/*.gif?*", "*://*/*.apng", "*://*/*.apng?*", "*://*/*.webp", "*://*/*.webp?*", "*://*/*.bmp", "*://*/*.bmp?*", "*://*/*.svg", "*://*/*.svg?*"],
+      "exclude_matches": ["*://*.dropbox.com/*"],
+      "css": ["css/image_styles.css"],
+      "js": ["js/images.js"]
+    },
     { //Dropbox-&-Local
       "matches": ["file:///*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/*"],
       "css": ["css/dropbox_styles.css"],
@@ -139,6 +145,11 @@
       "matches": ["*://calendar.google.com/*"],
       "css": ["css/google-calendar-styles.css"],
       "js": ["js/libs/arrive.js", "js/google-calendar.js"]
+    },
+    { //Washington_Energy
+      "matches": ["*://*.washingtonenergy.com/*"],
+      "exclude_matches": ["*://*.washingtonenergy.com/wp-admin/*"],
+      "js": ["js/autofill-form.js"]
     },
     { //miasf
       "matches": ["*://miasf-member-mgt-center.wildapricot.org/widget/directory/*"],

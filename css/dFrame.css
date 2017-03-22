@@ -111,14 +111,17 @@ html, body {
   display:inline-block;
   font-weight:400 !important;
   border-radius:30px;
-  text-align:center;
+  text-align:left;
   padding:10px 18px 10px 36px;
   background:#fff;
   margin:0 8px 8px 0;
   position:relative;
 }
+.link-errors .link-errors-wrapper > section.warning {
+  padding-left:18px;
+}
 
-.link-errors .link-errors-wrapper > section:before, .link-errors .link-errors-wrapper > section:after {
+.link-errors .link-errors-wrapper > section.error:before, .link-errors .link-errors-wrapper > section.error:after {
   content:"";
   background-color:#d20758;
   width:16px;
@@ -129,24 +132,55 @@ html, body {
   left:14px;
   top:0; bottom:0;
 }
-.link-errors .link-errors-wrapper > section:before {
+.link-errors .link-errors-wrapper > section.error:before {
   transform:rotate(45deg);
 }
-.link-errors .link-errors-wrapper > section:after {
+.link-errors .link-errors-wrapper > section.error:after {
   transform:rotate(-45deg);
 }
 
 .link-errors .link-errors-url {
   font-family: 'Courier New';
   font-size:14px;
-  line-height:22px;
+  line-height:20px;
   color:#fff;
-  padding:15px 15px 15px 25px;
+  padding:15px 15px 15px 20px;
   display:block;
   /*width:100%;*/
   word-break: break-word;
   word-wrap: break-word;
   background:rgba(255,255,255,0.2);
+
+    display: flex;
+    align-items: center;
+}
+
+.link-errors .link-errors-url .link-number {
+
+  width: 18px;
+  min-width: 18px;
+  max-width: 18px;
+
+  height: 18px;
+  min-height: 18px;
+  max-height: 18px;
+
+  line-height: 18px;
+
+  display: inline-block;
+  border-radius: 30px;
+  background: #fff;
+
+  color: #d20758;
+  text-align: center;
+  position: relative;
+  padding: 3px;
+  font-weight: bold;
+  font-size:14px;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-right:8px;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 /*.link-markers-off .link-marker {
@@ -173,11 +207,27 @@ html, body {
   color:#605c31;
 }
 
+.text-errors-off .text-error, .all-helpers-off .text-error {
+  box-shadow: none;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  animation:none;
+}
+
   @keyframes textError {
     0%   {  box-shadow:0 0 0 4px #fff697; background:#fff697; }
     50%  {  box-shadow:0 0 0 8px #fff373; background:#fff373; }
     100% {  box-shadow:0 0 0 4px #fff697; background:#fff697; }
   }
+
+
+/* ================= */
+
+
+.all-helpers-off .debug {
+  display:none;
+}
 
 
 /* ================= */
