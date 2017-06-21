@@ -1,3 +1,58 @@
+/*:root {
+  --mb-blue:        #1e78d7;
+  --mb-blue-hover:  #1964b3;
+
+  --pt:             #FFBE12;
+  --pt-light:       #FFBE12;
+  --pt-dark:        #dba004;
+
+  --at:             hsl(21, 100%, 53%);
+  --at-light:       hsla(21, 100%, 53%, .4);
+  --at-dark:        #db5209;
+
+  --ot:             hsl(346, 100%, 38%);
+  --ot-light:       hsla(346, 100%, 38%, .4);
+  --ot-dark:        #83001f;
+
+  --slp:            #00c2e0;
+  --slp-light:      #00c2e0;
+  --slp-dark:       #0091a7;
+
+  --other:          #bd00bf;
+  --other-light:    #bd00bf;
+  --other-dark:     #870489;
+
+  --lmt:            #1aa37a;
+  --lmt-light:      #1aa37a;
+  --lmt-dark:       #0f7d5c;
+
+  --enterprise:      #565e61;
+  --enterprise:      #565e61;
+  --enterprise-dark: #3f474a;
+
+  --drayer:         #1caa90;
+  --drayer-light:   #1caa90;
+  --drayer-dark:    #0b856f;
+
+  --newsletter-bg:  #eaedee;
+}*/
+
+/**************
+ **************
+
+  Selection
+
+***************
+***************/
+/*
+.disc-pt    ::selection  { background-color: var(--pt); }
+.disc-at    ::selection  { background-color: var(--at-light); }
+.disc-ot    ::selection  { background-color: var(--ot-light); }
+.disc-slp   ::selection  { background-color: var(--slp); }
+.disc-other ::selection  { background-color: var(--other); }
+.disc-lmt   ::selection  { background-color: var(--massage); }
+.disc-dr    ::selection  { background-color: var(--drayer); }*/
+
 /**************
  **************
 
@@ -8,18 +63,18 @@
 
 
 /* Taken from https://litmus.com/builder/045a56e */
-.debug-borders-highlight body *:not(section) {
+.debug-show-dims-highlight body *:not(section) {
     box-shadow: inset 0 0 0 1px white, 0 0 0 1px rgb(37, 167, 253);
 }
-.debug-borders-highlight body *:not(section):hover {
+.debug-show-dims-highlight body *:not(section):hover {
     box-shadow: 0 0 0 2px rgb(37, 167, 253);
 }
 
-/*.debug-borders-highlight td {
+/*.debug-show-dims-highlight td {
   box-shadow: inset 0 0 0 1px rgba(255,0,0,.25);
 }
 
-.debug-borders-highlight div {
+.debug-show-dims-highlight div {
   box-shadow: inset 0 0 0 1px rgba(0,0,255,.25), 0 0 0 1px rgba(0,0,255,.25);
 }*/
 

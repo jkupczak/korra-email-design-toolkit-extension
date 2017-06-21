@@ -139,6 +139,7 @@ img:hover, .res-media-dragging img {
   display: flex;
   align-items: center;
   padding: 0px 0 0px 4px;
+  overflow: hidden;
 }
 .dims div {
   display: flex;
@@ -189,7 +190,9 @@ div:hover > .input:focus { cursor: text; }
   padding:0;
   display: flex;
   cursor:pointer;
-  padding:0 10px 0 7px;
+  padding:0 8px 0 8px;
+  background:rgb(47, 90, 245);
+  border-radius:0;
 }
 .dims .reset-to-natural:hover {
   cursor:pointer;
@@ -209,6 +212,7 @@ div:hover > .input:focus { cursor: text; }
 .dims .reset-to-natural.disabled {
   opacity:.35;
   cursor:default;
+  background:transparent;
 }
 .dims .reset-to-natural.disabled:hover {
   cursor:default;

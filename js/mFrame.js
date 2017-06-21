@@ -20,14 +20,14 @@ window.addEventListener('scroll', function(e) {
 // Add drag scrolling
 // https://codepen.io/JTParrett/pen/rkofB
 
-var curYPos = 0,
-curXPos = 0,
-curDown = !1;
-
-window.addEventListener("mousemove", function(a) {
-    curDown === !0 && window.scrollTo(document.body.scrollLeft + (curXPos - a.pageX), document.body.scrollTop + (curYPos - a.pageY))
-}), window.addEventListener("mousedown", function(a) {
-    curDown = !0, curYPos = a.pageY, curXPos = a.pageX
-}), window.addEventListener("mouseup", function(a) {
-    curDown = !1
-});
+// var curYPos = 0,
+// curXPos = 0,
+// curDown = !1;
+//
+// window.addEventListener("mousemove", function(a) {
+//     curDown === !0 && window.scrollTo(document.body.scrollLeft + (curXPos - a.pageX), document.body.scrollTop + (curYPos - a.pageY))
+// }), window.addEventListener("mousedown", function(a) {
+//     curDown = !0, curYPos = a.pageY, curXPos = a.pageX
+// }), window.addEventListener("mouseup", function(a) {
+//     curDown = !1
+// });

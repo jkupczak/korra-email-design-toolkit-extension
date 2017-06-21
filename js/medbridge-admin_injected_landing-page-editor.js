@@ -1,7 +1,25 @@
 // Access window variable from Content Script
 // http://stackoverflow.com/a/20513730/556079
 
-console.warn(">>> medbridge-admin_injected_landing-page-editor.js loaded");
+console.warn(">>> medbridge-admin_injected_landing-page-editor.js loaded! - v2");
+
+
+// Override CMS+S to save page content when in fullscreen.
+document.addEventListener("keydown", function(e) {
+  if ( document.querySelector("html").classList.contains("fullscreen-editor") ) {
+    if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)  && e.keyCode == 83) {
+      e.preventDefault();
+      document.querySelector("#save-page-content").click();
+    }
+  }
+}, false);
+
+// function savePageContent() {
+//   if ( document.querySelector("html").classList.contains("fullscreen-editor") ) {
+//     document.querySelector("#save-page-content").click();
+//   }
+// }
+
 
 // Set the editor and submit button
 var editorDiv = document.querySelector("#page-content.ace_editor");
@@ -45,9 +63,15 @@ function expEditor() {
 // http://stackoverflow.com/a/41391872/556079
 //
 function wrapAll(nodes, wrapper) {
+
   // Cache the current parent and previous sibling of the first node.
-  var parent = nodes[0].parentNode;
-  var previousSibling = nodes[0].previousSibling;
+  if ( nodes.constructor === Array ) {
+    var parent = nodes[0].parentNode;
+    var previousSibling = nodes[0].previousSibling;
+  } else {
+    var parent = nodes.parentNode;
+    var previousSibling = nodes.previousSibling;
+  }
 
   // Place each node in wrapper.
   //  - If nodes is an array, we must increment the index we grab from

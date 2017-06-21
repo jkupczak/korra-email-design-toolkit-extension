@@ -24,6 +24,88 @@
 //
 
 
+//
+// FAILED ATTEMPT AT USING REQUEST BLOCKING TO SERVE MY OWN FILES INSTEAD.
+//
+// function logURL(requestDetails) {
+//   console.log("Loading: " + requestDetails.url);
+// }
+//
+// chrome.webRequest.onBeforeRequest.addListener(
+//   logURL,
+//   {urls: ["<all_urls>"], types:["script"]}
+// );
+//
+// // MailChimp CKEditor Toolbar Replacement
+// // https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Intercept_HTTP_requests
+// //
+// var pattern = "*://*.mailchimp.com/*/mcneapolitanconfig.js*";
+//
+// function redirect(requestDetails) {
+//   console.log("Redirecting: " + requestDetails.url);
+//   return {
+//     redirectUrl: chrome.extension.getURL('/js/injected/mailchimp-config.js')
+//   };
+// }
+//
+// chrome.webRequest.onBeforeRequest.addListener(
+//   redirect,
+//   {urls:[pattern], types:["script"]},
+//   ["blocking"]
+// );
+//
+// ////
+//
+// var pluginPattern = "*://*.mailchimp.com/release/*/ckeditor/plugins/mergetags/plugin.js*";
+//
+// function redirectPlugin(requestDetails) {
+//   console.log("Redirecting: " + requestDetails.url);
+//   return {
+//     redirectUrl: chrome.extension.getURL('/js/injected/mailchimp-plugin.js')
+//   };
+// }
+//
+// chrome.webRequest.onBeforeRequest.addListener(
+//   redirectPlugin,
+//   {urls:[pluginPattern], types:["script"]},
+//   ["blocking"]
+// );
+
+
+//////////////////////////////////////////
+//////////////////////////////////////////
+//////////////////////////////////////////
+
+// console.log("a");
+//
+// chrome.webRequest.onBeforeRequest.addListener(
+//
+//     function(details) {
+//
+//       console.log("b");
+//         console.log(details);
+//
+//          //return {redirectUrl: 'https://developer.salesforce.com/forums/ckeditor/ckeditor-5.x/rel/sfdc-config.js'};
+// 		//  return {redirectUrl: 'https://na5.salesforce.com/resource/1447106281000/DFB__sfdcConfig'};
+//     },
+//     {
+//         urls: [
+//             "https://us2.admin.mailchimp.com/release/11.7.553/js/ckeditor4/ckeditor/mcneapolitanconfig.js?t=H2OF",
+//             "https://us2.admin.mailchimp.com/release/11.7.553/js/ckeditor4/ckeditor/mcneapolitanconfig.js"
+//         ],
+//         types: ["script", "main_frame", "sub_frame", "stylesheet", "image", "object", "xmlhttprequest", "other"]
+//     },
+//     ["blocking"]
+// );
+
+//////////////////////////////////////////
+//////////////////////////////////////////
+//////////////////////////////////////////
+
+
+
+
+
 
 // Log all data from chrome.storage.sync
 // http://stackoverflow.com/a/27432365/556079
@@ -244,22 +326,29 @@ function awsFilename(link) {
 	return imgFile
 }
 function awsFilepath(link) {
-	var filePath = link.replace(/^.+medbridgemarketing\//gi, "");
 
-	var splitUrl = filePath.split("/");
-	splitUrl.pop();
+  link = link.replace(/^.+?\.com/i, "");
+	link = link.match(/^.+\//i, "");
+  return link;
 
-	var arrayLength = splitUrl.length;
-	var awsPrefix = splitUrl[0];
-  awsPrefix = awsPrefix.replace(/\+/gi, "%20"); // Image URLs use a + for spaces in a folder name, but you have to %20 when looking at that folder on AWS.
-
-	for (var i = 1; i < arrayLength; i++) {
-	    console.log(splitUrl[i]);
-
-	    awsPrefix = awsPrefix + "/" + splitUrl[i];
-	}
-
-	return awsPrefix
+  //
+	// var filePath = link.replace(/^.+?\.com\//gi, "");
+	//     filePath = filePath.match(/^.+\//gi, "");
+  //
+	// var splitUrl = filePath.split("/");
+	// splitUrl.pop();
+  //
+	// var arrayLength = splitUrl.length;
+	// var awsPrefix = splitUrl[0];
+  // awsPrefix = awsPrefix.replace(/\+/gi, "%20"); // Image URLs use a + for spaces in a folder name, but you have to %20 when looking at that folder on AWS.
+  //
+	// for (var i = 1; i < arrayLength; i++) {
+	//     console.log(splitUrl[i]);
+  //
+	//     awsPrefix = awsPrefix + "/" + splitUrl[i];
+	// }
+  //
+	// return awsPrefix
 }
 
 ///////////////////////////////////////////////
@@ -286,13 +375,13 @@ function onClickHandler(info, tab) {
 
   }
   else if (info.menuItemId == "backgroundImageAWS") {
-  	window.open("https://console.aws.amazon.com/s3/home?region=us-east-1#&bucket=medbridgemarketing&prefix=" + awsFilepath(bkgUrl));
+  	window.open("https://console.aws.amazon.com/s3/buckets" + awsFilepath(bkgUrl));
   }
   else if (info.menuItemId == "viewBackgroundImg") {
   	window.open(trimUrl(bkgUrl));
   }
   else if (info.menuItemId == "contextimage") {
-  	window.open("https://console.aws.amazon.com/s3/home?region=us-east-1#&bucket=medbridgemarketing&prefix=" + awsFilepath(info.srcUrl));
+  	window.open("https://console.aws.amazon.com/s3/buckets" + awsFilepath(info.srcUrl));
   }
   else {
     console.log("item " + info.menuItemId + " was clicked");

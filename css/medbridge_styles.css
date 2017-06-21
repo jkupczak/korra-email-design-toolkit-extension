@@ -240,3 +240,101 @@
 .course-listing.unapproved:hover {
   opacity:.8;
 }
+
+
+/****************************/
+/****************************/
+/****************************/
+
+.course-listing__wrapper .quick-info {
+  /*margin-top:5px;*/
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: flex-start;
+}
+
+.course-listing__wrapper .quick-info > * {
+  display: block;
+  margin-right:4px;
+}
+
+.course-listing__wrapper .quick-info .quick-copy {
+  font-size:10px;
+  padding:2px 3px; border-radius:3px; background:#fff; display: inline-block; color:#1e78d7;
+  min-height:17px; max-height:17px; line-height:13px;
+}
+.course-listing__wrapper .quick-info > .quick-copy:hover {
+  background:#1e78d7;
+  cursor: pointer;
+  color:#fff;
+}
+
+.course-listing__wrapper .quick-info .icomoon {
+  font-size:15px;
+}
+
+.course-listing__wrapper .quick-info .icomoon-embed {
+  font-size:18px;
+}
+
+
+
+.course-settings {
+  z-index:9999;
+  position: fixed;
+  display: flex;
+  bottom: 0; left: 0;
+  width:100%;
+  padding: 15px;
+  background:#fff;
+  box-shadow: 0 0 50px rgba(0,0,0,0.3);
+  align-items: center;
+}
+.course-settings .settings-group {
+  margin-right:20px;
+}
+.course-settings .settings-controls {
+  display: flex;
+  height:25px;
+}
+.course-settings #tracking-mod-number {
+  width:40px;
+  text-align:center;
+}
+.course-settings .settings-label {
+  display: block;
+  font-weight:bold;
+  font-size:13px;
+  color:#434343;
+  text-align: left;
+  margin-bottom:5px;
+
+}
+.course-settings input[type="text"] {
+  display: block;
+  border-radius:4px;
+  border:1px solid #ccc;
+  outline:0;
+  padding:2px 6px;
+}
+
+.course-settings .export-btn {
+  border-left: 1px solid #ccc;
+  padding-left: 30px;
+  margin-left: 10px;
+}
+
+.icomoon.icomoon-embed.jk-hover-pointer {
+  background: #fff;
+    padding: 2px 8px 6px 8px;
+    border-radius: 0 0 6px 6px;
+    /*margin-top: -6px;*/
+    /*margin-right: 0px;*/
+    position: relative;
+    top:-1px;
+    margin-right: 0;
+    z-index: 100;
+    border: 1px solid rgb(204, 204, 204);
+    border-top: 0;
+}

@@ -173,7 +173,21 @@
   float: right;
 }
 
-/* CUSTOM */
+/*********************************************/
+/*********************************************/
+/*********************************************/
+/*********************************************/
+/*********************************************/
+/*                                           */
+/*           CUSTOM TINGLE STYLING           */
+/*                                           */
+/*********************************************/
+/*********************************************/
+/*********************************************/
+/*********************************************/
+/*********************************************/
+
+
 .tingle-modal__close:focus {
   outline:none;
 }
@@ -181,12 +195,21 @@
   overflow:hidden;
   /*box-shadow:0 0 0 3px #d7d7d7;*/
 }
+
+
 /* Textarea */
 .tingle-modal.fill .tingle-modal-box__content {
   padding:0;
 }
 .tingle-modal.fill .tingle-modal-box, .tingle-modal.fill .tingle-modal-box__content {
   background:transparent;
+}
+
+.tingle-modal.html-output .tingle-modal-box__content {
+  background:#fff;
+  padding:40px;
+  overflow:auto;
+  max-height:90vh;
 }
 
 .tingle-modal.fill .tingle-modal-box {
@@ -196,7 +219,11 @@
 .tingle-modal textarea, .tingle-modal code {
   margin:0; border:0; outline: none;
   padding:40px;
+
   width:100%;
+  min-width: initial;
+  max-width: initial;
+
   height:90vh;
   max-height:90vh;
   font-family:monospace;
@@ -213,4 +240,8 @@
   background:#2c323c;
   color:#fff;
   white-space: pre-wrap;
+}
+
+.tingle-modal textarea:focus, .tingle-modal code:focus {
+  border:0;
 }

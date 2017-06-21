@@ -9,7 +9,8 @@
 // Add ratio info. eg 1:1, 16:9, 4:3. Reduce to the lowest whole number
 // Scroll wheel changes the input numbers when you are focused on them
 // How do I stop that Chrome zoom on big images?
-
+// Add buttons for dfferent background colors
+// Fix inputs so that when entering eg. 230 height, it doesnt change to 229 because the width is takeing precedant and rounding the height. If I want 230 i get 230!
 
 ///////////////////
 
@@ -29,6 +30,7 @@
 ///////////////////
 
 var img = document.querySelector("img");
+
 beforeResize();
 
 var naturalWidth = img.naturalWidth;
@@ -179,16 +181,84 @@ function presetSizes() {
       img.width = naturalWidth;
     } else {
       // Resize to fit viewport
-      if ( (document.body.clientWidth - naturalWidth) < (document.body.clientHeight - naturalHeight) ) {
-        // img.width = document.body.clientWidth;
+
+      console.log("document.body.clientWidth:" + document.body.clientWidth);
+      console.log("naturalWidth:" + naturalWidth);
+      console.log("(document.body.clientWidth - naturalWidth):" + (document.body.clientWidth - naturalWidth));
+
+      console.log("document.body.clientHeight:" + document.body.clientHeight);
+      console.log("naturalHeight:" + naturalHeight);
+      console.log("(document.body.clientHeight - naturalHeight):" + (document.body.clientHeight - naturalHeight));
+
+      // if ( document.body.clientWidth > document.body.clientHeight ) { // Landscape viewport
+      //   if ( naturalWidth > naturalHeight ) { // Landscape picture
+      //     img.style.width = "100vw";
+      //     img.style.height = "auto";
+      //   } else if ( naturalHeight > naturalWidth ) { // Portrait picture
+      //     img.style.height = "100vh";
+      //     img.style.width = "auto";
+      //   } else { // Square picture
+      //
+      //   }
+      // } else if ( document.body.clientHeight > document.body.clientWidth ) { // Portrait viewport
+      //   if ( naturalHeight > naturalWidth ) { // Portrait picture
+      //     img.style.height = "100vh";
+      //     img.style.width = "auto";
+      //   } else ( naturalWidth > naturalHeight ) { // Landscape picture
+      //     img.style.width = "100vw";
+      //     img.style.height = "auto";
+      //   } else { // Square picture
+      //
+      //   }
+      // } else { // Square viewport
+      //
+      // }
+
+      var widthRatio = document.body.clientWidth/naturalWidth;
+      console.log("widthRatio: " + widthRatio);
+
+      var heightRatio = document.body.clientHeight/naturalHeight;
+      console.log("heightRatio: " + heightRatio);
+
+
+      var ratio = Math.min(document.body.clientWidth/naturalWidth, document.body.clientHeight/naturalHeight);
+
+      var adjustedWidth = naturalWidth * ratio;
+      var adjustedHeight = naturalHeight * ratio;
+
+      console.log("adjustedWidth/clientWidth: " + adjustedWidth + "/" + document.body.clientWidth);
+      console.log("adjustedHeight/clientHeight: " + adjustedHeight + "/" + document.body.clientHeight);
+
+      if ( widthRatio < heightRatio ) {
         img.style.width = "100vw";
         img.style.height = "auto";
+        console.log("set width to 100vw");
       } else {
-        // var widthBasedOnHeight = document.body.clientHeight / naturalHeight;
-        // img.width = naturalWidth * widthBasedOnHeight;
         img.style.height = "100vh";
         img.style.width = "auto";
+        console.log("set height to 100vh");
       }
+
+      // if ( adjustedWidth > document.body.clientWidth && adjustedHeight < document.body.clientHeight ) {
+      //   img.style.width = "100vw";
+      //   img.style.height = "auto";
+      //   console.log("set width to 100vw");
+      // } else {
+      //   img.style.height = "100vh";
+      //   img.style.width = "auto";
+      //   console.log("set height to 100vh");
+      // }
+
+      // img.style.width = (naturalWidth * ratio) + "px";
+      // img.style.height = "auto";
+
+      // if ( (document.body.clientWidth - naturalWidth) < (document.body.clientHeight - naturalHeight) ) {
+      //   img.style.width = "100vw";
+      //   img.style.height = "auto";
+      // } else {
+      //   img.style.height = "100vh";
+      //   img.style.width = "auto";
+      // }
 
     }
 
@@ -498,14 +568,6 @@ function makeMediaZoomable(media, dragInitiater = media, absoluteSizing = false)
     imgWasResized();
 	}
 
-// http://stackoverflow.com/a/6150060/556079
-function selectElementContents(el) {
-  var range = document.createRange();
-  range.selectNodeContents(el);
-  var sel = window.getSelection();
-  sel.removeAllRanges();
-  sel.addRange(range);
-}
 
 function beforeResize() {
   img.removeAttribute("style");

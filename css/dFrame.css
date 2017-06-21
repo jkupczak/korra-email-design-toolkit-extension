@@ -1,6 +1,34 @@
 html, body {
-  padding:0;
-  margin:0;
+  /*padding:0;*/
+  /*margin:0;*/
+}
+
+/* ********** */
+/* ********** */
+
+@font-face {
+  font-family: "medbridge-chrome-extension";
+  src: url(chrome-extension://__MSG_@@extension_id__/fonts/medbridge-chrome-extension.woff);
+  /*src: url(chrome-extension://__MSG_@@extension_id__/medbridge-chrome-extension.woff);*/
+  font-weight: normal;
+  font-style: normal;
+}
+
+.fontastic-icon:before, [data-icon]:before {
+  font-family: "medbridge-chrome-extension" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.fontastic-icon:before {
+  display: flex !important;
+  align-items: center;
 }
 
 /* ********** */
@@ -117,27 +145,50 @@ html, body {
   margin:0 8px 8px 0;
   position:relative;
 }
+.link-errors code {
+  color:#6b0e33;
+  font-size:12px;
+}
 .link-errors .link-errors-wrapper > section.warning {
   padding-left:18px;
+  background: transparent;
+  box-shadow:0 0 0 2px #fff;
+  color:#fff;
 }
 
-.link-errors .link-errors-wrapper > section.error:before, .link-errors .link-errors-wrapper > section.error:after {
-  content:"";
-  background-color:#d20758;
-  width:16px;
-  height:4px;
-  display:block;
+/* */
+/* Error Icons */
+/* */
+.link-errors .link-errors-wrapper > section.error:before, .link-errors .link-errors-wrapper > section.error.error-icon-x:after {
+  color:#d20758;
+  /*display:block;*/
   position:absolute;
   margin:auto;
   left:14px;
   top:0; bottom:0;
 }
-.link-errors .link-errors-wrapper > section.error:before {
+
+.link-errors .link-errors-wrapper > section.error.error-icon-x:before, .link-errors .link-errors-wrapper > section.error.error-icon-x:after {
+  content:"";
+  background-color:#d20758;
+  width:16px;
+  height:4px;
+}
+.link-errors .link-errors-wrapper > section.error.error-icon-x:before {
   transform:rotate(45deg);
 }
-.link-errors .link-errors-wrapper > section.error:after {
+.link-errors .link-errors-wrapper > section.error.error-icon-x:after {
   transform:rotate(-45deg);
 }
+
+.link-errors .link-errors-wrapper > section.error.error-icon-lock:before {
+  content: "\50";
+  font-size:18px;
+}
+
+
+
+
 
 .link-errors .link-errors-url {
   font-family: 'Courier New';
@@ -230,4 +281,20 @@ html, body {
 }
 
 
-/* ================= */
+
+
+/***********************
+/***********************
+/***********************
+
+  MailChimp Conditionals
+
+ ***********************
+ ***********************
+ **********************/
+
+
+
+elseif, else {
+  /*display: initial !important;*/
+}

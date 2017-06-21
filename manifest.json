@@ -32,7 +32,7 @@
   ],
 
   "description": "Designed to help automate everyday tasks and provide additional styling and visual clues that can assist designers at a glance. Upgrades the user experience on Dropbox.com, MedBridgeEducation.com, MailChimp, Amazon Web Services, Gmail, and with files saved to the local harddrive.",
-  "version": "1.5",
+  "version": "2.0",
 
   "browser_action": {
     "default_icon": "icons/128-wrench.png",
@@ -68,8 +68,8 @@
     { //Global
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "css": ["css/global_styles.css"],
-      "js": ["js/global.js"],
+      "css": ["css/global_styles.css", "css/alertify.css", "css/alertify.medbridge.css"],
+      "js": ["js/global.js", "js/libs/alertify.js"],
       "run_at": "document_end"
     },
     { //Newsletter_run_at_doc_start
@@ -85,9 +85,11 @@
       "js": ["js/libs/alertify.js", "js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/newsletter.js"],
       "run_at": "document_end"
     },
-    { //Newsletter-Blog
+    { //MedBridge-Blog
       "matches": ["*://*.medbridgeeducation.com/blog/*"],
-      "js": ["js/medbridge-blog.js"],
+      "exclude_matches": ["*://*.medbridgeeducation.com/blog/wp-admin*"],
+      "css": ["css/medbridge_blog_styles.css"],
+      "js": ["js/global.js", "js/medbridge-blog.js"],
       "all_frames": true
     },
     { //Email-Labeling_Favicons_and_Title_bars
@@ -102,7 +104,7 @@
       "js": ["js/middleman.js"]
     },
     { //Images
-      "matches": ["*://*/*.png", "*://*/*.png?*", "*://*/*.jpg", "file:///*/*.jpg", "*://*/*.jpg?*", "*://*/*.jpeg", "*://*/*.jpeg?*", "*://*/*.gif", "*://*/*.gif?*", "*://*/*.apng", "*://*/*.apng?*", "*://*/*.webp", "*://*/*.webp?*", "*://*/*.bmp", "*://*/*.bmp?*", "*://*/*.svg", "*://*/*.svg?*"],
+      "matches": ["*://*/*.png", "file:///*/*.png", "*://*/*.png?*", "*://*/*.jpg", "file:///*/*.jpg", "*://*/*.jpg?*", "*://*/*.jpeg", "*://*/*.jpeg?*", "*://*/*.gif", "*://*/*.gif?*", "*://*/*.apng", "*://*/*.apng?*", "*://*/*.webp", "*://*/*.webp?*", "*://*/*.bmp", "*://*/*.bmp?*", "*://*/*.svg", "*://*/*.svg?*"],
       "exclude_matches": ["*://*.dropbox.com/*"],
       "css": ["css/image_styles.css"],
       "js": ["js/images.js"]
@@ -114,14 +116,17 @@
     },
     { //MailChimp
       "matches": ["*://*.mailchimp.com/*"],
-      "css": ["css/alertify.css", "css/alertify.medbridge.css", "css/mailchimp_styles.css"],
-      "js": ["js/libs/alertify.js", "js/mailchimp.js"]
+      "css": ["css/tingle.css", "css/alertify.css", "css/alertify.medbridge.css", "css/mailchimp_styles.css"],
+      "js": ["js/libs/arrive.js", "js/libs/tingle.js", "js/libs/alertify.js", "js/mailchimp.js", "js/tonya/mailchimp.js"]
     },
+        { //MailChimp-Clickmap-Data
+          "matches": ["*://*.mailchimp.com/reports/clickmap-data*"],
+          "js": ["js/mailchimp/clickmap-data.js"]
+        },
     { //MedBridge-Courses
-      "matches": ["*://*.medbridgeeducation.com/courses/*"],
-      "exclude_globs": ["*://*.medbridgeeducation.com/courses/details/*"],
+      "matches": ["*://*.medbridgeeducation.com/courses/*", "*://*.medbridgeeducation.com/courses?*"],
       "css": ["css/tingle.css", "css/medbridge_styles.css"],
-      "js": ["js/libs/tingle.js", "js/medbridge-courses.js"]
+      "js": ["js/libs/tidy.js", "js/libs/tingle.js", "js/medbridge-courses.js"]
     },
     { //_MedBridge Admin Panel
       "matches": ["*://*.medbridgeeducation.com/admin/*", "*://*.medbridgemassage.com/admin/*"],
@@ -141,15 +146,32 @@
       "matches": ["*://mail.google.com/*"],
       "css": ["css/gmail-styles.css"]
     },
+    { //Amazon
+      "matches": ["*://console.aws.amazon.com/s3/*"],
+      "css": ["css/global_styles.css", "css/alertify.css", "css/alertify.medbridge.css"],
+      "js": ["js/global.js", "js/libs/arrive.js", "js/libs/alertify.js", "js/aws.js"]
+    },
+    { //Twitter
+      "matches": ["*://*.twitter.com/*"],
+      "js": ["js/global.js", "js/libs/arrive.js", "js/twitter.js"]
+    },
     { //Google-Calendar
       "matches": ["*://calendar.google.com/*"],
       "css": ["css/google-calendar-styles.css"],
       "js": ["js/libs/arrive.js", "js/google-calendar.js"]
     },
+    { //Pushbullet
+      "matches": ["*://www.pushbullet.com/*"],
+      "js": ["js/libs/arrive.js", "js/pushbullet-script.js"]
+    },
     { //Washington_Energy
       "matches": ["*://*.washingtonenergy.com/*"],
       "exclude_matches": ["*://*.washingtonenergy.com/wp-admin/*"],
       "js": ["js/autofill-form.js"]
+    },
+    { //Toolkit
+      "matches": ["*://*.twitter.com/*"],
+      "js": ["js/toolkit.js"]
     },
     { //miasf
       "matches": ["*://miasf-member-mgt-center.wildapricot.org/widget/directory/*"],

@@ -1,6 +1,14 @@
+/***********/
+/***********/
+/*
+  General Styles
+*/
+/***********/
+/***********/
+
 * {
   user-select: initial !important;
-  cursor:auto !important;
+  /*cursor:auto !important;*/
 }
 
 @-webkit-keyframes spin {
@@ -24,6 +32,67 @@
   }
 }
 
+/***********/
+/***********/
+/*
+  Buttons
+*/
+/***********/
+/***********/
+
+.mc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius:4px;
+  background:#fff;
+  border:1px solid #ccc;
+  text-align:center;
+}
+
+.mc-btn.mc-btn-medium {
+  font-size:16px;
+  width:33px; height:33px; line-height:33px;
+}
+
+.download-report { color:#237a91 !important; margin-right:6px; position: relative; vertical-align: middle; }
+.download-report:before { color:#237a91 !important; }
+
+.download-report:hover { background:#237a91; color:#fff !important; border-color:#237a91; }
+.download-report:hover:before { color:#fff !important; }
+
+.download-report:active { background:hsl(193, 61%, 25%); }
+
+/***********/
+/***********/
+/*
+  Campaign List Rows
+*/
+/***********/
+/***********/
+.campaign-list-row {
+  display: flex;
+}
+.campaign-list-row .meta-actions.campaign.lastGroup {
+  display: flex;
+  align-items:center;
+  justify-content: flex-end;
+}
+
+/***********/
+/***********/
+/*
+  Campaign Wizard
+   - Recipients
+*/
+/***********/
+/***********/
+
+.c-builder .dijitReset.dijitStretch.dijitButtonContents { padding:15px 36px 15px 18px; }
+.c-builder .dijitReset.dijitStretch.dijitButtonContents > .dijitReset.dijitInputField.dijitButtonText { font-size:24px; }
+
+.c-builder .radio-grid input[type="radio"]:checked+label { background: #6dc5dc; }
 
 /***********/
 /***********/
@@ -164,12 +233,12 @@ body.discipline-ready .line.selfclear li.hover-item > a {
   /* Massage */
   .discipline-lmt .c-wizardNavigation.selfclear,
   .discipline-lmt .line.selfclear
-   { background: var(--massage-dark); }
+   { background: var(--lmt-dark); }
   .discipline-lmt .c-wizardNavigation.selfclear,
   .discipline-lmt .line.selfclear,
   .discipline-lmt #freddielink,
   .discipline-lmt .wizard-freddie {
-    box-shadow: inset 0 4px 0px var(--massage);
+    box-shadow: inset 0 4px 0px var(--lmt);
   }
   .discipline-lmt .wizard-freddie, .discipline-lmt .c-wizardLink--top:hover,
   .discipline-lmt #freddielink,
@@ -177,21 +246,78 @@ body.discipline-ready .line.selfclear li.hover-item > a {
   .discipline-lmt .gray-link:hover,
   .discipline-lmt .c-wizardLink--step:hover,
   .discipline-lmt .c-deliveryOptions .p0 {
-    background: var(--massage) !important;
+    background: var(--lmt) !important;
   }
-  .discipline-lmt .main-navigation .selected::after { border-bottom-color: var(--massage); }
+  .discipline-lmt .main-navigation .selected::after { border-bottom-color: var(--lmt); }
 
 /* Enterprise */
+.discipline-ent .c-wizardNavigation.selfclear,
+.discipline-ent .line.selfclear
+ { background: var(--enterprise-dark); }
+.discipline-ent .c-wizardNavigation.selfclear,
+.discipline-ent .line.selfclear,
+.discipline-ent #freddielink,
+.discipline-ent .wizard-freddie {
+  box-shadow: inset 0 4px 0px var(--enterprise);
+}
+.discipline-ent .wizard-freddie, .discipline-slp .c-wizardLink--top:hover,
+.discipline-ent #freddielink,
+.discipline-ent  .stayopen .c-wizardLink--top,
+.discipline-ent .gray-link:hover,
+.discipline-ent .c-wizardLink--step:hover,
+.discipline-ent .c-deliveryOptions .p0 {
+  background: var(--enterprise) !important;
+}
+.discipline-ent .main-navigation .selected::after { border-bottom-color: var(--enterprise); }
 
 
+/************/
+/************/
+/************/
+/*   OFF!   */
+/************/
+/************/
+/************/
+
+/* SETUP PAGE */
+.page-campaigns-wizard-setup h2:first-child,
+.page-campaigns-wizard-setup label[for="personalize-to"] + .checkbox-description > p,
+.page-campaigns-wizard-setup label[for="track-conversations"] + .checkbox-description > p,
+.page-campaigns-wizard-setup div > h3 + p:last-child,
+.page-campaigns-wizard-setup #skip-domain-verification + div > div > h3 + p:last-child
+{
+  display: none;
+}
+.page-campaigns-wizard-variatesetup h2:first-child,
+.page-campaigns-wizard-variatesetup label[for="personalize-to"] + .checkbox-description > p,
+.page-campaigns-wizard-variatesetup label[for="track-conversations"] + .checkbox-description > p,
+.page-campaigns-wizard-variatesetup div > h3 + p:last-child,
+.page-campaigns-wizard-variatesetup #skip-domain-verification + div > div > h3 + p:last-child
+{
+  display: none;
+}
+
+
+
+
+/************/
+/************/
+/************/
 
 
 
 .c-builder label[for="title"] + input + div.field-help.always-show { margin-bottom:0; }
-.c-builder #google-tag-disclose { margin-bottom:60px; }
+.c-builder #google-tag-disclose { margin-bottom:10px; }
+
+.c-builder label + .field-wrapper > input#to-email.av-text:only-child { margin-bottom: 0; }
+
+.c-builder .border-below {
+    padding-bottom: 13px;
+    margin-bottom: 14px;
+}
 
 .c-builder #google-tag-disclose .mirror {
-  color: var(--massage);
+  color: var(--lmt);
   font-weight:bold;
   font-size:14px;
   margin-top:6px;
@@ -202,7 +328,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 }
 .c-builder #google-tag-disclose .mirror:hover {
   cursor:pointer;
-  color: var(--massage-dark);
+  color: var(--lmt-dark);
 }
 .c-builder #google-tag-disclose .mirror:before {
   content:"\72";
@@ -218,7 +344,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 .c-builder #google-tag-disclose .mirror.off {
   color:#ccc;
 }
-.c-builder #analytics-tag:not(.off) { color: var(--massage); border-color: var(--massage); }
+.c-builder #analytics-tag:not(.off) { color: var(--lmt); border-color: var(--lmt); }
 
 .c-builder #analytics-tag { margin-bottom:0; }
 .c-builder #title + .field-help { margin-bottom:0; }
@@ -250,7 +376,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 .discipline-ot li.branding + li.hide-mobile:before { content:"O"; background:var(--ot); }
 .discipline-slp li.branding + li.hide-mobile:before { content:"S"; background:var(--slp); }
 .discipline-other li.branding + li.hide-mobile:before { content:"*"; background:var(--other); }
-.discipline-lmt li.branding + li.hide-mobile:before { content:"M"; background:var(--massage); }
+.discipline-lmt li.branding + li.hide-mobile:before { content:"M"; background:var(--lmt); }
 
 .discipline-ready li.branding + li.hide-mobile a {
   margin-left:70px;
@@ -439,7 +565,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 .campaigns-list .discipline-ot    .dijitCheckBox, .campaigns-list .discipline-ot    .dijitCheckBox:before { color: var(--ot); }
 .campaigns-list .discipline-slp   .dijitCheckBox, .campaigns-list .discipline-slp   .dijitCheckBox:before { color: var(--slp); }
 .campaigns-list .discipline-other .dijitCheckBox, .campaigns-list .discipline-other .dijitCheckBox:before { color: var(--other); }
-.campaigns-list .discipline-lmt   .dijitCheckBox, .campaigns-list .discipline-lmt   .dijitCheckBox:before { color: var(--massage); }
+.campaigns-list .discipline-lmt   .dijitCheckBox, .campaigns-list .discipline-lmt   .dijitCheckBox:before { color: var(--lmt); }
 
 .campaigns-list li[class*="discipline"] .dijitCheckBox:not(.selectCheckBoxHover):not(.selectCheckBoxChecked):before { color:#fff; }
 
@@ -458,7 +584,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 .campaigns-list li.discipline-ot    .dijitCheckBox      { background:var(--ot); }
 .campaigns-list li.discipline-slp    .dijitCheckBox     { background:var(--slp); }
 .campaigns-list li.discipline-other   .dijitCheckBox    { background:var(--other); }
-.campaigns-list li.discipline-lmt   .dijitCheckBox      { background:var(--massage); }
+.campaigns-list li.discipline-lmt   .dijitCheckBox      { background:var(--lmt); }
 .campaigns-list li.discipline-undefined  .dijitCheckBox { background:#B0B0B0; }
 
 .campaigns-list li  .dijitCheckBox input {
@@ -518,6 +644,26 @@ body.discipline-ready .line.selfclear li.hover-item > a {
  *
  */
 
+
+.jk-btn.jk-export-extra-data {
+  margin-right:10px !important;
+  box-shadow:inset 0 0 0 2px #1e78d7;
+}
+
+
+/*
+ *
+ *
+ */
+
+.page-lists-members #main-content { max-width:100% !important; }
+.page-lists-members #content .header { margin:20px 0 !important; }
+
+/*
+ *
+ *
+ */
+
 .edit-plaintext-dialog .dijitDialogPaneContent {
   max-height:100%;
 }
@@ -528,4 +674,94 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 }
 .edit-plaintext-dialog.dijitDialogShow {
   width:960px !important;
+}
+
+
+/*++++++++++++++++++++++++*
+ *                        *
+ *                        *
+ *   DISCIPLINE FILTERS   *
+ *                        *
+ *                        *
+ *++++++++++++++++++++++++*/
+
+body.campaigns-list #content .line.\!margin-bottom--lv3.action-bar {
+  margin-bottom: 10px !important;
+}
+
+#filter-bar {
+ display: flex;
+ padding:10px 10px 10px 10px;
+ background: #e0e0e0;
+ margin-top:10px;
+ border-radius:3px;
+}
+
+#discipline-filters {
+ display: flex;
+}
+
+.filter-group {
+  margin-right:20px;
+}
+
+
+.discipline-filter {
+ width:24px; height:24px; border-radius:24px;
+ cursor:pointer;
+ color:#fff;
+ margin-right:7px;
+}
+.discipline-filter.unselected { background:#fff; }
+
+.filter-pt, .filter-pt:hover       { box-shadow:inset 0 0 0 2px var(--pt), 0 0 0 1px var(--pt); background: var(--pt); }
+.filter-at, .filter-at:hover       { box-shadow:inset 0 0 0 2px var(--at), 0 0 0 1px var(--at); background: var(--at); }
+.filter-ot, .filter-ot:hover       { box-shadow:inset 0 0 0 2px var(--ot), 0 0 0 1px var(--ot); background: var(--ot); }
+.filter-slp, .filter-slp:hover     { box-shadow:inset 0 0 0 2px var(--slp), 0 0 0 1px var(--slp); background: var(--slp); }
+.filter-other, .filter-other:hover { box-shadow:inset 0 0 0 2px var(--other), 0 0 0 1px var(--other); background: var(--other); }
+.filter-lmt, .filter-lmt:hover     { box-shadow:inset 0 0 0 2px var(--lmt), 0 0 0 1px var(--lmt); background: var(--lmt); }
+.filter-ent, .filter-ent:hover     { box-shadow:inset 0 0 0 2px var(--enterprise), 0 0 0 1px var(--enterprise); background: var(--enterprise); }
+
+.discipline-filter:hover { transform: scale(1.1,1.1) }
+
+.filters-active .filter-pt:not(.unselected):hover { background: #fff; }
+
+
+
+
+.filtered-out * { display: none; visibility: hidden }
+.slats > ul > li.filtered-out { display: none;
+  /*max-height:4px; min-height:4px; height:4px; background:rgba(98, 241, 103, 0.67) !important; padding:0 !important; border:0 !important; margin:2px 0; */
+}
+
+
+#check-visible {
+  cursor:pointer;
+  width:24px; height:24px; border-radius:4px;
+  background:#fff;
+  box-shadow:inset 0 0 0 2px #ccc;
+}
+
+
+/************/
+/************/
+/************/
+
+.toolbox-bar:empty {
+  display: none;
+}
+.toolbox-bar {
+  background: #1b2229;
+  padding-left:8px;
+  color: #fff;
+  display: flex;
+  font-weight:bold;
+  height:22px; min-height:22px; max-height:22px;
+  font-size:10px;
+}
+.toolbox-bar * {
+  line-height:22px;
+}
+.toolbox-bar *:hover {
+  text-decoration: underline;
 }

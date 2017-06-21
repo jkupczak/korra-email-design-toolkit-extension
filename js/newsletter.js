@@ -1,6 +1,45 @@
+
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+// This: https://www.medbridgeeducation.com/h/pivot-physical-therapy-case-study/#request-a-demo
+// Versus THis: https://www.medbridgeeducation.com/h/pivot-physical-therapy-case-study#request-a-demo
+// Doesn't work without the / before the #. Make a link validator based on this nonsense.
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+
+
+
 // console.error( "newsletter.js - " + document.documentElement.clientWidth );
 
 console.warn(">>> newsletter.js loaded");
+
+function KeyPress(e) {
+// http://keycode.info/
+// http://jsfiddle.net/29sVC/
+// Consider using https://github.com/madrobby/keymaster
+
+  // console.log("begin function");
+  // console.log(evtobj.keyCode);
+
+  var evtobj = window.event? event : e
+
+  // Watch for Chrome zoom shortcuts, cmd/ctrl plus +/-/0
+  if ( (e.ctrlKey || e.metaKey) && (evtobj.keyCode == 48 || evtobj.keyCode == 187 || evtobj.keyCode == 189) ) {
+    setTimeout(function(){ checkZoomLevel(); }, 100);
+  }
+
+}
+
+window.onkeydown = KeyPress;
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -12,14 +51,49 @@ console.warn(">>> newsletter.js loaded");
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //
+//     _______  ______    _______  _______  ___      ___   _______  __   __  _______
+//    |       ||    _ |  |       ||       ||   |    |   | |       ||  | |  ||       |
+//    |    _  ||   | ||  |    ___||    ___||   |    |   | |    ___||  |_|  ||_     _|
+//    |   |_| ||   |_||_ |   |___ |   |___ |   |    |   | |   | __ |       |  |   |
+//    |    ___||    __  ||    ___||    ___||   |___ |   | |   ||  ||       |  |   |
+//    |   |    |   |  | ||   |___ |   |    |       ||   | |   |_| ||   _   |  |   |
+//    |___|    |___|  |_||_______||___|    |_______||___| |_______||__| |__|  |___|
+//
+//    ASCII: Modular - http://patorjk.com/software/taag/#p=display&h=0&v=0&f=Modular&t=VALIDATE
+//
+// Pre-Flight Checklist
+//  - Links
+//  - Keyword Check
+//  - Preheader
+//  - Zoom Level
+//  - Mobile View
+//  - Spell Check
+//  - Pending Edits - "You have pending edits!"
+//
+// Notes
+//  - Some links are using additional utm_'s that are not utm_content. If this is intential make sure you turn off GA in MC.
+//  - Detected the use of "NPS". Remember to add a footnote disclaimer.
+//
+//
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//
+//
 //  TO-DO LIST ✓ ■
 //  ==============
+//
+//  ## Spell Check ---
+//    ■ - Google has forsaken me! Try replacing Chrome spell check with http://www.javascriptspellcheck.com/JavaScript_SpellCheck_Hello_World
 //
 //  ## Mobile View ---
 //    ■ - Add multiple width options for the mFrame. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
 //    ✓ - Remove "Portrait" and "Landscape", replace with just the width names (and/or device names)
 //      - http://viewportsizes.com/?filter=iphone
 //    ■ - 320px | 360px | 480px | More
+//
+//  ## Scratch Pad ---
+//    ■ - Notepad that pops up and can be used to keep notes. Saves to chrome.storage.local when you idle.
+//    ■ - Pops back up automatically on refresh if you have something saved.
 //
 //  ## Link Markers ---
 //    ■ - Create a 'warning' class in addition to the 'error' class for link-markers. If an email is very old, mark link errors as warnings.
@@ -56,8 +130,12 @@ console.warn(">>> newsletter.js loaded");
 //  ## HTML Tag Checker ---
 //    ■ - Search for unsupported tags like <strong> and recommend replacements like <b>.
 //
+//  ## Code Checker --
+//    ■ - table cells where the width is defined in the width="" attribute must have it defined as an inline style too. (excludes % widths)
+//      - https://litmus.com/community/discussions/151-mystery-solved-dpi-scaling-in-outlook-2007-2013
+//
 //  ## Link Checker --
-//    ■ - Add support for link status Like how mail-tester.com does it.
+//    ■ - Add support for link status like how mail-tester.com does it.
 //        -They show a status report for each link like [302 - Redirection : Found] and [200 - Success : OK].
 //    ■ - Throw an error if a URL shortener is being used.
 //
@@ -129,8 +207,6 @@ console.warn(">>> newsletter.js loaded");
 //    ■ - If NPS verbiage is detected, remind me to add the fine print. - https://drive.google.com/open?id=0B_swaeZ9mgUMVERsZmlkNHJRak9XWVdSU3NDM2ZMdFh2V0Fv
 //    ■ - If a scrollbar exists in the mobile version at 320px wide.
 //
-//  ## Link Errors
-//    ■ - Missing after_affiliate_url
 //
 //
 //////////////
@@ -152,9 +228,9 @@ console.warn(">>> newsletter.js loaded");
 //  ## [ORB] Toggle All Off ---
 //    ■ - One master orb to turn off all running orbs.
 //
-//  ## [ORB] Image Guidelines ---
-//    ■ - Create toggle that will add PhotoShop-esque guidelines to all or individual images in the email.
-//    ■ - This will help show any alignment issues that may exist.
+//  ## [ORB] Guidelines ---
+//    ■ - Create toggle that will add PhotoShop-esque guidelines to all or individual images in the email. This will help show any alignment issues that may exist.
+//    ■ - Turn on "Guidelines" mode and click anywhere on the page to add custom guidelines.
 //
 //  ## [ORB] Image Dimensions ---
 //    ■ - Overlay a div on all images that shows their current size as well as their original size.
@@ -194,6 +270,30 @@ console.warn(">>> newsletter.js loaded");
 var view = getParameterByName("view");
 
 if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.test(document.URL) ) {
+
+
+///////////
+///////////
+///////////
+//// Pre-Load Variables
+//// The construction of our HTML is dependant on these variables being set first.
+///////////
+///////////
+///////////
+
+// MailChimp Conditions Parser
+// Conditional parsing is off by default
+if ( getParameterByName("conditions") === "1" ) {
+  var conditionsParser = true;
+} else {
+  var conditionsParser = false;
+}
+
+var suppressAlerts = false;
+if ( getParameterByName("presentation") === "1" ) {
+  suppressAlerts = true;
+  console.log("alerts suppressed");
+}
 
 ///////////
 ///////////
@@ -333,6 +433,7 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
   //////
   // Grab all of the TEXT in the document before we start manipulating the HTML
   var preheader = cleanPlainTxt(document.body.textContent); // http://stackoverflow.com/a/19032002/556079
+  // var preheader = cleanPlainTxt(document.body.innerText); // http://stackoverflow.com/a/19032002/556079
 
   ////
   //////
@@ -343,19 +444,30 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
   //////
   //// Get the page's HTML and Doctype
   //////
+  console.groupCollapsed("doctype");
 
   var savedDocType = "";
 
   // We need a doctype first. Reassemble the doctype if there is one in the code.
   if (document.doctype && document.doctype.name) {
     savedDocType = "<!doctype " + document.doctype.name;
+    console.log(savedDocType)
     if (document.doctype.publicId) {
       savedDocType += " PUBLIC \"" + document.doctype.publicId;
+      console.log(savedDocType)
     }
     if (document.doctype.systemId) {
       savedDocType += "\" \"" + document.doctype.systemId + '">';
+      console.log(savedDocType)
+    }
+    if (!document.doctype.publicId && !document.doctype.systemId) {
+      savedDocType += ">";
     }
   }
+  console.log(savedDocType)
+  console.groupEnd();
+
+
 
   // Create a copy of the original HTML
   var cleanedOriginalHtml = savedDocType;
@@ -365,7 +477,7 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
   var cleanedDesktopHtml = savedDocType;
   var cleanedMobileHtml = savedDocType;
 
-    // Add dFrame.css/mFrame.css
+    // Add dFrame.css/dFrame.css
     var toolkitStyle = document.createElement("link");
     toolkitStyle.href = chrome.extension.getURL('css/dFrame.css');
     toolkitStyle.id = "debug-unique-style-block";
@@ -397,6 +509,176 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
   cleanedDesktopHtml  = cleanedDesktopHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
   cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
 
+  //////
+  //////
+  //////
+
+
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  ////                                     /////
+  ////                                     /////
+  ////    MAILCHIMP CONDITIONALS PARSER    /////
+  ////                                     /////
+  ////                                     /////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+  //////////////////////////////////////////////
+
+  // Conditionals Reference
+  // http://kb.mailchimp.com/merge-tags/use-conditional-merge-tag-blocks
+
+  // Only parse the conditionals if we see that they are in the plain text HTML
+  if ( conditionsParser && cleanedDesktopHtml.match(/\*\|IF:/gi) && cleanedDesktopHtml.match(/\*\|END:IF\|\*/gi)  ) {
+
+      // Remove all linebreaks/newlines from HTML plain text so that we can REGEX more easily.
+      cleanedDesktopHtml = cleanedDesktopHtml.trim();
+      cleanedDesktopHtml = cleanedDesktopHtml.replace(/(\r\n|\n|\r)/gm,"");
+
+      // Count the total ifs so that we can mark our <condition> tag.
+      var totalConditions = 0;
+
+      ////////////////////
+      ////////////////////
+      ////     IF    /////
+      ////////////////////
+      ////////////////////
+      matchIfs();
+      function matchIfs() {
+
+        totalConditions++;
+
+        var ifMatch = cleanedDesktopHtml.match(/\*\|IF:.+?\|\*.+?\*\|/i);
+        // ifMatch = ifMatch[0].replace(/\*\|$/, "");
+        // console.log(ifMatch);
+        // var ifMatch = ifMatch[0].replace(/p=/gi,"");
+
+        // cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch, "<if>" + ifMatch[0] + "</if>" );
+
+        var conditionType = getConditionText(ifMatch[0]);
+
+        var modifiedMatch = ifMatch[0].replace(/\*\|$/, "");
+        var ifData = ifMatch[0].match(/^\*\|.+?\|\*/);
+        modifiedMatch = modifiedMatch.replace(ifData[0], "");
+
+        ifData = ifData[0].replace(/\*\|IF:/gi, "");
+        ifData = ifData.replace(/\|\*/gi, "");
+
+        var ifTag = "<if data-step='if' data-type='merge' data-conditions='" + conditionType + "'>"
+
+        cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch[0], "<condition data-step='condition' data-condition-count='" + totalConditions + "'>" + ifTag + modifiedMatch + "</if>*|");
+
+        if ( cleanedDesktopHtml.match(/\*\|IF:.+?\|\*.+?\*\|/i) ) {
+          console.log("true");
+          matchIfs();
+        } else {
+          console.log("false");
+        }
+      }
+
+
+      ////////////////////
+      ////////////////////
+      ///   END IF   /////
+      ////////////////////
+      ////////////////////
+      // Close <condition> tags
+      cleanedDesktopHtml = cleanedDesktopHtml.replace(/\*\|END:IF\|\*/gi, "</condition>");
+
+
+      ////////////////////
+      ////////////////////
+      ////  ELSE IF  /////
+      ////////////////////
+      ////////////////////
+      matchElseIfs();
+      function matchElseIfs() {
+
+        // Look for instances of *|ELSEIF in the string.
+        var ifMatch = cleanedDesktopHtml.match(/\*\|ELSEIF:.+?\|\*.+?(<\/condition>|\*\|ELSE)/i);
+
+        // elseifs aren't required in a condition. If the .match above did not find any, skip this section
+        if ( ifMatch !== null ) {
+
+            var conditionType = getConditionText(ifMatch[0]);
+
+            if ( ifMatch[0].endsWith("</condition>") ) {
+
+              var modifiedMatch = ifMatch[0].replace(/^\*\|ELSEIF:/, "");
+
+              var elseifTag = "<elseif data-step='elseif' data-conditions='" + conditionType + "'>";
+
+              var cleanedMatch = modifiedMatch.replace(/.+\|\*/, "");
+
+              cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch[0], elseifTag + cleanedMatch + "</elseif>");
+
+            } else {
+
+              var modifiedMatch = ifMatch[0].replace(/^\*\|ELSEIF:/, "");
+
+              var elseifTag = "<elseif data-step='elseif' data-conditions='" + conditionType + "'>";
+
+              var cleanedMatch = modifiedMatch.replace(/.+\|\*/, "");
+                  cleanedMatch = cleanedMatch.replace(/\*\|ELSE/, "");
+
+              cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch[0], elseifTag + cleanedMatch + "</elseif>*|ELSE");
+
+            }
+
+            if ( cleanedDesktopHtml.match(/\*\|ELSEIF:.+?\|\*.+?(<\/condition>|\*\|ELSE)/i) ) {
+              matchElseIfs();
+            }
+
+        }
+      }
+
+      ////////////////////
+      ////////////////////
+      ////    ELSE   /////
+      ////////////////////
+      ////////////////////
+      matchElse();
+      function matchElse() {
+        var ifMatch = cleanedDesktopHtml.match(/\*\|ELSE:\|\*.+?<\/condition>/i);
+
+        var modifiedMatch = ifMatch[0].replace(/^\*\|ELSE:\|\*/, "");
+
+        var cleanedMatch = modifiedMatch.replace(/<\/condition>/, "");
+
+        cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch[0], "<else data-step='else'>" + cleanedMatch + "</else></condition>");
+
+
+        if ( cleanedDesktopHtml.match(/\*\|ELSE:\|\*.+?<\/condition>/i) ) {
+          matchElse();
+        }
+      }
+
+      /////////////////
+      /////////////////
+      /////////////////
+      function getConditionText(string) {
+
+        var conditionText = string.replace(/^\*\|.+?:/, "");
+            conditionText = conditionText.replace(/\|\*.+/, "");
+
+        return conditionText;
+      }
+
+      console.log(cleanedDesktopHtml);
+
+
+  } //// End of MailChimp Conditionals Parser
+  //////
+  //////
+
+
+
+
+
 
 ////////////////////
 ////////////////////
@@ -409,9 +691,14 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
 ////////////////////
 
   // Destroy all <style> tags.
-  let styleSheetEle = document.querySelectorAll("style");
-  for (let style of styleSheetEle) {
-    destroy(style);
+  let styleBlocks = document.querySelectorAll("style");
+  for (let styleBlock of styleBlocks) {
+    destroy(styleBlock);
+  }
+
+  let linkedStylesheets = document.querySelectorAll("[rel='stylesheet']");
+  for (let linkedStylesheet of linkedStylesheets) {
+    destroy(linkedStylesheet);
   }
 
   // Destroy all <body> tags.
@@ -510,6 +797,10 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
   desktopIframeWrapper.className = "desktop-view-wrapper";
   iframeWrapper.appendChild(desktopIframeWrapper);
 
+  var desktopResizeHandle = document.createElement("div");
+  desktopResizeHandle.className = "dframe-resize-handle";
+  desktopIframeWrapper.appendChild(desktopResizeHandle);
+
     var desktopIframe = document.createElement("iframe");
     desktopIframe.className = "iframe-desktop-view";
     desktopIframe.id = "desktop-view"
@@ -520,7 +811,8 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
     desktopIframe.contentWindow.document.close();
 
     // Apply the desktop iframes document object to a variable
-    var dFrame = desktopIframe.contentDocument;
+    var dFrameContents = desktopIframe.contentDocument;
+
 
     // Quick <style> Injection
     // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the  styles aren't applied yet.
@@ -528,22 +820,22 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
     //
     // - Prevent flash of contenteditable cursor when spell check is activated.
     //
-    var dStyleElement = dFrame.createElement("style");
+    var dStyleElement = dFrameContents.createElement("style");
     // Experimenting with position .debug on page load to prevent the scrollbar from jumping around while the HTML waits for dFrame.css to load.
-    dStyleElement.appendChild(dFrame.createTextNode("html { overflow-y: scroll; } .spellcheck body { color:transparent; } ") );
-    dFrame.getElementsByTagName("head")[0].appendChild(dStyleElement);
+    dStyleElement.appendChild(dFrameContents.createTextNode("html { overflow-y: scroll; } /* .spellcheck body { color:transparent; } */ elseif, else { display: none; }") );
+    dFrameContents.getElementsByTagName("head")[0].appendChild(dStyleElement);
 
     //////////////
 
     // Add allFrames.js
-        // var dFrameAllFramesScript = document.createElement("script");
-        // dFrameAllFramesScript.src = chrome.extension.getURL('js/allFrames.js');
-        // insertAfter(dFrameAllFramesScript, dFrame.body);
+        var dFrameAllFramesScript = document.createElement("script");
+        dFrameAllFramesScript.src = chrome.extension.getURL('js/allFrames.js');
+        insertAfter(dFrameAllFramesScript, dFrameContents.body);
 
     // Add dFrame.js
     var dFrameFrameScript = document.createElement("script");
     dFrameFrameScript.src = chrome.extension.getURL('js/dFrame.js');
-    insertAfter(dFrameFrameScript, dFrame.body);
+    insertAfter(dFrameFrameScript, dFrameContents.body);
 
   /////////
   /////////
@@ -577,115 +869,9 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
     var mobileIframeSetting = document.createElement("div");
     mobileIframeSetting.className = "mobile-iframe-settings";
 
-    // var mWidth4 = document.createElement("div");
-    // mWidth4.id = "mobile-custom";
-    // var mWidth4Text = document.createTextNode("Custom");
-    // mWidth4.appendChild(mWidth4Text);
-    // mWidth4.addEventListener("click", toggleCustomMobileWidths, false);
-    // mobileIframeSetting.appendChild(mWidth4);
-
-    // var mWidth1 = document.createElement("div");
-    // mWidth1.id = "mobile-320";
-    // mWidth1.dataset.mobileWidth = "320";
-    // mWidth1.className = "active";
-    // var mWidth1Text = document.createTextNode("320");
-    // mWidth1.appendChild(mWidth1Text);
-    // mWidth1.addEventListener("click", changeMobileSize, false);
-    // mobileIframeSetting.appendChild(mWidth1);
-    //
-    // var mWidth2 = document.createElement("div");
-    // mWidth2.id = "mobile-360";
-    // mWidth2.id = "mobile-360";
-    // mWidth2.dataset.mobileWidth = "360";
-    // var mWidth2Text = document.createTextNode("360");
-    // mWidth2.appendChild(mWidth2Text);
-    // mWidth2.addEventListener("click", changeMobileSize, false);
-    // mobileIframeSetting.appendChild(mWidth2);
-    //
-    // var mWidth3 = document.createElement("div");
-    // mWidth3.id = "mobile-414";
-    // mWidth3.id = "mobile-414";
-    // mWidth3.dataset.mobileWidth = "414";
-    // var mWidth3Text = document.createTextNode("414");
-    // mWidth3.appendChild(mWidth3Text);
-    // mWidth3.addEventListener("click", changeMobileSize, false);
-    // mobileIframeSetting.appendChild(mWidth3);
-    //
-    // var mWidth3 = document.createElement("div");
-    // mWidth3.id = "mobile-414";
-    // mWidth3.id = "mobile-414";
-    // mWidth3.dataset.mobileWidth = "414";
-    // var mWidth3Text = document.createTextNode("414");
-    // mWidth3.appendChild(mWidth3Text);
-    // mWidth3.addEventListener("click", changeMobileSize, false);
-    // mobileIframeSetting.appendChild(mWidth3);
-    //
-    // var mWidth4 = document.createElement("div");
-    // mWidth4.id = "mobile-480";
-    // mWidth4.id = "mobile-480";
-    // mWidth4.dataset.mobileWidth = "480";
-    // var mWidth4Text = document.createTextNode("480");
-    // mWidth4.appendChild(mWidth4Text);
-    // mWidth4.addEventListener("click", changeMobileSize, false);
-    // mobileIframeSetting.appendChild(mWidth4);
-
     mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim active" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>'
 
     mobileIframeSetting.addEventListener("click", changeMobileSize, false);
-
-    // var mWidthExtraOptionsWrapper = document.createElement("div");
-    // mWidthExtraOptionsWrapper.id = "extra-mobile-widths";
-    // mWidthExtraOptionsWrapper.className = "extra-mobile-widths-wrapper";
-    // mobileDeviceWrapper.appendChild(mWidthExtraOptionsWrapper);
-    //
-    // function toggleCustomMobileWidths() {
-    //   mWidthExtraOptionsWrapper.style.display = "flex";
-    //   mWidthCustomInput.autofocus = "true";
-    //   console.log(mWidthExtraOptionsWrapper);
-    // }
-    //
-    // var mWidthCustomInputWrapper = document.createElement("div");
-    // mWidthCustomInputWrapper.id = "custom-mobile-width";
-    //
-    // var mWidthCustomInput = document.createElement("input");
-    // mWidthCustomInput.type = "number";
-    // mWidthCustomInput.placeholder = "Custom Width";
-    // mWidthCustomInput.max = "480";
-    // mWidthCustomInput.maxLength = "3";
-    // mWidthCustomInput.pattern = "[0-9]";
-    //
-    // mWidthCustomInputWrapper.appendChild(mWidthCustomInput);
-    // mWidthExtraOptionsWrapper.appendChild(mWidthCustomInputWrapper);
-
-      // var mWidthExtra1 = document.createElement("div");
-      // mWidthExtra1.className = "extra-width";
-      // mWidthExtra1.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
-      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra1);
-      //
-      // var mWidthExtra2 = document.createElement("div");
-      // mWidthExtra2.className = "extra-width";
-      // mWidthExtra2.innerHTML = "<div>477</div><div>iPhone 6</div>"
-      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra2);
-      //
-      // var mWidthExtra3 = document.createElement("div");
-      // mWidthExtra3.className = "extra-width";
-      // mWidthExtra3.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
-      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra3);
-      //
-      // var mWidthExtra4 = document.createElement("div");
-      // mWidthExtra4.className = "extra-width";
-      // mWidthExtra4.innerHTML = "<div><div>477</div><div>iPhone 6</div></div>"
-      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra4);
-      //
-      // var mWidthExtra5 = document.createElement("div");
-      // mWidthExtra5.className = "extra-width";
-      // mWidthExtra5.innerHTML = "<div><div>375</div><div>iPhone 6</div></div>"
-      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra5);
-      //
-      // var mWidthExtra6 = document.createElement("div");
-      // mWidthExtra6.className = "extra-width";
-      // mWidthExtra6.innerHTML = "<div><div>414</div><div>iPhone 6 Plus</div></div>"
-      // mWidthExtraOptionsWrapper.appendChild(mWidthExtra6);
 
       function hideMobileWrapper() {
         mobileIframeWrapper.classList.toggle('off');
@@ -694,44 +880,9 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
     mobileDeviceWrapper.appendChild(mobileIframeSetting);
 
 
-    function changeMobileSize(width) {
-
-      if ( typeof width === 'string' || width instanceof String ) {
-        console.error(width);
-        var widthToSet = width + "px";
-        console.log("if");
-
-        document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
-        document.querySelector(".mobile-iframe-settings [data-mobile-width='"+ width + "']").classList.add("active");
-
-      } else {
-
-        if (typeof(event) !== "undefined") {
-          if (event.target.dataset.mobileWidth !== undefined) {
-            var clickedSize = event.target;
-            var selectedSize = event.target.dataset.mobileWidth;
-
-            var widthToSet = selectedSize + "px";
-            history.replaceState(null,null, updateQueryString("mobilewidth", selectedSize) );
-
-            document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
-            clickedSize.classList.add("active");
-          }
-        }
-
-      }
-      mobileDeviceWrapper.style.width = widthToSet
-    }
-
-    if ( typeof getParameterByName("mobilewidth") === 'string' || getParameterByName("mobilewidth") instanceof String ) {
-      changeMobileSize(getParameterByName("mobilewidth"));
-      console.log("mobile width change");
-    }
-
-
     // Quick <style> Injection
     //
-    // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the  styles aren't applied yet.
+    // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the styles aren't applied yet.
     // http://stackoverflow.com/a/33079951/556079
     //
     // - Remove scrollbar from mobile view while still allowing scrolling
@@ -739,9 +890,8 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
     //
     var mStyleElement = mFrame.createElement("style");
         mStyleElement.className = "debug";
-    mStyleElement.appendChild(mFrame.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } .spellcheck body { color:transparent; }") );
+    mStyleElement.appendChild(mFrame.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } /* .spellcheck body { color:transparent; } */") );
     mFrame.getElementsByTagName("head")[0].appendChild(mStyleElement);
-
 
     // Add allFrames.js
         // var mFrameAllFramesScript = document.createElement("script");
@@ -759,7 +909,7 @@ if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.tes
     // allFramesStyles.href = chrome.extension.getURL('css/allFrames.css');
     // allFramesStyles.rel = "stylesheet";
     // allFramesStyles.type = "text/css";
-    // dFrame.head.appendChild(allFramesStyles);
+    // dFrameContents.head.appendChild(allFramesStyles);
     // mFrame.head.appendChild(allFramesStyles.cloneNode(true));
 
 
@@ -800,9 +950,14 @@ var pageUrl = document.URL;
 ///////////
 ///// Get the filename.
 ///////////
-
 var fileName = getFilename(pageUrl);
 
+
+///////////
+///// Get Discipline
+///////////
+var emailDisc = getDisciplineId(pageUrl);
+document.body.classList.add("disc-" + emailDisc);
 
 ///////////
 ///// Get the A/B Status.
@@ -895,6 +1050,7 @@ if ( /\-(HS|DR|Fox)\-/gi.test(pageUrl) ) {
 }
 
 
+
 ///////////
 ///// Determine if this is a sale or presale or neither
 ///////////
@@ -909,12 +1065,6 @@ if ( /\-Sale\-/gi.test(pageUrl) ) {
   emailPresale = true;
   emailAnySale = true;
 }
-
-///////////
-///// Get Discipline
-///////////
-var emailDisc = getDisciplineId(pageUrl);
-document.body.classList.add("disc-" + emailDisc);
 
 
 ///////////
@@ -979,13 +1129,166 @@ console.groupCollapsed("Global variables based on filename");
 
 console.groupEnd();
 
+
+
+    dFrameContents.body.classList.add("disc-" + emailDisc);
+    mFrame.body.classList.add("disc-" + emailDisc);
+
+
+
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 ////                                              ////
-////  Create Newsletter Header                    ////
+////  Global Functions                            ////
 ////                                              ////
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
+
+
+//////////
+/////
+///// Show dFrame width on window resize
+/////
+//////////
+//// - Update using element watcher when it's available in Chrome: https://jsfiddle.net/atotic/mr47wt1a/
+
+var dFrameWidthStatus = document.createElement("div");
+dFrameWidthStatus.id = "desktop-width-status";
+dFrameWidthStatus.className = "iframe-width-status";
+desktopIframeWrapper.appendChild(dFrameWidthStatus);
+var fadeWidthStatus;
+
+window.addEventListener('resize', showdFrameWidthStatus, true);
+
+function showdFrameWidthStatus() {
+  dFrameWidthStatus.classList.add("show");
+  dFrameWidthStatus.innerHTML = desktopIframe.clientWidth;
+
+  clearTimeout(fadeWidthStatus); //https://www.w3schools.com/jsref/met_win_cleartimeout.asp
+
+  fadeWidthStatus = setTimeout(function() {
+    dFrameWidthStatus.classList.remove("show");
+  }, 2000);
+}
+
+// https://stackoverflow.com/a/39312522/556079
+
+
+
+
+
+function changeMobileSize(width) {
+
+  if ( typeof width === 'string' || width instanceof String ) {
+    console.error(width);
+    var widthToSet = width + "px";
+    console.log("if");
+
+    document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
+    document.querySelector(".mobile-iframe-settings [data-mobile-width='"+ width + "']").classList.add("active");
+
+  } else {
+
+    if (typeof(event) !== "undefined") {
+      if (event.target.dataset.mobileWidth !== undefined) {
+        var clickedSize = event.target;
+        var selectedSize = event.target.dataset.mobileWidth;
+
+        var widthToSet = selectedSize + "px";
+        history.replaceState(null,null, updateQueryString("mobilewidth", selectedSize) );
+
+        document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
+        clickedSize.classList.add("active");
+      }
+    }
+
+  }
+  mobileDeviceWrapper.style.width = widthToSet
+  showdFrameWidthStatus();
+}
+
+
+
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+////                                              ////
+////  Newsletter Functions                        ////
+////                                              ////
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+function pinLinkMarker() {
+  // http://stackoverflow.com/a/8454104/556079
+  this.nextSibling.style.display = this.nextSibling.style.display === 'block' ? '' : 'block';
+}
+
+function unpinLinkMarker() {
+  // http://stackoverflow.com/a/6042235/556079
+  var flag = 0;
+
+  this.addEventListener("mousemove", function(){
+    flag = 1;
+  }, false);
+
+  this.addEventListener("mouseup", function(){
+    if(flag === 0){
+      this.style.display = "";
+    }
+  }, false);
+}
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+//
+//      _______  _______  _______  _______  ______          ___      _______  _______  ______
+//     |   _   ||       ||       ||       ||    _ |        |   |    |       ||   _   ||      |
+//     |  |_|  ||    ___||_     _||    ___||   | ||        |   |    |   _   ||  |_|  ||  _    |
+//     |       ||   |___   |   |  |   |___ |   |_||_       |   |    |  | |  ||       || | |   |
+//     |       ||    ___|  |   |  |    ___||    __  |      |   |___ |  |_|  ||       || |_|   |
+//     |   _   ||   |      |   |  |   |___ |   |  | |      |       ||       ||   _   ||       |
+//     |__| |__||___|      |___|  |_______||___|  |_|      |_______||_______||__| |__||______|
+//
+//
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+////                                              ////
+////  After Initial Page Loading                  ////
+////  Run Querystring Functions                   ////
+////                                              ////
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+// Wait till after all of our elements are created before attempting to run this function.
+
+if ( typeof getParameterByName("mobilewidth") === 'string' || getParameterByName("mobilewidth") instanceof String ) {
+  changeMobileSize(getParameterByName("mobilewidth"));
+  console.log("mobile width change");
+}
+
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+//
+//      ___      _______  __   __  _______  __   __  _______
+//     |   |    |   _   ||  | |  ||       ||  | |  ||       |
+//     |   |    |  |_|  ||  |_|  ||   _   ||  | |  ||_     _|
+//     |   |    |       ||       ||  | |  ||  |_|  |  |   |
+//     |   |___ |       ||_     _||  |_|  ||       |  |   |
+//     |       ||   _   |  |   |  |       ||       |  |   |
+//     |_______||__| |__|  |___|  |_______||_______|  |___|
+//
+//
+//      Now that dFrame and mFrame have been created we'll build the rest of the layout.
+//
+//
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+////                                                   ////
+////  Create Newsletter Header                         ////
+////                                                   ////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
 
 var headerBar = document.createElement("div");
@@ -1028,12 +1331,65 @@ mainContainer.appendChild(headerBar);
         var iconSuffix = "-sub";
       }
 
-      if ( emailDisc === "at" ) {
-        headerIcon = '<div><svg class="disc-img" viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#ff620d"/><path d="M80.4 222.2h37.2l8.3-27h47.7l8.4 27h37.4L166.2 77.8h-32.8L80.4 222.2zM149.8 118.2l15.6 50.1h-31.1L149.8 118.2z" fill="#fff"/></svg></div>'
+      // SVG Optimizer
+      // http://petercollingridge.appspot.com/svg-optimiser
+
+      var iconCode;
+
+      // PT
+      if ( emailDisc === "pt" ) {
+          if ( emailSubType === "sub" ) {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#FFBE12"/><path d="M221.5 88.8c-5.6-9-13.5-15.9-23.6-20.8 -10.2-4.9-21.9-7.3-35.1-7.3h-69v172.8h41.7v-58.6h26.6c21 0 37.6-5 49.7-15.1 12.1-10.1 18.1-23.6 18.1-40.4C229.9 108 227.1 97.8 221.5 88.8zM181.3 136.7c-4.2 4-10.4 6.1-18.5 6.1h-27.3V92.9h27.8c7.5 0.1 13.5 2.5 17.8 7.4 4.4 4.8 6.5 11.3 6.5 19.3C187.7 127 185.5 132.6 181.3 136.7z" fill="#FFF"/></svg>';
+          } else {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#FFBE12"/><path d="M221.5 88.8c-5.6-9-13.5-15.9-23.6-20.8 -10.2-4.9-21.9-7.3-35.1-7.3h-69v172.8h41.7v-58.6h26.6c21 0 37.6-5 49.7-15.1 12.1-10.1 18.1-23.6 18.1-40.4C229.9 108 227.1 97.8 221.5 88.8zM181.3 136.7c-4.2 4-10.4 6.1-18.5 6.1h-27.3V92.9h27.8c7.5 0.1 13.5 2.5 17.8 7.4 4.4 4.8 6.5 11.3 6.5 19.3C187.7 127 185.5 132.6 181.3 136.7z" fill="#FFF"/></svg>';
+          }
+      // AT
+      } else if ( emailDisc === "at" ) {
+          if ( emailSubType === "sub" ) {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#FF620D"/><path d="M66.8 229.5h44.5l10-32.3h57.1l10.1 32.3h44.7L169.3 56.7h-39.2L66.8 229.5zM149.8 105.1l18.6 59.9h-37.2L149.8 105.1z" fill="#FFF"/></svg>';
+          } else {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#FF620D"/><path d="M66.8 229.5h44.5l10-32.3h57.1l10.1 32.3h44.7L169.3 56.7h-39.2L66.8 229.5zM149.8 105.1l18.6 59.9h-37.2L149.8 105.1z" fill="#FFF"/></svg>';
+          }
+      // OT
+      } else if ( emailDisc === "ot" ) {
+          if ( emailSubType === "sub" ) {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#BF002D"/><path d="M189 67.8c-11.5-7-24.5-10.4-39.2-10.4 -14.8 0-28 3.5-39.6 10.6 -11.6 7-20.5 17-26.7 30 -6.2 12.9-9.3 27.9-9.3 44.8v9.7c0.3 16.3 3.7 30.7 10 43.3 6.4 12.6 15.3 22.3 26.6 29 11.4 6.8 24.5 10.1 39.2 10.1s27.8-3.5 39.3-10.5c11.5-7 20.4-17 26.6-30 6.2-13 9.4-27.9 9.4-44.7v-8c-0.1-16.6-3.3-31.4-9.7-44.2C209.4 84.7 200.5 74.8 189 67.8zM183.1 150.4c-0.1 16.8-3 29.6-8.7 38.6 -5.7 8.9-13.8 13.4-24.3 13.4 -11.1 0-19.4-4.5-25-13.6 -5.6-9.1-8.4-22.1-8.4-39l0.1-12.7c1.2-31.3 12.2-47 33.1-47 10.7 0 18.9 4.5 24.6 13.4 5.7 8.9 8.6 21.9 8.6 39.1V150.4z" fill="#FFF"/></svg>';
+          } else {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#BF002D"/><path d="M189 67.8c-11.5-7-24.5-10.4-39.2-10.4 -14.8 0-28 3.5-39.6 10.6 -11.6 7-20.5 17-26.7 30 -6.2 12.9-9.3 27.9-9.3 44.8v9.7c0.3 16.3 3.7 30.7 10 43.3 6.4 12.6 15.3 22.3 26.6 29 11.4 6.8 24.5 10.1 39.2 10.1s27.8-3.5 39.3-10.5c11.5-7 20.4-17 26.6-30 6.2-13 9.4-27.9 9.4-44.7v-8c-0.1-16.6-3.3-31.4-9.7-44.2C209.4 84.7 200.5 74.8 189 67.8zM183.1 150.4c-0.1 16.8-3 29.6-8.7 38.6 -5.7 8.9-13.8 13.4-24.3 13.4 -11.1 0-19.4-4.5-25-13.6 -5.6-9.1-8.4-22.1-8.4-39l0.1-12.7c1.2-31.3 12.2-47 33.1-47 10.7 0 18.9 4.5 24.6 13.4 5.7 8.9 8.6 21.9 8.6 39.1V150.4z" fill="#FFF"/></svg>';
+          }
+      // SLP
+      } else if ( emailDisc === "slp" ) {
+          if ( emailSubType === "sub" ) {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#00C2E0"/><path d="M134.6 93.7c4.3-3.3 10.2-4.9 17.6-4.9 7.4 0 13.2 1.9 17.5 5.8 4.3 3.9 6.5 9.3 6.5 16.4h41.5c0-10.5-2.7-19.9-8.2-28.1 -5.5-8.2-13.1-14.5-23-18.9 -9.9-4.4-21-6.6-33.4-6.6 -12.7 0-24.2 2-34.4 6.1 -10.2 4.1-18.1 9.8-23.7 17.1 -5.6 7.3-8.4 15.8-8.4 25.3 0 19.2 11.2 34.3 33.6 45.3 6.9 3.4 15.7 6.9 26.6 10.6 10.8 3.6 18.4 7.2 22.7 10.6 4.3 3.4 6.5 8.2 6.5 14.2 0 5.4-2 9.6-6 12.5 -4 3-9.4 4.5-16.3 4.5 -10.8 0-18.5-2.2-23.3-6.6 -4.8-4.4-7.2-11.2-7.2-20.5H81.5c0 11.4 2.9 21.5 8.6 30.2 5.7 8.7 14.3 15.6 25.6 20.7 11.4 5 24 7.5 38 7.5 19.9 0 35.5-4.3 46.9-12.9 11.4-8.6 17.1-20.5 17.1-35.6 0-18.9-9.3-33.7-28-44.5 -7.7-4.4-17.5-8.6-29.4-12.4 -11.9-3.8-20.3-7.6-25-11.2 -4.7-3.6-7.1-7.6-7.1-12C128.1 101.2 130.3 97 134.6 93.7z" fill="#FFF"/></svg>';
+          } else {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#00C2E0"/><path d="M134.6 93.7c4.3-3.3 10.2-4.9 17.6-4.9 7.4 0 13.2 1.9 17.5 5.8 4.3 3.9 6.5 9.3 6.5 16.4h41.5c0-10.5-2.7-19.9-8.2-28.1 -5.5-8.2-13.1-14.5-23-18.9 -9.9-4.4-21-6.6-33.4-6.6 -12.7 0-24.2 2-34.4 6.1 -10.2 4.1-18.1 9.8-23.7 17.1 -5.6 7.3-8.4 15.8-8.4 25.3 0 19.2 11.2 34.3 33.6 45.3 6.9 3.4 15.7 6.9 26.6 10.6 10.8 3.6 18.4 7.2 22.7 10.6 4.3 3.4 6.5 8.2 6.5 14.2 0 5.4-2 9.6-6 12.5 -4 3-9.4 4.5-16.3 4.5 -10.8 0-18.5-2.2-23.3-6.6 -4.8-4.4-7.2-11.2-7.2-20.5H81.5c0 11.4 2.9 21.5 8.6 30.2 5.7 8.7 14.3 15.6 25.6 20.7 11.4 5 24 7.5 38 7.5 19.9 0 35.5-4.3 46.9-12.9 11.4-8.6 17.1-20.5 17.1-35.6 0-18.9-9.3-33.7-28-44.5 -7.7-4.4-17.5-8.6-29.4-12.4 -11.9-3.8-20.3-7.6-25-11.2 -4.7-3.6-7.1-7.6-7.1-12C128.1 101.2 130.3 97 134.6 93.7z" fill="#FFF"/></svg>';
+          }
+      // OTHER
+      } else if ( emailDisc === "other" ) {
+          if ( emailSubType === "sub" ) {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#BD00BF"/><polygon points="228.9 108.9 168.8 133.7 173.8 64.2 132.3 64.2 137.1 132.4 75.3 107 62.6 143.6 125.9 161.1 81.7 213.8 115.2 235.7 150.9 180.6 186.4 237.7 220 214.8 177.5 163.4 241.5 145.9" fill="#fff"/></svg>';
+          } else {
+            iconCode = '<svg  viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#BD00BF"/><polygon points="228.9 108.9 168.8 133.7 173.8 64.2 132.3 64.2 137.1 132.4 75.3 107 62.6 143.6 125.9 161.1 81.7 213.8 115.2 235.7 150.9 180.6 186.4 237.7 220 214.8 177.5 163.4 241.5 145.9" fill="#fff"/></svg>';
+          }
+      // MASSAGE
+      } else if ( emailDisc === "lmt" ) {
+          if ( emailSubType === "sub" ) {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#ff620d"/><path d="M80.4 222.2h37.2l8.3-27h47.7l8.4 27h37.4L166.2 77.8h-32.8L80.4 222.2zM149.8 118.2l15.6 50.1h-31.1L149.8 118.2z" fill="#fff"/></svg>';
+          } else {
+            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#ff620d"/><path d="M80.4 222.2h37.2l8.3-27h47.7l8.4 27h37.4L166.2 77.8h-32.8L80.4 222.2zM149.8 118.2l15.6 50.1h-31.1L149.8 118.2z" fill="#fff"/></svg>';
+          }
       } else {
-        headerIcon = '<div><img class="disc-img" src="' + chrome.extension.getURL('favicons/' + emailDisc + iconSuffix + '.png') + '"></div>'
+        iconCode = '<img class="disc-img" src="' + chrome.extension.getURL('favicons/' + emailDisc + iconSuffix + '.png') + '">'
       }
+      // Wrap it up in a div
+      headerIcon = "<div class='disc-img svg-'" + emailDisc + "'>" + iconCode + "</div>";
+    } else {
+      // No discipline found in emailDisc
+      headerIcon = "";
     }
+
+
+
 
     // Create HTML for Header Audience Text
     var headerAudienceText = "";
@@ -1098,10 +1454,31 @@ var controlBar = document.createElement("div");
 controlBar.className = "control-bar";
 qaWrapper.appendChild(controlBar);
 
+  //////////
+  ////
+  ////  Preflight Status
+  ////
+  /////////
+
+  var preflightStatus = document.createElement("div");
+  preflightStatus.id = "preflight";
+  preflightStatus.className = "preflight-wrapper initial-load";
+  preflightStatus.innerHTML = '<div id="preflight-total" class="preflight-status preflight-total">0</div><div class="preflight-rocket preflight-status icomoon icomoon-rocket"></div>'
+  preflightStatus.addEventListener("click", showPreflight, false);
+  controlBar.appendChild(preflightStatus);
+
+  var preflightTotal = preflightStatus.querySelector(".preflight-total");
+
+  function showPreflight() {
+    // ...
+  }
+
+  // Orbs Top
   var orbsTop = document.createElement("div");
   orbsTop.className = "orbs-top";
   controlBar.appendChild(orbsTop);
 
+  // Orbs Bottom
   var orbsBottom = document.createElement("div");
   orbsBottom.className = "orbs-bottom";
   controlBar.appendChild(orbsBottom);
@@ -1209,6 +1586,8 @@ function paneToggle(infobar, mobile) {
 
 }
 
+
+
 // window.addEventListener('resize', function(event){
 //
 //   console.log(document.documentElement.clientWidth);
@@ -1265,7 +1644,7 @@ function paneToggle(infobar, mobile) {
 
 function getDbShareLink() {
 
-  console.groupCollapsed("Dropbox Share Function");
+  console.groupCollapsed("Dropbox Share Function Initiated");
 
   var source = this;
 
@@ -1280,7 +1659,7 @@ function getDbShareLink() {
     if ( elExists(document.querySelector("#dropbox-link-text")) ) {
 
       source.classList.remove("loading");
-      copyToClipboard(document.querySelector("#dropbox-link-text"));
+      copyToClipboard(document.querySelector("#dropbox-link-text"), "success");
       console.log("Shareable link found in the DOM. Copying to clipboard.")
 
     } else {
@@ -1411,7 +1790,7 @@ function processDbLink(shareableLink, action, source) {
       shareableLinkHolder.className = "hidden"
       shareableLinkHolder.value = shareableLink;
       document.body.appendChild(shareableLinkHolder);
-      copyToClipboard(document.querySelector("#dropbox-link-text"));
+      copyToClipboard(document.querySelector("#dropbox-link-text"), "success");
       source.classList.remove("loading");
 
       console.log("Copying processed link to clipboard. [" + shareableLink + "]");
@@ -1446,9 +1825,9 @@ function processDbLink(shareableLink, action, source) {
 ////
 /////////
 
-var orbDivider1 = document.createElement("div");
-orbDivider1.className = "orb-divider orb-divider-1";
-orbsBottom.appendChild(orbDivider1);
+// var orbDivider1 = document.createElement("div");
+// orbDivider1.className = "orb-divider orb-divider-1";
+// orbsBottom.appendChild(orbDivider1);
 
 var orbDivider2 = document.createElement("div");
 orbDivider2.className = "orb-divider orb-divider-2";
@@ -1551,7 +1930,26 @@ function swapUrl() {
 
 //////////
 ////
-////  Check to Blog
+////  Check Links
+////
+/////////
+
+if ( !isRecentEmail ) {
+  var checkLinksOrb = document.createElement("div");
+  checkLinksOrb.id = "check-links-orb";
+  checkLinksOrb.className = "check-links-orb orb glyph";
+  checkLinksOrb.addEventListener("click", runLinkValidation, false);
+  orbsBottom.appendChild(checkLinksOrb);
+
+  function runLinkValidation() {
+    linkValidationLoop("false");
+  }
+}
+
+
+//////////
+////
+////  Check the Blog
 ////
 /////////
 
@@ -1567,45 +1965,64 @@ function runCheckTheBlog() {
 
 //////////
 ////
+////  Zoom Check Orb
+////
+/////////
+
+var zoomCheckOrb = document.createElement("div");
+zoomCheckOrb.id = "zoom-check-orb";
+zoomCheckOrb.className = "zoom-check-orb orb glyph icomoon icomoon-search";
+zoomCheckOrb.addEventListener("click", zoomCheck, false);
+orbsBottom.appendChild(zoomCheckOrb);
+var showDimsToggle = false;
+
+function zoomCheck() {
+
+}
+
+
+
+//////////
+////
 ////  Create Borders/Dimensions Orb
 ////
 /////////
 
-var debugOrb = document.createElement("div");
-debugOrb.id = "borders-orb";
-debugOrb.className = "borders-orb orb glyph";
-debugOrb.addEventListener("click", toggleBorders, false);
-orbsBottom.appendChild(debugOrb);
-var bordersToggle = false;
+var showDimsOrb = document.createElement("div");
+showDimsOrb.id = "show-dims-orb";
+showDimsOrb.className = "show-dims-orb orb glyph";
+showDimsOrb.addEventListener("click", showDims, false);
+orbsBottom.appendChild(showDimsOrb);
+var showDimsToggle = false;
 
-function toggleBorders() {
+function showDims() {
 
-  bordersToggle = !bordersToggle;
+  showDimsToggle = !showDimsToggle;
 
-  if ( bordersToggle ) {
-    history.replaceState(null,null, updateQueryString("borders", "1") );
+  if ( showDimsToggle ) {
+    history.replaceState(null,null, updateQueryString("showdims", "1") );
   } else {
-    history.replaceState(null,null, updateQueryString("borders") );
+    history.replaceState(null,null, updateQueryString("showdims") );
   }
 
-  document.getElementById("borders-orb").classList.toggle("on");
+  document.getElementById("show-dims-orb").classList.toggle("on");
 
-  dFrame.documentElement.classList.toggle("debug-borders-highlight");
-  mFrame.documentElement.classList.toggle("debug-borders-highlight");
+  dFrameContents.documentElement.classList.toggle("debug-show-dims-highlight");
+  mFrame.documentElement.classList.toggle("debug-show-dims-highlight");
 
-  // if ( elExists(dFrame.getElementById("debug")) ) {
-  //   destroy(dFrame.getElementById("debug"));
+  // if ( elExists(dFrameContents.getElementById("debug")) ) {
+  //   destroy(dFrameContents.getElementById("debug"));
   //   destroy(mFrame.getElementById("debug"));
   // } else {
-  //   var debugStylingD = dFrame.createElement("style");
+  //   var debugStylingD = dFrameContents.createElement("style");
   //   debugStylingD.id = "debug";
-  //   debugStylingD.appendChild(dFrame.createTextNode("") );
+  //   debugStylingD.appendChild(dFrameContents.createTextNode("") );
   //
   //   var debugStylingM = mFrame.createElement("style");
   //   debugStylingM.id = "debug";
-  //   debugStylingM.appendChild(dFrame.createTextNode("td { box-shadow: inset 0 0 0 1px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
+  //   debugStylingM.appendChild(dFrameContents.createTextNode("td { box-shadow: inset 0 0 0 1px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
   //
-  //   dFrame.getElementsByTagName("head")[0].appendChild(debugStylingD);
+  //   dFrameContents.getElementsByTagName("head")[0].appendChild(debugStylingD);
   //   mFrame.getElementsByTagName("head")[0].appendChild(debugStylingM);
   // }
 
@@ -1614,22 +2031,22 @@ function toggleBorders() {
   //
 
   // Destory the td markers if they exist, create the wrapper for them if they do not.
-  if ( elExists(dFrame.getElementById("td-markers")) ) {
+  if ( elExists(dFrameContents.getElementById("td-markers")) ) {
 
-    destroy(dFrame.getElementById("td-markers"));
+    destroy(dFrameContents.getElementById("td-markers"));
     destroy(mFrame.getElementById("td-markers"));
 
   } else {
 
-    let dFrameTdList = dFrame.querySelectorAll("td");
+    let dFrameTdList = dFrameContents.querySelectorAll("td");
     var tdCount = 0
 
-    console.groupCollapsed("<td> Group (dFrame) - Total <td>'s Processed: " + dFrameTdList.length);
+    console.groupCollapsed("<td> Group (dFrameContents) - Total <td>'s Processed: " + dFrameTdList.length);
 
     var tdMarkerWrapper = document.createElement("section");
     tdMarkerWrapper.id = "td-markers";
     tdMarkerWrapper.className = "debug td-markers-wrapper";
-    dFrame.body.appendChild(tdMarkerWrapper);
+    dFrameContents.body.appendChild(tdMarkerWrapper);
     mFrame.body.appendChild(tdMarkerWrapper.cloneNode(true));
 
 
@@ -1638,7 +2055,7 @@ function toggleBorders() {
 
         tdCount++
 
-        var tdPos = getPosition(tdEle, dFrame);
+        var tdPos = getPosition(tdEle, dFrameContents);
 
         var tdMarker = document.createElement("section");
         tdMarker.className = "td-marker";
@@ -1656,7 +2073,7 @@ function toggleBorders() {
         // tdMarker.appendChild(tdTextPos);
 
         tdMarker.appendChild(tdTextNode);
-        dFrame.getElementById("td-markers").appendChild(tdMarker);
+        dFrameContents.getElementById("td-markers").appendChild(tdMarker);
 
       }
     }
@@ -1705,6 +2122,7 @@ function toggleBorders() {
 
   }
 
+  toggleImgDims();
 }
 
 
@@ -1733,46 +2151,46 @@ function toggleGuides() {
 
   document.getElementById("guides-orb").classList.toggle("on");
 
-  if ( elExists(dFrame.getElementById("alignment-guides")) ) {
-    destroy(dFrame.getElementById("alignment-guides"));
+  if ( elExists(dFrameContents.getElementById("alignment-guides")) ) {
+    destroy(dFrameContents.getElementById("alignment-guides"));
   } else {
 
-    var guidesStylingWrapper = dFrame.createElement("section");
+    var guidesStylingWrapper = dFrameContents.createElement("section");
     guidesStylingWrapper.id = "alignment-guides";
     guidesStylingWrapper.className = "debug alignment-guides-wrapper";
 
-      var guidesStyling1 = dFrame.createElement("section");
+      var guidesStyling1 = dFrameContents.createElement("section");
       guidesStyling1.classList.add("alignment-guide");
       guidesStyling1.style.left = "0";
       guidesStyling1.style.right = "0";
       guidesStylingWrapper.appendChild(guidesStyling1);
 
-      var guidesStyling2 = dFrame.createElement("section");
+      var guidesStyling2 = dFrameContents.createElement("section");
       guidesStyling2.classList.add("alignment-guide");
       guidesStyling2.style.left = "589px";
       guidesStyling2.style.right = "0";
       guidesStylingWrapper.appendChild(guidesStyling2);
 
-      var guidesStyling3 = dFrame.createElement("section");
+      var guidesStyling3 = dFrameContents.createElement("section");
       guidesStyling3.classList.add("alignment-guide");
       guidesStyling3.style.left = "619px";
       guidesStyling3.style.right = "0";
       guidesStylingWrapper.appendChild(guidesStyling3);
 
-      var guidesStyling4 = dFrame.createElement("section");
+      var guidesStyling4 = dFrameContents.createElement("section");
       guidesStyling4.classList.add("alignment-guide");
       guidesStyling4.style.left = "0";
       guidesStyling4.style.right = "589px";
       guidesStylingWrapper.appendChild(guidesStyling4);
 
-      var guidesStyling5 = dFrame.createElement("section");
+      var guidesStyling5 = dFrameContents.createElement("section");
       guidesStyling5.classList.add("alignment-guide");
       guidesStyling5.style.left = "0";
       guidesStyling5.style.right = "619px";
       guidesStylingWrapper.appendChild(guidesStyling5);
 
 
-    dFrame.getElementsByTagName("body")[0].appendChild(guidesStylingWrapper);
+    dFrameContents.getElementsByTagName("body")[0].appendChild(guidesStylingWrapper);
   }
 }
 
@@ -1782,40 +2200,40 @@ function toggleGuides() {
 ////
 /////////
 
-
-var navOrb = document.createElement("div");
-navOrb.className = "nav-orb orb dual-orb glyph";
-orbsBottom.appendChild(navOrb);
-
-  var navOrbUp = document.createElement("div");
-  navOrbUp.className = "nav-orb-up orb glyph";
-  navOrbUp.addEventListener("click", navUp, false);
-  navOrb.appendChild(navOrbUp);
-
-  var navOrbDown = document.createElement("div");
-  navOrbDown.className = "nav-orb-down orb glyph";
-  navOrbDown.addEventListener("click", navDown, false);
-  navOrb.appendChild(navOrbDown);
-
-  function navUp() {
-
-    var dFrameScroll = document.getElementById('desktop-view');
-    dFrameScroll.contentWindow.scrollTo(0,0);
-
-    var mFrameScroll = document.getElementById('mobile-view');
-    mFrameScroll.contentWindow.scrollTo(0,0);
-
-  }
-
-  function navDown() {
-
-    var dFrameScroll = document.getElementById('desktop-view');
-    dFrameScroll.contentWindow.scrollTo(0,dFrame.body.scrollHeight);
-
-    var mFrameScroll = document.getElementById('mobile-view');
-    mFrameScroll.contentWindow.scrollTo(0,mFrame.body.scrollHeight);
-
-  }
+//
+// var navOrb = document.createElement("div");
+// navOrb.className = "nav-orb orb dual-orb glyph";
+// orbsBottom.appendChild(navOrb);
+//
+//   var navOrbUp = document.createElement("div");
+//   navOrbUp.className = "nav-orb-up orb glyph";
+//   navOrbUp.addEventListener("click", navUp, false);
+//   navOrb.appendChild(navOrbUp);
+//
+//   var navOrbDown = document.createElement("div");
+//   navOrbDown.className = "nav-orb-down orb glyph";
+//   navOrbDown.addEventListener("click", navDown, false);
+//   navOrb.appendChild(navOrbDown);
+//
+//   function navUp() {
+//
+//     var dFrameScroll = document.getElementById('desktop-view');
+//     dFrameScroll.contentWindow.scrollTo(0,0);
+//
+//     var mFrameScroll = document.getElementById('mobile-view');
+//     mFrameScroll.contentWindow.scrollTo(0,0);
+//
+//   }
+//
+//   function navDown() {
+//
+//     var dFrameScroll = document.getElementById('desktop-view');
+//     dFrameScroll.contentWindow.scrollTo(0,dFrameContents.body.scrollHeight);
+//
+//     var mFrameScroll = document.getElementById('mobile-view');
+//     mFrameScroll.contentWindow.scrollTo(0,mFrame.body.scrollHeight);
+//
+//   }
 
 
 //////////
@@ -1827,27 +2245,46 @@ orbsBottom.appendChild(navOrb);
 var powerOrb = document.createElement("a");
 powerOrb.className = "power-orb orb glyph";
 powerOrb.href = document.URL + "?view=1";
-orbsTop.appendChild(powerOrb);
+orbsBottom.appendChild(powerOrb);
 
 
 //////////
 ////
-////   Custom Orb
+////   Presentation Orb
 ////
 /////////
 
 var customOrb = document.createElement("div");
 customOrb.className = "custom-orb orb glyph";
 customOrb.id = "custom-orb";
-customOrb.addEventListener("click", toggleCustom, false);
+customOrb.addEventListener("click", togglePresentation, false);
 orbsBottom.appendChild(customOrb);
-// var customToggle = false
+var presentationToggle = false
 
-document.body.classList.toggle("beta");
+// document.body.classList.toggle("beta");
 
-function toggleCustom() {
+function togglePresentation() {
 
-  document.body.classList.toggle("beta");
+  presentationToggle = !presentationToggle;
+
+  if ( presentationToggle ) {
+    history.replaceState(null,null, updateQueryString("presentation", "1") );
+  } else {
+    history.replaceState(null,null, updateQueryString("presentation") );
+  }
+
+  // document.body.classList.toggle("beta");
+
+  // history.replaceState(null,null, updateQueryString("presentation", "1") );
+
+  if ( document.body.classList.contains("presentation-mode") ) {
+    paneToggle(1,1);
+  } else {
+    paneToggle(0,1);
+  }
+
+  document.body.classList.toggle("presentation-mode");
+
   //
   // console.error(Notification.permission);
   //
@@ -1864,11 +2301,11 @@ function toggleCustom() {
   //
   // console.error(Notification.permission);
   //
-  // console.log(dFrame.body);
-  // console.log(dFrame.getElementsByTagName("body")[0]);
+  // console.log(dFrameContents.body);
+  // console.log(dFrameContents.getElementsByTagName("body")[0]);
   //
-  // console.log(dFrame.body.scrollTop);
-  // console.log(dFrame.getElementsByTagName("body")[0].scrollTop);
+  // console.log(dFrameContents.body.scrollTop);
+  // console.log(dFrameContents.getElementsByTagName("body")[0].scrollTop);
   //
   // var articleNumber = "1";
   // sessionStorage.setItem('article' + articleNumber + "status", "protected");
@@ -1917,7 +2354,7 @@ function toggleStyles() {
 
   if ( styleToggle ) {
 
-    let dStyleSheetEle = dFrame.querySelectorAll("style:not(.debug)");
+    let dStyleSheetEle = dFrameContents.querySelectorAll("style:not(.debug)");
     for (let style of dStyleSheetEle) {
       style.disabled = true;
     }
@@ -1929,7 +2366,7 @@ function toggleStyles() {
 
   } else {
 
-    let dStyleSheetEle = dFrame.querySelectorAll("style:not(.debug)");
+    let dStyleSheetEle = dFrameContents.querySelectorAll("style:not(.debug)");
     for (let style of dStyleSheetEle) {
       style.disabled = false;
     }
@@ -1961,10 +2398,10 @@ var editToggle = false
 
 function editEmail() {
   editToggle = !editToggle;
-  var editDesktop = dFrame.getElementsByTagName('html')[0].contentEditable = editToggle;
+  var editDesktop = dFrameContents.getElementsByTagName('html')[0].contentEditable = editToggle;
   document.getElementById("desktop-view").classList.toggle("editing");
   document.getElementById("edit-orb").classList.toggle("on");
-  dFrame.getElementsByTagName('body')[0].focus();
+  dFrameContents.getElementsByTagName('body')[0].focus();
 }
 
 
@@ -1991,7 +2428,7 @@ function toggleImages() {
     history.replaceState(null,null, updateQueryString("img") );
   }
 
-    let dFrameimgList = dFrame.querySelectorAll("img");
+    let dFrameimgList = dFrameContents.querySelectorAll("img");
     for (let img of dFrameimgList) {
       if ( imagesToggle ) {
         img.dataset.src = img.src;
@@ -2002,7 +2439,7 @@ function toggleImages() {
       }
     }
 
-    let dFrameBkgList = dFrame.querySelectorAll("[background]");
+    let dFrameBkgList = dFrameContents.querySelectorAll("[background]");
     for (let bkg of dFrameBkgList) {
       console.log(bkg);
       console.log(bkg.getAttribute("background"));
@@ -2058,26 +2495,30 @@ function toggleImages() {
 ////
 /////////
 
-var imgDimsOrb = document.createElement("div");
-imgDimsOrb.id = "img-dims-orb";
-imgDimsOrb.className = "img-dims-orb orb glyph";
-imgDimsOrb.addEventListener("click", toggleImgDims, false);
-orbsBottom.appendChild(imgDimsOrb);
+// var imgDimsOrb = document.createElement("div");
+// imgDimsOrb.id = "img-dims-orb";
+// imgDimsOrb.className = "img-dims-orb orb glyph";
+// imgDimsOrb.addEventListener("click", toggleImgDims, false);
+// orbsBottom.appendChild(imgDimsOrb);
+
 var imgDimsToggle = false;
 
 function toggleImgDims() {
 
   imgDimsToggle = !imgDimsToggle;
 
-  if ( imgDimsToggle ) {
-    history.replaceState(null,null, updateQueryString("imgdims", "1") );
-  } else {
-    history.replaceState(null,null, updateQueryString("imgdims") );
-  }
+// Commented out because I've folded this function into the borders function.
+  // if ( imgDimsToggle ) {
+  //   history.replaceState(null,null, updateQueryString("imgdims", "1") );
+  // } else {
+  //   history.replaceState(null,null, updateQueryString("imgdims") );
+  // }
 
-  document.getElementById("img-dims-orb").classList.toggle("on");
+  // document.getElementById("img-dims-orb").classList.toggle("on");
 
-  dFrame.documentElement.classList.toggle("debug-imgdims-highlight");
+// Continue...
+
+  dFrameContents.documentElement.classList.toggle("debug-imgdims-highlight");
   mFrame.documentElement.classList.toggle("debug-imgdims-highlight");
 
   //
@@ -2085,9 +2526,9 @@ function toggleImgDims() {
   //
 
   // Destory the td markers if they exist, create the wrapper for them if they do not.
-  if ( elExists(dFrame.getElementById("img-dims-markers")) ) {
+  if ( elExists(dFrameContents.getElementById("img-dims-markers")) ) {
 
-    destroy(dFrame.getElementById("img-dims-markers"));
+    destroy(dFrameContents.getElementById("img-dims-markers"));
     destroy(mFrame.getElementById("img-dims-markers"));
 
   } else {
@@ -2096,14 +2537,14 @@ function toggleImgDims() {
     var imgDimsWrapper = document.createElement("section");
     imgDimsWrapper.id = "img-dims-markers";
     imgDimsWrapper.className = "debug img-dims-markers-wrapper";
-    dFrame.body.appendChild(imgDimsWrapper);
+    dFrameContents.body.appendChild(imgDimsWrapper);
     mFrame.body.appendChild(imgDimsWrapper.cloneNode(true));
 
 
-    let dFrameImgDimsList = dFrame.querySelectorAll("img");
+    let dFrameImgDimsList = dFrameContents.querySelectorAll("img");
     var imgDimsCount = 0
 
-    console.groupCollapsed("<img> Group (dFrame) - Total <img>'s Processed: " + dFrameImgDimsList.length);
+    console.groupCollapsed("<img> Group (dFrameContents) - Total <img>'s Processed: " + dFrameImgDimsList.length);
     for (let imgDimsEle of dFrameImgDimsList) {
 
       imgDimsCount++;
@@ -2114,7 +2555,7 @@ function toggleImgDims() {
       var imgClientWidth = imgDimsEle.clientWidth;
       var imgClientHeight = imgDimsEle.clientHeight;
 
-      var imgPos = getPosition(imgDimsEle, dFrame);
+      var imgPos = getPosition(imgDimsEle, dFrameContents);
 
       var imgDimsMarker = document.createElement("section");
       imgDimsMarker.className = "img-dims-marker";
@@ -2163,7 +2604,7 @@ function toggleImgDims() {
 
 
       imgDimsMarker.innerHTML = "<section><section>" + imgClientWidth + "x" + imgClientHeight + "</section>" + naturalWidthText + "</section>"
-      dFrame.getElementById("img-dims-markers").appendChild(imgDimsMarker);
+      dFrameContents.getElementById("img-dims-markers").appendChild(imgDimsMarker);
 
       console.log(imgDimsEle);
       console.log("[" + imgDimsCount + "] imgNaturalWidth: " + imgNaturalWidth + ", imgNaturalHeight: " + imgNaturalHeight + ", imgClientWidth: " + imgClientWidth + ", imgNaturalHeight:" + imgNaturalHeight);
@@ -2171,7 +2612,7 @@ function toggleImgDims() {
 
       // tdCount++
       //
-      // var tdPos = getPosition(tdEle, dFrame);
+      // var tdPos = getPosition(tdEle, dFrameContents);
       //
       // var tdMarker = document.createElement("section");
       // tdMarker.className = "td-marker";
@@ -2182,7 +2623,7 @@ function toggleImgDims() {
       // var tdTextNode = document.createTextNode(tdEle.clientWidth + " x " + tdEle.clientHeight);
       //
       // tdMarker.appendChild(tdTextNode);
-      // dFrame.getElementById("td-markers").appendChild(tdMarker);
+      // dFrameContents.getElementById("td-markers").appendChild(tdMarker);
 
     }
     console.groupEnd();
@@ -2359,7 +2800,9 @@ function plainText() {
           insertText += module.querySelectorAll("[data-sub-mod='all-courses-cta'] a")[0].getAttribute("href").trim() + ")" + "\n\n* * *\n\n";
         }
         ////
-        insertText += module.querySelectorAll("[data-sub-mod='course-title']")[0].innerText.trim() + "\n"
+        if ( elExists(module.querySelectorAll("[data-sub-mod='course-title']")[0]) ) {
+          insertText += module.querySelectorAll("[data-sub-mod='course-title']")[0].innerText.trim() + "\n\n";
+        }
         if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[0]) ) {
           insertText += module.querySelectorAll("[data-sub-mod='author']")[0].innerText.trim() + "\n\n";
         }
@@ -2367,7 +2810,9 @@ function plainText() {
         insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[0].getAttribute("href").trim();
         insertText += "\n\n* * *\n\n";
         ////
-        insertText += module.querySelectorAll("[data-sub-mod='course-title']")[1].innerText.trim() + "\n"
+        if ( elExists(module.querySelectorAll("[data-sub-mod='course-title']")[1]) ) {
+          insertText += module.querySelectorAll("[data-sub-mod='course-title']")[1].innerText.trim() + "\n\n";
+        }
         if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[1]) ) {
           insertText += module.querySelectorAll("[data-sub-mod='author']")[1].innerText.trim() + "\n\n";
         }
@@ -2375,7 +2820,9 @@ function plainText() {
         insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[1].getAttribute("href").trim();
         insertText += "\n\n* * *\n\n";
         ////
-        insertText += module.querySelectorAll("[data-sub-mod='course-title']")[2].innerText.trim() + "\n"
+        if ( elExists(module.querySelectorAll("[data-sub-mod='course-title']")[2]) ) {
+          insertText += module.querySelectorAll("[data-sub-mod='course-title']")[2].innerText.trim() + "\n\n";
+        }
         if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[2]) ) {
           insertText += module.querySelectorAll("[data-sub-mod='author']")[2].innerText.trim() + "\n\n";
         }
@@ -2443,10 +2890,6 @@ function plainText() {
       console.log(plainText);
 
       // Create Plain-Text Modal
-      var plainTextModal = document.createElement("textarea");
-      plainTextModal.className = "plain-text-modal";
-      var plainTextModalText = document.createTextNode(plainText);
-      plainTextModal.appendChild(plainTextModalText);
 
       // document.body.appendChild(plainTextModal);
 
@@ -2465,13 +2908,14 @@ function plainText() {
           }
       });
 
-      plainTextTingle.setContent(plainTextModal);
+      var plainTextContainer = createPlainTextContainer(plainText);
+      plainTextTingle.setContent(plainTextContainer);
 
   }
 
+  var plainTextContainer = document.querySelector(".tingle-modal-box textarea")
   plainTextTingle.open();
-  document.getElementsByClassName('plain-text-modal')[0].focus(); // Active Chrome spellcheck
-  document.getElementsByClassName('plain-text-modal')[0].scrollTop = 0; // Scroll back to the top of the textarea
+  selectElementContents(plainTextContainer);
 
 }
 
@@ -2543,16 +2987,24 @@ if ( !preheader90Pattern.test(textMinusPreheader) ) {
 
   var totalPreheaderWordsMatched = 0;
 
-  console.log("Total words: " + preheaderTotalWords + " - Word list: " + preheader90);
+  console.log("Total important words in preheader: " + preheaderTotalWords + " - Word list: " + preheader90);
+
+  console.groupCollapsed("All text minus preheader");
+  console.log(textMinusPreheader);
+  console.groupEnd();
 
   for (var i = 0; i < preheaderTotalWords; i++) {
 
-    var matcher = escapeRegExp(preheader90[i]);
-        matcher = new RegExp("\\b" + preheader90[i] + "\\b"); // double escape special characters
+    // var matcher = escapeRegExp(preheader90[i]);
+    var wordToMatch = preheader90[i].replace(/(^[^a-zA-Z\d\s]|[^a-zA-Z\d\s]$)/gi, "");
+    var  matcher = new RegExp("\\b" + escapeRegExp(wordToMatch) + "\\b", "gi"); // double escape special characters
+    // var  matcher = new RegExp("\\b" + escapeRegExp(wordToMatch) + "(\\b|\\r\\n?|\\n|$|<br\s*.*?\/?>)", "gi"); // double escape special characters
 
     if ( matcher.test(textMinusPreheader) ) {
       totalPreheaderWordsMatched++;
-      console.log("Matched (" + totalPreheaderWordsMatched + "): " + preheader90[i] + " (regex: " + matcher + ")");
+      console.log("Matched (" + totalPreheaderWordsMatched + "): " + wordToMatch + " (regex: " + matcher + ")");
+    } else {
+      console.error("Unmatched (X): " + wordToMatch + " (regex: " + matcher + ")");
     }
 
   }
@@ -2574,8 +3026,11 @@ preheaderWapper.appendChild(preheaderMatchDiv);
 setTimeout(function() {
 
   if ( matchRating < 95 ) {
-    alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.", 0);
+    toast("suppress", "error", "Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.</div>", 0);
+    // alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.", 0);
     preheaderMatchDiv.classList.add("error");
+    // preflightErrors++;
+    preflightError();
   }
   preheaderMatchDiv.classList.add("ready");
 
@@ -2583,8 +3038,7 @@ setTimeout(function() {
 
 console.groupEnd();
 
-
-//////////
+/////////
 ////
 ////  Create Link Checker Module
 ////
@@ -2608,11 +3062,11 @@ var linkMarkersToggle = false;
 function toggleLinkMarkers() {
 
   if ( this.nodeType !== 1 ) {
-    dFrame.getElementById("link-markers").classList.add("on-page-load");
-  } else if ( dFrame.querySelector(".on-page-load") ) {
-    dFrame.getElementById("link-markers").classList.remove("on-page-load");
+    dFrameContents.getElementById("link-markers").classList.add("on-page-load");
+  } else if ( dFrameContents.querySelector(".on-page-load") ) {
+    dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
   } else {
-    dFrame.getElementById("link-markers").classList.toggle("hidden");
+    dFrameContents.getElementById("link-markers").classList.toggle("hidden");
   }
 
   linkMarkersToggle = !linkMarkersToggle;
@@ -2660,6 +3114,11 @@ if ( getParameterByName("infobar") || getParameterByName("mobile") ) {
   console.log("panes modified on page load via querystring");
 }
 
+if ( getParameterByName("presentation") === "1" ) {
+  togglePresentation();
+  console.log("presentation mode on");
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2682,15 +3141,107 @@ if ( getParameterByName("infobar") || getParameterByName("mobile") ) {
 ////////////
 ////////////
 
-alertify.set('notifier','position', 'bottom-left');
+alertify.set('notifier','position', 'bottom-right');
+
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////
+////     __   __  _______  ___      ___   ______   _______  _______  _______
+////     |  | |  ||   _   ||   |    |   | |      | |   _   ||       ||       |
+////     |  |_|  ||  |_|  ||   |    |   | |  _    ||  |_|  ||_     _||    ___|
+////     |       ||       ||   |    |   | | | |   ||       |  |   |  |   |___
+////     |       ||       ||   |___ |   | | |_|   ||       |  |   |  |    ___|
+////      |     | |   _   ||       ||   | |       ||   _   |  |   |  |   |___
+////       |___|  |__| |__||_______||___| |______| |__| |__|  |___|  |_______|
+////
+////    Our page layout has been built.
+////    Start looking at the code in dFrame to validate links and more.
+////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////// ==  xxxxxxxxxxxxxxx  == //////////////////////////////
+//////////////////////// ==                   == //////////////////////////////
+//////////////////////// ==  ZOOM LEVEL CHECK == //////////////////////////////
+//////////////////////// ==                   == //////////////////////////////
+//////////////////////// ==  xxxxxxxxxxxxxxx  == //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+var zoomLevelChecked = false;
+function checkZoomLevel() {
+// https://stackoverflow.com/a/6365777/556079
+// https://stackoverflow.com/a/6365777/556079
+
+  var screenCssPixelRatio = (window.outerWidth - 8) / window.innerWidth;
+  var zoomLevel;
+  if (screenCssPixelRatio <= .34) {
+    zoomLevel = "-6+";
+  } else if (screenCssPixelRatio <= .44) {
+    zoomLevel = "-5";
+  } else if (screenCssPixelRatio <= .54) {
+    zoomLevel = "-4";
+  } else if (screenCssPixelRatio <= .64) {
+    zoomLevel = "-3";
+  } else if (screenCssPixelRatio <= .76) {
+    zoomLevel = "-2";
+  } else if (screenCssPixelRatio <= .92) {
+    zoomLevel = "-1";
+  } else if (screenCssPixelRatio <= 1.05 && screenCssPixelRatio >= .98) {
+    zoomLevel = "0";
+  } else if (screenCssPixelRatio <= 1.10) {
+    zoomLevel = "1";
+  } else if (screenCssPixelRatio <= 1.32) {
+    zoomLevel = "2";
+  } else if (screenCssPixelRatio <= 1.58) {
+    zoomLevel = "3";
+  } else if (screenCssPixelRatio <= 1.90) {
+    zoomLevel = "4";
+  } else if (screenCssPixelRatio <= 2.28) {
+    zoomLevel = "5";
+  } else if (screenCssPixelRatio >= 2.29) {
+    zoomLevel = "6+";
+  } else {
+    zoomLevel = "unknown";
+  }
+
+
+  console.log("Zoom Level: " + zoomLevel + " (" + screenCssPixelRatio + ")");
+
+
+  if ( zoomLevelChecked ) {
+
+  }
+  else if ( screenCssPixelRatio >= .88 ) {
+    zoomLevelChecked = false;
+    console.log("Zoom level not checked.");
+  }
+  else if ( screenCssPixelRatio <= .87 ) {
+    zoomLevelChecked = true;
+    console.log("Zoom level checked.");
+    updatePreflightErrorTotal("success", 1);
+  }
+
+}
+
+var zoomCheckStatus = false;
+updatePreflightErrorTotal("error", 1); // Zoom level is an error on page load. Only one time! If zoom check is found in sessionsStorage, all of this should be ignored. Or should it? Major changes to HTML should be re-checked at different zoom levels after a page refresh. Figure out what to do here.
+checkZoomLevel();
 
 
 
 //
-
-if ( !elExists(dFrame.querySelector("[data-module-wrapper]")) ) {
-  alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
-}
+// Deprecated. Different modules can now be within what were previously considered top level modules. I now have to manually label modules with [data-mod]. This makes declaring the parent wrapper pointless.
+// if ( !elExists(dFrameContents.querySelector("[data-module-wrapper]")) ) {
+//   alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2715,10 +3266,10 @@ if ( !elExists(dFrame.querySelector("[data-module-wrapper]")) ) {
 var moduleSettingsWrapper = document.createElement("section");
     moduleSettingsWrapper.id = "module-settings";
     moduleSettingsWrapper.className = "debug module-settings-wrapper";
-    dFrame.body.appendChild(moduleSettingsWrapper);
+    dFrameContents.body.appendChild(moduleSettingsWrapper);
 
 
-let moduleList = dFrame.querySelectorAll("[data-module-wrapper] > table");
+let moduleList = dFrameContents.querySelectorAll("[data-mod]");
 var i = 0
 
 console.groupCollapsed("Modules Group - Total Modules Found: " + moduleList.length);
@@ -2752,10 +3303,17 @@ if (typeof moduleSettingsMenu != 'undefined') {
   moduleSettingsWrapper.appendChild(moduleSettingsMenu);
 }
 
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+//////////////////////// ==  xxxxxxxxxxxxxxx  == //////////////////////////////
+//////////////////////// ==                   == //////////////////////////////
+//////////////////////// ==  LINK VALIDATION  == //////////////////////////////
+//////////////////////// ==                   == //////////////////////////////
+//////////////////////// ==  xxxxxxxxxxxxxxx  == //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2775,140 +3333,188 @@ if (typeof moduleSettingsMenu != 'undefined') {
     ///////////////////////
     ///////////////////////
     ///////////////////////
-    ///////////////////////
-
-    var totalProtectedArticles = 0;
-
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-
-    function pinLinkMarker() {
-      // http://stackoverflow.com/a/8454104/556079
-      this.nextSibling.style.display = this.nextSibling.style.display === 'block' ? '' : 'block';
-    }
-
-    ////////
-    ////////
-    ////////
-
-    function unpinLinkMarker() {
-      // http://stackoverflow.com/a/6042235/556079
-      var flag = 0;
-
-      this.addEventListener("mousemove", function(){
-        flag = 1;
-      }, false);
-
-      this.addEventListener("mouseup", function(){
-        if(flag === 0){
-          this.style.display = "";
-        }
-      }, false);
-    }
 
     ////////
     ////////
     ////////
 
     // Function to handle creating error markers, error tags (that explain the error), and incrementing the error counter.
-    function createLinkErrorRow(link, msg, warning) {
+    function createLinkErrorRow(link, msg, type, icon) {
 
+      console.log(link);
       console.log("[" + link.dataset.number + "] " + link);
+
       console.error("Error Found: " + msg);
 
-      var linkMarker = dFrame.querySelector("#link-markers .link-marker[data-number='" + link.dataset.number + "']")
-      console.log(linkMarker);
+      var linkMarker = dFrameContents.querySelector("#link-markers .link-marker[data-number='" + link.dataset.number + "']")
+      // console.log(linkMarker);
 
       var errorRow = document.createElement("section");
-      var errorRowText = document.createTextNode(msg);
+      var errorRowText = document.createElement("div");
+          errorRowText.innerHTML = msg
       errorRow.appendChild(errorRowText);
-      linkErrorLogNoticeWrapper.appendChild(errorRow);
 
-      if ( warning ) {
+      // Instead of just assuming linkErrorLogNoticeWrapper is the right wrapper, we'll reset it to a variable by checking for this link data number. This is better because any errors that come in asynchronously can now be applied properly.
+      var currentErrorWrapper = dFrameContents.querySelector("section.link-errors[data-number='" + link.dataset.number + "'] .link-errors-wrapper");
+      // linkErrorLogNoticeWrapper.appendChild(errorRow);
+      currentErrorWrapper.appendChild(errorRow);
+
+      if ( type === "warning" ) {
 
         errorRow.classList.add("warning");
         totalLinkWarnings++
 
       } else {
 
+        // Increment total preflight errors
+        preflightError();
+        totalLinkErrors++;
+
         errorRow.classList.add("error");
 
         link.dataset.error = "true";
         linkMarker.classList.add("error");
 
-        totalLinkErrors++
-        linkErrors++
-        totalErrors++
+        // totalLinkErrors++
+        // linkErrors++
+        // totalErrors++
 
-        linkMarker.innerHTML = linkErrors;
+        // Instead of relying on the variables above, read the innerHtml of the linkMarker object. Convert it to a number and increment it. Better for async!
+        if ( linkMarker.innerHTML === "" || linkMarker.innerHTML === "0" ) {
+          linkMarker.innerHTML = "1";
+        } else {
+          var currentLinkErrors = Number(linkMarker.innerHTML);
+          currentLinkErrors++
+          linkMarker.innerHTML = currentLinkErrors;
+        }
 
       }
+
+      if ( icon ) {
+        errorRow.classList.add("fontastic-icon", "error-icon-" + icon);
+      } else {
+        errorRow.classList.add("error-icon-x");
+      }
+
+      // console.log(linkErrorLogNoticeWrapper);
+      // console.log(currentErrorWrapper);
+      // console.log(errorRow);
+
 
     }
 
     ////////
     ////////
     ////////
+
+    ///////////
+    //
+    //  Variables needed for checking the blog.
+    //
+    ///////////
+
+    var totalProtectedArticles = 0;
+    var blogStatusSuccessArray = [];
+    var isBlogLoaded = false;
+    var totalBlogIframesOpen = 0; // Track the total amount of iframes we open to check the blog.
 
     ///////////
     //
     //  Function to check the blog for data on an article.
     //
     ///////////
-    function checkTheBlog(linkHref) {
 
+    function checkTheBlog(linkHref, link) {
+
+      // If a URL was passed into this function...
       if ( linkHref ) {
 
-        console.groupCollapsed("linkHref found, checking blog - " + linkHref);
+        // Grab the data-number from this link object. We're going to use it with the iframe to track what's going on.
+        var blogLinkNumber = link.dataset.number;
+
+        console.groupCollapsed("Checking blog link for data: [" + blogLinkNumber + "]" + linkHref);
 
         // Check if an iframe already exists with this URL by iterating through all relevant iframes in the DOM.
+        console.log("Total iFrames currently open: " + totalBlogIframesOpen + " - Now beginning for...let loop to find iframes that have already been loaded.");
+
         let blogCheckList = document.querySelectorAll("iframe.blog-check");
+
+        var iframesFoundinDOM = 0;
         for (let blogIframe of blogCheckList) {
 
-          console.log("blogIframe.getAttribute('src') = " + blogIframe.getAttribute("src"));
-          console.log("isBlogLoaded = " + isBlogLoaded);
+          iframesFoundinDOM++;
+
+          console.log("Current iFrame found in the DOM (#" + iframesFoundinDOM + ") during this loop has this src: " + blogIframe.getAttribute("src"));
 
           if ( blogIframe.getAttribute("src").replace(/[?&]blog\-check\=.+/gi, "") === linkHref ) {
             isBlogLoaded = true;
+            console.log("The current link we're checking MATCHES this iFrame that's already in the DOM.");
+          } else {
+            isBlogLoaded = false;
+            console.log("The current link we're checking DOES NOT MATCH this iFrame that's already in the DOM.");
           }
 
         }
+        console.log("All iframes (" + iframesFoundinDOM + ") in the DOM have been checked. End of for...let loop.");
 
+        //
         if ( isBlogLoaded === false ) {
-          console.log("if isBlogLoaded = " + isBlogLoaded);
 
           // Create an iframe for this link
           totalBlogIframesOpen++
-          console.log("Creating iframe for link " + i + " | totalBlogIframesOpen = " + totalBlogIframesOpen);
+          console.log("Creating an iframe for current link: " + totalBlogIframesOpen + " - " + linkHref);
 
           var blogCheck = document.createElement("iframe");
-              blogCheck.src = linkHref + "&blog-check=" + i;
-              blogCheck.className = "blog-check blog-check-" + i;
-              blogCheck.id = "iframe-" + i;
+              blogCheck.src = linkHref + "&blog-check=" + blogLinkNumber;
+              blogCheck.className = "blog-check blog-check-" + blogLinkNumber;
+              blogCheck.id = "iframe-" + blogLinkNumber;
           document.body.appendChild(blogCheck);
 
+          // Wait X seconds for the blog to send a reply. If it doesn't, throw an error.
+          // I thought I needed this, but apparently not! - http://stackoverflow.com/a/9540320/556079
+          // (function(link) {
+              // setTimeout(function(){console.log(i)}, 1000);
+
+              var blogTimeout = 25000 + (totalBlogIframesOpen*10000);
+              var blogTimeoutStr = blogTimeout.toString();
+                  blogTimeoutStr = blogTimeoutStr.substring(0, blogTimeoutStr.length-3);
+
+              console.log(totalBlogIframesOpen + " iframe(s) are open. Setting the blog check timer to " + blogTimeoutStr + " seconds.");
+              setTimeout(function(){
+                if ( blogStatusSuccessArray.indexOf(processBlogLinkBeingChecked(linkHref) ) > -1 ) {
+                  console.log("Blog loaded!");
+                } else {
+                  console.log("Blog didn't load after " + blogTimeoutStr + " seconds. Verify the link.");
+                  console.log(link);
+                  createLinkErrorRow(link, "Blog took too long to load. Check the link.");
+                }
+              }, blogTimeout);
+          // })(link);
+
+
+
         } else {
-          console.log("else isBlogLoaded = " + isBlogLoaded);
+          console.log("This link is already loaded in an iframe. End of check on this link.");
         }
 
-        console.info("totalBlogIframesOpen = " + totalBlogIframesOpen);
+        console.info("Total iFrames now open: " + totalBlogIframesOpen);
 
         console.groupEnd();
 
+      // *No* URL was passed into this function...
       } else {
 
         console.log("No linkHref found. Looping through all links.");
 
-        let freshBlogCheck = dFrame.querySelectorAll("a");
+        let freshBlogCheck = dFrameContents.querySelectorAll("a");
         for (let link of freshBlogCheck) {
 
-          if ( /(blog\/2|\-article)/gi.test(link.href) ) {
-            checkTheBlog(link.href);
+          if ( /(after_affiliate_url=blog|blog\/2|\-article|\-blog\/)/gi.test(link.href) && !/p=2503/gi.test(link.href) ) {
+            checkTheBlog(link.href, link);
           }
 
         }
+        console.log("Finished looping through all links.");
       }
     }
 
@@ -2917,62 +3523,120 @@ if (typeof moduleSettingsMenu != 'undefined') {
     ///////////////////////
     ///////////////////////
 
-let linkList = dFrame.querySelectorAll("a");
-var i = 0
-
-console.groupCollapsed("Links Group - Total Links Processed: " + linkList.length);
 
 // Create the wrapper for the link-markers.
-
 var linkMarkerWrapper = document.createElement("section");
 linkMarkerWrapper.id = "link-markers";
 linkMarkerWrapper.className = "debug link-markers-wrapper";
-dFrame.body.appendChild(linkMarkerWrapper);
+dFrameContents.body.appendChild(linkMarkerWrapper);
 
-for (let link of linkList) {
+//////
+//////
+//
+// Find and loop through all links
+//
+/////
+/////
 
-  var linkErrors = 0;
-  i++
+linkValidationLoop("true");
 
-  // Set link to a variable and clean it if it's local.
-  var linkHref = link.href;
-  if ( /^file:.+\//gi.test(linkHref) ) {
-    linkHref = linkHref.replace(/^file:.+\//gi, "");
-  }
+function linkValidationLoop(ageCheck) {
 
-  // Create link module in left column.
-  if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
+  let linkList = dFrameContents.querySelectorAll("a");
+  var i = 0
 
-    var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
+  console.groupCollapsed("Links Group for Validation - Total Links Processed: " + linkList.length);
 
-    var linkRow = document.createElement("div");
-    linkRow.className = "link-row";
-    linkRowsWrapper.appendChild(linkRow);
+// ageCheck = true | false
+  console.log("ageCheck is set to: " + ageCheck);
 
-    var linkRowNum = document.createElement("div");
-    linkRowNum.className = "link-row-num";
-    var textLinkNum = document.createTextNode(i);
-    linkRowNum.appendChild(textLinkNum);
-    linkRow.appendChild(linkRowNum);
+  for (let link of linkList) {
 
-    var linkRowHref = document.createElement("div");
-    linkRowHref.className = "link-row-href";
+    var linkErrors = 0;
+    i++
 
-    if ( /\.medbridgeeducation\.com/gi.test(linkHref) ) {
-      var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\.medbridgeeducation\.com/gi, ""));
-    } else {
-      var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\./gi, ""));
+    // Set link to a variable and clean it if it's local.
+    var linkHref = link.href;
+    if ( /^file:.+\//gi.test(linkHref) ) {
+      linkHref = linkHref.replace(/^file:.+\//gi, "");
     }
 
-    linkRowHref.appendChild(textLinkHref);
-    linkRow.appendChild(linkRowHref);
 
-    console.groupCollapsed("[" + i + "] " + linkHref);
+    if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
+
+      // Create link module ROW in left column.
+      var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
+
+      var linkRow = document.createElement("div");
+      linkRow.className = "link-row";
+      linkRowsWrapper.appendChild(linkRow);
+
+      var linkRowNum = document.createElement("div");
+      linkRowNum.className = "link-row-num";
+      var textLinkNum = document.createTextNode(i);
+      linkRowNum.appendChild(textLinkNum);
+      linkRow.appendChild(linkRowNum);
+
+      var linkRowHref = document.createElement("div");
+      linkRowHref.className = "link-row-href";
+
+      if ( /\.medbridgeeducation\.com/gi.test(linkHref) ) {
+        var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\.medbridgeeducation\.com/gi, ""));
+      } else {
+        var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\./gi, ""));
+      }
+
+      linkRowHref.appendChild(textLinkHref);
+      linkRow.appendChild(linkRowHref);
+
+
+
+      //////////////////////////////
+      //////////////////////////////
+      //    Validate Links
+      //////////////////////////////
+      //////////////////////////////
+
+      if ( isRecentEmail || ageCheck === "false" ) {
+        // Only validate the link if the date on the email filename is recent.
+        validateLinks(link, i);
+      } else {
+        // Else, skip validation of this link.
+        if ( i < 10 ) {
+          var iLog = "0" + i;
+        } else { iLog = i; }
+        console.log("[" + iLog + "] VALIDATION SKIPPED - " + linkHref + " (This IS NOT a recent email, skipping automatic link validation.)");
+      }
+
+
+    }
+  }
+  console.groupEnd();
+
+}
+
+//////////
+//////////
+//////////
+function validateLinks(link, i) {
+
+    // Set link to a variable and clean it if it's local.
+    var linkHref = link.href;
+    if ( /^file:.+\//gi.test(linkHref) ) {
+      linkHref = linkHref.replace(/^file:.+\//gi, "");
+    }
+
+    if ( i < 10 ) {
+      var iLog = "0" + i;
+    } else { iLog = i; }
+
+    console.groupCollapsed("[" + iLog + "] VALIDATION RESULTS - " + linkHref);
     console.log(link);
-    console.log( getPosition(link, dFrame) );
-    console.groupEnd();
+    console.log( getPosition(link, dFrameContents) );
 
-    var linkPosition = getPosition(link, dFrame);
+
+    // Create Link Markers in HTML Email
+    var linkPosition = getPosition(link, dFrameContents);
 
     link.classList.add("marked");
     link.dataset.number = i;
@@ -2984,7 +3648,7 @@ for (let link of linkList) {
     linkMarker.dataset.href = linkHref;
     linkMarker.dataset.number = i;
     linkMarker.addEventListener("click", pinLinkMarker, false);
-    dFrame.getElementById("link-markers").appendChild(linkMarker);
+    dFrameContents.getElementById("link-markers").appendChild(linkMarker);
 
 
     var linkErrorLog = document.createElement("section");
@@ -3008,13 +3672,6 @@ for (let link of linkList) {
     linkErrorLog.appendChild(linkErrorLogNoticeWrapper);
 
 
-    //////////////////////////////
-    //////////////////////////////
-    //    Validate Links
-    //////////////////////////////
-    //////////////////////////////
-
-
     ////////////////
     ////////////////
     //
@@ -3030,54 +3687,89 @@ for (let link of linkList) {
     ////////////////
 
     // Global link testing variables
-
-    var medbridgeDomainLink
-    var medbridgeWwwLink
-    var medbridgeOrMassageLink
-
-    if ( /\/\/.+?\.?medbridge(ed|education|massage)\.com/gi.test(linkHref) ) {
-      medbridgeDomainLink = true;
+    var medbridgeEdLink
+    if ( /^https?:\/\/(.+?\.)?medbridge(ed|education)\.com/gi.test(linkHref) ) {
+      medbridgeEdLink = true;
     } else {
-      medbridgeDomainLink = false;
-    }
-
-    if ( /\/\/(www\.)?medbridge(ed|education)\.com/gi.test(linkHref) ) {
-      medbridgeWwwLink = true;
-      medbridgeOrMassageLink = true;
-    } else {
-      medbridgeWwwLink = false;
-      medbridgeOrMassageLink = false;
+      medbridgeEdLink = false;
     }
 
     var massageLink
-    if ( /\/\/(www\.)?medbridgemassage\.com/gi.test(linkHref) ) {
+    if ( /^https?:\/\/(www\.)?medbridgemassage\.com/gi.test(linkHref) ) {
       massageLink = true;
-      medbridgeOrMassageLink = true;
     } else {
       massageLink = false;
+    }
+
+    var medbridgeOrMassageLink
+    if ( medbridgeEdLink || massageLink ) {
+      medbridgeOrMassageLink = true;
+    } else {
       medbridgeOrMassageLink = false;
     }
 
+    console.log("medbridgeEdLink - " + medbridgeEdLink);
+    console.log("massageLink - " + massageLink);
+    console.log("medbridgeOrMassageLink - " + medbridgeOrMassageLink);
+
+    ////
     var blogLink
-    if ( /\/blog\/20\d\d/gi.test(linkHref) ) {
+    if ( medbridgeEdLink && (/\.com\/blog/.test(linkHref) || /url=\/?blog.+?p=/.test(linkHref) || /\-blog(\/|\?)/.test(linkHref) || /after_affiliate_url=blog/.test(linkHref)) ) {
       blogLink = true;
     } else {
       blogLink = false;
     }
+    console.log("blogLink - " + blogLink);
 
-    var needsGoogleTracking
-    if ( medbridgeDomainLink && !outsideOrg && !emailSale ) {
-      needsGoogleTracking = true;
+    ////
+    var articleLink
+    if ( (/medbridge(ed|education)\.com\/blog\/20\d\d\//gi.test(linkHref) || /medbridge(ed|education)\.com\/.+?p=\d\d\d/gi.test(linkHref)) && !/p=2503/gi.test(linkHref) ) {
+      articleLink = true;
     } else {
-      needsGoogleTracking = false;
+      articleLink = false;
     }
+    console.log("articleLink - " + articleLink);
 
-    var needsPromoCode
-    if ( (emailSubType === "ns" && !outsideOrg && emailDisc !== "ent") && medbridgeDomainLink ) {
-      needsPromoCode = true;
+    ////
+    var isMarketingUrl
+    if ( medbridgeOrMassageLink && /\.com\/trk\-/gi.test(linkHref) ) {
+      isMarketingUrl = true;
     } else {
-      needsPromoCode = false;
+      isMarketingUrl = false;
     }
+    console.log("isMarketingUrl - " + isMarketingUrl);
+
+    // Deprecated. No longer checking for https. - 4/18/17
+    // var needsHttps
+    // if ( medbridgeOrMassageLink && !blogLink && !articleLink ) {
+    //   needsHttps = true;
+    // } else {
+    //   needsHttps = false;
+    // }
+    // console.log("needsHttps - " + needsHttps);
+
+    ////
+    linkNeedsGoogleTracking = false;
+    if ( medbridgeOrMassageLink && !outsideOrg && !emailSale ) {
+      linkNeedsGoogleTracking = true;
+    } else {
+      linkNeedsGoogleTracking = false;
+    }
+    console.log("linkNeedsGoogleTracking - " + linkNeedsGoogleTracking);
+
+    ////
+    var linkNeedsPromoCode
+    if ( (emailSubType === "ns" && !outsideOrg && emailDisc !== "ent") && medbridgeOrMassageLink ) {
+      linkNeedsPromoCode = true;
+    } else {
+      linkNeedsPromoCode = false;
+    }
+    console.log("linkNeedsPromoCode - " + linkNeedsPromoCode);
+
+    ////
+    console.groupEnd();
+    ////
+
 
     ///////////////////////
     ///////////////////////
@@ -3097,7 +3789,9 @@ for (let link of linkList) {
   ///////
   //// Begin Link Check ////
   ///////
-  if ( !/^mailto/.test(linkHref) ) {
+  if ( !/^mailto/.test(linkHref) && !/localhost\:/.test(linkHref) ) {
+  ///////
+  // Ignore mailto's and localhost:
   ///////
   ///////
   ///////
@@ -3159,32 +3853,26 @@ for (let link of linkList) {
     // Once unprotected, articles should never go protected. So I don't think I need to bother checking.
     //
 
-
-    // Track the total amount of iframes we open to check the blog.
-    var totalBlogIframesOpen = 0;
-
-    if ( medbridgeDomainLink && /(blog\/2|\-article)/gi.test(linkHref) && isRecentEmail ) {
+    if ( medbridgeOrMassageLink && /(blog\/2|\-article|p=\d\d\d)/gi.test(linkHref) && isRecentEmail && !/p=2503/gi.test(linkHref)) {
       if ( onDropbox ) {
         createLinkErrorRow(link, "cannot check blog while on dropbox.com");
       } else {
 
-        console.groupCollapsed(" - Blog Link Check");
+        console.groupCollapsed(" - Starting Blog Link Check");
 
         console.info("This blog link is being published in a recent email.");
 
-        var isBlogLoaded = false;
+        isBlogLoaded = false;
 
-        if ( /after_affiliate_url/gi.test(linkHref) ) {
-          var blogLinkToCheck = linkHref.replace(/\&.+/gi, "");
-              blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?after_affiliate_url\=\/?/gi, "");
-        } else {
-          var blogLinkToCheck = linkHref.replace(/\/?\?.+/gi, "");
-              blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?\//gi, "");
-        }
+        ////
+        ////
+        var blogLinkToCheck = processBlogLinkBeingChecked(linkHref);
+
+        //
+        console.log("Checking for blogStatus in sessionStorage using this name: " + blogLinkToCheck);
 
         // Check if this URL is already in sessionStorage
         blogStatus = sessionStorage.getItem(blogLinkToCheck);
-        console.log("blogStatus: " + blogStatus);
 
         // Run a check on this link using the object we found in sessionStorage.
         if ( blogStatus ) {
@@ -3195,11 +3883,12 @@ for (let link of linkList) {
           var blogStatusFromStorage = sessionStorage.getItem(blogLinkToCheck).split(",");
           console.log(blogStatusFromStorage);
 
+          console.log("Checking article link using fnction checkArticleLink(link, blogStatusFromStorage)")
           checkArticleLink(link, blogStatusFromStorage);
 
           if ( blogStatusFromStorage[2] === "protected" ) {
 
-            createLinkErrorRow(link, "run a blog check when ready", "warning");
+            createLinkErrorRow(link, "run a blog check to update", "warning");
 
             // //Article is still protected, open an iframe and check again.
             // if ( getParameterByName("checkblog") !== "0" ) {
@@ -3208,11 +3897,15 @@ for (let link of linkList) {
           }
 
         } else {
-          console.log("Could not find data in storage for this blog link, checking the blog for data.");
-          createLinkErrorRow(link, "blog data not found in storage, refresh to try again");
 
           if ( getParameterByName("checkblog") !== "0" ) {
-            checkTheBlog(linkHref);
+            var updatedLinkObj = link;
+            checkTheBlog(linkHref, updatedLinkObj);
+            console.log("Could not find data in storage for this blog link, checking the blog for data.");
+            createLinkErrorRow(link, "blog data not found in storage, running check now");
+          } else {
+            console.log("Could not find data in storage for this blog link, no check is being run.");
+            createLinkErrorRow(link, "blog data not found in storage, refresh to try again");
           }
 
         }
@@ -3230,23 +3923,37 @@ for (let link of linkList) {
 
     ////-----------------------------////
     ////
+    // utm's other than content are unlikely to be used
+    if ( /utm_(medium|source|campaign)/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "extra utm's");
+    }
+
+    ////-----------------------------////
+    ////
     // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( needsGoogleTracking && !/utm_content/gi.test(linkHref) ) {
+    if ( linkNeedsGoogleTracking && !/utm_content/gi.test(linkHref) ) {
       createLinkErrorRow(link, "missing utm");
     }
 
     ////-----------------------------////
     ////
+    // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
+    if ( /\.com\/\//gi.test(linkHref) ) {
+      createLinkErrorRow(link, "remove extra /");
+    }
+
+    ////-----------------------------////
+    ////
     // DON'T USE UTM - outsideOrg, off domain urls, and Sale emails should not have utms
-    if ( /utm_content/gi.test(linkHref) && !needsGoogleTracking ) {
+    if ( /utm_content/gi.test(linkHref) && !linkNeedsGoogleTracking ) {
       createLinkErrorRow(link, "remove utm");
     }
 
     ////
     // Check for whitelabeling versus www
-    if ( outsideOrg && !blogLink && medbridgeDomainLink ) {
+    if ( outsideOrg && !blogLink && medbridgeEdLink ) {
 
-      if ( medbridgeWwwLink ) {
+      if ( /https?:\/\/(www\.)?med/.test(linkHref) ) {
         createLinkErrorRow(link, "missing whitelabeling");
       }
       else if ( (emailSubType === "hs" && !/\/healthsouth\./i.test(linkHref)) || (emailSubType === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailSubType === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
@@ -3254,10 +3961,13 @@ for (let link of linkList) {
       }
 
     }
+    if ( !outsideOrg && medbridgeEdLink && !/https?:\/\/(www\.|medbridgeed(ucation)?\.com\/)/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "remove whitelabeling");
+    }
 
     ////
     // Validate querystring pattern if it looks like there is one
-    if ( /[^#]+\&.+\=/.test(linkHref) || /[^#]+\?.+\=/.test(linkHref) ) {
+    if ( /[^#]+\&.+\=/.test(linkHref) || /[^#]+\?.+\=/.test(linkHref) && ( !/after_signin_url/.test(linkHref) ) ) {
 
       if ( /\&.+\=/.test(linkHref) && !/\?./.test(linkHref) ) {
         createLinkErrorRow(link, "missing ? in query string");
@@ -3273,7 +3983,7 @@ for (let link of linkList) {
       // Check the query string without any ending hash
       var linkHrefNoHash = linkHref.replace(/#.+/, "");
 
-      if ( !/\?([\.\w-]+(=[\.\/\w-]*)?(&[\.\w-]+(=[\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
+      if ( !/\?([\.\w-]+(=[\+\.\/\w-]*)?(&[\.\w-]+(=[\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
         createLinkErrorRow(link, "invalid query string");
       }
 
@@ -3283,7 +3993,7 @@ for (let link of linkList) {
 
     ////-----------------------------////
     ////
-    if ( needsPromoCode ) {
+    if ( linkNeedsPromoCode ) {
 
       // Links to MedBridge in -ns emails need to use a marketing URL
       if ( !/\.com\/trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) ) {
@@ -3291,14 +4001,24 @@ for (let link of linkList) {
       }
 
       // Spell after_affiliate_url correctly!
-      if ( !/\-article/gi.test(linkHref) && !/after_affiliate_url/gi.test(linkHref) ) {
+      if ( !/\-(blog|article)/gi.test(linkHref) && !/after_affiliate_url/gi.test(linkHref) ) {
         createLinkErrorRow(link, "missing after_affiliate_url");
       }
 
+      // Too many leading /'s' during a redirect can cause a link to not work
+      if ( /after_affiliate_url=\/\/+/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "too many /'s'");
+      }
+
+      // Watch out for extra hyphens!
+      if ( /\-\-/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "investigate consecutive hyphens");
+      }
+
       // Check the date in a tracking URL
-      var monthPattern = new RegExp("trk\-" + emailMonthAbbr + "\-", "gi");
+      var monthPattern = new RegExp("\\/trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
       if ( !monthPattern.test(linkHref) ) {
-        createLinkErrorRow(link, "link should begin with 'trk-" + emailMonthAbbr + "-' to match current month");
+        createLinkErrorRow(link, "link should included '-" + emailMonthAbbr + "-' to match current month");
       }
     }
 
@@ -3312,9 +4032,9 @@ for (let link of linkList) {
     //
     // console.log("emailSubType: " + emailSubType);
     // console.log("outsideOrg: " + outsideOrg);
-    // console.log("medbridgeDomainLink: " + medbridgeDomainLink);
+    // console.log("medbridgeOrMassageLink: " + medbridgeOrMassageLink);
 
-    if ( needsGoogleTracking ) {
+    if ( linkNeedsGoogleTracking ) {
 
       var moduleNumber = link.closest("[data-module-count]");
 
@@ -3354,35 +4074,32 @@ for (let link of linkList) {
       createLinkErrorRow(link, "missing color in style attribute");
     }
 
+    if ( link.style.textAlign !== '' && linkedImg ) {
+      createLinkErrorRow(link, "don't use text-align in links when linking images, it breaks in safari");
+    }
+
 
 
     ////
-    // Check for old fashioned marketing URLS in sub or outsideOrg
-    if ( (outsideOrg || emailSubType === "sub" ) && (medbridgeDomainLink && /\.com\/trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
-      createLinkErrorRow(link, "do not use marketing url");
+    // Check for old fashioned marketing URLS in sub, ent, or outsideOrg
+    if ( (outsideOrg || emailSubType === "sub" || emailDisc === "ent" ) && (medbridgeOrMassageLink && /\.com\/trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
+      createLinkErrorRow(link, "do not use a marketing url");
     }
 
     ////
     // Check for medium=email in Sale and Presale emails
     ////
-    if ( !outsideOrg && medbridgeDomainLink && ( blogLink || /\-article/gi.test(linkHref) ) ) {
 
-      if ( emailAnySale ) { // Any sale email
+    if ( (emailSubType === "sub" || !emailAnySale) && /[\?&]medium=email/gi.test(linkHref) ) {
 
-        if ( emailSubType === "sub" && /medium=email/gi.test(linkHref) ) {
-          createLinkErrorRow(link, "remove medium=email");
-        }
+      createLinkErrorRow(link, "remove medium=email");
 
-        if ( emailSubType === "ns" && !/medium=email/gi.test(linkHref) ) {
-          createLinkErrorRow(link, "add medium=email");
-        }
+    }
 
-      } else { // Not a sale email
+    else if ( emailSubType === "ns" && !outsideOrg && medbridgeOrMassageLink && ( articleLink || /\-article/gi.test(linkHref) ) ) {
 
-        if ( /medium=email/gi.test(linkHref) ) {
-          createLinkErrorRow(link, "remove medium=email");
-        }
-
+      if ( emailAnySale && !/medium=email/gi.test(linkHref)) { // Any sale email
+        createLinkErrorRow(link, "add medium=email");
       }
 
     }
@@ -3394,14 +4111,20 @@ for (let link of linkList) {
     if ( emailSubType === "sub" || outsideOrg ) {
 
       // sub=yes is required in blog links.
-      if ( blogLink && !/sub=yes/gi.test(linkHref) ) {
+      if ( articleLink && !/sub=yes/gi.test(linkHref) ) {
         createLinkErrorRow(link, "add sub=yes");
       }
       // sub=yes should not be in any other links.
-      if ( ( !blogLink && !/\-article/gi.test(linkHref) ) && /sub=yes/gi.test(linkHref) ) {
+      if ( ( !articleLink && !/\-article/gi.test(linkHref) ) && /sub=yes/gi.test(linkHref) ) {
         createLinkErrorRow(link, "remove sub=yes");
       }
 
+    }
+
+    ////
+    // Check for broken article links in sub
+    if ( medbridgeEdLink && emailSubType === "sub" && /p=\d\d\d/gi.test(linkHref) && !/\.com\/blog(\/|\?)/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "article link is broken");
     }
 
     ////
@@ -3411,49 +4134,113 @@ for (let link of linkList) {
     }
 
     ////
-    // Check for existence of https in blog links in sub version
-    if ( blogLink && emailSubType === "sub" && /https:\/\//gi.test(linkHref) ) {
+    // Use p=#### to force Wordpress to redirect to http.
+    // Check for existence of https in blog links in sub version when NOT using p=####
+    if ( blogLink && emailSubType === "sub" && /https:\/\//gi.test(linkHref) && !/p=\d\d\d/gi.test(linkHref) ) {
       createLinkErrorRow(link, "blog links cannot be https");
     }
 
     ////
     // https required
-    if ( /http:/gi.test(linkHref) && !/\/blog\//gi.test(linkHref) && medbridgeOrMassageLink ) {
-      createLinkErrorRow(link, "https missing");
-    }
+    // DEPRECATED - Links to MedBridge with http automatically switch to https on load. So we don't need to bother specifying.
+    // Since blog links require http, its much less maintenance to just make all links http.
+    // if ( needsHttps && /http:\//gi.test(linkHref) ) {
+    //   createLinkErrorRow(link, "https missing");
+    // }
 
     ////
-    // outsideOrg should not link to home-exercise-program.
+    // Verify links in A/B emails if it looks like the link is using -a or -b.
+    if ( isMarketingUrl && abTesting === "a" && /\-b[\?\/]/i.test(linkHref) ) {
+      createLinkErrorRow(link, "fix a/b version");
+    }
+    if ( isMarketingUrl && abTesting === "b" && /\-a[\?\/]/i.test(linkHref) ) {
+      createLinkErrorRow(link, "fix a/b version");
+    }
+    if ( isMarketingUrl && (abTesting !== "a" && abTesting !== "b") && /\-(a|b)[\?\/]/i.test(linkHref) ) {
+      createLinkErrorRow(link, "remove -a/-b");
+    }
+
+
+    ////
+    // outsideOrg and subs should not link to home-exercise-program.
     // Use /patient_care/programs/create
-    if ( outsideOrg && /\home-exercise-program/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "outsideOrg uses /patient_care/programs/create instead");
+    if ( (outsideOrg || emailSubType === "sub") && /\.com\/home\-exercise\-program/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+    }
+    if ( (outsideOrg || emailSubType === "sub") && /patient_care\/programs\/create/gi.test(linkHref) && !/after_signin_url/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+    }
+    if ( (!outsideOrg && emailSubType !== "sub") && /patient_care\/programs\/create/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "use <code>home-exercise-program</code>");
     }
 
     ////
-    // Discipline Check
+    // Traking URL - Discipline Check
 
-    if ( emailDisc !== "multi" && emailDisc !== null && medbridgeDomainLink && !blogLink && !/\/courses\/details\//g.test(linkHref) ) {
+    if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && medbridgeOrMassageLink && !/\/courses\/details\//g.test(linkHref) && isMarketingUrl ) {
 
-      if ( emailDisc !== "slp" && (/#?\/?speech-language-pathology/gi.test(linkHref) || /-slp(\-|\/|\?)/g.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong discipline");
+      if ( emailDisc === "pt" && !/-pt(\-|\/|\?)/g.test(linkHref) ) {
+        createLinkErrorRow(link, "missing discipline");
       }
-      if ( ( emailDisc !== "pt" && emailDisc !== "dr" ) && (/#?\/?physical-therapy[^\-]/gi.test(linkHref) || /-pt(\-|\/|\?)/g.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong discipline");
+      if ( emailDisc === "at" && !/-at(\-|\/|\?)/g.test(linkHref) ) {
+        createLinkErrorRow(link, "missing discipline");
       }
-      if ( emailDisc !== "at" && (/#?\/?athletic-training/gi.test(linkHref) || /-at(\-|\/|\?)/g.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong discipline");
+      if ( emailDisc === "ot" && !/-ot(\-|\/|\?)/g.test(linkHref) ) {
+        createLinkErrorRow(link, "missing discipline");
       }
-      if ( emailDisc !== "ot" && (/#?\/?occupational-therapy/gi.test(linkHref) || /-ot(\-|\/|\?)/g.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong discipline");
+      if ( emailDisc === "slp" && !/-slp(\-|\/|\?)/g.test(linkHref) ) {
+        createLinkErrorRow(link, "missing discipline");
       }
-
-
+      if ( emailDisc === "other" && !/-other(\-|\/|\?)/g.test(linkHref) ) {
+        createLinkErrorRow(link, "missing discipline");
+      }
     }
+
+    // Homepage - Discipline Check
+    if ( emailDisc !== "multi" && emailDisc !== null && medbridgeOrMassageLink ) { //&& isMarketingUrl
+
+      if ( (emailDisc !== "pt" && emailDisc !== "other") && /after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "wrong homepage");
+      }
+      if ( emailDisc !== "at" && /after_affiliate_url=\/?athletic-training(&|$)/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "wrong homepage");
+      }
+      if ( emailDisc !== "ot" && /after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "wrong homepage");
+      }
+      if ( emailDisc !== "slp" && /after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "wrong homepage");
+      }
+    }
+
+
+    // Courses Page - Discipline Check
+    if ( emailDisc !== "multi" && emailDisc !== null && /#/g.test(linkHref) ) { //  && medbridgeOrMassageLink
+
+      if ( (emailDisc !== "pt" && emailDisc !== "other") && /#\/?physical-therapy/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "wrong hashtag");
+      }
+      if ( emailDisc !== "at" && /#\/?athletic-training/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "wrong hashtag");
+      }
+      if ( emailDisc !== "ot" && /#\/?occupational-therapy/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "wrong hashtag");
+      }
+      if ( emailDisc !== "slp" && /#\/?speech-language-pathology/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "wrong hashtag");
+      }
+    }
+
+    // Check for unecessary discipline hastags. Should only be used when linking to courses page
+    if ( /#\/?(speech-language-pathology|physical-therapy|athletic-training|occupational-therapy)/gi.test(linkHref) && !/(_url=courses|\/courses)(\/|\?|&|$)/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "unecessary hashtag");
+    }
+
 
     ////
     // NO //support. in outsideOrg
     if ( /\/support\./gi.test(linkHref) && outsideOrg ) {
-      createLinkErrorRow(link, "://support. not allowed in outsideOrg");
+      createLinkErrorRow(link, "://support. not allowed in outsideOrg, use mailto:support@medbridgeed.com");
     }
 
   ///////
@@ -3469,9 +4256,13 @@ for (let link of linkList) {
 
     var linkText = link.innerText;
 
-  }
+
 }
-console.groupEnd();
+//////////
+//////////
+//////////
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3484,7 +4275,7 @@ console.groupEnd();
 ////
 //////
 // Iterate through ALL IMAGES - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-let imgList = dFrame.querySelectorAll("img");
+let imgList = dFrameContents.querySelectorAll("img");
 var i = 0
 console.log("Total Images: " + imgList.length)
 for (let img of imgList) {
@@ -3529,13 +4320,62 @@ AOTA (only in OT)
 
 
 //
+// SPAM TRIGGER WORD
+//
+// Click|Click below|Click here|Click to remove|
+findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Being a member|Beneficiary|Best price|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Congratulations|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Leave|Life Insurance|limited time|Limited time offer|Limited time only|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Lowest Price|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No middleman|No obligation|No purchase necessary|No questions asked|No selling|No strings attached|No\-?obligation|Not intended|Notspam|Now only|Obligation|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Please read|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Prizes?|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|Round the world|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Special promotion|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
+  wrap: 'span',
+  wrapClass: "text-error"
+});
+
+
+//
 // DISCIPLINE CHECKS
 //
+
+// Promo Codes
+  if ( emailDisc !== "pt" ) {
+    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+      find: /(Promo.+?\b[A-Za-z0-9]+?PT\b)/gi,
+      wrap: 'span',
+      wrapClass: "text-error"
+    });
+  }
+  if ( emailDisc !== "at" ) {
+    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+      find: /(Promo.+?\b[A-Za-z0-9]+?AT\b)/gi,
+      wrap: 'span',
+      wrapClass: "text-error"
+    });
+  }
+  if ( emailDisc !== "ot" ) {
+    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+      find: /(Promo.+?\b[A-Za-z0-9]+?OT\b)/gi,
+      wrap: 'span',
+      wrapClass: "text-error"
+    });
+  }
+  if ( emailDisc !== "slp" ) {
+    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+      find: /(Promo.+?\b[A-Za-z0-9]+?SLP\b)/gi,
+      wrap: 'span',
+      wrapClass: "text-error"
+    });
+  }
+  if ( emailDisc === "other" ) {
+    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+      find: /(Promo.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
+      wrap: 'span',
+      wrapClass: "text-error"
+    });
+  }
+
 if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Physical Therapy - PT
 
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|BOC\-Approved)/g,
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(ASHA|\bAOTA|BOC\-Approved|Athletic Training|Occupational Therapy|CCC\-SLP)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -3543,8 +4383,8 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "at" ) {
   // Athletic Training - AT
 
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|Physical Therapy)/g,
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(patient|ASHA|\bAOTA|Physical Therapy|Occupational Therapy|CCC\-SLP)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -3552,8 +4392,14 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "ot" ) {
   // Occupational Therapy - OT
 
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|BOC\-Approved|Physical Therapy)/g,
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(ASHA|BOC\-Approved|Physical Therapy|Athletic Training|CCC\-SLP)/g,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+  // case-insensitive
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /home exercise program/gi,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -3561,8 +4407,8 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "slp" ) {
   // Speech Language Pathology - SLP
 
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(\bAOTA|BOC\-Approved|Physical Therapy)/g,
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(\bAOTA|BOC\-Approved|Physical Therapy|Athletic Training|Occupational Therapy)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -3570,8 +4416,8 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "lmt" ) {
   // Massage
 
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy|patient engagement tool)/g,
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy|patient engagement tool|CCC\-SLP)/g,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -3584,24 +4430,44 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 }
 
 
-// All
-findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-  find: /(certification(\.| |$)[^p]|at no extra cost|[^\u00a0]\u2192|get your ceu|ceu's|\/?[A-Za-z]+>)/gi, // Update to add "word &nbsp;&rarr;" as an error
-  wrap: 'span',
-  wrapClass: "text-error"
-});
+//
+// ALL
+//
 
-// All (case sensitive)
-findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-  find: /\b[Mm]edbridge( |\.|\!)/g,
+  // NOTES ---
+  // 17-06-14 - Decided to stop saying "Unlimited CEUs" and instead say "Unlimited Access to CEUs" or "Unlimited CEU Access".
+
+  // All (case INsensitive)
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|certification(\.| |$)[^p]|at no extra cost|[^\u00a0]\u2192|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
+    // Update to add "word &nbsp;&rarr;" as an error
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+
+  // All (case sensitive)
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
+    wrap: 'span',
+    wrapClass: "text-error"
+  });
+
+
+
+
+//
+// PRODUCT CAPITALIZATION
+//
+findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  find: /MedBridge (?:patient [Ee]|Patient e)ngagement/g,
   wrap: 'span',
   wrapClass: "text-error"
 });
 
 // Sub
 if ( emailSubType === "sub" && emailDisc !== "ent" ) {
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(Start for Free|in (an|the) (annual|MedBridge)|Learn More|\bSubscribe)/gi,
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(Start for Free|in (an|the) annual|\bSubscribe)/gi,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -3609,8 +4475,8 @@ if ( emailSubType === "sub" && emailDisc !== "ent" ) {
 
 // NS
 if ( emailSubType === "ns" ) {
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /(Start Now|in (an|your) annual|Register Now|Refer(\-| )a(\-| )Friend)/gi,
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(Start Now|in (an|your) annual|Refer(\-| )a(\-| )Friend)/gi,
     wrap: 'span',
     wrapClass: "text-error"
   });
@@ -3618,7 +4484,7 @@ if ( emailSubType === "ns" ) {
 
 // outsideOrg
 if ( outsideOrg ) {
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
     find: /additional cost|Refer(\-| )a(\-| )Friend/gi,
     wrap: 'span',
     wrapClass: "text-error"
@@ -3626,13 +4492,13 @@ if ( outsideOrg ) {
 }
 
 // emailAnySale
-if ( !emailAnySale ) {
-  findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
-    find: /\$200/gi,
-    wrap: 'span',
-    wrapClass: "text-error"
-  });
-}
+// if ( !emailAnySale ) {
+//   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+//     find: /\$200/gi,
+//     wrap: 'span',
+//     wrapClass: "text-error"
+//   });
+// }
 
 
 
@@ -3646,16 +4512,16 @@ if ( !emailAnySale ) {
 ////////////
 ////////////
 
-if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrame.body.textContent) ) {
+if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrameContents.body.textContent) ) {
   alertify.error("Refer a Friend<div>Remember update the MailChimp database and use conditional statements to only show Refer a Friend content to eligible contacts.</div>", 0);
 }
 
 
-// if ( !elExists(dFrame.querySelector("[data-module-wrapper]")) ) {
+// if ( !elExists(dFrameContents.querySelector("[data-module-wrapper]")) ) {
 //   alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
 // }
 // if ( emailSubType === "ns" && ) {
-//   findAndReplaceDOMText(dFrame.getElementsByTagName('body')[0], {
+//   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 //     find: /(Start Now|in (an|your) annual|Register Now|Refer(\-| )a(\-| )Friend)/gi,
 //     wrap: 'span',
 //     wrapClass: "text-error"
@@ -3671,7 +4537,7 @@ if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrame.body.textContent) ) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function toggleHelpers() {
-  dFrame.documentElement.classList.toggle("all-helpers-off");
+  dFrameContents.documentElement.classList.toggle("all-helpers-off");
 }
 ////////////
 ////////////
@@ -3688,7 +4554,7 @@ function toggleHelpers() {
 
 if ( getParameterByName("helpers") === "0" ) {
   toggleHelpers();
-  console.log("jelpers off");
+  console.log("helpers off");
 }
 
 if ( getParameterByName("img") === "0" ) {
@@ -3701,8 +4567,8 @@ if ( getParameterByName("style") === "0" ) {
   console.log("styles off");
 }
 
-if ( getParameterByName("borders") === "1" ) {
-  toggleBorders();
+if ( getParameterByName("showdims") === "1" ) {
+  showDims();
   console.log("box-shadow borders shown");
 }
 
@@ -3741,33 +4607,45 @@ if ( getParameterByName("imgdims") === "1" ) {
 ////////////
 ////////////
 
-  //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
-  dFrame.getElementsByTagName('html')[0].contentEditable = 'true';
-  dFrame.getElementsByTagName('html')[0].classList.add("spellcheck");
-  dFrame.getElementsByTagName('body')[0].focus();
+// 05-25-17 - DEPRECATED
+// A recent update to Google Chrome cause the built-in spellchecking feature to no longer function as expected.
 
-  // For some reason, if contenteditable is turned off too quickly, the red squiggles are sometimes misaligned with the text they are indicating as incorrectly spelled. For this reason we're using a setTimeout here.
-  setTimeout(function() {
-    dFrame.getElementsByTagName('html')[0].contentEditable = 'false';
-    dFrame.getElementsByTagName('html')[0].classList.remove("spellcheck");
-
-    mFrame.getElementsByTagName('html')[0].contentEditable = 'true';
-    mFrame.getElementsByTagName('html')[0].classList.add("spellcheck");
-    mFrame.getElementsByTagName('body')[0].focus();
-  }, 200);
-
-  setTimeout(function() {
-    mFrame.getElementsByTagName('html')[0].contentEditable = 'false';
-    mFrame.getElementsByTagName('html')[0].classList.remove("spellcheck");
-
-    document.querySelector('.mod-preheader .mod-body').contentEditable = 'true';
-    document.querySelector('.mod-preheader .mod-body').focus();
-  }, 400);
-
-  setTimeout(function() {
-    document.querySelector('.mod-preheader .mod-body').contentEditable = 'false';
-  }, 600);
-
+//
+// function checkSpelling() {
+//
+//   //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
+//   dFrameContents.getElementsByTagName('html')[0].contentEditable = 'true';
+//   dFrameContents.getElementsByTagName('html')[0].classList.add("spellcheck");
+//   dFrameContents.getElementsByTagName('body')[0].focus();
+//
+//   // For some reason, if contenteditable is turned off too quickly, the red squiggles are sometimes misaligned with the text they are indicating as incorrectly spelled. For this reason we're using a setTimeout here.
+//   setTimeout(function() {
+//     dFrameContents.getElementsByTagName('html')[0].contentEditable = 'false';
+//     dFrameContents.getElementsByTagName('html')[0].classList.remove("spellcheck");
+//
+//     mFrame.getElementsByTagName('html')[0].contentEditable = 'true';
+//     mFrame.getElementsByTagName('html')[0].classList.add("spellcheck");
+//     mFrame.getElementsByTagName('body')[0].focus();
+//   }, 200);
+//
+//   setTimeout(function() {
+//     mFrame.getElementsByTagName('html')[0].contentEditable = 'false';
+//     mFrame.getElementsByTagName('html')[0].classList.remove("spellcheck");
+//
+//     document.querySelector('.mod-preheader .mod-body').contentEditable = 'true';
+//     document.querySelector('.mod-preheader .mod-body').focus();
+//   }, 400);
+//
+//   setTimeout(function() {
+//     document.querySelector('.mod-preheader .mod-body').contentEditable = 'false';
+//   }, 600);
+//
+//   dFrameContents.getElementsByTagName('body')[0].spellcheck = true;
+//
+//   console.log("Spell check function complete.");
+// }
+//
+// checkSpelling();
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3779,12 +4657,13 @@ if ( getParameterByName("imgdims") === "1" ) {
 
     //////////
 
-
     chrome.runtime.onMessage.addListener(
       function(request, sender, sendResponse) {
 
           // console.log("request.greeting: " + request.greeting);
           var blogStatusReply = request.greeting.split("|");
+          console.log("blogStatusReply: ");
+          console.log(blogStatusReply);
 
           if ( blogStatusReply[1] === "error" ) {
 
@@ -3795,11 +4674,31 @@ if ( getParameterByName("imgdims") === "1" ) {
 
             var blogUrlChecked = document.querySelector("#iframe-" + blogStatusReply[4]).getAttribute("src").replace(/[?&]blog\-check.+/gi, "");
 
-            if ( /after_affiliate_url/gi.test(blogUrlChecked) ) {
-              blogUrlChecked = blogUrlChecked.replace(/\&.+/gi, "");
-            } else {
-              blogUrlChecked = blogUrlChecked.replace(/\?.+/gi, "");
-            }
+
+            console.log("blogStatusReply[4]: ");
+            console.log(blogStatusReply[4]);
+            console.log("blogUrlChecked: " + blogUrlChecked);
+
+
+            blogUrlChecked = processBlogLinkBeingChecked(blogUrlChecked);
+
+            blogStatusSuccessArray.push(blogUrlChecked);
+
+
+            // if ( /after_affiliate_url/gi.test(blogUrlChecked) ) {
+            //   blogUrlChecked = blogUrlChecked.replace(/\&.+/gi, "");
+            //   console.log("blogUrlChecked: " + blogUrlChecked);
+            // }
+            // // New way to link articles in -ns and -sub. Using the p=#### id of the article lets us keep the same link if the URL changes in the future
+            // else if ( /p=\d\d\d/gi.test(linkHref) ) {
+            //   console.log("This blog link uses p=#### id for linking.")
+            //   var blogLinkToCheckArray = linkHref.match(/p=[0-9]*/gi);
+            //   var blogLinkToCheck = blogLinkToCheckArray[0].replace(/p=/gi,"");
+            // }
+            // else {
+            //   blogUrlChecked = blogUrlChecked.replace(/\?.+/gi, "");
+            //   console.log("blogUrlChecked: " + blogUrlChecked);
+            // }
 
             blogUrlChecked = blogUrlChecked.replace(/^https?\:\/\/.+?\//i, "");
             blogUrlChecked = blogUrlChecked.replace(/\/$/i, "");
@@ -3807,6 +4706,7 @@ if ( getParameterByName("imgdims") === "1" ) {
             // console.log(blogUrlChecked);
             // console.log(blogStatusReply[1] + "|" + blogUrlChecked);
 
+            console.log("Saving to sessionStorage: " + blogUrlChecked + " - " + blogStatusReply);
             sessionStorage.setItem(blogUrlChecked, blogStatusReply);
 
             destroy(document.querySelector("#iframe-" + blogStatusReply[4]));
@@ -3819,32 +4719,248 @@ if ( getParameterByName("imgdims") === "1" ) {
     );
 
 
+    function processBlogLinkBeingChecked(link) {
+
+      console.log("function is processing the blog link being checked: " + link);
+
+      // First 'if' handles the blog link when we eventually are allowed to use after_affiliate_url for blog links, this is just future proofing (4/14/17)
+      // if ( /after_affiliate_url/gi.test(link) ) {
+      //   console.log("This blog link uses after_affiliate_url for linking.");
+      //   var blogLinkToCheck = link.replace(/\&.+/gi, "");
+      //       blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?after_affiliate_url\=\/?/gi, "");
+      //       console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
+      // }
+      // // New way to link articles in -ns and -sub. Using the p=#### id of the article lets us keep the same link if the URL changes in the future
+      // else
+
+      if ( /p=\d\d\d/gi.test(link) ) {
+        console.log("This blog link uses p=#### id for linking.")
+        var blogLinkToCheckArray = link.match(/p=[0-9]*/gi);
+        var blogLinkToCheck = blogLinkToCheckArray[0].replace(/p=/gi,"");
+            console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
+      }
+      else {
+        console.log("This blog link uses ??? for linking.");
+        var blogLinkToCheck = link.replace(/\/?\?.+/gi, "");
+            blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?\//gi, "");
+            console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
+      }
+
+      return blogLinkToCheck;
+
+    }
+
     // Need to use this during link checking and again once the postMessages come back. Figure that out.
-    function checkArticleLink(link, obj) {
-      var blogStatusFromStorage = obj;
+    function checkArticleLink(linkObject, blogStatusFromStorage) {
+
+      // console.log(link.href);
+      // console.log(blogStatusFromStorage);
+
+      var blogStatusFromStorage = blogStatusFromStorage;
       // Check Protects/Unprotected
       if ( blogStatusFromStorage[2] === "protected" ) {
-        createLinkErrorRow(link, "article is protected");
+        createLinkErrorRow(linkObject, "article is protected", "error", "lock");
         totalProtectedArticles++;
       }
       // Check Pearl vs Blog
-      if ( needsGoogleTracking ) {
-        if ( blogStatusFromStorage[3] === "blogger" && !/\-blog/i.test(linkHref) ) {
-          createLinkErrorRow(link, "add 'blog' to utm");
-        } else if ( blogStatusFromStorage[3] === "pearl" && !/\-pearl/i.test(linkHref) ) {
-          createLinkErrorRow(link, "add 'pearl' to utm");
+      if ( linkNeedsGoogleTracking ) {
+        if ( blogStatusFromStorage[3] === "blog" && !/utm_content=.+?\-blog/gi.test(linkObject.href) ) {
+          createLinkErrorRow(linkObject, "add 'blog' to utm");
+        } else if ( blogStatusFromStorage[3] === "pearl" && !/utm_content=.+?\-pearl/gi.test(linkObject.href) ) {
+          createLinkErrorRow(linkObject, "add 'pearl' to utm");
         }
       }
 
-      console.error(totalProtectedArticles);
+      // console.error(totalProtectedArticles);
     }
 
-    console.error(totalProtectedArticles);
+    // console.error(totalProtectedArticles);
 
     if ( totalProtectedArticles > 0 ) {
       console.error(totalProtectedArticles);
       alertify.error("1 or more articles are protected<div>Remember to unprotect all articles and re-check their status before sending out the newsletter.</div>", 0);
     }
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////// == Scroll Syncing == ////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+dFrameContents.addEventListener('scroll', function(e) {
+  syncScroll(dFrameContents, document.querySelector("#desktop-view"));
+});
+mFrame.addEventListener('scroll', function(e) {
+  syncScroll(mFrame, document.querySelector("#mobile-view"));
+});
+
+    // dFrameContents.removeEventListener('scroll', makeBackgroundYellow, false);
+    // mFrame.removeEventListener('scroll', makeBackgroundYellow, false);
+
+function syncScroll(targetFrame, iFrameObj) {
+
+  // console.log("syncScroll function activated.")
+
+  if ( iFrameObj.classList.contains("syncing") ) {
+    iFrameObj.classList.remove("syncing");
+    return false;
+  } else {
+
+    // var targetFrameHeight = targetFrame.body.scrollHeight - targetFrame.body.clientHeight;
+    // var targetFrameHeight = targetFrame.body.scrollHeight - targetFrame.clientHeight;
+    var targetFrameHeight = targetFrame.body.scrollHeight - iFrameObj.clientHeight;
+    var targetScrollPos = targetFrame.body.scrollTop;
+    var targetScrollPerc = targetScrollPos / targetFrameHeight;
+
+    // console.log("targetFrame.body.scrollHeight: " + targetFrame.body.scrollHeight + ", targetFrame.body.clientHeight: " + targetFrame.body.clientHeight);
+    // console.log("targetFrame.body.scrollHeight: " + targetFrame.body.scrollHeight + ", targetFrame.clientHeight: " + targetFrame.clientHeight);
+    // console.log("targetFrame.body.scrollHeight: " + targetFrame.body.scrollHeight + ", iFrameObj.clientHeight: " + iFrameObj.clientHeight);
+    // console.log("targetFrameHeight: " + targetFrameHeight + ", targetScrollPos: " + targetScrollPos + ", targetScrollPerc: " + targetScrollPerc);
+
+    if ( iFrameObj.id === "desktop-view" ) {
+      // var matchingFramePos = (mFrame.body.scrollHeight - mFrame.body.clientHeight) * targetScrollPerc;
+      var matchingFramePos = (mFrame.body.scrollHeight - document.querySelector("#mobile-view").clientHeight) * targetScrollPerc;
+      var matchingFrameScroll = document.getElementById('mobile-view');
+      // console.log("Active: Scrolling Desktop View - targetScrollPerc: " + targetScrollPerc + ", matchingFramePos: " + matchingFramePos);
+    } else {
+      // var matchingFramePos = (dFrameContents.body.scrollHeight - dFrameContents.body.clientHeight) * targetScrollPerc;
+      var matchingFramePos = (dFrameContents.body.scrollHeight - document.querySelector("#desktop-view").clientHeight) * targetScrollPerc;
+      var matchingFrameScroll = document.getElementById('desktop-view');
+      // console.log("Active: Scrolling Mobile View - targetScrollPerc: " + targetScrollPerc + ", matchingFramePos: " + matchingFramePos);
+    }
+
+    matchingFrameScroll.classList.add("syncing");
+    matchingFrameScroll.contentWindow.scrollTo(0,matchingFramePos);
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+
+// Hide rocket and reveal errors in the notifier after a few seconds on initial page load.
+// Only reveal it if the tab is active when the settimeout fires.
+// Re-try whenever the tab becomes active until it works, then remove the event listener.
+
+
+// Listen for changes to the pages visibility
+  // Page Visibility in 2015 - https://stackoverflow.com/a/6184276/556079
+  // You can't remove eventlisteners if the function is anonymous - https://stackoverflow.com/a/10444156/556079 / https://stackoverflow.com/a/5825519/556079
+  // Naming a function so that you can pass extra variables and also remove the event later - https://stackoverflow.com/a/16651942/556079
+  // Bubbling/false vs Capturing/true - https://stackoverflow.com/a/14807507/556079
+window.addEventListener('visibilitychange', activatePreflightNotifier, true);
+
+function activatePreflightNotifier() {
+
+  console.log("activatePreflightNotifier initiated");
+
+  setTimeout(function() {
+
+    if ( !document.hidden ) { // https://stackoverflow.com/a/12186061/556079
+      console.log("document.hidden = false");
+
+      preflightStatus.classList.remove("initial-load");
+      preflightStatus.classList.add("load-finished");
+
+      if ( preflightTotal.textContent === "0" ) {
+        preflightNotifierSuccess();
+      }
+
+      window.removeEventListener('visibilitychange', activatePreflightNotifier, true);
+      // window.removeEventListener('visibilitychange', true);
+
+       // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener
+      // Events https://developers.google.com/web/tools/chrome-devtools/console/events
+      console.log("listener removed");
+
+    } else {
+      console.log("document.hidden = true");
+    }
+
+  }, 1000);
+
+}
+activatePreflightNotifier();
+
+
+function preflightNotifierSuccess() {
+  preflightStatus.classList.remove("error");
+  preflightTotal.textContent = "";
+  preflightStatus.classList.add("success");
+  preflightTotal.classList.add("icomoon", "icomoon-checkmark");
+}
+
+
+function updatePreflightErrorTotal(type, i) {
+
+  console.groupCollapsed("updatePreflightErrorTotal function initiated.")
+
+  var currentValue = parseInt(preflightTotal.innerHTML);
+
+  // Increment total by 1, reduce by 1, or increase by a given integer
+  if ( type === "error" ) {
+    console.log("Adding " + i + " to total error value.");
+    currentValue = currentValue + i;
+    preflightTotal.innerHTML = currentValue;
+  } else if ( type = "success" ) {
+    console.log("Subtracting " + i + " from total error value.");
+    currentValue = currentValue - i;
+    preflightTotal.innerHTML = currentValue;
+  }
+  console.log("currentValue: " + currentValue);
+  // if ( type === "zoom" ) {
+  //   if ( status = true ) {
+  //
+  //   }
+  // }
+
+  // Update Class
+  if ( currentValue <= 0 ) {
+    preflightNotifierSuccess();
+  } else if ( currentValue > 0 ) {
+    preflightStatus.classList.add("error");
+    preflightStatus.classList.remove("success");
+  }
+
+  console.groupEnd();
+}
+
+
+
+function preflightError() {
+
+  var currentValue = parseInt(preflightTotal.innerHTML);
+
+  currentValue++;
+
+  preflightStatus.classList.add("error");
+  preflightTotal.innerHTML = currentValue;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// Drag to Resize
+// https://codepen.io/zz85/post/resizing-moving-snapping-windows-with-js-css
+// http://codepen.io/zz85/pen/gbOoVP?editors=0100
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3859,6 +4975,15 @@ if ( getParameterByName("imgdims") === "1" ) {
 
 document.querySelector("html").classList.toggle("errors");
 console.log("// end of newsletter.js")
+//
+// var scrolltest = document.querySelector("#desktop-view");
+//
+// scrolltest.addEventListener('scroll', function(e) {
+//
+//   console.log(window.scrollY);
+//
+// });
+
 
 
 

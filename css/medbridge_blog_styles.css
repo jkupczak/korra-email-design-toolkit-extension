@@ -1,0 +1,42 @@
+.jk-helpBar {
+  position: fixed;
+  z-index:999999;
+  bottom:0;
+  left:0;
+  /*width:100%;*/
+  background: #1e78d7;
+  padding:15px 30px;
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+  display: flex;
+
+  color:#444;
+
+}
+
+.jk-helpBar input {
+  color:#444 !important;
+  width:380px !important;
+  padding:10px !important;
+  border:1px solid rgba(0,0,0,0.35) !important;
+}
+
+.jk-helpBar .copy {
+  cursor:pointer;
+  font-weight: bold;
+  width:auto;
+  background:#1264bb;
+  color:#fff;
+  padding:0 20px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin:0 2px;
+}
+.jk-helpBar .copy:hover {
+  background:#07478b;
+}
+
+.offscreen {
+  position: absolute;
+  left:-9999px;
+}

@@ -17,7 +17,7 @@ document.arrive("#tgTable", function() {
 
 function calendarStyler() {
 
-  let calendarItems = document.querySelectorAll("dl > dd > div.cpchip > span");
+  let calendarItems = document.querySelectorAll("dl > dd > div.cpchip .evt-lk");
 
   for (let calendarItem of calendarItems) {
 
@@ -80,6 +80,10 @@ function colorizer(el, string) {
 
   else if ( /Planning\:/i.test(string) ) {
     el.closest("div.chip").classList.add("mod-planning");
+  }
+
+  else if ( /Reminder\:/i.test(string) ) {
+    el.closest("div.chip").classList.add("mod-reminder");
   }
 
 }

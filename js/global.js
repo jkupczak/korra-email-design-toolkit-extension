@@ -18,10 +18,76 @@ function getMonthAbbr(date) {
     "nov", "dec"
   ];
 
+  // If a date wasn't passed to this function, create one based on today's date.
+  if (!date) {
+    var date = new Date();
+  }
+
   var monthIndex = date.getMonth();
 
   return monthNames[monthIndex];
 
+}
+
+// https://davidwalsh.name/javascript-debounce-function
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
+//
+// You'll pass the debounce function the function to execute and the fire rate limit in milliseconds.  Here's an example usage:
+//
+// var myEfficientFn = debounce(function() {
+// 	// All the taxing stuff you do
+// }, 250);
+//
+// window.addEventListener('resize', myEfficientFn);
+//
+
+
+//
+// Select the contents of an element
+// http://stackoverflow.com/a/6150060/556079
+//
+function selectElementContents(el) {
+
+  if ( el.scrollTop !== 0 ) {
+    el.scrollTop = 0;
+  }
+
+  var range = document.createRange();
+  range.selectNodeContents(el);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+
+//
+// Create a <textarea> and insert a passed string. For use with Tingle.js to quickly create copyable modals.
+//
+function createPlainTextContainer(string) {
+  var plainTextContainer = document.createElement("textarea");
+  plainTextContainer.className = "plain-text-modal";
+  var plainTextString = document.createTextNode(string);
+  plainTextContainer.appendChild(plainTextString);
+
+  return plainTextContainer;
 }
 
 //
@@ -97,15 +163,31 @@ function getEmailDate(filename) {
 
 }
 
+// https://plainjs.com/javascript/manipulation/wrap-an-html-structure-around-an-element-28/
+function wrap(el, wrapper) {
+  el.parentNode.insertBefore(wrapper, el);
+  wrapper.appendChild(el);
+}
+
+
 //
 // Wrap wrapper around nodes
 // Just pass a collection of nodes, and a wrapper element
 // http://stackoverflow.com/a/41391872/556079
 //
 function wrapAll(nodes, wrapper) {
+
+    console.log(nodes);
+    console.log(wrapper);
+
     // Cache the current parent and previous sibling of the first node.
-    var parent = nodes[0].parentNode;
-    var previousSibling = nodes[0].previousSibling;
+    if ( nodes.constructor === Array ) {
+      var parent = nodes[0].parentNode;
+      var previousSibling = nodes[0].previousSibling;
+    } else {
+      var parent = nodes.parentNode;
+      var previousSibling = nodes.previousSibling;
+    }
 
     // Place each node in wrapper.
     //  - If nodes is an array, we must increment the index we grab from
@@ -128,11 +210,11 @@ function wrapAll(nodes, wrapper) {
 // http://stackoverflow.com/a/20513730/556079
 //
 function injectScript(file, node) {
-    var th = document.getElementsByTagName(node)[0];
-    var s = document.createElement('script');
-    s.setAttribute('type', 'text/javascript');
-    s.setAttribute('src', file);
-    th.appendChild(s);
+  var th = document.getElementsByTagName(node)[0];
+  var s = document.createElement('script');
+  s.setAttribute('type', 'text/javascript');
+  s.setAttribute('src', file);
+  th.appendChild(s);
 }
 
 
@@ -179,9 +261,9 @@ function calcWorkingDays(fromDate, days) {
 function isRecentEmail(emailDate) {
 
   var todaysDate = new Date();
-      yesterdaysDate = new Date(todaysDate.setDate(todaysDate.getDate()-1));
+      lastWeek = new Date(todaysDate.setDate(todaysDate.getDate()-5));
 
-  if ( emailDate > yesterdaysDate ) {
+  if ( emailDate > lastWeek ) {
     // console.error("emailDate (" + emailDate + ") is greater than yesterdaysDate (" + yesterdaysDate + ")");
     return true;
   } else {
@@ -198,28 +280,33 @@ function getDisciplineId(string) {
 
   var trimmedString = string.trim();
 
-       if ( /-(PT|Physical)(\s|-|\.|$)/gi.test(trimmedString) )    { var disciplineId = "pt";    }
-  else if ( /-(AT|Athletic)(\s|-|\.|$)/gi.test(trimmedString) )    { var disciplineId = "at";    }
+       if ( /-PT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";    }
+  else if ( /-AT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "at";    }
   else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "ot";    }
   else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { var disciplineId = "slp";   }
   else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { var disciplineId = "other"; }
   else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "lmt";   }
-  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "dr";    }
+
+  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";    }
   else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { var disciplineId = "fox";   }
   else if ( /-HS(-|\.|$)/gi.test(trimmedString) )                  { var disciplineId = "hs";    }
   else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "multi"; }
-  else if ( /-(ENT|Enterprise)(\s|-|\.|$)/gi.test(trimmedString) ) { var disciplineId = "ent";   }
+  else if ( /-(ENT|Enterprise|MFB)(\s|-|\.|$)/gi.test(trimmedString) ) { var disciplineId = "ent";   }
+
+  else if ( /-(Physical)(\s|-|\.|$)/gi.test(trimmedString) )       { var disciplineId = "pt";    }
+  else if ( /-Athletic(\s|-|\.|$)/gi.test(trimmedString) )         { var disciplineId = "at";    }
+
   else { var disciplineId = null }
 
 
   ////
-  console.groupCollapsed("getDisciplineId - " + disciplineId);
-
-    console.log("running function on trimmedString: " + trimmedString);
-    console.log("function returned this: " + disciplineId);
-    console.log(this);
-
-  console.groupEnd();
+  // console.groupCollapsed("getDisciplineId - " + disciplineId);
+  //
+  //   console.log("running function on trimmedString: " + trimmedString);
+  //   console.log("function returned this: " + disciplineId);
+  //   console.log(this);
+  //
+  // console.groupEnd();
   ////
 
   return disciplineId;
@@ -297,7 +384,12 @@ function getABstatus(string) {
 
 }
 
-// Insert an element after another element.
+// Insert an element BEFORE another element.
+function insertBefore(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode);
+}
+
+// Insert an element AFTER another element.
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
@@ -497,33 +589,84 @@ function destroyIfExists(el) {
   }
 }
 
-// http://stackoverflow.com/a/6150060/556079
-function selectElementContents(el) {
-    var range = document.createRange();
-    range.selectNodeContents(el);
-    var sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
+//
+function createCopyBtn(node, stringToCopy) {
+  node.dataset.copy = stringToCopy;
+  node.onclick = copyToClipboard;
+  node.classList.add("jk-hover-pointer", "jk-copy-btn");
 }
 
-
 //
-function copyToClipboard(el) {
+function copyToClipboard(toCopy, msg, persist) {
+
+  if (toCopy.tagName === "INPUT" || toCopy.tagName === "TEXTAREA" || toCopy.contentEditable === "true" ) {
+
+    var copyHolder = toCopy;
+
+  } else {
+
+    var copyHolder = document.createElement("textarea");
+    copyHolder.className = "temporary-copy-holder";
+
+    if (typeof toCopy === 'string' || toCopy instanceof String) {
+      copyHolder.textContent = toCopy;
+    } else {
+      copyHolder.textContent = this.dataset.copy;
+    }
+
+    document.body.appendChild(copyHolder);
+
+  }
+
 
   // Copy the Link - http://www.jstips.co/en/copy-to-clipboard/
   // Select the content
-  el.select();
+  copyHolder.select();
   document.execCommand('copy');
 
-  alertify.success("Saved to clipboard!<div><span class='url'>" + el.value + "</span></div>", 20);
+  var previewOfCopy = htmlEntities(copyHolder.value).slice(0, 200);
+  if ( copyHolder.value.length > 200 ) {
+    previewOfCopy += "...";
+  }
+  // if ( msg === "success" ) {
+    alertify.success("Saved to clipboard!<div><span class='copied-text'>" + previewOfCopy + "</span></div>", 10);
+  // }
+
+  if ( !persist ) {
+    destroyIfExists(copyHolder);
+  }
 
 }
 
+//
+/////
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+//
+// Conditional Alerts
+function toast(suppress, type, string, int) {
+  if ( suppress === "suppress" && suppressAlerts === true ) {
+    console.log("Alert suppressed: \"" + string + "\"");
+    return false;
+  }
+
+  alertify.error(string, int);
+  console.log("Alert fired: \"" + string + "\"");
+
+}
 
 // Test if an element exists in the DOM.
-function elExists(el) {
+function elExists(el, set) {
   if ( typeof(el) != 'undefined' && el != null ) {
-    return true;
+    if ( set === "object" ) {
+      return el;
+    } else if ( set === "text" ) {
+      return el.textContent;
+    } else {
+      return true;
+    }
   } else {
     return false;
   }
@@ -556,13 +699,21 @@ function cleanPlainTxt(text) {
 
   // console.log(text);
 
-  text = text.replace(/(\&nbsp\;|\n|\t|\r|\u00a0)/gi, " "); // http://stackoverflow.com/a/1496863/556079
+  text = text.replace(/(\&nbsp\;|\n|\t|\r\n?|\u00a0)/gi, " "); // http://stackoverflow.com/a/1496863/556079
   // text = text.replace(/(  +)/gi, "");
+
+  // console.log(text);
+
   text = text.replace(/\t/gi, "");
   text = text.replace(/\n\n+/gi, "\n\n");
+
+  // console.log(text);
+
   text = text.replace(/   +/gi, " ");
   text = text.replace(/(^ +?| +?$)/gi, "");
   text = text.trim();
+
+  // console.log(text);
 
   return text
 }
