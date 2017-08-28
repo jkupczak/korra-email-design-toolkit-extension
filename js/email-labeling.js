@@ -1,4 +1,4 @@
-console.warn(">>> email-labeling.js loaded");
+console.warn("[sonic-toolkit-extension] loaded /js/email-labeling.js");
 
 //
 // Remove default favicon

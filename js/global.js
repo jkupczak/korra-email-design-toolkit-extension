@@ -1,6 +1,4 @@
-// console.error( "global.js - " + document.documentElement.clientWidth );
-
-console.warn(">>> global.js loaded");
+console.warn("[sonic-toolkit-extension] loaded /js/global.js");
 
 ////
 ////// Global Functions
@@ -481,6 +479,7 @@ function isHidden(el) {
 
 // Update the query string
 // http://stackoverflow.com/a/11654596/556079
+// TIP: Set value to null to remove the key from the URL.
 function updateQueryString(key, value, url) {
     if (!url) url = window.location.href;
     var re = new RegExp("([?&])" + key + "=.*?(&|#|$)(.*)", "gi"),
@@ -596,8 +595,23 @@ function createCopyBtn(node, stringToCopy) {
   node.classList.add("jk-hover-pointer", "jk-copy-btn");
 }
 
-//
+// Copy to Clipboard Function
+////
+// How it Works:
+// Inserts text passed to it into a temporary object and then executes a copy command.
+// After it's finished the temporary object is destroyed.
+// If an object is passed instead of text, we use that object to copy from instead of creating a new one.
+// The object is still destroyed unless persist === true.
+////
+// Failure Notes:
+// After a user action, document.execCommand('copy') cannot take more than 1000ms (pretty sure) to be run. If it does, nothing will be copied.
+// This will most often happen if after a user action we first do an AJAX call or we utilize a setTimeout.
+////
 function copyToClipboard(toCopy, msg, persist) {
+
+  console.log(this);
+  console.log(event);
+  event.preventDefault();
 
   if (toCopy.tagName === "INPUT" || toCopy.tagName === "TEXTAREA" || toCopy.contentEditable === "true" ) {
 
@@ -632,7 +646,7 @@ function copyToClipboard(toCopy, msg, persist) {
     alertify.success("Saved to clipboard!<div><span class='copied-text'>" + previewOfCopy + "</span></div>", 10);
   // }
 
-  if ( !persist ) {
+  if ( persist !== true ) {
     destroyIfExists(copyHolder);
   }
 

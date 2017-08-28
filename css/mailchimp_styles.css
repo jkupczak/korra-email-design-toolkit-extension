@@ -89,8 +89,8 @@
 /***********/
 /***********/
 
-.c-builder .dijitReset.dijitStretch.dijitButtonContents { padding:15px 36px 15px 18px; }
-.c-builder .dijitReset.dijitStretch.dijitButtonContents > .dijitReset.dijitInputField.dijitButtonText { font-size:24px; }
+.page-campaigns-wizard-recipients.c-builder h2 + div .dijitReset.dijitStretch.dijitButtonContents { padding:15px 36px 15px 18px !important; }
+.page-campaigns-wizard-recipients.c-builder h2 + div .dijitReset.dijitStretch.dijitButtonContents > .dijitReset.dijitInputField.dijitButtonText { font-size:24px; }
 
 .c-builder .radio-grid input[type="radio"]:checked+label { background: #6dc5dc; }
 
@@ -103,7 +103,7 @@
 /***********/
 
 .wizard-title {
-  left:90px !important;
+  left: 108px !important;
   font-size:16px;
 }
 
@@ -115,157 +115,185 @@
 /* */
 /* Header */
 /* */
-body.discipline-ready .c-wizardNavigation.selfclear,
-body.discipline-ready .c-wizardNavigation.selfclear li.hover-item > a,
-body.discipline-ready .nav-link a,
-body.discipline-ready .line.selfclear,
-body.discipline-ready .line.selfclear li.hover-item > a {
+body.discipline-ready:not(.discipline-null) .c-wizardNavigation.selfclear,
+body.discipline-ready:not(.discipline-null) .c-wizardNavigation.selfclear li.hover-item > a,
+body.discipline-ready:not(.discipline-null) .nav-link a,
+body.discipline-ready:not(.discipline-null) .line.selfclear,
+body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
   color:#fff !important;
 }
 
   .c-builder .c-wizardNavigation.selfclear, .c-builder .line.selfclear { transition: all 0.29s ease-in-out 0s; }
 
   /* PT */
-  .discipline-pt .c-wizardNavigation.selfclear,
-  .discipline-pt .line.selfclear
+  .discipline-pt .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-pt .main-navigation .line.selfclear
    { background: var(--pt-dark); }
-  .discipline-pt .c-wizardNavigation.selfclear,
-  .discipline-pt .line.selfclear,
-  .discipline-pt #freddielink,
-  .discipline-pt .wizard-freddie {
+  .discipline-pt .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-pt .main-navigation .line.selfclear,
+  .discipline-pt .main-navigation #freddielink,
+  .discipline-pt .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--pt);
   }
-  .discipline-pt .wizard-freddie, .discipline-pt .c-wizardLink--top:hover,
-  .discipline-pt #freddielink,
-  .discipline-pt .stayopen .c-wizardLink--top,
-  .discipline-pt .gray-link:hover,
+  .discipline-pt .main-navigation .wizard-freddie, .discipline-pt .c-wizardLink--top:hover,
+  .discipline-pt .main-navigation #freddielink,
+  .discipline-pt .main-navigation .stayopen .c-wizardLink--top,
+  .discipline-pt .main-navigation .gray-link:hover,
+  .discipline-pt .main-navigation .c-wizardLink--step:hover,
   .discipline-pt .c-wizardLink--step:hover,
-  .discipline-pt .c-deliveryOptions .p0 {
+  .discipline-pt .p1,
+  .discipline-pt .c-deliveryOptions .p0,
+  .discipline-pt .wizard-menu > a:first-child
+  {
     background: var(--pt) !important;
   }
   .discipline-pt .main-navigation .selected::after { border-bottom-color: var(--pt); }
 
   /*******/
   /* AT */
-  .discipline-at .c-wizardNavigation.selfclear,
-  .discipline-at .line.selfclear
+  .discipline-at .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-at .main-navigation .line.selfclear
    { background: var(--at-dark); }
-  .discipline-at .c-wizardNavigation.selfclear,
-  .discipline-at .line.selfclear,
-  .discipline-at #freddielink,
-  .discipline-at .wizard-freddie {
+  .discipline-at .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-at .main-navigation .line.selfclear,
+  .discipline-at .main-navigation #freddielink,
+  .discipline-at .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--at);
   }
-  .discipline-at .wizard-freddie, .discipline-at .c-wizardLink--top:hover,
-  .discipline-at #freddielink,
-  .discipline-at .stayopen .c-wizardLink--top,
-  .discipline-at .gray-link:hover,
+  .discipline-at .main-navigation .wizard-freddie, .discipline-at .c-wizardLink--top:hover,
+  .discipline-at .main-navigation #freddielink,
+  .discipline-at .main-navigation .stayopen .c-wizardLink--top,
+  .discipline-at .main-navigation .gray-link:hover,
+  .discipline-at .main-navigation .c-wizardLink--step:hover,
   .discipline-at .c-wizardLink--step:hover,
-  .discipline-at .c-deliveryOptions .p0 {
+  .discipline-at .p1,
+  .discipline-at .c-deliveryOptions .p0,
+  .discipline-at .wizard-menu > a:first-child
+  {
     background: var(--at) !important;
   }
   .discipline-at .main-navigation .selected::after { border-bottom-color: var(--at); }
 
   /*******/
   /* OT */
-  .discipline-ot .c-wizardNavigation.selfclear,
-  .discipline-ot .line.selfclear
+  .discipline-ot .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-ot .main-navigation .line.selfclear
    { background: var(--ot-dark); }
-  .discipline-ot .c-wizardNavigation.selfclear,
-  .discipline-ot .line.selfclear,
-  .discipline-ot #freddielink,
-  .discipline-ot .wizard-freddie {
+  .discipline-ot .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-ot .main-navigation .line.selfclear,
+  .discipline-ot .main-navigation #freddielink,
+  .discipline-ot .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--ot);
   }
-  .discipline-ot .wizard-freddie, .discipline-ot .c-wizardLink--top:hover,
-  .discipline-ot #freddielink,
-  .discipline-ot  .stayopen .c-wizardLink--top,
-  .discipline-ot .gray-link:hover,
+  .discipline-ot .main-navigation .wizard-freddie, .discipline-ot .c-wizardLink--top:hover,
+  .discipline-ot .main-navigation #freddielink,
+  .discipline-ot .main-navigation .stayopen .c-wizardLink--top,
+  .discipline-ot .main-navigation .gray-link:hover,
+  .discipline-ot .main-navigation .c-wizardLink--step:hover,
   .discipline-ot .c-wizardLink--step:hover,
-  .discipline-ot .c-deliveryOptions .p0 {
+  .discipline-ot .p1,
+  .discipline-ot .c-deliveryOptions .p0,
+  .discipline-ot .wizard-menu > a:first-child
+  {
     background: var(--ot) !important;
   }
   .discipline-ot .main-navigation .selected::after { border-bottom-color: var(--ot); }
 
   /********/
   /* SLP */
-  .discipline-slp .c-wizardNavigation.selfclear,
-  .discipline-slp .line.selfclear
+  .discipline-slp .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-slp .main-navigation .line.selfclear
    { background: var(--slp-dark); }
-  .discipline-slp .c-wizardNavigation.selfclear,
-  .discipline-slp .line.selfclear,
-  .discipline-slp #freddielink,
-  .discipline-slp .wizard-freddie {
+  .discipline-slp .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-slp .main-navigation .line.selfclear,
+  .discipline-slp .main-navigation #freddielink,
+  .discipline-slp .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--slp);
   }
-  .discipline-slp .wizard-freddie, .discipline-slp .c-wizardLink--top:hover,
-  .discipline-slp #freddielink,
-  .discipline-slp  .stayopen .c-wizardLink--top,
-  .discipline-slp .gray-link:hover,
+  .discipline-slp .main-navigation .wizard-freddie, .discipline-slp .c-wizardLink--top:hover,
+  .discipline-slp .main-navigation #freddielink,
+  .discipline-slp .main-navigation .stayopen .c-wizardLink--top,
+  .discipline-slp .main-navigation .gray-link:hover,
+  .discipline-slp .main-navigation .c-wizardLink--step:hover,
   .discipline-slp .c-wizardLink--step:hover,
-  .discipline-slp .c-deliveryOptions .p0 {
+  .discipline-slp .p1,
+  .discipline-slp .c-deliveryOptions .p0,
+  .discipline-slp .wizard-menu > a:first-child
+  {
     background: var(--slp) !important;
   }
   .discipline-slp .main-navigation .selected::after { border-bottom-color: var(--slp); }
 
   /********/
   /* Other */
-  .discipline-other .c-wizardNavigation.selfclear,
-  .discipline-other .line.selfclear
+  .discipline-other .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-other .main-navigation .line.selfclear
    { background: var(--other-dark); }
-  .discipline-other .c-wizardNavigation.selfclear,
-  .discipline-other .line.selfclear,
-  .discipline-other #freddielink,
-  .discipline-other .wizard-freddie {
+  .discipline-other .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-other .main-navigation .line.selfclear,
+  .discipline-other .main-navigation #freddielink,
+  .discipline-other .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--other);
   }
-  .discipline-other .wizard-freddie, .discipline-other .c-wizardLink--top:hover,
-  .discipline-other #freddielink,
-  .discipline-other  .stayopen .c-wizardLink--top,
-  .discipline-other .gray-link:hover,
+  .discipline-other .main-navigation .wizard-freddie, .discipline-other .c-wizardLink--top:hover,
+  .discipline-other .main-navigation #freddielink,
+  .discipline-other .main-navigation .stayopen .c-wizardLink--top,
+  .discipline-other .main-navigation .gray-link:hover,
+  .discipline-other .main-navigation .c-wizardLink--step:hover,
   .discipline-other .c-wizardLink--step:hover,
-  .discipline-other .c-deliveryOptions .p0 {
+  .discipline-other .p1,
+  .discipline-other .c-deliveryOptions .p0,
+  .discipline-other .wizard-menu > a:first-child
+  {
     background: var(--other) !important;
   }
   .discipline-other .main-navigation .selected::after { border-bottom-color: var(--other); }
 
   /********/
   /* Massage */
-  .discipline-lmt .c-wizardNavigation.selfclear,
-  .discipline-lmt .line.selfclear
+  .discipline-lmt .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-lmt .main-navigation .line.selfclear
    { background: var(--lmt-dark); }
-  .discipline-lmt .c-wizardNavigation.selfclear,
-  .discipline-lmt .line.selfclear,
-  .discipline-lmt #freddielink,
-  .discipline-lmt .wizard-freddie {
+  .discipline-lmt .main-navigation .c-wizardNavigation.selfclear,
+  .discipline-lmt .main-navigation .line.selfclear,
+  .discipline-lmt .main-navigation #freddielink,
+  .discipline-lmt .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--lmt);
   }
-  .discipline-lmt .wizard-freddie, .discipline-lmt .c-wizardLink--top:hover,
-  .discipline-lmt #freddielink,
-  .discipline-lmt  .stayopen .c-wizardLink--top,
-  .discipline-lmt .gray-link:hover,
+  .discipline-lmt .main-navigation .wizard-freddie, .discipline-lmt .c-wizardLink--top:hover,
+  .discipline-lmt .main-navigation #freddielink,
+  .discipline-lmt .main-navigation .stayopen .c-wizardLink--top,
+  .discipline-lmt .main-navigation .gray-link:hover,
+  .discipline-lmt .main-navigation .c-wizardLink--step:hover,
   .discipline-lmt .c-wizardLink--step:hover,
-  .discipline-lmt .c-deliveryOptions .p0 {
+  .discipline-lmt .p1,
+  .discipline-lmt .c-deliveryOptions .p0,
+  .discipline-lmt .wizard-menu > a:first-child
+  {
     background: var(--lmt) !important;
   }
   .discipline-lmt .main-navigation .selected::after { border-bottom-color: var(--lmt); }
 
 /* Enterprise */
-.discipline-ent .c-wizardNavigation.selfclear,
-.discipline-ent .line.selfclear
+.discipline-ent .main-navigation .c-wizardNavigation.selfclear,
+.discipline-ent .main-navigation .line.selfclear
  { background: var(--enterprise-dark); }
-.discipline-ent .c-wizardNavigation.selfclear,
-.discipline-ent .line.selfclear,
-.discipline-ent #freddielink,
-.discipline-ent .wizard-freddie {
+.discipline-ent .main-navigation .c-wizardNavigation.selfclear,
+.discipline-ent .main-navigation .line.selfclear,
+.discipline-ent .main-navigation #freddielink,
+.discipline-ent .main-navigation .wizard-freddie {
   box-shadow: inset 0 4px 0px var(--enterprise);
 }
-.discipline-ent .wizard-freddie, .discipline-slp .c-wizardLink--top:hover,
-.discipline-ent #freddielink,
-.discipline-ent  .stayopen .c-wizardLink--top,
-.discipline-ent .gray-link:hover,
-.discipline-ent .c-wizardLink--step:hover,
-.discipline-ent .c-deliveryOptions .p0 {
+.discipline-ent .main-navigation .wizard-freddie, .discipline-ent .c-wizardLink--top:hover,
+.discipline-ent .main-navigation #freddielink,
+.discipline-ent .main-navigation .stayopen .c-wizardLink--top,
+.discipline-ent .main-navigation .gray-link:hover,
+.discipline-ent .main-navigation .c-wizardLink--step:hover,
+.disciplineent .c-wizardLink--step:hover,
+.discipline-ent .p1,
+.discipline-ent .c-deliveryOptions .p0,
+.discipline-ent .wizard-menu > a:first-child
+{
   background: var(--enterprise) !important;
 }
 .discipline-ent .main-navigation .selected::after { border-bottom-color: var(--enterprise); }
@@ -284,7 +312,10 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 .page-campaigns-wizard-setup label[for="personalize-to"] + .checkbox-description > p,
 .page-campaigns-wizard-setup label[for="track-conversations"] + .checkbox-description > p,
 .page-campaigns-wizard-setup div > h3 + p:last-child,
-.page-campaigns-wizard-setup #skip-domain-verification + div > div > h3 + p:last-child
+.page-campaigns-wizard-setup #skip-domain-verification + div > div > h3 + p:last-child,
+/* Preview Text */ .page-campaigns-wizard-setup div[data-mc-el="previewTextContainer"],
+/* Preview Text */ .page-campaigns-wizard-setup label[for="preview_text"],
+/* Tracking Descriptions */ .page-campaigns-wizard-setup .field-wrapper label + .checkbox-description
 {
   display: none;
 }
@@ -296,6 +327,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 {
   display: none;
 }
+
 
 
 
@@ -391,6 +423,158 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 /***********/
 
 
+#campaigns-list .c-campaignManager_slat:nth-child(odd) {
+  background: rgb(250, 250, 250);
+}
+#campaigns-list .c-campaignManager_slat {
+  border-bottom:0;
+  border-top: 1px solid rgb(230,230,230);
+  padding: 5px 18px 5px 18px;
+  align-items: center;
+}
+#campaigns-list .status-draft + .c-campaignManager_slat {
+  border:0;
+}
+
+#campaigns-list .c-campaignManager_slat.status-draft {
+  padding-top:15px;
+  padding-bottom:15px;
+  border: 0;
+  box-shadow: inset 0 0 0 5px #fff, inset 0 0 0 6px rgb(210,210,210);
+  background: rgb(245,245,245);
+}
+
+/* Hidden */
+.c-campaignManager_slat_details p:last-child { display: none; }
+
+/* Spacing */
+.campaigns-list .c-campaignManager_actionBar { padding-top:15px; padding-bottom:45px; }
+.campaigns-list .mc-content { max-width: 1440px; }
+.campaigns-list .content > .header { margin:18px 0 !important; }
+
+/* Sidebar */
+.c-campaignManager_sidebar { width:245px !important; }
+
+/* Search Bar Position */
+.c-campaignManager_actionBar { margin-top: 0 !important; top:auto !important; width:initial !important; }
+.c-campaignManager_actionBar--fixed { position: relative !important; }
+.c-campaignManager_actionBar--fixed+.c-campaignManager_listWrapper { padding-top: 0 !important; }
+.c-campaignManager_searchBox, .c-campaignManager_searchCount { padding-left:0 !important; }
+
+/* Campaigns List */
+.c-campaignManager_sidebar--fixed + .c-campaignManager_listOuter { margin-left:245px !important; }
+
+.c-campaignManager_listOuter { top:-60px !important; width: calc(100% - 245px) !important; padding-left: 30px !important; }
+
+/*#campaigns-list .status-draft {
+  border: 1px solid #ccc;
+  padding-top:15px;
+  padding-bottom:15px;
+
+}
+#campaigns-list .status-draft, #campaigns-list .status-draft + li {
+  box-shadow: inset 0 3px 0 0 rgba(0,0,0,0.05);
+}
+#campaigns-list *:not(.status-draft) + .status-draft, #campaigns-list .status-draft:first-child {
+  box-shadow: none;
+}
+#campaigns-list .status-draft + .status-draft {
+  border-top:0;
+}*/
+
+
+li .c-campaignManager_slat_actions>.dijitComboButton { opacity: 0.25; }
+li[data-status="draft"] .c-campaignManager_slat_actions>.dijitComboButton { opacity: 1 !important; }
+
+.current-status-is-draft span { background: rgb(208, 21, 43); color:#fff; }
+
+#campaigns-list .status-draft .current-status-is-draft {
+  overflow: visible;
+}
+#campaigns-list .status-draft .current-status-is-draft span {
+  animation: pulseDraft 1s infinite linear;
+}
+@keyframes pulseDraft {
+  0% {
+    box-shadow: 0 0 0 0px rgba(208, 21, 43, .75), 0 0 0 4px rgba(208, 21, 43, .375);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(208, 21, 43, .375), 0 0 0 8px rgba(208, 21, 43, 0);
+  }
+  51% {
+    box-shadow: 0 0 0 4px rgba(208, 21, 43, .375), 0 0 0 0px rgba(208, 21, 43, .75);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(208, 21, 43, 0), 0 0 0 4px rgba(208, 21, 43, .375);
+  }
+}
+
+.c-campaignManager_slat_status {
+  flex: 0 0 90px !important;
+}
+.c-campaignManager_slat_stats {
+  flex: 0 0 240px !important;
+}
+.c-campaignManager_slat_stat > div {
+  padding-right:18px !important;
+}
+
+/* Create Campaign */
+/*.add-btn { display: none !important; float: none !important; }*/
+
+
+/* Select Campaign Row Input */
+.c-campaignManager_slat_checkbox {
+  position: static !important;
+  opacity: 1 !important;
+  display: flex;
+  align-items: center;
+  padding-right:18px !important;
+}
+
+.beaker {
+  fill: rgb(230,230,230);
+}
+[data-type="A/B"] .beaker {
+  fill: rgb(120,120,120);
+}
+[data-type="A/B"]:hover .beaker {
+  animation: wacky 5s infinite linear;
+}
+@keyframes wacky {
+  0%  { fill: rgb(246, 5, 237)  }
+  20%  { fill: rgb(5, 246, 138)  }
+  40%  { fill: rgb(168, 43, 255)  }
+  60%  { fill: rgb(246, 215, 5)  }
+  80%  { fill: rgb(5, 246, 87)  }
+  100% { fill: rgb(246, 5, 237)  }
+}
+/*[data-type="A/B"]:hover .beaker-2 {
+  animation: wacky2 1s infinite linear;
+}
+@keyframes wacky2 {
+  0%  { fill: rgb(40, 125, 252)  }
+  20%  {  fill: rgb(5, 246, 87) }
+  40%  { fill: rgb(246, 215, 5)  }
+  60%  { fill: rgb(168, 43, 255)  }
+  80%  { fill: rgb(5, 246, 138)  }
+  100% { fill: rgb(246, 5, 237)  }
+}
+[data-type="A/B"]:hover .beaker-3 {
+  animation: wacky3 1s infinite linear;
+}
+@keyframes wacky3 {
+  0%  {  fill: rgb(5, 246, 138) }
+  20%  {  fill: rgb(246, 5, 237)  }
+  40%  { fill: rgb(40, 125, 252)  }
+  60%  { fill: rgb(5, 246, 87)  }
+  80%  { fill: rgb(246, 215, 5)  }
+  100% { fill: rgb(168, 43, 255) }
+}*/
+
+
+/*
+
 #campaigns-list > .draft {
   padding-top:10px !important;
   padding-bottom:10px !important;
@@ -431,7 +615,6 @@ body.discipline-ready .line.selfclear li.hover-item > a {
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: center;
-  /*align-items: stretch;*/
 }
 .nav-link.total-drafts > div > div {
   height:auto;
@@ -451,11 +634,11 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 }
 .nav-link.drafts-exist > div {
   color:#fff;
-}
+}*/
 
 
 /* A/B Testing */
-#campaigns-list li .status > p > span:first-child:before {
+/*#campaigns-list li .status > p > span:first-child:before {
   content:"\71";
   width:24px; height:24px; line-height:24px;
   text-align:center;
@@ -470,7 +653,6 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 
   font-family: "medbridge-chrome-extension";
   font-style: normal !important;
-  /*font-weight: normal !important;*/
   font-variant: normal !important;
   text-transform: none !important;
   speak: none;
@@ -482,15 +664,14 @@ body.discipline-ready .line.selfclear li.hover-item > a {
   content:"R";
   font-family:Roboto;
   font-weight:900;
-  /*font-weight:bold;*/
   font-size:15px;
   color:#6f7481;
   box-shadow:inset 0 0 0 3px #6f7481, 0 0 0 0px #6f7481;
   background:#fff;
-}
+}*/
 
 /* Loading Spinner */
-.campaigns-list  .dijitCheckBox:after {
+/*.campaigns-list  .dijitCheckBox:after {
   pointer-events: none;
   display:block;
   z-index:1000;
@@ -528,7 +709,6 @@ body.discipline-ready .line.selfclear li.hover-item > a {
   top: 0;
   bottom: 0;
   position: absolute !important;
-  /*overflow:hidden;*/
 }
 .campaigns-list  .dijitCheckBox:before {
   content:"";
@@ -567,7 +747,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 .campaigns-list .discipline-other .dijitCheckBox, .campaigns-list .discipline-other .dijitCheckBox:before { color: var(--other); }
 .campaigns-list .discipline-lmt   .dijitCheckBox, .campaigns-list .discipline-lmt   .dijitCheckBox:before { color: var(--lmt); }
 
-.campaigns-list li[class*="discipline"] .dijitCheckBox:not(.selectCheckBoxHover):not(.selectCheckBoxChecked):before { color:#fff; }
+.campaigns-list li[class*="discipline"] .dijitCheckBox:not(.selectCheckBoxHover):not(.selectCheckBoxChecked):before { color:#fff; }*/
 
 
 
@@ -579,7 +759,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 
 
 
-.campaigns-list li.discipline-pt  .dijitCheckBox        { background:var(--pt); }
+/*.campaigns-list li.discipline-pt  .dijitCheckBox        { background:var(--pt); }
 .campaigns-list li.discipline-at   .dijitCheckBox       { background:var(--at); }
 .campaigns-list li.discipline-ot    .dijitCheckBox      { background:var(--ot); }
 .campaigns-list li.discipline-slp    .dijitCheckBox     { background:var(--slp); }
@@ -592,10 +772,10 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 }
 .campaigns-list #campaigns-list .freddicon {
   margin:7px 0 auto 77px;
-}
+}*/
 
 /* Buttons */
-.clean-fields.chr-btn {
+/*.clean-fields.chr-btn {
   display:inline-block;
   padding:3px 8px;
   background:#5b5d6c;
@@ -608,7 +788,7 @@ body.discipline-ready .line.selfclear li.hover-item > a {
   cursor:pointer;
   border-radius:5px;
   color:#fff;
-}
+}*/
 
 
 /*li[class*="discipline-"] > div:first-child {
@@ -626,17 +806,15 @@ body.discipline-ready .line.selfclear li.hover-item > a {
 .discipline-undefined > div:first-child { border-left-color:#c2c2c2; }*/
 
 
-.campaigns-list .content > .header {
-  margin:24px 0;
-}
-.campaigns-list .slats>ul>li { padding:7px 15px !important; } /* row height */
+
+/*.campaigns-list .slats>ul>li { padding:7px 15px !important; }
 .campaigns-list #campaigns-list .status p { font-size:11px; line-height:15px; }
 .campaigns-list #campaigns-list .data h4 { font-size:15px; }
 .campaigns-list #campaigns-list .data p  { font-size:12px; }
 
 .campaigns-list #campaigns-list li.selfclear.relative:nth-child(odd) {
     background: rgb(250,250,250);
-}
+}*/
 
 
 /*
@@ -743,6 +921,35 @@ body.campaigns-list #content .line.\!margin-bottom--lv3.action-bar {
 }
 
 
+/************/
+/************/
+/************/
+/* Import History */
+/************/
+/************/
+/************/
+
+.page-lists-dashboard-imports .row-dim {
+ padding:8px 0;
+}
+.page-lists-dashboard-imports .row-dim > * {
+  opacity:.4;
+}
+.page-lists-dashboard-imports .row-dim p,
+.page-lists-dashboard-imports .row-dim h4 {
+  font-size:12px !important;
+  line-height:16px !important;
+}
+
+
+/************/
+/************/
+/************/
+
+.page-campaigns-wizard-variateconfirm  li[data-social-share],
+.page-campaigns-wizard-variateconfirm  li[data-social-share] + li {
+  opacity: .33;
+}
 /************/
 /************/
 /************/

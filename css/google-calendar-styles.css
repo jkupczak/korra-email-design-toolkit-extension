@@ -18,26 +18,50 @@
 
 /****/
 
+.mod-work        { background: #ffffff !important; }
 /* 7e6adf */
 .mod-build        { background: #5e75ed !important; }
 .mod-edits        { background: #73a6e3 !important; }
 .mod-testing      { background: #54cff0 !important; }
+.mod-qa           { background: #54aaf0 !important; }
 .mod-schedule     { background: #40dd7a !important; }
 
 /* */
 
-.mod-special      { background: #474747 !important; }
-  .mod-special span  { color:#fff !important; }
+.mod-special      { background: #cacaca !important; }
+  /*.mod-special span  { color:#fff !important; }*/
 
 .mod-reporting    { background: #f18657 !important; }
 .mod-planning     { background: #d8f75c !important; }
 .mod-list         { background: #fba7d7 !important; }
 
-.mod-reminder     { background: #ff4657 !important; animation: pulse 1s ease infinite;
-}
+.mod-reminder     { background: #ff4657 !important; animation: pulse 1s ease infinite; }
 
   @keyframes pulse {
     10%   { background:#ff4657; }
     50%  { background:#ff939c; }
     90% { background:#ff4657; }
   }
+
+
+.tg-gutter .mod-meeting.chip {
+  /*background: linear-gradient(0deg, #4d4d4d, #1a1a1a);
+  background-size: 400% 400%;
+
+  animation: meeting 6s ease infinite;*/
+
+  background: #424242;
+  box-shadow: -4px 0 0 0px rgba(50,50,50,.5), inset 0 0 0 2px rgba(0,0,0,0.35) !important;;
+
+  /*border-style: dotted !important;*/
+  /*border-width: 1px !important;*/
+  /*border-color: rgba(0,0,0,0.1) !important;*/
+  border:0 !important;
+}
+.tg-gutter .mod-meeting.chip span { color:#fff; }
+
+/*@keyframes meeting {
+    0%{background-position:50% 0%}
+    50%{background-position:50% 100%}
+    100%{background-position:50% 0%}
+}*/

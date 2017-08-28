@@ -113,6 +113,9 @@ function logChromeStorage() {
   chrome.storage.sync.get(function(result) {
     console.log(result)
   });
+  chrome.storage.local.get(function(result) {
+    console.log(result)
+  });
 }
 
 logChromeStorage();

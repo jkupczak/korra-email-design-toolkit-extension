@@ -1,0 +1,173 @@
+table.table.table-condensed.fix-width-table > tbody {
+  display: flex;
+  min-width: 100% !important;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: flex-start;
+  align-items: stretch;
+  padding-top:12px;
+}
+table.table.table-condensed.fix-width-table > tbody:after {
+  content: "";
+  flex: auto;
+  margin: 10px 5px;
+  padding: 10px;
+  border: 1px solid transparent;
+  display: block;
+}
+
+table.table.table-condensed.fix-width-table > thead {
+  display: block;
+}
+
+table.table.table-condensed.fix-width-table .awsui-icon.file-image-o {
+  display: none;
+}
+
+/**********************/
+/* Image and Filename */
+/**********************/
+table.table.table-condensed.fix-width-table > tbody > tr > td.truncate:nth-child(2) {
+  align-items: left !important;
+  display: flex;
+  height: auto;
+}
+table.table.table-condensed.fix-width-table > tbody > tr > td.truncate:nth-child(2) > div {
+  padding: 0 !important;
+  margin: 0 0 10px 0 !important;
+  width:178px !important;
+  min-width:178px !important;
+  max-width:178px !important;
+  height:128px !important;
+  min-height:128px !important;
+  max-height:128px !important;
+}
+
+table.table.table-condensed.fix-width-table > tbody > tr > td.truncate:nth-child(2) > div > img {
+  height:128px !important;
+  min-height:128px !important;
+  max-height:128px !important;
+  display: block !important;
+}
+
+table.table.table-condensed.fix-width-table > tbody > tr > td.truncate:nth-child(2) {
+  padding:0;
+  display: flex;
+  flex-direction: column;
+}
+table.table.table-condensed.fix-width-table > tbody > tr > td.truncate:nth-child(2) a.list-view-item-name {
+  padding:10px 0 0 0;
+  font-size:12px;
+  white-space: normal !important;
+}
+
+/****************/
+/*     Date     */
+/****************/
+table.table.table-condensed.fix-width-table > tbody > tr > td:nth-child(3) {
+  padding-left:0 !important;
+  padding-bottom:0 !important;
+  padding-right:0 !important;
+}
+/****************/
+/*     Filesize     */
+/****************/
+table.table.table-condensed.fix-width-table > tbody > tr > td:nth-child(4) {
+  padding-right:0 !important;
+  padding-bottom:0 !important;
+}
+
+/**********/
+/* Select */
+/**********/
+table.table.table-condensed.fix-width-table > tbody > tr > td:nth-child(1) {
+  position: absolute;
+  display: block;
+  top:-7px;
+  left:-7px;
+  margin:0;
+  padding:4px;
+  background: rgb(240,240,240);
+  border:1px solid rgb(220,220,220);
+  border-radius: 4px;
+  z-index:0;
+}
+    table.table.table-condensed.fix-width-table > tbody > tr > td:nth-child(1) label {
+      height: auto;
+    }
+    table.table.table-condensed.fix-width-table > tbody > tr > td:nth-child(1) label div {
+      padding:0; margin:0;
+    }
+
+/****************/
+/* Storage Type */
+/****************/
+table.table.table-condensed.fix-width-table > tbody > tr > td:last-child {
+  display: none;
+}
+
+/**************/
+/* Containers */
+/**************/
+table.table.table-condensed.fix-width-table > tbody > tr {
+  display: block;
+  position: relative;
+  width: 200px;
+  max-width: 200px;
+  min-width:200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px 5px;
+
+  background: linear-gradient(to bottom, rgba(255,255,255,1) 0%,rgba(255,255,255,1) 150px,rgba(237,237,237,1) 150px,rgba(237,237,237,1) 100%);
+
+}
+
+table.table.table-condensed.fix-width-table > tbody > tr > td {
+  border:0;
+  font-size:10px !important;
+  height:auto;
+  z-index:0;
+}
+
+/*****************/
+/*    Folders    */
+/*****************/
+
+table.table.table-condensed.fix-width-table > tbody > tr[ng-repeat*="folder"] {
+    background: rgba(237,237,237,1);
+}
+/*table.table.table-condensed.fix-width-table > tbody > tr[ng-repeat*="folder"] td:nth-child(2):before,*/
+table.table.table-condensed.fix-width-table > tbody > tr[ng-repeat*="folder"] td:nth-child(3),
+table.table.table-condensed.fix-width-table > tbody > tr[ng-repeat*="folder"] td:nth-child(4),
+table.table.table-condensed.fix-width-table > tbody > tr[ng-repeat*="folder"] td:nth-child(5)
+ {
+    display: none;
+}
+
+table.table.table-condensed.fix-width-table > tbody > tr[ng-repeat*="folder"] td:nth-child(2):before {
+  content:"\e930" !important;
+  font-family: 'IcoMoon-Free' !important;
+
+  background: none;
+  width:100%;
+  margin-top:0; margin-right:0; margin-bottom:30px;
+  height:100px;
+  font-size:100px;
+  line-height:100px;
+  text-align:center;
+
+  color: rgba(0,0,0,0.5);
+}
+
+table.table.table-condensed.fix-width-table > tbody > tr[ng-repeat*="folder"] td:nth-child(2) a {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px !important;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+}

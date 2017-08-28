@@ -1,5 +1,21 @@
+#surface {
+  background: rgba(0,0,0,0.6);
+}
 
+/* Attachment Previews */
+.attachment-viewer-frame-preview-image {
+  width:100%;
+}
+.attachment-viewer-overlay {
+  z-index: -1 !important;
+}
+.attachment-viewer-overlay *,
+.attachment-viewer-prev-frame-btn,
+.attachment-viewer-next-frame-btn {
+  display: none;
+}
 
+/* */
 .calendar-content .card-label.mod-card-front {
   height:4px !important;
 }
@@ -39,3 +55,11 @@
   width:200px;
   height:200px;
 }*/
+
+#board .list-wrapper {
+  width:180px;
+}
+
+#board .js-add-list.list-wrapper {
+  display: none;
+}

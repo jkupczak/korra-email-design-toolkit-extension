@@ -1,6 +1,6 @@
+console.warn("[medbridge-home-extension] loaded /js/medbridge-blog.js");
 // Only run script if the referrer is empty.
 // Clicking from newsletters where target="_blank" is set will result in an empty referrer.
-console.info(">>> js/medbridge-blog.js loaded.");
 
 function getAuthorType() {
 
@@ -100,37 +100,32 @@ if ( getParameterByName("blog-check") ) {
 
 // if ( /\/blog\//gi.test(document.URL) ) {
 
-  console.log("We're on an article page, activate!");
+  console.log("We're on an article page, activate blog ID copy button.");
 
   var helpBar = document.createElement("div");
   helpBar.className = "jk-helpBar"
-  helpBar.innerHTML = "<input id='jk-shortlink' type='text'></input><input id='jk-blog-id' class='offscreen' type='text'></input><input id='jk-sub-url' class='offscreen' type='text'></input><input id='jk-sub-sale-url' class='offscreen' type='text'></input><div class='copy blog-id'>Copy Blog ID</div><div class='copy sub-url'>Copy -sub URL</div><div class='copy sale-url'>Copy -sub Sale URL</div>"
+
+  var copyIdBtn = document.createElement("div");
+  copyIdBtn.innerHTML = "Copy Blog ID";
+  createCopyBtn(copyIdBtn, document.querySelector("link[rel='shortlink']").href.replace(/^.+?p=/gi,""));
+  copyIdBtn.className = "copy blog-id"
+
+  // helpBar.innerHTML = "<div class='copy blog-id'>Copy Blog ID</div>"
+  helpBar.appendChild(copyIdBtn);
   document.body.appendChild(helpBar);
 
   // Set Links
-  var shortLink = document.querySelector("link[rel='shortlink']").href;
+  // var shortLink = document.querySelector("link[rel='shortlink']").href;
 
-  document.querySelector("#jk-shortlink").value = shortLink;
-  document.querySelector("#jk-blog-id").value = shortLink.replace(/^.+?p=/gi,"");
-  document.querySelector("#jk-sub-url").value = shortLink + "&utm_content=mod" + getModeNumber() + "-conted-" + getAuthorType() + "&sub=yes";
-  document.querySelector("#jk-sub-sale-url").value = shortLink + "&utm_content=mod" + getModeNumber() + "-conted-" + getAuthorType() + "&sub=yes&medium=email";
+  // document.querySelector("#jk-blog-id").value = shortLink.replace(/^.+?p=/gi,"");
 
   //
-  document.querySelector(".jk-helpBar .copy.blog-id").addEventListener("click", copyBlogId, false);
-  document.querySelector(".jk-helpBar .copy.sub-url").addEventListener("click", copySubUrl, false);
-  document.querySelector(".jk-helpBar .copy.sale-url").addEventListener("click", copySubSaleUrl, false);
+  // document.querySelector(".jk-helpBar .copy.blog-id").addEventListener("click", copyBlogId, false);
 
-  function copyBlogId() {
-    copyToClipboard(document.querySelector(".jk-helpBar #jk-blog-id"));
-  }
+  // function copyBlogId() {
+  //   copyToClipboard(document.querySelector(".jk-helpBar #jk-blog-id"));
+  // }
 
-  function copySubUrl() {
-    copyToClipboard(document.querySelector(".jk-helpBar #jk-sub-url"));
-  }
-
-  function copySubSaleUrl() {
-    copyToClipboard(document.querySelector(".jk-helpBar #jk-sub-sale-url"));
-  }
 
 // } else {
 //   console.log("This isn't an article page!");

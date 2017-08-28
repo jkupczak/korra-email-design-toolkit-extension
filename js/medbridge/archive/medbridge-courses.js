@@ -78,7 +78,7 @@ options = {
 function exportSingleModule() {
 
   // GA
-  if ( document.querySelector("#ga-status").checked && selectWhitelabel.value === "www" ) {
+  if ( document.querySelector("#tracking-mod-number").value !== "" && selectWhitelabel.value === "www" ) {
     var gaTracking = "utm_content=mod" + document.querySelector("#tracking-mod-number").value + "-conted-course";
   } else {
     var gaTracking = "";
@@ -123,7 +123,7 @@ function exportSingleModule() {
   }
 
   // Course Link
-  if ( document.querySelector("#tracking-status").checked && document.querySelector("#set-tracking-url").value !== "" ) {
+  if ( document.querySelector("#set-tracking-url").value !== "" ) {
     gaTracking = "&" + gaTracking;
     var courseLink = "https://" + selectWhitelabel.value + ".medbridgeeducation.com/" + document.querySelector("#set-tracking-url").value + "/?after_affiliate_url=" + courseShortLink + gaTracking;
   } else {
@@ -180,23 +180,28 @@ if ( localStorage.getItem("setModuleNumber") || localStorage.getItem("setModuleN
 
 var settingsBar = document.createElement("div");
     settingsBar.className = "course-settings";
-    settingsBar.innerHTML = '<div class="settings-group settings-audience"><div class="settings-label">Audience</div><div class="settings-controls"><select id="select-audience"><option value="non-subscribers">Non-Subscribers</option><option value="subscribers">Subscribers</option></select></div></div><div class="settings-group settings-whitelabel"><div class="settings-label">Whitelabeling</div><div class="settings-controls"><select id="select-whitelabel"><option value="www">MedBridge</option><option value="foxrehab">Fox</option><option value="drayerpt">Drayer</option><option value="healthsouth">HealthSouth</option></select></div></div><div class="settings-group settings-layout"><div class="settings-label">Layout</div><div class="settings-controls"><select id="select-layout"><option value="col">Columns</option><option value="row">Rows</option></select></div></div><div class="settings-group settings-tracking"><div class="settings-label">Marketing URL</div><div class="settings-controls"><input id="tracking-status" type="checkbox" checked><input id="set-tracking-url" type="text" value="' + todaysLink + '"></div></div><div class="settings-group settings-module-number"><div class="settings-label">Module #</div><div class="settings-controls"><input id="ga-status" type="checkbox" checked><input id="tracking-mod-number" type="text" value="' + defaultModuleNumber + '" placeholder="mod#"></div></div>'
+    settingsBar.innerHTML = '<div class="settings-group settings-whitelabel"><div class="settings-label">Whitelabeling</div><div class="settings-controls"><select id="select-whitelabel"><option value="www">MedBridge</option><option value="foxrehab">Fox</option><option value="drayerpt">Drayer</option><option value="healthsouth">HealthSouth</option></select></div></div><div class="settings-group settings-audience"><div class="settings-label">Audience</div><div class="settings-controls"><select id="select-audience"><option value="non-subscribers">Non-Subscribers</option><option value="subscribers">Subscribers</option></select></div></div><div class="settings-group settings-layout"><div class="settings-label">Layout</div><div class="settings-controls"><select id="select-layout"><option value="col">Columns</option><option value="row">Rows</option></select></div></div><div class="settings-group settings-tracking"><div class="settings-label">Marketing URL</div><div class="settings-controls"><input id="set-tracking-url" type="text" value="' + todaysLink + '"></div></div><div class="settings-group settings-module-number"><div class="settings-label">Module #</div><div class="settings-controls"><input id="tracking-mod-number" type="text" value="' + defaultModuleNumber + '"></div></div>'
 
+// If we're on a course details page, make an export button and append it to the settings bar we just created.
 if ( courseDetail ) {
   settingsBar.innerHTML = settingsBar.innerHTML + '<div class="settings-group export-btn"><div style="width:120px; padding:12px 0;" class="btn btn-primary btn-block smtm">Export Course</div></div>';
+  // Export Course btn
+  var exportCoursebtn = document.querySelector(".export-btn");
+  exportCoursebtn.addEventListener("click", exportSingleModule, false);
 }
 
 document.body.appendChild(settingsBar);
 
-// Export Course btn
-var exportCoursebtn = document.querySelector(".export-btn");
-exportCoursebtn.addEventListener("click", exportSingleModule, false);
 
 
+
+
+
+//////////////////////////////////////
 ////////////////////
+////////////////////   SAVE SETTINGS
 ////////////////////
-////////////////////
-////////////////////
+//////////////////////////////////////
 
 // Save settings to sessionStorage
 document.querySelector("#set-tracking-url").addEventListener("blur", saveURLtoSession, false);
@@ -245,6 +250,18 @@ function saveModuletoStorage() {
 
 ///// Layout
 var selectLayout = document.getElementById('select-layout');
+// selectLayout.addEventListener("blur", saveLayoutToStorage, false);
+// function saveLayoutToStorage() {
+//   if ( !this.value ) {
+//     var savedVal = "";
+//   } else {
+//     var savedVal = this.value;
+//   }
+//   // sessionStorage.setItem("setTrackingUrl", savedVal);
+//   localStorage.setItem("setLayout", savedVal);
+// }
+
+
 
 
 
@@ -411,10 +428,14 @@ if ( !courseDetail ) {
         courseParent.dataset.title = courseParent.querySelector(".course-listing__title").textContent;
         courseParent.dataset.img = courseParent.querySelector(".course-listing__media a img").src;
 
-        var ngHref = courseParent.dataset.link = courseParent.querySelector(".course-listing__media a").getAttribute("ng-href");
-        if ( ngHref ) {
-          ngHref.slice(1);
-        }
+        courseParent.dataset.link = courseParent.querySelector(".course-listing__media a").getAttribute("ng-href").replace(/^\//,"");
+
+        // var ngHref = courseParent.dataset.link = courseParent.querySelector(".course-listing__media a").getAttribute("ng-href");
+        // console.error(ngHref);
+        // console.error(courseParent.dataset.link);
+        // if ( ngHref ) {
+        //   ngHref.slice(1);
+        // }
 
 
         // Author may be more than one and exist in two separate spans. Grab all of them and then loop through them.

@@ -1,4 +1,4 @@
-console.warn("js/libs/arrive.js loaded.");
+console.warn("[sonic-toolkit-extension] loaded /js/libs/arrive.js");
 
 /*
  * arrive.js

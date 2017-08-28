@@ -576,13 +576,19 @@ function beforeResize() {
 function percentagePlusMinus() {
 
   var currentWidth = img.clientWidth;
+  var newZoomedSize;
 
   beforeResize();
 
   if (this.classList.contains("minus")) {
     img.width = currentWidth * 0.8;
   } else {
-    img.width = currentWidth / 0.8;
+    newZoomedSize = Math.ceil(currentWidth / 0.8);
+    if ( newZoomedSize === 0 ) {
+      newZoomedSize = 10;
+    }
+    console.log(newZoomedSize);
+    img.width = newZoomedSize;
   }
 
   imgWasResized();

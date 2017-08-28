@@ -1,6 +1,6 @@
 // console.error( "newsletter-async.js - " + document.documentElement.clientWidth );
 
-console.warn(">>> newsletter-async.js loaded");
+console.warn("[sonic-toolkit-extension] loaded /js/newsletter-async.js");
 
 //
 //
@@ -18,11 +18,14 @@ console.warn(">>> newsletter-async.js loaded");
 var dbx;
 
 chrome.storage.sync.get("dpToken", function(items) {
-  if (!chrome.runtime.error) {
+  if (!chrome.runtime.error && items.dpToken) {
     // console.log(items);
     dbx = new Dropbox({ accessToken: items.dpToken });
-    console.info("Dropbox access token retrieved.")
+    console.groupCollapsed("Dropbox access token retrieved.");
+    console.log(items.dpToken);
+    console.groupEnd();
   } else {
-    console.error("Could not retrieve Dropbox access token from chrome.storage.sync.")
+    console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dpToken is " + items.dpToken);
+    console.info("Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
   }
 });

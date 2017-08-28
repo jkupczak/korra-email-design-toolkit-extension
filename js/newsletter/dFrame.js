@@ -1,3 +1,6 @@
+console.warn("[sonic-toolkit-extension] loaded /js/newsletter/dFrame.js");
+/////////////////////////////////////////////////////////////////////////
+
 
 ////////
 //////// Remember scroll position after reloads

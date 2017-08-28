@@ -1,3 +1,4 @@
+console.warn("[sonic-toolkit-extension] loaded /js/libs/findAndReplaceDOMText.js");
 /**
  *
  * https://github.com/padolsey/findAndReplaceDOMText

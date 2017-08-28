@@ -130,7 +130,8 @@
 }
 
 .tingle-modal--overflow {
-  padding-top: 5vh;
+  overflow-y: scroll;
+  padding-top: 8vh;
 }
 
 /* btn

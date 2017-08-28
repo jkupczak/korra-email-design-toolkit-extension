@@ -1,3 +1,22 @@
+console.warn("[sonic-toolkit-extension] loaded /js/newsletter.js");
+///////////////////////////////////////////////////////////////////
+
+//
+// MAILCHIMP!!!!
+// Check subject line against the preheader. Look for repeated sentences/phrases.
+// CHECK FOR MAILCHIMP CODES FOR FORWARD AND UNSUB!!!
+// ALERT IF ITS MC OR GR CODES
+//
+//
+
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+
+// ALERT
+//  - THIS EMAIL IS X DAYS OLD!
+//  - LINKS WERE NOT CHECKED AT ALL
+//  - TEXT WAS NOT CHECKED AT ALL
 
 ////////////////////////////////
 ////////////////////////////////
@@ -5,9 +24,70 @@
 ////////////////////////////////
 ////////////////////////////////
 ////////////////////////////////
+
 // This: https://www.medbridgeeducation.com/h/pivot-physical-therapy-case-study/#request-a-demo
 // Versus THis: https://www.medbridgeeducation.com/h/pivot-physical-therapy-case-study#request-a-demo
 // Doesn't work without the / before the #. Make a link validator based on this nonsense.
+// EXCEPT NOW IT DOES??? 07/11/17
+
+///--------
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
+// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
+// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//
+// Extract the blog check functions so that they can be used on mailchimp.com.
+// Disallow saving, exiting, and navigating away until I acknowledge that the article is not unprotected yet.
+// Make this acknowledgement independant of MailChimp's DOM so that if the site changes, my script doesn't break.
+// Use Tingle to show a popup with a confirmation button.
+// Save to chrome.storage (so that it persists across tabs) the article status.
+// When I try to schedule or send the email, check chrome.storage and stop me until the article has been unprotected.
+// And for that matter, make sure we're using chrome.storage instead of sessionstorage in newsletter.js.
+// Deal with cleaning up storage by keeping the data in there until an associated mailchimp campaign ID is loaded, and then scheduled or sent.
+//
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
+// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
+// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+///--------
+
+// MULTI emails, do not say $200, $300, $250, $95, or $145 or any $ price at all because SLP is different now. Throw an error.
+
+///--------
+
+// Detect if a link is hidden/offscreen and create a module or alert to say that/how many.
+
+///--------
+
+// A/B Testing View
+// Show versions A and B side-by-side with a click of a button.
+// Sync scrolling and dedicate 50% of the window to each version.
+// Drag to resize both iframes for mobile view.
+
+///--------
+
+// When desktop frame gets to mobile size (<480), hide vertical scrollbar.
+
+///--------
+
+// Count citations like <sup>1</sup> in the HTML, verify that they appear in the right order. Throw an error if 2 comes before 1, etc.
+
+///--------
+
+// Measure all images against their natural non-resized dimensions.
+
+//// - Throw an error if they are wildly off (images being squished out of proportion)
+//// - Show a warning if we're using an image at exactly the natural dims, because its best practice to delivery hi-res images
+
+///--------
+
+// Switch to a =1001 setup for determining visible layout. Handle it all at once as early as possible to have a smooth page load
+// See codepen: https://codepen.io/pen/?editors=0010
+
 ////////////////////////////////
 ////////////////////////////////
 ////////////////////////////////
@@ -17,28 +97,6 @@
 
 
 // console.error( "newsletter.js - " + document.documentElement.clientWidth );
-
-console.warn(">>> newsletter.js loaded");
-
-function KeyPress(e) {
-// http://keycode.info/
-// http://jsfiddle.net/29sVC/
-// Consider using https://github.com/madrobby/keymaster
-
-  // console.log("begin function");
-  // console.log(evtobj.keyCode);
-
-  var evtobj = window.event? event : e
-
-  // Watch for Chrome zoom shortcuts, cmd/ctrl plus +/-/0
-  if ( (e.ctrlKey || e.metaKey) && (evtobj.keyCode == 48 || evtobj.keyCode == 187 || evtobj.keyCode == 189) ) {
-    setTimeout(function(){ checkZoomLevel(); }, 100);
-  }
-
-}
-
-window.onkeydown = KeyPress;
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -86,7 +144,7 @@ window.onkeydown = KeyPress;
 //    ■ - Google has forsaken me! Try replacing Chrome spell check with http://www.javascriptspellcheck.com/JavaScript_SpellCheck_Hello_World
 //
 //  ## Mobile View ---
-//    ■ - Add multiple width options for the mFrame. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
+//    ■ - Add multiple width options for the mFrameContents. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
 //    ✓ - Remove "Portrait" and "Landscape", replace with just the width names (and/or device names)
 //      - http://viewportsizes.com/?filter=iphone
 //    ■ - 320px | 360px | 480px | More
@@ -501,7 +559,7 @@ if ( getParameterByName("presentation") === "1" ) {
     document.getElementById("debug-unique-style-block").setAttribute("href", chrome.extension.getURL('css/mFrame.css'))
     cleanedMobileHtml += document.documentElement.outerHTML;
 
-  // Remove all <script> tags. HTML emails cannot have them. We don't design them in there, but if you're viewing this page with Middleman then there will be some injected <script> tags that can cause us issues. These <script> tags allow Middleman to reload the page when changes to the file are made. We don't need them in our dFrame or mFrame potentially mucking things up.
+  // Remove all <script> tags. HTML emails cannot have them. We don't design them in there, but if you're viewing this page with Middleman then there will be some injected <script> tags that can cause us issues. These <script> tags allow Middleman to reload the page when changes to the file are made. We don't need them in our dFrame or mFrameContents potentially mucking things up.
   // Also removes <object> tags. Which is also injected by Middleman (and MM sometimes tries to remove it itself and fails)
   // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
 
@@ -708,7 +766,11 @@ if ( getParameterByName("presentation") === "1" ) {
   }
   // Create a new <body> tag.
   var newBody = document.createElement("body");
-  insertAfter(newBody, document.head)
+  insertAfter(newBody, document.head);
+
+
+  // Create a new injected script.
+  injectScript( chrome.extension.getURL('/js/newsletter/zoom.js'), 'body');
 
 
 
@@ -738,15 +800,17 @@ if ( getParameterByName("presentation") === "1" ) {
 /////////////
 
   // Apply our cleaned and reassembled original code to an iFrame as a backup to save it.
-  var domCopy = document.createElement("iframe");
-  domCopy.className = "og-dom";
-  document.body.appendChild(domCopy)
+  // Commented out for now to save on loading time and console clutter
 
-  domCopy.contentWindow.document.open();
-  domCopy.contentWindow.document.write(cleanedOriginalHtml);
-  domCopy.contentWindow.document.close();
-
-  var domCopy = domCopy.contentWindow.document;
+      // var domCopy = document.createElement("iframe");
+      // domCopy.className = "og-dom";
+      // document.body.appendChild(domCopy)
+      //
+      // domCopy.contentWindow.document.open();
+      // domCopy.contentWindow.document.write(cleanedOriginalHtml);
+      // domCopy.contentWindow.document.close();
+      //
+      // var domCopy = domCopy.contentWindow.document;
 
 
 //////////
@@ -828,17 +892,18 @@ if ( getParameterByName("presentation") === "1" ) {
     //////////////
 
     // Add allFrames.js
-        var dFrameAllFramesScript = document.createElement("script");
-        dFrameAllFramesScript.src = chrome.extension.getURL('js/allFrames.js');
-        insertAfter(dFrameAllFramesScript, dFrameContents.body);
+    var dFrameAllFramesScript = document.createElement("script");
+    dFrameAllFramesScript.src = chrome.extension.getURL('js/newsletter/allFrames.js');
+    insertAfter(dFrameAllFramesScript, dFrameContents.body);
 
     // Add dFrame.js
     var dFrameFrameScript = document.createElement("script");
-    dFrameFrameScript.src = chrome.extension.getURL('js/dFrame.js');
+    dFrameFrameScript.src = chrome.extension.getURL('js/newsletter/dFrame.js');
     insertAfter(dFrameFrameScript, dFrameContents.body);
 
   /////////
   /////////
+  ///////// MOBILE
   /////////
   /////////
 
@@ -860,7 +925,7 @@ if ( getParameterByName("presentation") === "1" ) {
     mobileIframe.contentWindow.document.close();
 
     // Apply the mobile iframes document object to a variable
-    var mFrame = mobileIframe.contentDocument;
+    var mFrameContents = mobileIframe.contentDocument;
 
     ////////
     ////////
@@ -888,20 +953,20 @@ if ( getParameterByName("presentation") === "1" ) {
     // - Remove scrollbar from mobile view while still allowing scrolling
     // - Prevent flash of contenteditable cursor when spell check is activated.
     //
-    var mStyleElement = mFrame.createElement("style");
+    var mStyleElement = mFrameContents.createElement("style");
         mStyleElement.className = "debug";
-    mStyleElement.appendChild(mFrame.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } /* .spellcheck body { color:transparent; } */") );
-    mFrame.getElementsByTagName("head")[0].appendChild(mStyleElement);
+    mStyleElement.appendChild(mFrameContents.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } /* .spellcheck body { color:transparent; } */") );
+    mFrameContents.getElementsByTagName("head")[0].appendChild(mStyleElement);
 
     // Add allFrames.js
-        // var mFrameAllFramesScript = document.createElement("script");
-        // mFrameAllFramesScript.src = chrome.extension.getURL('js/allFrames.js');
-        // insertAfter(mFrameAllFramesScript, mFrame.body);
+    var mFrameAllFramesScript = document.createElement("script");
+    mFrameAllFramesScript.src = chrome.extension.getURL('js/newsletter/allFrames.js');
+    insertAfter(mFrameAllFramesScript, mFrameContents.body);
 
     // Add mFrame.js
     var mFrameScript = document.createElement("script");
-    mFrameScript.src = chrome.extension.getURL('js/mFrame.js');
-    insertAfter(mFrameScript, mFrame.body);
+    mFrameScript.src = chrome.extension.getURL('js/newsletter/mFrame.js');
+    insertAfter(mFrameScript, mFrameContents.body);
 
 
     // Add allFrames.css
@@ -910,7 +975,7 @@ if ( getParameterByName("presentation") === "1" ) {
     // allFramesStyles.rel = "stylesheet";
     // allFramesStyles.type = "text/css";
     // dFrameContents.head.appendChild(allFramesStyles);
-    // mFrame.head.appendChild(allFramesStyles.cloneNode(true));
+    // mFrameContents.head.appendChild(allFramesStyles.cloneNode(true));
 
 
     // Allow touch events to mimic mobile behavior
@@ -1132,7 +1197,7 @@ console.groupEnd();
 
 
     dFrameContents.body.classList.add("disc-" + emailDisc);
-    mFrame.body.classList.add("disc-" + emailDisc);
+    mFrameContents.body.classList.add("disc-" + emailDisc);
 
 
 
@@ -1145,37 +1210,80 @@ console.groupEnd();
 //////////////////////////////////////////////////////
 
 
-//////////
+
+/////////////////////////////
 /////
-///// Show dFrame width on window resize
+/////   KeyPress Capture
 /////
-//////////
+/////////////////////////////
+
+// Watch for keypresses and react accordingly.
+// Load in ASAP so that we can catch everything as the page is loading.
+window.onkeydown = KeyPress;
+
+function KeyPress(e) {
+
+  // Get the event keycodes
+  var evtobj = window.event? event : e
+
+  // Zoom Detection
+  // Watch for Chrome zoom shortcuts, cmd/ctrl plus +/-/0
+  // Block their function and let zoom.js handle the rest.
+  if ( (e.ctrlKey || e.metaKey) && (evtobj.keyCode == 48 || evtobj.keyCode == 187 || evtobj.keyCode == 189) ) {
+    e.preventDefault();
+    checkZoomLevel();
+  }
+}
+
+
+
+/////////////////////////////
+/////
+/////   Show dFrame width on window resize
+/////
+/////////////////////////////
+
 //// - Update using element watcher when it's available in Chrome: https://jsfiddle.net/atotic/mr47wt1a/
+
+var dFrameSizeStatus = document.createElement("div");
+dFrameSizeStatus.className = "iframe-size-status";
 
 var dFrameWidthStatus = document.createElement("div");
 dFrameWidthStatus.id = "desktop-width-status";
-dFrameWidthStatus.className = "iframe-width-status";
-desktopIframeWrapper.appendChild(dFrameWidthStatus);
+dFrameWidthStatus.className = "iframe-width-status iframe-status-container";
+dFrameSizeStatus.appendChild(dFrameWidthStatus);
+
+var dFrameZoomStatus = document.createElement("div");
+dFrameZoomStatus.id = "desktop-zoom-status";
+dFrameZoomStatus.className = "iframe-zoom-status iframe-status-container";
+dFrameZoomStatus.innerHTML = "100%";
+dFrameSizeStatus.appendChild(dFrameZoomStatus);
+
+desktopIframeWrapper.appendChild(dFrameSizeStatus);
+
 var fadeWidthStatus;
 
 window.addEventListener('resize', showdFrameWidthStatus, true);
 
 function showdFrameWidthStatus() {
   dFrameWidthStatus.classList.add("show");
-  dFrameWidthStatus.innerHTML = desktopIframe.clientWidth;
+  dFrameWidthStatus.innerHTML = (desktopIframe.clientWidth-15) + "px";
 
   clearTimeout(fadeWidthStatus); //https://www.w3schools.com/jsref/met_win_cleartimeout.asp
 
   fadeWidthStatus = setTimeout(function() {
     dFrameWidthStatus.classList.remove("show");
-  }, 2000);
+  }, 4000);
 }
 
 // https://stackoverflow.com/a/39312522/556079
 
 
-
-
+/////////////////////////////
+/////
+/////   Change mobile viewport width
+/////
+/////////////////////////////
 
 function changeMobileSize(width) {
 
@@ -1195,7 +1303,12 @@ function changeMobileSize(width) {
         var selectedSize = event.target.dataset.mobileWidth;
 
         var widthToSet = selectedSize + "px";
-        history.replaceState(null,null, updateQueryString("mobilewidth", selectedSize) );
+
+        if ( selectedSize !== "320" ) {
+          history.replaceState(null,null, updateQueryString("mobilewidth", selectedSize) );
+        } else {
+          history.replaceState(null,null, updateQueryString("mobilewidth", null) );
+        }
 
         document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
         clickedSize.classList.add("active");
@@ -1265,6 +1378,31 @@ if ( typeof getParameterByName("mobilewidth") === 'string' || getParameterByName
   console.log("mobile width change");
 }
 
+if ( getParameterByName("layout") ) {
+  var layout = getParameterByName("layout").match(/.{1}/g);
+
+
+  if ( layout[0] === "0" ) {
+    infoBar.classList.add("off");
+  }
+
+  if ( layout[1] === "0" ) {
+    document.body.classList.add("presentation-mode");
+  }
+
+  if ( layout[2] === "0" ) {
+    mobileIframeWrapper.classList.add("off");
+  }
+  console.error(layout);
+}
+
+
+
+// if ( getParameterByName("layout") === "0" ) {
+//   toggleImages();
+//   console.log("images off");
+// }
+
 
 
 ////////////////////////////////////////////////////////////
@@ -1279,7 +1417,7 @@ if ( typeof getParameterByName("mobilewidth") === 'string' || getParameterByName
 //     |_______||__| |__|  |___|  |_______||_______|  |___|
 //
 //
-//      Now that dFrame and mFrame have been created we'll build the rest of the layout.
+//      Now that dFrame and mFrameContents have been created we'll build the rest of the layout.
 //
 //
 ///////////////////////////////////////////////////////////
@@ -1291,9 +1429,9 @@ if ( typeof getParameterByName("mobilewidth") === 'string' || getParameterByName
 ///////////////////////////////////////////////////////////
 
 
-var headerBar = document.createElement("div");
-headerBar.className = "header-bar";
-mainContainer.appendChild(headerBar);
+// var headerBar = document.createElement("div");
+// headerBar.className = "header-bar";
+// mainContainer.appendChild(headerBar);
 
 /////
 
@@ -1382,10 +1520,52 @@ mainContainer.appendChild(headerBar);
         iconCode = '<img class="disc-img" src="' + chrome.extension.getURL('favicons/' + emailDisc + iconSuffix + '.png') + '">'
       }
       // Wrap it up in a div
-      headerIcon = "<div class='disc-img svg-'" + emailDisc + "'>" + iconCode + "</div>";
+      headerIcon = "<div class='disc-img svg-" + emailDisc + "'>" + iconCode + "</div>";
     } else {
       // No discipline found in emailDisc
       headerIcon = "";
+    }
+
+
+    /////////
+    /////////
+    /////////
+    var documentDesc = document.createElement("div");
+    documentDesc.className = "document-desc";
+
+    var documentIcon = document.createElement("div");
+    documentIcon.innerHTML = headerIcon;
+    documentIcon.className = "document-icon";
+    documentDesc.appendChild(documentIcon);
+
+
+    //
+
+
+    pageTitle.innerHTML += headerIcon;
+
+
+    // Organization Logos
+    if ( outsideOrg ) {
+      console.error("!");
+      var orgLogo;
+      // var orgLogo = document.createElement("img");
+      //     orgLogo.className = "organization-logo";
+
+      if ( emailSubType === "fox" ) {
+        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/fox.png') + "' class='organization-logo'>"
+        console.error(orgLogo);
+      }
+      if ( emailSubType === "dr" ) {
+        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/drayer.png') + "' class='organization-logo'>"
+        console.error(orgLogo);
+      }
+      if ( emailSubType === "hs" ) {
+        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/hs.png') + "' class='organization-logo'>"
+        console.error(orgLogo);
+      }
+
+      pageTitle.innerHTML += orgLogo;
     }
 
 
@@ -1406,32 +1586,50 @@ mainContainer.appendChild(headerBar);
 
       headerAudienceText += '</div>';
     }
+    pageTitle.innerHTML += headerAudienceText;
+
+    //
+    pageTitle.innerHTML += abTitleIcon;
+
+    //
+    pageTitle.innerHTML += '<div class="email-title"><div class="title-large"><span>' + toTitleCaseRestricted(emailTitle) + '</span></div>' + showEmailDate + '</div>'
 
     // Inject content into the title bar
-    pageTitle.innerHTML = headerIcon + headerAudienceText + abTitleIcon + '<div class="email-title"><div class="title-large"><span>' + toTitleCaseRestricted(emailTitle) + '</span></div>' + showEmailDate + '</div>';
-    headerBar.appendChild(pageTitle);
+    // pageTitle.innerHTML = headerIcon + headerAudienceText + abTitleIcon + '<div class="email-title"><div class="title-large"><span>' + toTitleCaseRestricted(emailTitle) + '</span></div>' + showEmailDate + '</div>';
+
+    //
+    // headerBar.appendChild(pageTitle);
+
+    /////
+    // Append document description to the the info-bar
+    var documentTitle = document.createElement("div");
+    documentTitle.innerHTML = headerAudienceText;
+    documentTitle.className = "document-title";
+    documentDesc.appendChild(documentTitle);
+
+    infoBar.prepend(documentDesc);
 
 /////
 
-var mainMenu = document.createElement("div");
-mainMenu.className = "main-menu";
-
-if ( onDropbox ) {
-  var navLocalView = '<div id="nav-local-view" class="nav-local-view"><span>Local View</span></div>';
-} else {
-  var navLocalView = '';
-}
-
-mainMenu.innerHTML = '<div id="nav-plain-text" class="nav-item nav-plain-text"><span class="icon"></span><span>Create Plain Text</span></div><div id="nav-share" class="nav-item nav-share"><span class="icon"></span><span>Share</span></div>' + navLocalView + '<div class="nav-item nav-dropbox"><span class="icon"></span><a href="https://www.dropbox.com/work/' + localParentFolder + '">Open in Dropbox</a></div><div class="nav-item nav-settings"><span class="icon"></span><span>Settings</span></div>'
-headerBar.appendChild(mainMenu);
-
-// Attach event listenrs
-document.querySelector("#nav-plain-text").addEventListener('click', plainText, false);
-document.querySelector("#nav-share").addEventListener('click', getDbShareLink, false);
-
-if ( onDropbox ) {
-  document.querySelector("#nav-local-view").addEventListener('click', swapUrl, false);
-}
+// var mainMenu = document.createElement("div");
+// mainMenu.className = "main-menu";
+//
+// if ( onDropbox ) {
+//   var navLocalView = '<div id="nav-local-view" class="nav-local-view"><span>Local View</span></div>';
+// } else {
+//   var navLocalView = '';
+// }
+//
+// mainMenu.innerHTML = '<div id="nav-plain-text" class="nav-item nav-plain-text"><span class="icon"></span><span>Create Plain Text</span></div><div id="nav-share" class="nav-item nav-share"><span class="icon"></span><span>Share</span></div>' + navLocalView + '<div class="nav-item nav-dropbox"><span class="icon"></span><a href="https://www.dropbox.com/work/' + localParentFolder + '">Open in Dropbox</a></div>'
+// headerBar.appendChild(mainMenu);
+//
+// // Attach event listenrs
+// document.querySelector("#nav-plain-text").addEventListener('click', plainText, false);
+// document.querySelector("#nav-share").addEventListener('click', getDbShareLink, false);
+//
+// if ( onDropbox ) {
+//   document.querySelector("#nav-local-view").addEventListener('click', swapUrl, false);
+// }
 
 
 // document.querySelector("#nav-dropbox").addEventListener('click', getDbShareLink, false);
@@ -1441,6 +1639,19 @@ if ( onDropbox ) {
 //   console.log( event.target );
 //   console.log( event.currentTarget );
 // }
+
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+////                                              ////
+////  Create Dropbox Shareable URL INPUT          ////
+////                                              ////
+//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+
+var dropboxUrlInput = document.createElement("input");
+dropboxUrlInput.id = "dropbox-shareable-link-text";
+dropboxUrlInput.className = "temporary-copy-holder";
+document.body.appendChild(dropboxUrlInput);
 
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
@@ -1470,7 +1681,30 @@ qaWrapper.appendChild(controlBar);
   var preflightTotal = preflightStatus.querySelector(".preflight-total");
 
   function showPreflight() {
-    // ...
+
+    console.log("showPreflight() function started");
+
+    // instanciate new modal
+    preflightWindow = new tingle.modal({
+      footer: false,
+      stickyFooter: false,
+      cssClass: ['fill'],
+
+      onOpen: function() {
+        console.log('modal open');
+      },
+      onClose: function() {
+        console.log('modal closed');
+      }
+    });
+
+    var preflightHTML = "<div id='preflight-window'><div class='preflight-header'>Preflight Check</div><div class='main-checks'><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div></div>"
+    preflightWindow.setContent(preflightHTML);
+
+    preflightWindow.open();
+
+    console.log("showPreflight() function ended");
+
   }
 
   // Orbs Top
@@ -1635,14 +1869,16 @@ function paneToggle(infobar, mobile) {
 ////
 /////////
 
-// var shareOrb = document.createElement("div");
-// shareOrb.className = "share-orb orb glyph";
-// if ( onLocalServer ) { shareOrb.classList.add("off") };
-// shareOrb.addEventListener("click", getDbShareLink, false);
-// orbsTop.appendChild(shareOrb);
+var shareOrb = document.createElement("div");
+shareOrb.className = "share-orb orb glyph";
+if ( onLocalServer ) { shareOrb.classList.add("off") };
+shareOrb.addEventListener("click", getDbShareLink, false);
+orbsTop.appendChild(shareOrb);
 
 
 function getDbShareLink() {
+
+  t0 = performance.now();
 
   console.groupCollapsed("Dropbox Share Function Initiated");
 
@@ -1656,10 +1892,10 @@ function getDbShareLink() {
 
     source.classList.add("loading");
 
-    if ( elExists(document.querySelector("#dropbox-link-text")) ) {
+    if ( dropboxUrlInput.value !== "" ) {
 
       source.classList.remove("loading");
-      copyToClipboard(document.querySelector("#dropbox-link-text"), "success");
+      copyToClipboard(dropboxUrlInput, "success", true);
       console.log("Shareable link found in the DOM. Copying to clipboard.")
 
     } else {
@@ -1785,12 +2021,25 @@ function processDbLink(shareableLink, action, source) {
 
     if ( action === "copy" ) {
 
-      var shareableLinkHolder = document.createElement("input");
-      shareableLinkHolder.id = "dropbox-link-text"
-      shareableLinkHolder.className = "hidden"
-      shareableLinkHolder.value = shareableLink;
-      document.body.appendChild(shareableLinkHolder);
-      copyToClipboard(document.querySelector("#dropbox-link-text"), "success");
+      // var shareableLinkHolder = document.createElement("input");
+      // shareableLinkHolder.id = "dropbox-link-text"
+      // shareableLinkHolder.className = "hidden"
+      // shareableLinkHolder.value = shareableLink;
+      // document.body.appendChild(shareableLinkHolder);
+
+      dropboxUrlInput.value = shareableLink;
+
+      var t1 = performance.now();
+
+      copyToClipboard(dropboxUrlInput, "success", true);
+
+      // var x = (t1 - t0) / 1000;
+      // var seconds = x % 60;
+
+      var seconds = Math.round(((t1 - t0)/1000)%60);
+
+      console.log("Call to DropBox took " + (t1 - t0) + " milliseconds (" + seconds + " seconds).");
+
       source.classList.remove("loading");
 
       console.log("Copying processed link to clipboard. [" + shareableLink + "]");
@@ -2008,22 +2257,22 @@ function showDims() {
   document.getElementById("show-dims-orb").classList.toggle("on");
 
   dFrameContents.documentElement.classList.toggle("debug-show-dims-highlight");
-  mFrame.documentElement.classList.toggle("debug-show-dims-highlight");
+  mFrameContents.documentElement.classList.toggle("debug-show-dims-highlight");
 
   // if ( elExists(dFrameContents.getElementById("debug")) ) {
   //   destroy(dFrameContents.getElementById("debug"));
-  //   destroy(mFrame.getElementById("debug"));
+  //   destroy(mFrameContents.getElementById("debug"));
   // } else {
   //   var debugStylingD = dFrameContents.createElement("style");
   //   debugStylingD.id = "debug";
   //   debugStylingD.appendChild(dFrameContents.createTextNode("") );
   //
-  //   var debugStylingM = mFrame.createElement("style");
+  //   var debugStylingM = mFrameContents.createElement("style");
   //   debugStylingM.id = "debug";
   //   debugStylingM.appendChild(dFrameContents.createTextNode("td { box-shadow: inset 0 0 0 1px rgba(255,0,0,.25); } div:not(.alignment-guide) { box-shadow: inset 0 0 0 2px rgba(0,0,255,.25), 0 0 0 2px rgba(0,0,255,.25); }") );
   //
   //   dFrameContents.getElementsByTagName("head")[0].appendChild(debugStylingD);
-  //   mFrame.getElementsByTagName("head")[0].appendChild(debugStylingM);
+  //   mFrameContents.getElementsByTagName("head")[0].appendChild(debugStylingM);
   // }
 
   //
@@ -2034,7 +2283,7 @@ function showDims() {
   if ( elExists(dFrameContents.getElementById("td-markers")) ) {
 
     destroy(dFrameContents.getElementById("td-markers"));
-    destroy(mFrame.getElementById("td-markers"));
+    destroy(mFrameContents.getElementById("td-markers"));
 
   } else {
 
@@ -2047,7 +2296,7 @@ function showDims() {
     tdMarkerWrapper.id = "td-markers";
     tdMarkerWrapper.className = "debug td-markers-wrapper";
     dFrameContents.body.appendChild(tdMarkerWrapper);
-    mFrame.body.appendChild(tdMarkerWrapper.cloneNode(true));
+    mFrameContents.body.appendChild(tdMarkerWrapper.cloneNode(true));
 
 
     for (let tdEle of dFrameTdList) {
@@ -2081,7 +2330,7 @@ function showDims() {
     console.groupEnd();
 
 
-    let mFrameTdList = mFrame.querySelectorAll("td");
+    let mFrameTdList = mFrameContents.querySelectorAll("td");
     var tdCount = 0
 
     console.groupCollapsed("<td> Group (mFrame) - Total <td>'s Processed: " + mFrameTdList.length);
@@ -2095,7 +2344,7 @@ function showDims() {
 
         tdCount++
 
-        var tdPos = getPosition(tdEle, mFrame);
+        var tdPos = getPosition(tdEle, mFrameContents);
 
         var tdMarker = document.createElement("section");
         tdMarker.className = "td-marker";
@@ -2113,7 +2362,7 @@ function showDims() {
         // tdMarker.appendChild(tdTextPos);
 
         tdMarker.appendChild(tdTextNode);
-        mFrame.getElementById("td-markers").appendChild(tdMarker);
+        mFrameContents.getElementById("td-markers").appendChild(tdMarker);
 
       }
     }
@@ -2231,7 +2480,7 @@ function toggleGuides() {
 //     dFrameScroll.contentWindow.scrollTo(0,dFrameContents.body.scrollHeight);
 //
 //     var mFrameScroll = document.getElementById('mobile-view');
-//     mFrameScroll.contentWindow.scrollTo(0,mFrame.body.scrollHeight);
+//     mFrameScroll.contentWindow.scrollTo(0,mFrameContents.body.scrollHeight);
 //
 //   }
 
@@ -2359,7 +2608,7 @@ function toggleStyles() {
       style.disabled = true;
     }
 
-    let mStyleSheetEle = mFrame.querySelectorAll("style:not(.debug)");
+    let mStyleSheetEle = mFrameContents.querySelectorAll("style:not(.debug)");
     for (let style of mStyleSheetEle) {
       style.disabled = true;
     }
@@ -2371,7 +2620,7 @@ function toggleStyles() {
       style.disabled = false;
     }
 
-    let mStyleSheetEle = mFrame.querySelectorAll("style:not(.debug)");
+    let mStyleSheetEle = mFrameContents.querySelectorAll("style:not(.debug)");
     for (let style of mStyleSheetEle) {
       style.disabled = false;
     }
@@ -2455,7 +2704,7 @@ function toggleImages() {
       }
     }
 
-    let mFrameimgList = mFrame.querySelectorAll("img");
+    let mFrameimgList = mFrameContents.querySelectorAll("img");
     for (let img of mFrameimgList) {
       if ( imagesToggle ) {
         img.dataset.src = img.src;
@@ -2466,7 +2715,7 @@ function toggleImages() {
       }
     }
 
-    let mFrameBkgList = mFrame.querySelectorAll("[background]");
+    let mFrameBkgList = mFrameContents.querySelectorAll("[background]");
     for (let bkg of mFrameBkgList) {
       console.log(bkg);
       console.log(bkg.getAttribute("background"));
@@ -2519,7 +2768,7 @@ function toggleImgDims() {
 // Continue...
 
   dFrameContents.documentElement.classList.toggle("debug-imgdims-highlight");
-  mFrame.documentElement.classList.toggle("debug-imgdims-highlight");
+  mFrameContents.documentElement.classList.toggle("debug-imgdims-highlight");
 
   //
   // Find <img> dimensions
@@ -2529,7 +2778,7 @@ function toggleImgDims() {
   if ( elExists(dFrameContents.getElementById("img-dims-markers")) ) {
 
     destroy(dFrameContents.getElementById("img-dims-markers"));
-    destroy(mFrame.getElementById("img-dims-markers"));
+    destroy(mFrameContents.getElementById("img-dims-markers"));
 
   } else {
 
@@ -2538,7 +2787,7 @@ function toggleImgDims() {
     imgDimsWrapper.id = "img-dims-markers";
     imgDimsWrapper.className = "debug img-dims-markers-wrapper";
     dFrameContents.body.appendChild(imgDimsWrapper);
-    mFrame.body.appendChild(imgDimsWrapper.cloneNode(true));
+    mFrameContents.body.appendChild(imgDimsWrapper.cloneNode(true));
 
 
     let dFrameImgDimsList = dFrameContents.querySelectorAll("img");
@@ -2630,7 +2879,7 @@ function toggleImgDims() {
 
 
 
-    // let mFrameImgDimsList = mFrame.querySelectorAll("img");
+    // let mFrameImgDimsList = mFrameContents.querySelectorAll("img");
     // var imgDimsCount = 0
     //
     // console.groupCollapsed("<img> Group (mFrame) - Total <img>'s Processed: " + mFrameImgDimsList.length);
@@ -2662,10 +2911,10 @@ function toggleImgDims() {
 ////
 /////////
 
-// var plainTextOrb = document.createElement("div");
-// plainTextOrb.className = "plain-text-orb orb glyph";
-// plainTextOrb.addEventListener("click", plainText, false);
-// orbsBottom.appendChild(plainTextOrb);
+var plainTextOrb = document.createElement("div");
+plainTextOrb.className = "plain-text-orb orb glyph";
+plainTextOrb.addEventListener("click", plainText, false);
+orbsBottom.appendChild(plainTextOrb);
 
 
 function plainText() {
@@ -2936,6 +3185,33 @@ function processModuleText(moduleType) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////
+/////
+/////   QA Bars
+/////
+/////////////////////////////
+
+function appendQaBar(newBar) {
+
+  newBar.className = "qa-bar"
+  newBar.innerHTML = "<div class='qa-title'><div class='qa-icon'></div><div class='qa-text'></div></div>"
+  qaResults.appendChild(newBar);
+
+}
+
+// After a test has concluded, run this function to update the icon that shows the status.
+function applyQaResults(qaBar, status, msg) {
+  qaBar.classList.add("finished", status);
+  qaBar.querySelector(".qa-text").innerHTML = msg;
+}
+
+/////////////
+// QA RESULTS Container
+/////////////
+
+var qaResults = document.createElement("div");
+qaResults.id = "qa-results";
+infoBar.appendChild(qaResults);
 
 
 //////////
@@ -2945,16 +3221,19 @@ function processModuleText(moduleType) {
 ////
 /////////
 
-
-var preheaderWapper = document.createElement("div");
-preheaderWapper.className = "preheader-wrapper mod-wrapper";
-infoBar.appendChild(preheaderWapper);
+var preheaderQaBar = document.createElement("div");
+preheaderQaBar.id = "qa-preheader";
+preheaderQaBar.className = "qa-preheader expanded preheader-wrapper mod-wrapper";
+appendQaBar(preheaderQaBar);
 
 
 var preheader150 = preheader.substring(0, 150).trim();
-preheader150 = "<div class='mod mod-preheader'><div class='title'>Preheader</div><div class='mod-body'>" + [preheader150.slice(0, 90), "<span class='preheader-back'>", preheader150.slice(90)].join('') + "</span></div></div>"; // http://stackoverflow.com/a/4364902/556079
+preheader150 = [preheader150.slice(0, 90), "<span class='preheader-back'>", preheader150.slice(90)].join('') + "</span>"; // http://stackoverflow.com/a/4364902/556079
 
-preheaderWapper.innerHTML = preheader150;
+var preheaderTextPreview = document.createElement("div");
+preheaderTextPreview.innerHTML = preheader150;
+preheaderTextPreview.className = "preheader-preview-text"
+preheaderQaBar.appendChild(preheaderTextPreview);
 
 
 
@@ -3017,11 +3296,14 @@ if ( !preheader90Pattern.test(textMinusPreheader) ) {
 }
 
 
-var preheaderMatchDiv = document.createElement("div");
-    preheaderMatchDiv.className = "preheader-match-rating";
-var preheaderMatchTextNode = document.createTextNode(matchRating + "%");
-preheaderMatchDiv.appendChild(preheaderMatchTextNode);
-preheaderWapper.appendChild(preheaderMatchDiv);
+var preheaderMatchText = "Preheader at <span class='preheader-match-rating'>" + matchRating + "%</span> match.";
+
+// Test finished, determine status
+if ( matchRating > 85 ) {
+  applyQaResults(preheaderQaBar, "success", preheaderMatchText);
+} else {
+  applyQaResults(preheaderQaBar, "error", preheaderMatchText);
+}
 
 setTimeout(function() {
 
@@ -3032,11 +3314,119 @@ setTimeout(function() {
     // preflightErrors++;
     preflightError();
   }
-  preheaderMatchDiv.classList.add("ready");
+  // preheaderMatchDiv.classList.add("ready");
 
 }, 500);
 
 console.groupEnd();
+
+
+
+//////////
+////
+////  QA Bar: Links
+////
+/////////
+
+var linksQaBar = document.createElement("div");
+linksQaBar.id = "qa-links";
+linksQaBar.className = "qa-links";
+appendQaBar(linksQaBar);
+
+
+//////////
+////
+////  QA Bar: Articles
+////
+/////////
+
+var articlesQaBar = document.createElement("div");
+articlesQaBar.id = "qa-articles";
+articlesQaBar.className = "qa-articles";
+appendQaBar(articlesQaBar);
+
+
+//////////
+////
+////  QA Bar: Mobile Layout
+////
+/////////
+
+var mobileLayoutQaBar = document.createElement("div");
+mobileLayoutQaBar.id = "qa-mobile-layout";
+mobileLayoutQaBar.className = "qa-mobile-layout";
+appendQaBar(mobileLayoutQaBar);
+
+console.log(mFrameContents.body.scrollWidth);
+console.log(mobileIframe.offsetWidth);
+
+if ( mFrameContents.body.scrollWidth > mobileIframe.offsetWidth ) {
+  applyQaResults(mobileLayoutQaBar, "error", "Mobile layout too wide.");
+} else {
+  applyQaResults(mobileLayoutQaBar, "success", "Mobile layout approved.");
+}
+
+
+//////////
+////
+////  QA Bar: Zoom Levels
+////
+/////////
+
+var zoomLevelsQaBar = document.createElement("div");
+zoomLevelsQaBar.id = "qa-zoom-levels";
+zoomLevelsQaBar.className = "qa-zoom-levels";
+appendQaBar(zoomLevelsQaBar);
+
+
+//////////
+////
+////  QA Bar: Citations
+////
+/////////
+
+var citationsQaBar = document.createElement("div");
+citationsQaBar.id = "qa-citations";
+citationsQaBar.className = "qa-citations";
+appendQaBar(citationsQaBar);
+
+
+//////////
+////
+////  QA Bar: Images
+////
+/////////
+
+var imagesQaBar = document.createElement("div");
+imagesQaBar.id = "qa-images";
+imagesQaBar.className = "qa-images";
+appendQaBar(imagesQaBar);
+
+
+//////////
+////
+////  QA Bar: Text Warnings
+////
+/////////
+
+var textWarningsQaBar = document.createElement("div");
+textWarningsQaBar.id = "qa-text-warnings";
+textWarningsQaBar.className = "qa-text-warnings";
+appendQaBar(textWarningsQaBar);
+
+
+//////////
+////
+////  QA Bar: Spelling Errors
+////
+/////////
+
+var spellcheckQaBar = document.createElement("div");
+spellcheckQaBar.id = "qa-spellcheck";
+spellcheckQaBar.className = "qa-spellcheck";
+appendQaBar(spellcheckQaBar);
+
+
 
 /////////
 ////
@@ -3044,40 +3434,40 @@ console.groupEnd();
 ////
 /////////
 
-var linkCheckerWrapper = document.createElement("div");
-linkCheckerWrapper.id = "link-checker";
-linkCheckerWrapper.className = "link-checker-wrapper mod-wrapper";
-infoBar.appendChild(linkCheckerWrapper);
-
-var linkCheckerHtml = "<div class='mod mod-link-checker'><div class='title'>MedBridge Links</div><div class='mod-body'></div></div>";
-linkCheckerWrapper.innerHTML = linkCheckerHtml;
-
-var modLinkToggle = document.createElement("div");
-modLinkToggle.className = "toggle";
-modLinkToggle.addEventListener("click", toggleLinkMarkers, false);
-document.querySelector(".mod-link-checker .title").appendChild(modLinkToggle);
-
-var linkMarkersToggle = false;
-
-function toggleLinkMarkers() {
-
-  if ( this.nodeType !== 1 ) {
-    dFrameContents.getElementById("link-markers").classList.add("on-page-load");
-  } else if ( dFrameContents.querySelector(".on-page-load") ) {
-    dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
-  } else {
-    dFrameContents.getElementById("link-markers").classList.toggle("hidden");
-  }
-
-  linkMarkersToggle = !linkMarkersToggle;
-
-  if ( linkMarkersToggle ) {
-    history.replaceState(null,null, updateQueryString("links", "0") );
-  } else {
-    history.replaceState(null,null, updateQueryString("links") );
-  }
-
-}
+    // var linkCheckerWrapper = document.createElement("div");
+    // linkCheckerWrapper.id = "link-checker";
+    // linkCheckerWrapper.className = "link-checker-wrapper mod-wrapper";
+    // infoBar.appendChild(linkCheckerWrapper);
+    //
+    // var linkCheckerHtml = "<div class='mod mod-link-checker'><div class='title'>MedBridge Links</div><div class='mod-body'></div></div>";
+    // linkCheckerWrapper.innerHTML = linkCheckerHtml;
+    //
+    // var modLinkToggle = document.createElement("div");
+    // modLinkToggle.className = "toggle";
+    // modLinkToggle.addEventListener("click", toggleLinkMarkers, false);
+    // document.querySelector(".mod-link-checker .title").appendChild(modLinkToggle);
+    //
+    // var linkMarkersToggle = false;
+    //
+    // function toggleLinkMarkers() {
+    //
+    //   if ( this.nodeType !== 1 ) {
+    //     dFrameContents.getElementById("link-markers").classList.add("on-page-load");
+    //   } else if ( dFrameContents.querySelector(".on-page-load") ) {
+    //     dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
+    //   } else {
+    //     dFrameContents.getElementById("link-markers").classList.toggle("hidden");
+    //   }
+    //
+    //   linkMarkersToggle = !linkMarkersToggle;
+    //
+    //   if ( linkMarkersToggle ) {
+    //     history.replaceState(null,null, updateQueryString("links", "0") );
+    //   } else {
+    //     history.replaceState(null,null, updateQueryString("links") );
+    //   }
+    //
+    // }
 
 
 
@@ -3087,13 +3477,13 @@ function toggleLinkMarkers() {
 ////
 /////////
 
-var imgCheckerWrapper = document.createElement("div");
-imgCheckerWrapper.id = "img-checker";
-imgCheckerWrapper.className = "img-checker-wrapper mod-wrapper";
-infoBar.appendChild(imgCheckerWrapper);
-
-var imgCheckerHtml = "<div class='mod mod-img-checker'><div class='title'>Images</div><div class='mod-body'></div></div>";
-imgCheckerWrapper.innerHTML = imgCheckerHtml;
+    // var imgCheckerWrapper = document.createElement("div");
+    // imgCheckerWrapper.id = "img-checker";
+    // imgCheckerWrapper.className = "img-checker-wrapper mod-wrapper";
+    // infoBar.appendChild(imgCheckerWrapper);
+    //
+    // var imgCheckerHtml = "<div class='mod mod-img-checker'><div class='title'>Images</div><div class='mod-body'></div></div>";
+    // imgCheckerWrapper.innerHTML = imgCheckerHtml;
 
 
 
@@ -3106,7 +3496,7 @@ imgCheckerWrapper.innerHTML = imgCheckerHtml;
 ///////////////////////////////////////////////////////////////////////////////
 
 //
-// Modify our page view/style/css based on the querystring before we start modifying dFrame and mFrame.
+// Modify our page view/style/css based on the querystring before we start modifying dFrame and mFrameContents.
 //
 
 if ( getParameterByName("infobar") || getParameterByName("mobile") ) {
@@ -3175,61 +3565,73 @@ alertify.set('notifier','position', 'bottom-right');
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+//////////
+/////
+//      !!!!!!!!!!!!!!!!!!
+//      Prevent zoom of the top level document when the shortcut is pressed. And instead initiate a zoom on dFrame only. That would be awesome!
+////
+/////////
+
 var zoomLevelChecked = false;
 function checkZoomLevel() {
 // https://stackoverflow.com/a/6365777/556079
 // https://stackoverflow.com/a/6365777/556079
 
-  var screenCssPixelRatio = (window.outerWidth - 8) / window.innerWidth;
-  var zoomLevel;
-  if (screenCssPixelRatio <= .34) {
-    zoomLevel = "-6+";
-  } else if (screenCssPixelRatio <= .44) {
-    zoomLevel = "-5";
-  } else if (screenCssPixelRatio <= .54) {
-    zoomLevel = "-4";
-  } else if (screenCssPixelRatio <= .64) {
-    zoomLevel = "-3";
-  } else if (screenCssPixelRatio <= .76) {
-    zoomLevel = "-2";
-  } else if (screenCssPixelRatio <= .92) {
-    zoomLevel = "-1";
-  } else if (screenCssPixelRatio <= 1.05 && screenCssPixelRatio >= .98) {
-    zoomLevel = "0";
-  } else if (screenCssPixelRatio <= 1.10) {
-    zoomLevel = "1";
-  } else if (screenCssPixelRatio <= 1.32) {
-    zoomLevel = "2";
-  } else if (screenCssPixelRatio <= 1.58) {
-    zoomLevel = "3";
-  } else if (screenCssPixelRatio <= 1.90) {
-    zoomLevel = "4";
-  } else if (screenCssPixelRatio <= 2.28) {
-    zoomLevel = "5";
-  } else if (screenCssPixelRatio >= 2.29) {
-    zoomLevel = "6+";
-  } else {
-    zoomLevel = "unknown";
-  }
+  // var screenCssPixelRatio = (window.outerWidth - 8) / window.innerWidth;
+  // var zoomLevel;
+  // if (screenCssPixelRatio <= .34) {
+  //   zoomLevel = "-6+";
+  // } else if (screenCssPixelRatio <= .44) {
+  //   zoomLevel = "-5";
+  // } else if (screenCssPixelRatio <= .54) {
+  //   zoomLevel = "-4";
+  // } else if (screenCssPixelRatio <= .64) {
+  //   zoomLevel = "-3";
+  // } else if (screenCssPixelRatio <= .76) {
+  //   zoomLevel = "-2";
+  // } else if (screenCssPixelRatio <= .92) {
+  //   zoomLevel = "-1";
+  // } else if (screenCssPixelRatio <= 1.05 && screenCssPixelRatio >= .98) {
+  //   zoomLevel = "0";
+  // } else if (screenCssPixelRatio <= 1.10) {
+  //   zoomLevel = "1";
+  // } else if (screenCssPixelRatio <= 1.32) {
+  //   zoomLevel = "2";
+  // } else if (screenCssPixelRatio <= 1.58) {
+  //   zoomLevel = "3";
+  // } else if (screenCssPixelRatio <= 1.90) {
+  //   zoomLevel = "4";
+  // } else if (screenCssPixelRatio <= 2.28) {
+  //   zoomLevel = "5";
+  // } else if (screenCssPixelRatio >= 2.29) {
+  //   zoomLevel = "6+";
+  // } else {
+  //   zoomLevel = "unknown";
+  // }
+  //
+  //
+  // console.log("Zoom Level: " + zoomLevel + " (" + screenCssPixelRatio + ")");
 
 
-  console.log("Zoom Level: " + zoomLevel + " (" + screenCssPixelRatio + ")");
+  // console.error(Number(dFrameContents.documentElement.style.zoom));
+  // console.error(currentZoomLevel);
 
+  setTimeout(function(){
 
-  if ( zoomLevelChecked ) {
+    var currentZoomLevel = dFrameContents.documentElement.style.zoom || 1;
 
-  }
-  else if ( screenCssPixelRatio >= .88 ) {
-    zoomLevelChecked = false;
-    console.log("Zoom level not checked.");
-  }
-  else if ( screenCssPixelRatio <= .87 ) {
-    zoomLevelChecked = true;
-    console.log("Zoom level checked.");
-    updatePreflightErrorTotal("success", 1);
-  }
+    if ( currentZoomLevel && currentZoomLevel <= 0.85 ) {
+      zoomLevelChecked = true;
+      console.log("Zoom level checked!");
+    }
+    console.error(currentZoomLevel);
+
+  }, 1000);
+
 
 }
+
 
 var zoomCheckStatus = false;
 updatePreflightErrorTotal("error", 1); // Zoom level is an error on page load. Only one time! If zoom check is found in sessionsStorage, all of this should be ignored. Or should it? Major changes to HTML should be re-checked at different zoom levels after a page refresh. Figure out what to do here.
@@ -3266,7 +3668,7 @@ checkZoomLevel();
 var moduleSettingsWrapper = document.createElement("section");
     moduleSettingsWrapper.id = "module-settings";
     moduleSettingsWrapper.className = "debug module-settings-wrapper";
-    dFrameContents.body.appendChild(moduleSettingsWrapper);
+    dFrameContents.documentElement.appendChild(moduleSettingsWrapper);
 
 
 let moduleList = dFrameContents.querySelectorAll("[data-mod]");
@@ -3407,116 +3809,116 @@ if (typeof moduleSettingsMenu != 'undefined') {
     ////////
     ////////
 
-    ///////////
-    //
-    //  Variables needed for checking the blog.
-    //
-    ///////////
-
-    var totalProtectedArticles = 0;
-    var blogStatusSuccessArray = [];
-    var isBlogLoaded = false;
-    var totalBlogIframesOpen = 0; // Track the total amount of iframes we open to check the blog.
-
-    ///////////
-    //
-    //  Function to check the blog for data on an article.
-    //
-    ///////////
-
-    function checkTheBlog(linkHref, link) {
-
-      // If a URL was passed into this function...
-      if ( linkHref ) {
-
-        // Grab the data-number from this link object. We're going to use it with the iframe to track what's going on.
-        var blogLinkNumber = link.dataset.number;
-
-        console.groupCollapsed("Checking blog link for data: [" + blogLinkNumber + "]" + linkHref);
-
-        // Check if an iframe already exists with this URL by iterating through all relevant iframes in the DOM.
-        console.log("Total iFrames currently open: " + totalBlogIframesOpen + " - Now beginning for...let loop to find iframes that have already been loaded.");
-
-        let blogCheckList = document.querySelectorAll("iframe.blog-check");
-
-        var iframesFoundinDOM = 0;
-        for (let blogIframe of blogCheckList) {
-
-          iframesFoundinDOM++;
-
-          console.log("Current iFrame found in the DOM (#" + iframesFoundinDOM + ") during this loop has this src: " + blogIframe.getAttribute("src"));
-
-          if ( blogIframe.getAttribute("src").replace(/[?&]blog\-check\=.+/gi, "") === linkHref ) {
-            isBlogLoaded = true;
-            console.log("The current link we're checking MATCHES this iFrame that's already in the DOM.");
-          } else {
-            isBlogLoaded = false;
-            console.log("The current link we're checking DOES NOT MATCH this iFrame that's already in the DOM.");
-          }
-
-        }
-        console.log("All iframes (" + iframesFoundinDOM + ") in the DOM have been checked. End of for...let loop.");
-
-        //
-        if ( isBlogLoaded === false ) {
-
-          // Create an iframe for this link
-          totalBlogIframesOpen++
-          console.log("Creating an iframe for current link: " + totalBlogIframesOpen + " - " + linkHref);
-
-          var blogCheck = document.createElement("iframe");
-              blogCheck.src = linkHref + "&blog-check=" + blogLinkNumber;
-              blogCheck.className = "blog-check blog-check-" + blogLinkNumber;
-              blogCheck.id = "iframe-" + blogLinkNumber;
-          document.body.appendChild(blogCheck);
-
-          // Wait X seconds for the blog to send a reply. If it doesn't, throw an error.
-          // I thought I needed this, but apparently not! - http://stackoverflow.com/a/9540320/556079
-          // (function(link) {
-              // setTimeout(function(){console.log(i)}, 1000);
-
-              var blogTimeout = 25000 + (totalBlogIframesOpen*10000);
-              var blogTimeoutStr = blogTimeout.toString();
-                  blogTimeoutStr = blogTimeoutStr.substring(0, blogTimeoutStr.length-3);
-
-              console.log(totalBlogIframesOpen + " iframe(s) are open. Setting the blog check timer to " + blogTimeoutStr + " seconds.");
-              setTimeout(function(){
-                if ( blogStatusSuccessArray.indexOf(processBlogLinkBeingChecked(linkHref) ) > -1 ) {
-                  console.log("Blog loaded!");
-                } else {
-                  console.log("Blog didn't load after " + blogTimeoutStr + " seconds. Verify the link.");
-                  console.log(link);
-                  createLinkErrorRow(link, "Blog took too long to load. Check the link.");
-                }
-              }, blogTimeout);
-          // })(link);
-
-
-
-        } else {
-          console.log("This link is already loaded in an iframe. End of check on this link.");
-        }
-
-        console.info("Total iFrames now open: " + totalBlogIframesOpen);
-
-        console.groupEnd();
-
-      // *No* URL was passed into this function...
-      } else {
-
-        console.log("No linkHref found. Looping through all links.");
-
-        let freshBlogCheck = dFrameContents.querySelectorAll("a");
-        for (let link of freshBlogCheck) {
-
-          if ( /(after_affiliate_url=blog|blog\/2|\-article|\-blog\/)/gi.test(link.href) && !/p=2503/gi.test(link.href) ) {
-            checkTheBlog(link.href, link);
-          }
-
-        }
-        console.log("Finished looping through all links.");
-      }
-    }
+                  // ///////////
+                  // //
+                  // //  Variables needed for checking the blog.
+                  // //
+                  // ///////////
+                  //
+                  // var totalProtectedArticles = 0;
+                  // var blogStatusSuccessArray = [];
+                  // var isBlogLoaded = false;
+                  // var totalBlogIframesOpen = 0; // Track the total amount of iframes we open to check the blog.
+                  //
+                  // ///////////
+                  // //
+                  // //  Function to check the blog for data on an article.
+                  // //
+                  // ///////////
+                  //
+                  // function checkTheBlog(linkHref, link) {
+                  //
+                  //   // If a URL was passed into this function...
+                  //   if ( linkHref ) {
+                  //
+                  //     // Grab the data-number from this link object. We're going to use it with the iframe to track what's going on.
+                  //     var blogLinkNumber = link.dataset.number;
+                  //
+                  //     console.groupCollapsed("Checking blog link for data: [" + blogLinkNumber + "]" + linkHref);
+                  //
+                  //     // Check if an iframe already exists with this URL by iterating through all relevant iframes in the DOM.
+                  //     console.log("Total iFrames currently open: " + totalBlogIframesOpen + " - Now beginning for...let loop to find iframes that have already been loaded.");
+                  //
+                  //     let blogCheckList = document.querySelectorAll("iframe.blog-check");
+                  //
+                  //     var iframesFoundinDOM = 0;
+                  //     for (let blogIframe of blogCheckList) {
+                  //
+                  //       iframesFoundinDOM++;
+                  //
+                  //       console.log("Current iFrame found in the DOM (#" + iframesFoundinDOM + ") during this loop has this src: " + blogIframe.getAttribute("src"));
+                  //
+                  //       if ( blogIframe.getAttribute("src").replace(/[?&]blog\-check\=.+/gi, "") === linkHref ) {
+                  //         isBlogLoaded = true;
+                  //         console.log("The current link we're checking MATCHES this iFrame that's already in the DOM.");
+                  //       } else {
+                  //         isBlogLoaded = false;
+                  //         console.log("The current link we're checking DOES NOT MATCH this iFrame that's already in the DOM.");
+                  //       }
+                  //
+                  //     }
+                  //     console.log("All iframes (" + iframesFoundinDOM + ") in the DOM have been checked. End of for...let loop.");
+                  //
+                  //     //
+                  //     if ( isBlogLoaded === false ) {
+                  //
+                  //       // Create an iframe for this link
+                  //       totalBlogIframesOpen++
+                  //       console.log("Creating an iframe for current link: " + totalBlogIframesOpen + " - " + linkHref);
+                  //
+                  //       var blogCheck = document.createElement("iframe");
+                  //           blogCheck.src = linkHref + "&blog-check=" + blogLinkNumber;
+                  //           blogCheck.className = "blog-check blog-check-" + blogLinkNumber;
+                  //           blogCheck.id = "iframe-" + blogLinkNumber;
+                  //       document.body.appendChild(blogCheck);
+                  //
+                  //       // Wait X seconds for the blog to send a reply. If it doesn't, throw an error.
+                  //       // I thought I needed this, but apparently not! - http://stackoverflow.com/a/9540320/556079
+                  //       // (function(link) {
+                  //           // setTimeout(function(){console.log(i)}, 1000);
+                  //
+                  //           var blogTimeout = 25000 + (totalBlogIframesOpen*10000);
+                  //           var blogTimeoutStr = blogTimeout.toString();
+                  //               blogTimeoutStr = blogTimeoutStr.substring(0, blogTimeoutStr.length-3);
+                  //
+                  //           console.log(totalBlogIframesOpen + " iframe(s) are open. Setting the blog check timer to " + blogTimeoutStr + " seconds.");
+                  //           setTimeout(function(){
+                  //             if ( blogStatusSuccessArray.indexOf(processBlogLinkBeingChecked(linkHref) ) > -1 ) {
+                  //               console.log("Blog loaded!");
+                  //             } else {
+                  //               console.log("Blog didn't load after " + blogTimeoutStr + " seconds. Verify the link.");
+                  //               console.log(link);
+                  //               createLinkErrorRow(link, "Blog took too long to load. Check the link.");
+                  //             }
+                  //           }, blogTimeout);
+                  //       // })(link);
+                  //
+                  //
+                  //
+                  //     } else {
+                  //       console.log("This link is already loaded in an iframe. End of check on this link.");
+                  //     }
+                  //
+                  //     console.info("Total iFrames now open: " + totalBlogIframesOpen);
+                  //
+                  //     console.groupEnd();
+                  //
+                  //   // *No* URL was passed into this function...
+                  //   } else {
+                  //
+                  //     console.log("No linkHref found. Looping through all links.");
+                  //
+                  //     let freshBlogCheck = dFrameContents.querySelectorAll("a");
+                  //     for (let link of freshBlogCheck) {
+                  //
+                  //       if ( /(after_affiliate_url=blog|blog\/2|\-article|\-blog\/)/gi.test(link.href) && !/p=2503/gi.test(link.href) ) {
+                  //         checkTheBlog(link.href, link);
+                  //       }
+                  //
+                  //     }
+                  //     console.log("Finished looping through all links.");
+                  //   }
+                  // }
 
     ///////////////////////
     ///////////////////////
@@ -3528,7 +3930,7 @@ if (typeof moduleSettingsMenu != 'undefined') {
 var linkMarkerWrapper = document.createElement("section");
 linkMarkerWrapper.id = "link-markers";
 linkMarkerWrapper.className = "debug link-markers-wrapper";
-dFrameContents.body.appendChild(linkMarkerWrapper);
+dFrameContents.documentElement.appendChild(linkMarkerWrapper);
 
 //////
 //////
@@ -3565,29 +3967,29 @@ function linkValidationLoop(ageCheck) {
     if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
 
       // Create link module ROW in left column.
-      var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
-
-      var linkRow = document.createElement("div");
-      linkRow.className = "link-row";
-      linkRowsWrapper.appendChild(linkRow);
-
-      var linkRowNum = document.createElement("div");
-      linkRowNum.className = "link-row-num";
-      var textLinkNum = document.createTextNode(i);
-      linkRowNum.appendChild(textLinkNum);
-      linkRow.appendChild(linkRowNum);
-
-      var linkRowHref = document.createElement("div");
-      linkRowHref.className = "link-row-href";
-
-      if ( /\.medbridgeeducation\.com/gi.test(linkHref) ) {
-        var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\.medbridgeeducation\.com/gi, ""));
-      } else {
-        var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\./gi, ""));
-      }
-
-      linkRowHref.appendChild(textLinkHref);
-      linkRow.appendChild(linkRowHref);
+      // var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
+      //
+      // var linkRow = document.createElement("div");
+      // linkRow.className = "link-row";
+      // linkRowsWrapper.appendChild(linkRow);
+      //
+      // var linkRowNum = document.createElement("div");
+      // linkRowNum.className = "link-row-num";
+      // var textLinkNum = document.createTextNode(i);
+      // linkRowNum.appendChild(textLinkNum);
+      // linkRow.appendChild(linkRowNum);
+      //
+      // var linkRowHref = document.createElement("div");
+      // linkRowHref.className = "link-row-href";
+      //
+      // if ( /\.medbridgeeducation\.com/gi.test(linkHref) ) {
+      //   var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\.medbridgeeducation\.com/gi, ""));
+      // } else {
+      //   var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\./gi, ""));
+      // }
+      //
+      // linkRowHref.appendChild(textLinkHref);
+      // linkRow.appendChild(linkRowHref);
 
 
 
@@ -3688,7 +4090,7 @@ function validateLinks(link, i) {
 
     // Global link testing variables
     var medbridgeEdLink
-    if ( /^https?:\/\/(.+?\.)?medbridge(ed|education)\.com/gi.test(linkHref) ) {
+    if ( /^https?:\/\/([^.]+\.)?medbridge(ed|education)\.com/gi.test(linkHref) ) {
       medbridgeEdLink = true;
     } else {
       medbridgeEdLink = false;
@@ -3750,7 +4152,7 @@ function validateLinks(link, i) {
 
     ////
     linkNeedsGoogleTracking = false;
-    if ( medbridgeOrMassageLink && !outsideOrg && !emailSale ) {
+    if ( medbridgeEdLink && !outsideOrg ) {
       linkNeedsGoogleTracking = true;
     } else {
       linkNeedsGoogleTracking = false;
@@ -3944,7 +4346,7 @@ function validateLinks(link, i) {
 
     ////-----------------------------////
     ////
-    // DON'T USE UTM - outsideOrg, off domain urls, and Sale emails should not have utms
+    // DON'T USE UTM - outsideOrg and off domain urls should not have utms
     if ( /utm_content/gi.test(linkHref) && !linkNeedsGoogleTracking ) {
       createLinkErrorRow(link, "remove utm");
     }
@@ -3983,7 +4385,7 @@ function validateLinks(link, i) {
       // Check the query string without any ending hash
       var linkHrefNoHash = linkHref.replace(/#.+/, "");
 
-      if ( !/\?([\.\w-]+(=[\+\.\/\w-]*)?(&[\.\w-]+(=[\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
+      if ( !/\?([\.\w-]+(=[\!\|\*\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
         createLinkErrorRow(link, "invalid query string");
       }
 
@@ -4007,19 +4409,26 @@ function validateLinks(link, i) {
 
       // Too many leading /'s' during a redirect can cause a link to not work
       if ( /after_affiliate_url=\/\/+/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "too many /'s'");
+        createLinkErrorRow(link, "too many consecutive /'s'");
       }
 
       // Watch out for extra hyphens!
       if ( /\-\-/gi.test(linkHref) ) {
         createLinkErrorRow(link, "investigate consecutive hyphens");
       }
-
-      // Check the date in a tracking URL
-      var monthPattern = new RegExp("\\/trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
-      if ( !monthPattern.test(linkHref) ) {
-        createLinkErrorRow(link, "link should included '-" + emailMonthAbbr + "-' to match current month");
+      // Watch out for extra forward slashes!
+      if ( /https?:\/\/.+?\/\//gi.test(linkHref) ) {
+        createLinkErrorRow(link, "investigate consecutive forward slashes");
       }
+
+      // Check the date in a tracking URL if the email's filename has a date in it to match against
+      if ( emailDate.getMonth() ) {
+        var monthPattern = new RegExp("\\/trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
+        if ( !monthPattern.test(linkHref) ) {
+          createLinkErrorRow(link, "link should included '-" + emailMonthAbbr + "-' to match current month");
+        }
+      }
+
     }
 
 
@@ -4088,8 +4497,6 @@ function validateLinks(link, i) {
 
     ////
     // Check for medium=email in Sale and Presale emails
-    ////
-
     if ( (emailSubType === "sub" || !emailAnySale) && /[\?&]medium=email/gi.test(linkHref) ) {
 
       createLinkErrorRow(link, "remove medium=email");
@@ -4136,8 +4543,8 @@ function validateLinks(link, i) {
     ////
     // Use p=#### to force Wordpress to redirect to http.
     // Check for existence of https in blog links in sub version when NOT using p=####
-    if ( blogLink && emailSubType === "sub" && /https:\/\//gi.test(linkHref) && !/p=\d\d\d/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "blog links cannot be https");
+    if ( blogLink && !linkNeedsPromoCode && /https:\/\//gi.test(linkHref) && !/p=\d\d\d/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "full blog/article links cannot be https");
     }
 
     ////
@@ -4162,8 +4569,24 @@ function validateLinks(link, i) {
 
 
     ////
+    // Link Text Hints
+    if ( (/Request (Group|a Demo|Info)/gi.test(link.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Part of an organization|Request (Group|a Demo|Info))/gi.test(link.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
+      createLinkErrorRow(link, "link text does not match url");
+    }
+    if ( /Article/gi.test(link.textContent) && !/(\/blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "link text does not match url");
+    }
+
+    ////
+    // Enterprise
+    if ( medbridgeOrMassageLink && emailSubType === "sub" && emailDisc === "ent" && /request\-a\-demo/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "no demo requests in enterprise sub");
+    }
+
+
+    ////
     // outsideOrg and subs should not link to home-exercise-program.
-    // Use /patient_care/programs/create
+    // Use sign-in/?after_signin_url=patient_care/programs/create
     if ( (outsideOrg || emailSubType === "sub") && /\.com\/home\-exercise\-program/gi.test(linkHref) ) {
       createLinkErrorRow(link, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
     }
@@ -4197,42 +4620,93 @@ function validateLinks(link, i) {
     }
 
     // Homepage - Discipline Check
-    if ( emailDisc !== "multi" && emailDisc !== null && medbridgeOrMassageLink ) { //&& isMarketingUrl
+    // Checking NS and SUB.
+    if ( emailDisc !== "multi" && emailDisc !== null && !outsideOrg && medbridgeOrMassageLink ) { //&& isMarketingUrl
 
-      if ( (emailDisc !== "pt" && emailDisc !== "other") && /after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) ) {
+      if ( (emailDisc !== "pt") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) || /\.com\/physical-therapy(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
-      if ( emailDisc !== "at" && /after_affiliate_url=\/?athletic-training(&|$)/gi.test(linkHref) ) {
+      if ( (emailDisc !== "other" && emailDisc !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(linkHref) || /\.com\/(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
-      if ( emailDisc !== "ot" && /after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(linkHref) ) {
+      if ( emailDisc !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(linkHref) || /\.com\/athletic-training(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
-      if ( emailDisc !== "slp" && /after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(linkHref) ) {
+      if ( emailDisc !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(linkHref) || /\.com\/occupational-therapy(\?|$)/gi.test(linkHref)) ) {
+        createLinkErrorRow(link, "wrong homepage");
+      }
+      if ( emailDisc !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(linkHref) || /\.com\/speech-language-pathology(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
     }
 
 
     // Courses Page - Discipline Check
-    if ( emailDisc !== "multi" && emailDisc !== null && /#/g.test(linkHref) ) { //  && medbridgeOrMassageLink
+    if ( emailDisc !== "multi" && !outsideOrg && emailDisc !== null && /#/g.test(linkHref) && /courses/g.test(linkHref) ) { //  && medbridgeOrMassageLink
 
-      if ( (emailDisc !== "pt" && emailDisc !== "other") && /#\/?physical-therapy/gi.test(linkHref) ) {
+      // if ( (emailDisc !== "pt" && emailDisc !== "other") && /#\/?physical-therapy/gi.test(linkHref) ) {
+      //   createLinkErrorRow(link, "wrong hashtag");
+      // }
+      // if ( emailDisc !== "at" && /#\/?athletic/gi.test(linkHref) ) {
+      //   createLinkErrorRow(link, "wrong hashtag");
+      // }
+      // if ( emailDisc !== "ot" && /#\/?occupational-therapy/gi.test(linkHref) ) {
+      //   createLinkErrorRow(link, "wrong hashtag");
+      // }
+      // if ( emailDisc !== "slp" && /#\/?speech-language-pathology/gi.test(linkHref) ) {
+      //   createLinkErrorRow(link, "wrong hashtag");
+      // }
+      
+      if ( (emailDisc === "pt" && emailDisc === "other") && !/#\/?physical-therapy/gi.test(linkHref) ) {
         createLinkErrorRow(link, "wrong hashtag");
       }
-      if ( emailDisc !== "at" && /#\/?athletic-training/gi.test(linkHref) ) {
+      if ( emailDisc === "at" && !/#\/?athletic-training/gi.test(linkHref) ) {
         createLinkErrorRow(link, "wrong hashtag");
       }
-      if ( emailDisc !== "ot" && /#\/?occupational-therapy/gi.test(linkHref) ) {
+      if ( emailDisc === "ot" && !/#\/?occupational-therapy/gi.test(linkHref) ) {
         createLinkErrorRow(link, "wrong hashtag");
       }
-      if ( emailDisc !== "slp" && /#\/?speech-language-pathology/gi.test(linkHref) ) {
+      if ( emailDisc === "slp" && !/#\/?speech-language-pathology/gi.test(linkHref) ) {
         createLinkErrorRow(link, "wrong hashtag");
       }
     }
 
+
+
+    // Pricing
+    // SUB
+    if ( medbridgeOrMassageLink && emailSubType === "sub" && /\.com\/pricing/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "dont link to pricing in sub");
+    }
+    // NS
+    if ( medbridgeOrMassageLink && emailSubType === "ns" && /pricing/gi.test(linkHref) ) {
+
+      // PT
+      if ( emailDisc === "pt" && !/pricing\/pt/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "link to pricing/pt");
+      }
+      // AT
+      else if ( emailDisc === "at" && !/pricing\/at/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "link to pricing/at");
+      }
+      // OT
+      else if ( emailDisc === "ot" && !/pricing\/ot/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "link to pricing/ot");
+      }
+      // SLP
+      else if ( emailDisc === "slp" && !/pricing\/slp/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "link to pricing/slp");
+      }
+      // Other
+      else if ( emailDisc === "other" && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "link to standard pricing page");
+      }
+
+    }
+
+
     // Check for unecessary discipline hastags. Should only be used when linking to courses page
-    if ( /#\/?(speech-language-pathology|physical-therapy|athletic-training|occupational-therapy)/gi.test(linkHref) && !/(_url=courses|\/courses)(\/|\?|&|$)/gi.test(linkHref) ) {
+    if ( /#\/?(speech-language-pathology|physical-therapy|athletic-training|occupational-therapy)/gi.test(linkHref) && ( !/(_url=courses|\/courses)(#|\/|\?|&|$)/gi.test(linkHref) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(linkHref) ) ) {
       createLinkErrorRow(link, "unecessary hashtag");
     }
 
@@ -4316,37 +4790,53 @@ Text to Search For
 ASHA (only in SLP)
 AOTA (only in OT)
 
+
 */
 
+// Only check words if this is a recent email.
+if ( isRecentEmail ) {
 
+  countCitations();
+} else {
+  console.error("Text was not checked for errors.")
+}
+
+function countCitations() {
+  console.log( "Citations", dFrameContents.getElementsByTagName('sup').length );
+  var asters = (dFrameContents.body.innerText.match(/[^\|]\*[^\|]/g)||[]).length;
+  console.log( "Asterisks", asters);
+}
+
+// Run a check on all text in the email
+highlightTextErrors();
+function highlightTextErrors() {
 //
 // SPAM TRIGGER WORD
 //
 // Click|Click below|Click here|Click to remove|
 findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Being a member|Beneficiary|Best price|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Congratulations|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Leave|Life Insurance|limited time|Limited time offer|Limited time only|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Lowest Price|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No middleman|No obligation|No purchase necessary|No questions asked|No selling|No strings attached|No\-?obligation|Not intended|Notspam|Now only|Obligation|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Please read|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Prizes?|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|Round the world|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Special promotion|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
-  wrap: 'span',
-  wrapClass: "text-error"
+  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Being a member|Beneficiary|Best price|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Congratulations|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Lowest Price|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No middleman|No obligation|No purchase necessary|No questions asked|No selling|No strings attached|No\-?obligation|Not intended|Notspam|Now only|Obligation|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Please read|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Prizes?|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|Round the world|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
+  wrap: 'span', wrapClass: "text-error"
 });
 
 
-//
-// DISCIPLINE CHECKS
-//
+/////////////////////////////////
+////                         ////
+////    DISCIPLINE CHECKS    ////
+////                         ////
+/////////////////////////////////
 
 // Promo Codes
   if ( emailDisc !== "pt" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
       find: /(Promo.+?\b[A-Za-z0-9]+?PT\b)/gi,
-      wrap: 'span',
-      wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "at" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
       find: /(Promo.+?\b[A-Za-z0-9]+?AT\b)/gi,
-      wrap: 'span',
-      wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "ot" ) {
@@ -4359,67 +4849,94 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
   if ( emailDisc !== "slp" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
       find: /(Promo.+?\b[A-Za-z0-9]+?SLP\b)/gi,
-      wrap: 'span',
-      wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc === "other" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
       find: /(Promo.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
-      wrap: 'span',
-      wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-error"
     });
   }
 
+//////////
+////
+//// Physical Therapy - PT
+////
+//////////
 if ( emailDisc === "pt" || emailDisc === "other" ) {
-  // Physical Therapy - PT
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|BOC\-Approved|Athletic Training|Occupational Therapy|CCC\-SLP)/g,
-    wrap: 'span',
-    wrapClass: "text-error"
+    find: /(ASHA|\bAOTA|BOC\-Approved|Athletic Training|Occupational Therapy|CCC\-SLP|\$95|\$145)/g,
+    wrap: 'span', wrapClass: "text-error"
   });
 
+//////////
+////
+//// Athletic Training - AT
+////
+//////////
 } else if ( emailDisc === "at" ) {
-  // Athletic Training - AT
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(patient|ASHA|\bAOTA|Physical Therapy|Occupational Therapy|CCC\-SLP)/g,
-    wrap: 'span',
-    wrapClass: "text-error"
+    find: /(ASHA|\bAOTA|Physical Therapy|Occupational Therapy|CCC\-SLP|\$95|\$145)/g,
+    wrap: 'span', wrapClass: "text-error"
+  });
+  // case-insensitive
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(patients? [^education]|outcomes?)/gi,
+    wrap: 'span', wrapClass: "text-error"
   });
 
+//////////
+////
+//// Occupational Therapy - OT
+////
+//////////
 } else if ( emailDisc === "ot" ) {
-  // Occupational Therapy - OT
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(ASHA|BOC\-Approved|Physical Therapy|Athletic Training|CCC\-SLP)/g,
-    wrap: 'span',
-    wrapClass: "text-error"
+    find: /(ASHA|BOC\-Approved|Physical Therapy|Athletic Training|CCC\-SLP|\$95|\$145)/g,
+    wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
     find: /home exercise program/gi,
-    wrap: 'span',
-    wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-error"
   });
 
+//////////
+////
+//// Speech Language Pathology - SLP
+////
+//////////
 } else if ( emailDisc === "slp" ) {
-  // Speech Language Pathology - SLP
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(\bAOTA|BOC\-Approved|Physical Therapy|Athletic Training|Occupational Therapy)/g,
-    wrap: 'span',
-    wrapClass: "text-error"
+    find: /(\bAOTA|BOC\-Approved|Physical Therapy|Athletic Training|Occupational Therapy|\$200|\$250)/g,
+    wrap: 'span', wrapClass: "text-error"
+  });
+  // case-insensitive
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(patient outcomes?|home exercise program|clinician)/gi,
+    wrap: 'span', wrapClass: "text-error"
   });
 
+//////////
+////
+//// Massage
+////
+//////////
 } else if ( emailDisc === "lmt" ) {
-  // Massage
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy|patient engagement tool|CCC\-SLP)/g,
-    wrap: 'span',
-    wrapClass: "text-error"
+    find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy|CCC\-SLP|\$95|\$145|\$200|\$250)/g,
+    wrap: 'span', wrapClass: "text-error"
+  });
+  // case-insensitive
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /patient engagement tool/gi,
+    wrap: 'span', wrapClass: "text-error"
   });
 
 } else if ( emailDisc === "ent" ) {
@@ -4439,67 +4956,147 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
   // All (case INsensitive)
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|certification(\.| |$)[^p]|at no extra cost|[^\u00a0]\u2192|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
+    find: /Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
     // Update to add "word &nbsp;&rarr;" as an error
-    wrap: 'span',
-    wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-error"
   });
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /(?:(?!\u00a0).{1}|^.{0,0})(\u2192)(?!\u00a0)/g,
+    // find: /?:(?!\\u00a0).{6}|^.{0,5})(\\u2192)(?!\\u00a0)/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+  // findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  //   find: //gi,
+  //   // find: /?:(?!\\u00a0).{6}|^.{0,5})(\\u2192)(?!\\u00a0)/gi,
+  //   wrap: 'span', wrapClass: "text-error"
+  // });
 
   // All (case sensitive)
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
     find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
-    wrap: 'span',
-    wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-error"
   });
 
 
-
+//
+// NUMBERS - COMMAS
+//
+findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  find: /\b\d\d\d\d\b/g,
+  wrap: 'span', wrapClass: "text-error"
+});
 
 //
 // PRODUCT CAPITALIZATION
 //
 findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /MedBridge (?:patient [Ee]|Patient e)ngagement/g,
-  wrap: 'span',
-  wrapClass: "text-error"
+  find: /MedBridge ((?:patient [Ee]|Patient e)ngagement|Prep\-program|prep\-[Pp]rogram)/g,
+  wrap: 'span', wrapClass: "text-error"
 });
 
-// Sub
-if ( emailSubType === "sub" && emailDisc !== "ent" ) {
+//
+// Prep-Program
+//
+findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  find: /\b(MedBridge|.CS) Prep Program\b/gi,
+  wrap: 'span', wrapClass: "text-error"
+});
+
+findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  find: /\bprep\-program\b/g,
+  wrap: 'span', wrapClass: "text-error"
+});
+
+//
+// Subscriber
+//
+if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(Start for Free|in (an|the) annual|\bSubscribe)/gi,
-    wrap: 'span',
-    wrapClass: "text-error"
+    find: /(Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|in a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
+    wrap: 'span', wrapClass: "text-error"
   });
 }
 
-// NS
+//
+// Non-Subscribers
+//
 if ( emailSubType === "ns" ) {
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(Start Now|in (an|your) annual|Refer(\-| )a(\-| )Friend)/gi,
-    wrap: 'span',
-    wrapClass: "text-error"
+    find: /(Start Now|Refer(\-| )a(\-| )Friend|in(?:cluded with)? your (?:(?:MedBridge )?s|annual (?:MedBridge )?s)ubscription)/gi,
+    wrap: 'span', wrapClass: "text-error"
   });
 }
 
+//
 // outsideOrg
+//
 if ( outsideOrg ) {
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
     find: /additional cost|Refer(\-| )a(\-| )Friend/gi,
-    wrap: 'span',
-    wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-error"
   });
 }
 
+//
 // emailAnySale
-// if ( !emailAnySale ) {
-//   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-//     find: /\$200/gi,
-//     wrap: 'span',
-//     wrapClass: "text-error"
-//   });
-// }
+//
+if ( !emailAnySale ) {
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /\$(200|95|145|250)( |!|\.)/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+}
 
+//
+// Sale Verbiage
+//
+
+// MedBridge Pricing
+findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  find: /([^r] 40% off)/gi,
+  wrap: 'span', wrapClass: "text-error"
+});
+if ( emailAnySale && emailDisc !== "lmt" ) {
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /50%/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+}
+// Massage Pricing
+if ( emailAnySale && emailDisc === "lmt" ) {
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /40%/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+}
+
+
+//
+// Grammar
+//
+findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  find: /evidence based EBP/gi,
+  wrap: 'span', wrapClass: "text-error"
+});
+
+findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  find: /evidence\-based EBP/gi,
+  wrap: 'span', wrapClass: "text-error"
+});
+
+//
+// Enterprise
+//
+if ( emailDisc === "ent" && emailSubType === "sub" ) {
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /request a demo/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+}
+
+
+}
+// end function
 
 
 ////////////
@@ -4623,14 +5220,14 @@ if ( getParameterByName("imgdims") === "1" ) {
 //     dFrameContents.getElementsByTagName('html')[0].contentEditable = 'false';
 //     dFrameContents.getElementsByTagName('html')[0].classList.remove("spellcheck");
 //
-//     mFrame.getElementsByTagName('html')[0].contentEditable = 'true';
-//     mFrame.getElementsByTagName('html')[0].classList.add("spellcheck");
-//     mFrame.getElementsByTagName('body')[0].focus();
+//     mFrameContents.getElementsByTagName('html')[0].contentEditable = 'true';
+//     mFrameContents.getElementsByTagName('html')[0].classList.add("spellcheck");
+//     mFrameContents.getElementsByTagName('body')[0].focus();
 //   }, 200);
 //
 //   setTimeout(function() {
-//     mFrame.getElementsByTagName('html')[0].contentEditable = 'false';
-//     mFrame.getElementsByTagName('html')[0].classList.remove("spellcheck");
+//     mFrameContents.getElementsByTagName('html')[0].contentEditable = 'false';
+//     mFrameContents.getElementsByTagName('html')[0].classList.remove("spellcheck");
 //
 //     document.querySelector('.mod-preheader .mod-body').contentEditable = 'true';
 //     document.querySelector('.mod-preheader .mod-body').focus();
@@ -4656,130 +5253,130 @@ if ( getParameterByName("imgdims") === "1" ) {
 ///////////////////////////////////////////////////////////////////////////////
 
     //////////
-
-    chrome.runtime.onMessage.addListener(
-      function(request, sender, sendResponse) {
-
-          // console.log("request.greeting: " + request.greeting);
-          var blogStatusReply = request.greeting.split("|");
-          console.log("blogStatusReply: ");
-          console.log(blogStatusReply);
-
-          if ( blogStatusReply[1] === "error" ) {
-
-          } else {
-
-            // console.log("blogStatusReply: " + blogStatusReply);
-            // console.log("blogStatusReply[4]: " + blogStatusReply[4]);
-
-            var blogUrlChecked = document.querySelector("#iframe-" + blogStatusReply[4]).getAttribute("src").replace(/[?&]blog\-check.+/gi, "");
-
-
-            console.log("blogStatusReply[4]: ");
-            console.log(blogStatusReply[4]);
-            console.log("blogUrlChecked: " + blogUrlChecked);
-
-
-            blogUrlChecked = processBlogLinkBeingChecked(blogUrlChecked);
-
-            blogStatusSuccessArray.push(blogUrlChecked);
-
-
-            // if ( /after_affiliate_url/gi.test(blogUrlChecked) ) {
-            //   blogUrlChecked = blogUrlChecked.replace(/\&.+/gi, "");
-            //   console.log("blogUrlChecked: " + blogUrlChecked);
+            //
+            // chrome.runtime.onMessage.addListener(
+            //   function(request, sender, sendResponse) {
+            //
+            //       // console.log("request.greeting: " + request.greeting);
+            //       var blogStatusReply = request.greeting.split("|");
+            //       console.log("blogStatusReply: ");
+            //       console.log(blogStatusReply);
+            //
+            //       if ( blogStatusReply[1] === "error" ) {
+            //
+            //       } else {
+            //
+            //         // console.log("blogStatusReply: " + blogStatusReply);
+            //         // console.log("blogStatusReply[4]: " + blogStatusReply[4]);
+            //
+            //         var blogUrlChecked = document.querySelector("#iframe-" + blogStatusReply[4]).getAttribute("src").replace(/[?&]blog\-check.+/gi, "");
+            //
+            //
+            //         console.log("blogStatusReply[4]: ");
+            //         console.log(blogStatusReply[4]);
+            //         console.log("blogUrlChecked: " + blogUrlChecked);
+            //
+            //
+            //         blogUrlChecked = processBlogLinkBeingChecked(blogUrlChecked);
+            //
+            //         blogStatusSuccessArray.push(blogUrlChecked);
+            //
+            //
+            //         // if ( /after_affiliate_url/gi.test(blogUrlChecked) ) {
+            //         //   blogUrlChecked = blogUrlChecked.replace(/\&.+/gi, "");
+            //         //   console.log("blogUrlChecked: " + blogUrlChecked);
+            //         // }
+            //         // // New way to link articles in -ns and -sub. Using the p=#### id of the article lets us keep the same link if the URL changes in the future
+            //         // else if ( /p=\d\d\d/gi.test(linkHref) ) {
+            //         //   console.log("This blog link uses p=#### id for linking.")
+            //         //   var blogLinkToCheckArray = linkHref.match(/p=[0-9]*/gi);
+            //         //   var blogLinkToCheck = blogLinkToCheckArray[0].replace(/p=/gi,"");
+            //         // }
+            //         // else {
+            //         //   blogUrlChecked = blogUrlChecked.replace(/\?.+/gi, "");
+            //         //   console.log("blogUrlChecked: " + blogUrlChecked);
+            //         // }
+            //
+            //         blogUrlChecked = blogUrlChecked.replace(/^https?\:\/\/.+?\//i, "");
+            //         blogUrlChecked = blogUrlChecked.replace(/\/$/i, "");
+            //
+            //         // console.log(blogUrlChecked);
+            //         // console.log(blogStatusReply[1] + "|" + blogUrlChecked);
+            //
+            //         console.log("Saving to sessionStorage: " + blogUrlChecked + " - " + blogStatusReply);
+            //         sessionStorage.setItem(blogUrlChecked, blogStatusReply);
+            //
+            //         destroy(document.querySelector("#iframe-" + blogStatusReply[4]));
+            //         // console.log("#iframe-" + blogStatusReply[4] + " destroyed.")
+            //
+            //       }
+            //
+            //
+            //   }
+            // );
+            //
+            //
+            // function processBlogLinkBeingChecked(link) {
+            //
+            //   console.log("function is processing the blog link being checked: " + link);
+            //
+            //   // First 'if' handles the blog link when we eventually are allowed to use after_affiliate_url for blog links, this is just future proofing (4/14/17)
+            //   // if ( /after_affiliate_url/gi.test(link) ) {
+            //   //   console.log("This blog link uses after_affiliate_url for linking.");
+            //   //   var blogLinkToCheck = link.replace(/\&.+/gi, "");
+            //   //       blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?after_affiliate_url\=\/?/gi, "");
+            //   //       console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
+            //   // }
+            //   // // New way to link articles in -ns and -sub. Using the p=#### id of the article lets us keep the same link if the URL changes in the future
+            //   // else
+            //
+            //   if ( /p=\d\d\d/gi.test(link) ) {
+            //     console.log("This blog link uses p=#### id for linking.")
+            //     var blogLinkToCheckArray = link.match(/p=[0-9]*/gi);
+            //     var blogLinkToCheck = blogLinkToCheckArray[0].replace(/p=/gi,"");
+            //         console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
+            //   }
+            //   else {
+            //     console.log("This blog link uses ??? for linking.");
+            //     var blogLinkToCheck = link.replace(/\/?\?.+/gi, "");
+            //         blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?\//gi, "");
+            //         console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
+            //   }
+            //
+            //   return blogLinkToCheck;
+            //
             // }
-            // // New way to link articles in -ns and -sub. Using the p=#### id of the article lets us keep the same link if the URL changes in the future
-            // else if ( /p=\d\d\d/gi.test(linkHref) ) {
-            //   console.log("This blog link uses p=#### id for linking.")
-            //   var blogLinkToCheckArray = linkHref.match(/p=[0-9]*/gi);
-            //   var blogLinkToCheck = blogLinkToCheckArray[0].replace(/p=/gi,"");
+            //
+            // // Need to use this during link checking and again once the postMessages come back. Figure that out.
+            // function checkArticleLink(linkObject, blogStatusFromStorage) {
+            //
+            //   // console.log(link.href);
+            //   // console.log(blogStatusFromStorage);
+            //
+            //   var blogStatusFromStorage = blogStatusFromStorage;
+            //   // Check Protects/Unprotected
+            //   if ( blogStatusFromStorage[2] === "protected" ) {
+            //     createLinkErrorRow(linkObject, "article is protected", "error", "lock");
+            //     totalProtectedArticles++;
+            //   }
+            //   // Check Pearl vs Blog
+            //   if ( linkNeedsGoogleTracking ) {
+            //     if ( blogStatusFromStorage[3] === "blog" && !/utm_content=.+?\-blog/gi.test(linkObject.href) ) {
+            //       createLinkErrorRow(linkObject, "add 'blog' to utm");
+            //     } else if ( blogStatusFromStorage[3] === "pearl" && !/utm_content=.+?\-pearl/gi.test(linkObject.href) ) {
+            //       createLinkErrorRow(linkObject, "add 'pearl' to utm");
+            //     }
+            //   }
+            //
+            //   // console.error(totalProtectedArticles);
             // }
-            // else {
-            //   blogUrlChecked = blogUrlChecked.replace(/\?.+/gi, "");
-            //   console.log("blogUrlChecked: " + blogUrlChecked);
+            //
+            // // console.error(totalProtectedArticles);
+            //
+            // if ( totalProtectedArticles > 0 ) {
+            //   console.error(totalProtectedArticles);
+            //   alertify.error("1 or more articles are protected<div>Remember to unprotect all articles and re-check their status before sending out the newsletter.</div>", 0);
             // }
-
-            blogUrlChecked = blogUrlChecked.replace(/^https?\:\/\/.+?\//i, "");
-            blogUrlChecked = blogUrlChecked.replace(/\/$/i, "");
-
-            // console.log(blogUrlChecked);
-            // console.log(blogStatusReply[1] + "|" + blogUrlChecked);
-
-            console.log("Saving to sessionStorage: " + blogUrlChecked + " - " + blogStatusReply);
-            sessionStorage.setItem(blogUrlChecked, blogStatusReply);
-
-            destroy(document.querySelector("#iframe-" + blogStatusReply[4]));
-            // console.log("#iframe-" + blogStatusReply[4] + " destroyed.")
-
-          }
-
-
-      }
-    );
-
-
-    function processBlogLinkBeingChecked(link) {
-
-      console.log("function is processing the blog link being checked: " + link);
-
-      // First 'if' handles the blog link when we eventually are allowed to use after_affiliate_url for blog links, this is just future proofing (4/14/17)
-      // if ( /after_affiliate_url/gi.test(link) ) {
-      //   console.log("This blog link uses after_affiliate_url for linking.");
-      //   var blogLinkToCheck = link.replace(/\&.+/gi, "");
-      //       blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?after_affiliate_url\=\/?/gi, "");
-      //       console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
-      // }
-      // // New way to link articles in -ns and -sub. Using the p=#### id of the article lets us keep the same link if the URL changes in the future
-      // else
-
-      if ( /p=\d\d\d/gi.test(link) ) {
-        console.log("This blog link uses p=#### id for linking.")
-        var blogLinkToCheckArray = link.match(/p=[0-9]*/gi);
-        var blogLinkToCheck = blogLinkToCheckArray[0].replace(/p=/gi,"");
-            console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
-      }
-      else {
-        console.log("This blog link uses ??? for linking.");
-        var blogLinkToCheck = link.replace(/\/?\?.+/gi, "");
-            blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?\//gi, "");
-            console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
-      }
-
-      return blogLinkToCheck;
-
-    }
-
-    // Need to use this during link checking and again once the postMessages come back. Figure that out.
-    function checkArticleLink(linkObject, blogStatusFromStorage) {
-
-      // console.log(link.href);
-      // console.log(blogStatusFromStorage);
-
-      var blogStatusFromStorage = blogStatusFromStorage;
-      // Check Protects/Unprotected
-      if ( blogStatusFromStorage[2] === "protected" ) {
-        createLinkErrorRow(linkObject, "article is protected", "error", "lock");
-        totalProtectedArticles++;
-      }
-      // Check Pearl vs Blog
-      if ( linkNeedsGoogleTracking ) {
-        if ( blogStatusFromStorage[3] === "blog" && !/utm_content=.+?\-blog/gi.test(linkObject.href) ) {
-          createLinkErrorRow(linkObject, "add 'blog' to utm");
-        } else if ( blogStatusFromStorage[3] === "pearl" && !/utm_content=.+?\-pearl/gi.test(linkObject.href) ) {
-          createLinkErrorRow(linkObject, "add 'pearl' to utm");
-        }
-      }
-
-      // console.error(totalProtectedArticles);
-    }
-
-    // console.error(totalProtectedArticles);
-
-    if ( totalProtectedArticles > 0 ) {
-      console.error(totalProtectedArticles);
-      alertify.error("1 or more articles are protected<div>Remember to unprotect all articles and re-check their status before sending out the newsletter.</div>", 0);
-    }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4795,12 +5392,12 @@ if ( getParameterByName("imgdims") === "1" ) {
 dFrameContents.addEventListener('scroll', function(e) {
   syncScroll(dFrameContents, document.querySelector("#desktop-view"));
 });
-mFrame.addEventListener('scroll', function(e) {
-  syncScroll(mFrame, document.querySelector("#mobile-view"));
+mFrameContents.addEventListener('scroll', function(e) {
+  syncScroll(mFrameContents, document.querySelector("#mobile-view"));
 });
 
     // dFrameContents.removeEventListener('scroll', makeBackgroundYellow, false);
-    // mFrame.removeEventListener('scroll', makeBackgroundYellow, false);
+    // mFrameContents.removeEventListener('scroll', makeBackgroundYellow, false);
 
 function syncScroll(targetFrame, iFrameObj) {
 
@@ -4823,8 +5420,8 @@ function syncScroll(targetFrame, iFrameObj) {
     // console.log("targetFrameHeight: " + targetFrameHeight + ", targetScrollPos: " + targetScrollPos + ", targetScrollPerc: " + targetScrollPerc);
 
     if ( iFrameObj.id === "desktop-view" ) {
-      // var matchingFramePos = (mFrame.body.scrollHeight - mFrame.body.clientHeight) * targetScrollPerc;
-      var matchingFramePos = (mFrame.body.scrollHeight - document.querySelector("#mobile-view").clientHeight) * targetScrollPerc;
+      // var matchingFramePos = (mFrameContents.body.scrollHeight - mFrameContents.body.clientHeight) * targetScrollPerc;
+      var matchingFramePos = (mFrameContents.body.scrollHeight - document.querySelector("#mobile-view").clientHeight) * targetScrollPerc;
       var matchingFrameScroll = document.getElementById('mobile-view');
       // console.log("Active: Scrolling Desktop View - targetScrollPerc: " + targetScrollPerc + ", matchingFramePos: " + matchingFramePos);
     } else {

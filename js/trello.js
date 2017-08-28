@@ -1,4 +1,86 @@
-console.warn(">>> trello.js loaded");
+console.warn("[sonic-toolkit-extension] loaded /js/trello.js");
+///////////////////////////////////////////////////////////////
+
+// Add support for using shortcuts when inputs are focused.
+// https://github.com/madrobby/keymaster#filter-key-presses
+key.filter = function(event){
+  var tagName = (event.target || event.srcElement).tagName;
+  key.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
+  return true;
+}
+
+// Save open editing window
+key('⌘+s, ctrl+s', function(event){
+
+  console.log("Save current edits.")
+
+  if ( elExists(document.querySelector(".edit-controls .confirm.mod-submit-edit.js-save-edit")) ) {
+    document.querySelector(".edit-controls .confirm.mod-submit-edit.js-save-edit").click();
+  }
+
+  // Regardless if the save button exists or not, block the browser save function.
+  return false; //prevent default browser function
+});
+
+
+// Bold
+key('⌘+b, ctrl+b, ⌘+i, ctrl+i', function(event, handler){
+
+
+  console.log(handler.shortcut, handler.scope);
+
+  console.log("Make text bold with markdown");
+
+  var text = "";
+  // var range;
+  // var range2;
+
+  var activeEl = document.activeElement;
+
+  // var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+  //
+  // if (
+  //   (activeElTagName == "textarea") || (activeElTagName == "input" &&
+  //   /^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
+  //   (typeof activeEl.selectionStart == "number")
+  // ) {
+  //     text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+  //
+  // } else if (window.getSelection) {
+  //     text = window.getSelection().toString();
+  // }
+  // console.log(text);
+
+
+  let {selectionStart, selectionEnd} = activeEl;
+
+  // nothing is selected
+  if (selectionStart === selectionEnd) return;
+
+  let string = activeEl.value;
+  let prefix = string.substring(0, selectionStart);
+  let infix = string.substring(selectionStart, selectionEnd);
+  let postfix = string.substring(selectionEnd);
+
+  if ( /b/.test(handler.shortcut) ) {
+    var markdown = "**"
+  } else if ( /i/.test(handler.shortcut) ) {
+    var markdown = "*";
+  }
+  activeEl.value = prefix + markdown + infix + markdown + postfix;
+
+
+
+  return false; //prevent default browser function
+});
+
+// Duplicate currently selected line
+key('⌘+d, ctrl+d', function(event){
+
+  console.log("Duplicate currently selected line.")
+
+  return false; //prevent default browser function
+});
 
 // HELP
 // https://developer.chrome.com/extensions/storage
@@ -55,3 +137,30 @@ console.warn(">>> trello.js loaded");
 //
 //   }
 // };
+
+
+// Add a Copy Button to <code> blocks.
+//////////////////////////////////////
+document.arrive(".description-content .markeddown", function() {
+
+  console.log("markeddown arrived!");
+
+  console.log(this);
+
+  let codeBlocks = this.querySelectorAll("pre");
+  for (let codeBlock of codeBlocks) {
+    console.log(codeBlock);
+
+    var codeToCopy = codeBlock.querySelectorAll("code")[0].innerText;
+
+    var copyCode = document.createElement("div");
+    copyCode.innerText = "Copy";
+    copyCode.style = "border-radius:4px;background:rgb(177, 221, 242); padding:2px 6px;font-weight:bold; display:inline-block; font-size:10px; margin-bottom:12px; position:relative; top:-5px;"
+
+    createCopyBtn(copyCode, codeToCopy);
+
+    insertAfter(copyCode, codeBlock);
+
+  }
+
+});
