@@ -130,19 +130,23 @@ function getFilename(url) {
 
 //
 // Process filename to find email date
+// Filenames should use YY-MM-DD.
+// YYYY can be used as well, but will be ignored. No harm!
 //
 function getEmailDate(filename) {
 
-  var year = filename.substring(0, 2);
-  var month = filename.substring(3, 5);
-  var day = filename.substring(6, 8);
+  var dateArray = filename.match(/\d\d-\d\d-\d\d/g);
 
-  // console.error(filename);
-  // console.error(year);
-  // console.error(month);
-  // console.error(day);
+  if ( dateArray ) {
+  	dateArray = dateArray[0].split("-")
 
-  // Use / and not - http://stackoverflow.com/a/31732581/556079
+    var year = dateArray[0];
+    var month = dateArray[1];
+    var day = dateArray[2];
+
+  }
+
+  // Use forward slash /, not hyphen - http://stackoverflow.com/a/31732581/556079
   var emailDate = "20" + year + "/" + month + "/" + day;
   emailDate = new Date(emailDate);
 
@@ -156,8 +160,6 @@ function getEmailDate(filename) {
   //   }
 
   return emailDate
-
-
 
 }
 
@@ -270,6 +272,36 @@ function isRecentEmail(emailDate) {
   }
 }
 
+//
+//
+//
+function addToDate(date, days) {
+
+  var calculatedDate = new Date(date.setDate(date.getDate()+days));
+  return calculatedDate;
+
+}
+function subtractFromDate(date, days) {
+
+  var calculatedDate = new Date(date.setDate(date.getDate()-days));
+  return calculatedDate;
+
+}
+
+//
+// Process string to find organization
+//
+function getOrgId(string) {
+
+  var trimmedString = string.trim();
+  
+       if ( /-HS(\s|-|\.|$)/gi.test(trimmedString)  )      { var orgId = "hs";    }
+  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString)  )      { var orgId = "dr";    }
+  else if ( /-FOX(\s|-|\.|$)/gi.test(trimmedString) )      { var orgId = "fox";   }
+  else    { var orgId = "mb"; }
+
+  return orgId;
+}
 
 //
 // Process string to find disciplineId

@@ -76,6 +76,7 @@ if ( mcCampaignName ) {
 function applyMcTheme() {
 
   pageDisciplineId = getDisciplineId(mcCampaignName);
+  orgId = getOrgId(mcCampaignName);
 
   if ( pageDisciplineId ) {
     document.body.classList.add("discipline-ready");

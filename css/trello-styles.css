@@ -16,16 +16,22 @@
 }
 
 /* */
+.calendar-table {
+  border-spacing:16px !important;
+}
+
 .calendar-content .card-label.mod-card-front {
-  height:4px !important;
+  min-width:12px; max-width:12px;
+  min-height:12px; max-height:12px;
+  margin-top: 0 !important; margin-bottom:0 !important;
 }
 
 .calendar-content .day-cell {
-  width:16.8% !important;
-  height:200px !important;
+  width:18% !important;
+  height:300px !important;
 }
 .calendar-content .day-cell:last-child, .calendar-content .day-cell:first-child {
-  width:8% !important;
+  width:5% !important;
   opacity:.33 !important;
 }
 
@@ -35,11 +41,30 @@
 }
 
 .calendar-content .list-card-details {
-  padding:4px 6px 0px 8px !important;
+  padding:2px 6px 0px 8px !important;
+}
+
+/* Is Complete */
+.calendar-content .is-due-complete {
+  opacity:.5;
+}
+.calendar-month .list-card.is-due-complete .list-card-title {
+  font-style: normal !important;
+}
+
+
+.calendar-content .list-card-title {
+  font-size:11px;
+  margin-bottom:2px;
 }
 
 .calendar-content .list-card-labels {
-  margin-bottom:0 !important;
+  position: absolute;
+  top: 0;
+  bottom:0;
+  margin: auto !important;
+  right: 0;
+  height:12px;
 }
 
 .calendar-content .day-cell a {

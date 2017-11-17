@@ -155,26 +155,44 @@ var totalUrgentDrafts;
 ///////
 ///////
 //
-// HARVEST!
+// HARVEST A/B DATA
+//
+//=================
+//
+// The purpose of this function is to load the report pages of A/B campaigns.
+// This does not capture data from NON-A/B campaigns, or campaigns that have not been delivered.
+// Once the page is loaded, a separate script called mailchimp-capture.js scans the page for data.
+// That data is then saved to the extensions chrome.local.storage for export later.
+// This data pertains to IDs of each A/B test that cannot be extracted from just the main campaigns overview page.
+// Go to Extensions > Background page > Storage Explorer to find the saved data.
+// Add this data to the local Excel reporting file.
+// Once all of the data is extracted from a page, the tab is closed and the function continues by opening the next link as a new tab.
 //
 ///////
 ///////
 
-        // var harvestDataBtn = document.createElement("a");
-        //     harvestDataBtn.className = "button !margin-right--lv0 jk-btn jk-export-extra-data";
-        //     harvestDataBtn.innerHTML = "Harvest Data";
-        //     harvestDataBtn.addEventListener("click", harvestData, false);
-        //
-        // // Add it to the DOM with the rest of the buttons
-        // headerBtns.insertBefore(harvestDataBtn, dlSentCampaigns);
+
+
+
+var leftNav = document.querySelector("#campaigns-nav");
+
+var harvestDataBtn = document.createElement("a");
+    harvestDataBtn.className = "button !margin-right--lv0 jk-btn jk-export-extra-data";
+    harvestDataBtn.innerHTML = "Harvest A/B Data";
+    harvestDataBtn.addEventListener("click", harvestData, false);
+
+    // Add it to the DOM with the rest of the buttons
+    leftNav.prepend(harvestDataBtn);
 
 function harvestData() {
 
-    let arr = document.querySelectorAll("a[title='Campaign Name']");
+    // let arr = document.querySelectorAll("a[title='Campaign Name']");
+    let arr = document.querySelectorAll("li[data-type='A/B'][data-status='delivered'] a.c-campaignManager_slat_details_link");
     let genObj = genFunc();
 
     let val = genObj.next();
 
+    console.log(val);
     console.log(val.value);
     console.log(val.value.href.replace(/^.+?id=/gi,""));
     window.open('https://us2.admin.mailchimp.com/reports/show?id=' + val.value.href.replace(/^.+?id=/gi,"") + "&capture=1", '_blank');
@@ -205,24 +223,29 @@ function harvestData() {
 ///////
 ///////
 //
-// Create a New Button
+// Export Extra Data
+//
+//
+// Grabs data from every row in the campaigns page and displays it in a modal.
+// Used for matching campaign types "A/B" or "Regular" using UID's in our excel report.
 //
 ///////
 ///////
-          //
-          // var exportExtraCampaignData = document.createElement("a");
-          //     exportExtraCampaignData.className = "button !margin-right--lv0 jk-btn jk-export-extra-data";
-          //     exportExtraCampaignData.innerHTML = "Export Extra Data";
-          //     exportExtraCampaignData.addEventListener("click", processExtraData, false);
-          //
-          // // Add it to the DOM with the rest of the buttons
-          // headerBtns.insertBefore(exportExtraCampaignData, dlSentCampaigns);
+
+  var exportExtraCampaignData = document.createElement("a");
+      exportExtraCampaignData.className = "button !margin-right--lv0 jk-btn jk-export-extra-data";
+      exportExtraCampaignData.innerHTML = "Export Extra Data";
+      exportExtraCampaignData.addEventListener("click", processExtraData, false);
+
+  // Add it to the DOM with the rest of the buttons
+  leftNav.prepend(exportExtraCampaignData);
 
 function processExtraData() {
 
   var data = "";
 
-  let rows = document.querySelectorAll(".campaign-list-row");
+  // let rows = document.querySelectorAll(".campaign-list-row");
+  let rows = document.querySelectorAll(".c-campaignManager_list_group > ul > li");
   for (let row of rows) {
 
     if ( row.dataset.status === "delivered" )  {
@@ -232,7 +255,6 @@ function processExtraData() {
   }
 
   data = data.trim();
-
 
 
   // instanciate new modal
@@ -401,7 +423,7 @@ function processCampaignList() {
   for (let campaignRow of campaignsList) {
 
     // Mark this row as processed.
-    campaignRow.classList.add("processed");
+    campaignRow.classList.add("processed", "campaign-list-row");
 
     // Campaign Variables
     var emailIcon          = campaignRow.querySelector(".c-channelIcon--email");
@@ -470,7 +492,7 @@ function processCampaignList() {
 
 
     // Destroy <b> in list name.
-    destroy(campaignList.childNodes[0]);
+    // destroy(campaignList.childNodes[0]);
 
     // campaignRow.classList.add("campaign-list-row");
 
@@ -489,8 +511,8 @@ function processCampaignList() {
     }
     disciplineImg.className = "position--relative";
     disciplineImg.style = "margin-right:9px;";
-    disciplineImg.width = "30";
-    disciplineImg.height = "30";
+    disciplineImg.width = "20";
+    disciplineImg.height = "20";
     insertBefore(disciplineImg, campaignDetails);
 
 

@@ -27,3 +27,30 @@
 .jk-helpBar .copy:hover {
   background:#07478b;
 }
+
+
+
+/*************/
+/*           */
+/* PROTECTED */
+/*           */
+/*************/
+
+.post-protected #top_bg,
+.post-protected #top_bg .section.def_section,
+.post-protected #top_bg .post p,
+.post-protected #top_bg .post div,
+.post-protected #top_bg .post h2,
+.post-protected #top_bg .post h3,
+.post-protected #top_bg .post h4,
+.post-protected #top_bg .post h5,
+.post-protected #top_bg .post h6
+
+{
+  background:#d62a61 !important;
+  color:#fff !important;
+}
+
+.post-protected #top_bg .section.def_section a {
+  color:#ffb0c9 !important;
+}

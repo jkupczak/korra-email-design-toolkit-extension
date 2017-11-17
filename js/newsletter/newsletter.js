@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/newsletter.js");
+console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 ///////////////////////////////////////////////////////////////////
 
 //
@@ -8,6 +8,14 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter.js");
 // ALERT IF ITS MC OR GR CODES
 //
 //
+
+/////
+/////
+// KNOWN-ERROR!!
+// tables that are 100% width should not be aligned left, always align center.
+// theres a bug in outlook that causes the next <table> element to be hidden if the previous one was 100% width and left aligned. This happens even if the two tables are not direct siblings. For example, if they are separated by a </td><td> this bug will still happen.
+/////
+/////
 
 ////////////////////////////////
 ////////////////////////////////
@@ -70,7 +78,22 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter.js");
 
 ///--------
 
+// Command/Ctrl Click a link to reveal link info?
+//   - Full URL
+//   - List of attached UTMs
+//   - Times this link occurs in the document (And which time it is, is it the 1st occurence of this link?)
+//       - Ignore utms
+//   - Order of this link (is it the 1st link? the 5th?)
+//   Denote if it's a tracking URL or not, if its a blog link, if its a MedBridge or 3rd party link
+
+///--------
+
 // When desktop frame gets to mobile size (<480), hide vertical scrollbar.
+// Listen for scrolling with mousewheel, arrow keys, and ctrl/cmd+arrow keys when an iframe isn't in focus and apply the scrolling to the iframes!
+
+///--------
+
+// Apply checkmarks next to each link that passes validation. Toggle-able so that it doesn't appear by default?
 
 ///--------
 
@@ -901,6 +924,13 @@ if ( getParameterByName("presentation") === "1" ) {
     dFrameFrameScript.src = chrome.extension.getURL('js/newsletter/dFrame.js');
     insertAfter(dFrameFrameScript, dFrameContents.body);
 
+    // Add <base>
+    // Forces all links within the iFrame to open in their own separate tabs.
+    // <base target="_blank" />
+    var dFrameBase = document.createElement("base");
+    dFrameBase.target = "_blank";
+    dFrameContents.head.append(dFrameBase);
+
   /////////
   /////////
   ///////// MOBILE
@@ -955,7 +985,7 @@ if ( getParameterByName("presentation") === "1" ) {
     //
     var mStyleElement = mFrameContents.createElement("style");
         mStyleElement.className = "debug";
-    mStyleElement.appendChild(mFrameContents.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; } * { cursor:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAARVBMVEUAAABdXV0AAABdXV0bGxtOTk5dXV1dXV1dXV1dXV0uLi4lJSUODg4HBwddXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV04FrOjAAAAF3RSTlOMqACik6NmF5oImZaQjomEWgU5mSE6W6bKrUEAAADNSURBVDjLhZPdEoQgCIXZMEnT/Kn2/R91sR2trXU4d8o3HESAoclkHSbEKehsztsGkMZXE2q6ASnWcEViugK0lMvRKue9U3Ysp4VOYFtLWEGTKsi6VYAmPs7wo5mvJvoCqeRXcJMqLukAYo0/iVgAwpb/4YLEgOb64K+4Uj2AwdPgaYIG8pGgmyIDO9geYNkDwuHQ9QjATXI9wHGzgGv0PcBzlSIgWohFis8UGyW2Wvos8buFgXlLI2fEoZXHXl4cefXk5W0ye13//bL+H4yFCQFUrJO8AAAAAElFTkSuQmCC) 16 16, none; } /* .spellcheck body { color:transparent; } */") );
+    mStyleElement.appendChild(mFrameContents.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; }") );
     mFrameContents.getElementsByTagName("head")[0].appendChild(mStyleElement);
 
     // Add allFrames.js
@@ -968,6 +998,12 @@ if ( getParameterByName("presentation") === "1" ) {
     mFrameScript.src = chrome.extension.getURL('js/newsletter/mFrame.js');
     insertAfter(mFrameScript, mFrameContents.body);
 
+    // Add <base>
+    // Forces all links within the iFrame to open in their own separate tabs.
+    // <base target="_blank" />
+    var mFrameBase = document.createElement("base");
+    mFrameBase.target = "_blank";
+    mFrameContents.head.append(mFrameBase);
 
     // Add allFrames.css
     // var allFramesStyles = document.createElement("link");
@@ -1019,9 +1055,23 @@ var fileName = getFilename(pageUrl);
 
 
 ///////////
+///// Get the Platform
+///////////
+
+var emailPlatform;
+var emailPlatformName;
+if ( /^GR\-/i.test(fileName) ) {
+  emailPlatform = "gr";
+  emailPlatformName = "GetResponse";
+} else {
+  emailPlatform = "mc";
+  emailPlatformName = "MailChimp";
+}
+
+///////////
 ///// Get Discipline
 ///////////
-var emailDisc = getDisciplineId(pageUrl);
+var emailDisc = getDisciplineId(fileName);
 document.body.classList.add("disc-" + emailDisc);
 
 ///////////
@@ -1123,6 +1173,7 @@ if ( /\-(HS|DR|Fox)\-/gi.test(pageUrl) ) {
 var emailAnySale = false;
 var emailSale = false;
 var emailPresale = false;
+
 if ( /\-Sale\-/gi.test(pageUrl) ) {
   emailSale = true;
   emailAnySale = true;
@@ -1141,7 +1192,13 @@ var emailTitle = getEmailTitle(fileName, emailDisc);
 ///////////
 ///// Get Date of Email
 ///////////
-var emailDate = getEmailDate(fileName);
+var emailDate = getEmailDate(fileName) || new Date();
+
+// If no email date is found in the filename, set the emailDate variable to be today's date.
+if ( isNaN(emailDate) == true ) { // ref - http://stackoverflow.com/a/1353710/556079
+  emailDate = new Date();;
+}
+
 var emailMonthAbbr = getMonthAbbr(emailDate);
 
 
@@ -1164,6 +1221,10 @@ var totalTextErrors = 0;
 ///////////
 
 console.groupCollapsed("Global variables based on filename");
+
+  console.group("Platform");
+    console.log("emailPlatform = " + emailPlatform);
+  console.groupEnd();
 
   console.group("Location");
     console.log("pageUrl = " + pageUrl);
@@ -1199,41 +1260,6 @@ console.groupEnd();
     dFrameContents.body.classList.add("disc-" + emailDisc);
     mFrameContents.body.classList.add("disc-" + emailDisc);
 
-
-
-//////////////////////////////////////////////////////
-//////////////////////////////////////////////////////
-////                                              ////
-////  Global Functions                            ////
-////                                              ////
-//////////////////////////////////////////////////////
-//////////////////////////////////////////////////////
-
-
-
-/////////////////////////////
-/////
-/////   KeyPress Capture
-/////
-/////////////////////////////
-
-// Watch for keypresses and react accordingly.
-// Load in ASAP so that we can catch everything as the page is loading.
-window.onkeydown = KeyPress;
-
-function KeyPress(e) {
-
-  // Get the event keycodes
-  var evtobj = window.event? event : e
-
-  // Zoom Detection
-  // Watch for Chrome zoom shortcuts, cmd/ctrl plus +/-/0
-  // Block their function and let zoom.js handle the rest.
-  if ( (e.ctrlKey || e.metaKey) && (evtobj.keyCode == 48 || evtobj.keyCode == 187 || evtobj.keyCode == 189) ) {
-    e.preventDefault();
-    checkZoomLevel();
-  }
-}
 
 
 
@@ -1279,76 +1305,6 @@ function showdFrameWidthStatus() {
 // https://stackoverflow.com/a/39312522/556079
 
 
-/////////////////////////////
-/////
-/////   Change mobile viewport width
-/////
-/////////////////////////////
-
-function changeMobileSize(width) {
-
-  if ( typeof width === 'string' || width instanceof String ) {
-    console.error(width);
-    var widthToSet = width + "px";
-    console.log("if");
-
-    document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
-    document.querySelector(".mobile-iframe-settings [data-mobile-width='"+ width + "']").classList.add("active");
-
-  } else {
-
-    if (typeof(event) !== "undefined") {
-      if (event.target.dataset.mobileWidth !== undefined) {
-        var clickedSize = event.target;
-        var selectedSize = event.target.dataset.mobileWidth;
-
-        var widthToSet = selectedSize + "px";
-
-        if ( selectedSize !== "320" ) {
-          history.replaceState(null,null, updateQueryString("mobilewidth", selectedSize) );
-        } else {
-          history.replaceState(null,null, updateQueryString("mobilewidth", null) );
-        }
-
-        document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
-        clickedSize.classList.add("active");
-      }
-    }
-
-  }
-  mobileDeviceWrapper.style.width = widthToSet
-  showdFrameWidthStatus();
-}
-
-
-
-//////////////////////////////////////////////////////
-//////////////////////////////////////////////////////
-////                                              ////
-////  Newsletter Functions                        ////
-////                                              ////
-//////////////////////////////////////////////////////
-//////////////////////////////////////////////////////
-
-function pinLinkMarker() {
-  // http://stackoverflow.com/a/8454104/556079
-  this.nextSibling.style.display = this.nextSibling.style.display === 'block' ? '' : 'block';
-}
-
-function unpinLinkMarker() {
-  // http://stackoverflow.com/a/6042235/556079
-  var flag = 0;
-
-  this.addEventListener("mousemove", function(){
-    flag = 1;
-  }, false);
-
-  this.addEventListener("mouseup", function(){
-    if(flag === 0){
-      this.style.display = "";
-    }
-  }, false);
-}
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -2202,15 +2158,21 @@ if ( !isRecentEmail ) {
 ////
 /////////
 
-var blogOrb = document.createElement("div");
-blogOrb.id = "blog-orb";
-blogOrb.className = "blog-orb orb glyph";
-blogOrb.addEventListener("click", runCheckTheBlog, false);
-orbsBottom.appendChild(blogOrb);
+  // !!!!!!!!!!!!!!!!!!!!
+  //
+  // FUNCTION COMMENTED OUT. THE SWITCH TO HTTPS MEANS THIS NO LONGER WORKS. NEED TO FIX!
+  //
 
-function runCheckTheBlog() {
-  checkTheBlog();
-}
+// var blogOrb = document.createElement("div");
+// blogOrb.id = "blog-orb";
+// blogOrb.className = "blog-orb orb glyph";
+// blogOrb.addEventListener("click", runCheckTheBlog, false);
+// orbsBottom.appendChild(blogOrb);
+//
+// function runCheckTheBlog() {
+//   // Code that runs the blog check is located in a separate file.
+//   checkTheBlog();
+// }
 
 //////////
 ////
@@ -2218,16 +2180,16 @@ function runCheckTheBlog() {
 ////
 /////////
 
-var zoomCheckOrb = document.createElement("div");
-zoomCheckOrb.id = "zoom-check-orb";
-zoomCheckOrb.className = "zoom-check-orb orb glyph icomoon icomoon-search";
-zoomCheckOrb.addEventListener("click", zoomCheck, false);
-orbsBottom.appendChild(zoomCheckOrb);
-var showDimsToggle = false;
-
-function zoomCheck() {
-
-}
+// var zoomCheckOrb = document.createElement("div");
+// zoomCheckOrb.id = "zoom-check-orb";
+// zoomCheckOrb.className = "zoom-check-orb orb glyph icomoon icomoon-search";
+// zoomCheckOrb.addEventListener("click", zoomCheck, false);
+// orbsBottom.appendChild(zoomCheckOrb);
+// var showDimsToggle = false;
+//
+// function zoomCheck() {
+//
+// }
 
 
 
@@ -2911,10 +2873,10 @@ function toggleImgDims() {
 ////
 /////////
 
-var plainTextOrb = document.createElement("div");
-plainTextOrb.className = "plain-text-orb orb glyph";
-plainTextOrb.addEventListener("click", plainText, false);
-orbsBottom.appendChild(plainTextOrb);
+// var plainTextOrb = document.createElement("div");
+// plainTextOrb.className = "plain-text-orb orb glyph";
+// plainTextOrb.addEventListener("click", plainText, false);
+// orbsBottom.appendChild(plainTextOrb);
 
 
 function plainText() {
@@ -3310,7 +3272,7 @@ setTimeout(function() {
   if ( matchRating < 95 ) {
     toast("suppress", "error", "Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.</div>", 0);
     // alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.", 0);
-    preheaderMatchDiv.classList.add("error");
+    // preheaderMatchDiv.classList.add("error");
     // preflightErrors++;
     preflightError();
   }
@@ -3743,8 +3705,8 @@ if (typeof moduleSettingsMenu != 'undefined') {
     // Function to handle creating error markers, error tags (that explain the error), and incrementing the error counter.
     function createLinkErrorRow(link, msg, type, icon) {
 
-      console.log(link);
-      console.log("[" + link.dataset.number + "] " + link);
+      // console.log(link);
+      // console.log("[" + link.dataset.number + "] " + link);
 
       console.error("Error Found: " + msg);
 
@@ -3940,18 +3902,70 @@ dFrameContents.documentElement.appendChild(linkMarkerWrapper);
 /////
 /////
 
-linkValidationLoop("true");
+
+
+linkValidationLoop("false");
 
 function linkValidationLoop(ageCheck) {
 
   let linkList = dFrameContents.querySelectorAll("a");
-  var i = 0
 
   console.groupCollapsed("Links Group for Validation - Total Links Processed: " + linkList.length);
 
-// ageCheck = true | false
+  // Loop through each link on the page first before we validate individually.
+  var allLinkUrlsList = [];
+  var medbridgeLinkUrlsList = [];
+
+  for (let link of linkList) {
+
+    allLinkUrlsList.push(link.href);
+
+    if ( /medbridge(ed(ucation)?|massage)\.com\//gi.test(link.href) ) {
+      medbridgeLinkUrlsList.push(link.href);
+    }
+
+  }
+
+  // Grab all MedBridge links and output them to the console for a quick helpful view.
+  console.groupCollapsed("All MedBridge Links Listed");
+    console.log(medbridgeLinkUrlsList);
+  console.groupEnd();
+
+
+  // Determine if portions of links in -ns emails match each other by finding the most common string and checking against it later when we loop through the links again for validation.
+  // This is important for marketing tracking urls, utm_source, and utm_campaign
+  //////////////////
+  if ( emailSubType === "ns" ) {
+    // tracking url
+    commonTrkUrl = mostCommonString("tracking", medbridgeLinkUrlsList);
+    if ( commonTrkUrl ) {
+      commonTrkUrlRegex = new RegExp(escapeRegExp(commonTrkUrl) + "\/?\\?","i");
+    }
+  }
+
+  // utm_source
+  commonUtmSource = mostCommonString("utm_source", medbridgeLinkUrlsList);
+  if ( commonUtmSource ) {
+    commonUtmSourceRegex = new RegExp(escapeRegExp(commonUtmSource) + "(&|$)","i");
+  }
+  // utm_campaign
+  commonUtmCampaign = mostCommonString("utm_campaign", medbridgeLinkUrlsList);
+  if ( commonUtmCampaign ) {
+    commonUtmCampaignRegex = new RegExp(escapeRegExp(commonUtmCampaign) + "(&|$)","i");
+  }
+
+
+
+
+  // ageCheck = true | false
+  //////////////////////////
   console.log("ageCheck is set to: " + ageCheck);
 
+
+  // Loop through each link and run a validation function on each.
+  /////////////////
+
+  var i = 0
   for (let link of linkList) {
 
     var linkErrors = 0;
@@ -3964,7 +3978,7 @@ function linkValidationLoop(ageCheck) {
     }
 
 
-    if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
+    // if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
 
       // Create link module ROW in left column.
       // var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
@@ -3999,19 +4013,21 @@ function linkValidationLoop(ageCheck) {
       //////////////////////////////
       //////////////////////////////
 
-      if ( isRecentEmail || ageCheck === "false" ) {
-        // Only validate the link if the date on the email filename is recent.
-        validateLinks(link, i);
-      } else {
-        // Else, skip validation of this link.
-        if ( i < 10 ) {
-          var iLog = "0" + i;
-        } else { iLog = i; }
-        console.log("[" + iLog + "] VALIDATION SKIPPED - " + linkHref + " (This IS NOT a recent email, skipping automatic link validation.)");
-      }
+      validateLinks(link, i);
+
+              // if ( isRecentEmail || ageCheck === "false" ) {
+              //   // Only validate the link if the date on the email filename is recent.
+              //   validateLinks(link, i);
+              // } else {
+              //   // Else, skip validation of this link.
+              //   if ( i < 10 ) {
+              //     var iLog = "0" + i;
+              //   } else { iLog = i; }
+              //   console.log("[" + iLog + "] VALIDATION SKIPPED - " + linkHref + " (This IS NOT a recent email, skipping automatic link validation.)");
+              // }
 
 
-    }
+    // }
   }
   console.groupEnd();
 
@@ -4024,10 +4040,11 @@ function validateLinks(link, i) {
 
     // Set link to a variable and clean it if it's local.
     var linkHref = link.href;
-    if ( /^file:.+\//gi.test(linkHref) ) {
-      linkHref = linkHref.replace(/^file:.+\//gi, "");
+    if ( /^(file\:|(https?\:\/\/)?localhost)/gi.test(linkHref) ) {
+      linkHref = linkHref.replace(/^.+\//gi, "");
     }
 
+    // Making our counter for console.log 2 digits instead of 1. (1 vs 01)
     if ( i < 10 ) {
       var iLog = "0" + i;
     } else { iLog = i; }
@@ -4088,6 +4105,23 @@ function validateLinks(link, i) {
     ////////////////
     ////////////////
 
+// If this is a merge tag link - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
+if ( /^(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[\[?.+\]\]?)/gi.test(linkHref) ) {
+
+    // Links in an email for the GetResponse Platform
+    if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
+      createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
+    }
+    // Links in an email for the MailChimp Platform
+    else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(linkHref) ) { // Look for SendGrid and GR merge tags.
+      createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
+    }
+
+}
+
+// All other links
+else if ( !/^mailto/.test(linkHref) ) {
+
     // Global link testing variables
     var medbridgeEdLink
     if ( /^https?:\/\/([^.]+\.)?medbridge(ed|education)\.com/gi.test(linkHref) ) {
@@ -4134,7 +4168,7 @@ function validateLinks(link, i) {
 
     ////
     var isMarketingUrl
-    if ( medbridgeOrMassageLink && /\.com\/trk\-/gi.test(linkHref) ) {
+    if ( medbridgeOrMassageLink && /\.com\/(gr|mc)?trk\-/gi.test(linkHref) ) {
       isMarketingUrl = true;
     } else {
       isMarketingUrl = false;
@@ -4191,7 +4225,7 @@ function validateLinks(link, i) {
   ///////
   //// Begin Link Check ////
   ///////
-  if ( !/^mailto/.test(linkHref) && !/localhost\:/.test(linkHref) ) {
+
   ///////
   // Ignore mailto's and localhost:
   ///////
@@ -4203,11 +4237,35 @@ function validateLinks(link, i) {
     }
 
     // http://stackoverflow.com/a/9284473/556079
+    // https://gist.github.com/dperini/729294
+    // Edited by me to allow _ in subdomain.
+    // Does not support _ in domain, but it should.
+    // Does not support URL's ending with a - but it should.
 
-    else if ( !/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(linkHref) ) {
+    else if ( !/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9](?:_|-)*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(linkHref) )
+    {
       createLinkErrorRow(link, "invalid URL scheme [2]");
     }
 
+    // Marketing URL's
+    // trk = mc, grtrk = getresponse
+    if ( emailPlatform === "gr" && linkNeedsPromoCode && !/\.com\/grtrk\-/i.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
+      createLinkErrorRow(link, "wrong tracking url for this email platform, use grtrk-");
+    }
+
+
+    //////
+    ////// Detect the use of merge tags.
+    ////// This is different than earlier where detected links that were JUST merge tags. Like [[email]] and *|UNSUB|*
+
+      // Wrong merge tags in a Link for the GetResponse Platform
+      if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
+        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
+      }
+      // Wrong merge tags in a Link for the MailChimp Platform
+      else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(linkHref) ) { // Look for SendGrid and GR merge tags.
+        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
+      }
 
     ///////////////////////
     ///////////////////////
@@ -4300,15 +4358,19 @@ function validateLinks(link, i) {
 
         } else {
 
-          if ( getParameterByName("checkblog") !== "0" ) {
-            var updatedLinkObj = link;
-            checkTheBlog(linkHref, updatedLinkObj);
-            console.log("Could not find data in storage for this blog link, checking the blog for data.");
-            createLinkErrorRow(link, "blog data not found in storage, running check now");
-          } else {
-            console.log("Could not find data in storage for this blog link, no check is being run.");
-            createLinkErrorRow(link, "blog data not found in storage, refresh to try again");
-          }
+          // !!!!!!!!!!!!!!!!!!!!
+          // 11-3-17
+          // COMMENTED OUT UNTIL IT CAN BE FIXED!
+
+          // if ( getParameterByName("checkblog") !== "0" ) {
+          //   var updatedLinkObj = link;
+          //   checkTheBlog(linkHref, updatedLinkObj);
+          //   console.log("Could not find data in storage for this blog link, checking the blog for data.");
+          //   createLinkErrorRow(link, "blog data not found in storage, running check now");
+          // } else {
+          //   console.log("Could not find data in storage for this blog link, no check is being run.");
+          //   createLinkErrorRow(link, "blog data not found in storage, refresh to try again");
+          // }
 
         }
 
@@ -4319,16 +4381,27 @@ function validateLinks(link, i) {
     ////-----------------------------////
     ////
     // Every link needs a target attribute.
-    if ( !link.hasAttribute("target") ) {
-      createLinkErrorRow(link, "missing target attribute");
+    // Deprecated. This is an old idea. It's not needed in mobile or desktop apps. And web clients like Yahoo, Gmail, and Hotmail already open links in a new tab.
+          // if ( !link.hasAttribute("target") ) {
+          //   createLinkErrorRow(link, "missing target attribute");
+          // }
+
+    ////-----------------------------////
+    ////
+    // Link do NOT need a target attribute.
+    if ( link.hasAttribute("target") ) {
+      createLinkErrorRow(link, "target attribute not needed");
     }
 
     ////-----------------------------////
     ////
     // utm's other than content are unlikely to be used
-    if ( /utm_(medium|source|campaign)/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "extra utm's");
-    }
+
+    // !!!! //////////////////// Re-active this when I can make a feature that allows you to ignore it.
+
+    // if ( /utm_(medium|source|campaign)/gi.test(linkHref) ) {
+    //   createLinkErrorRow(link, "extra utm's");
+    // }
 
     ////-----------------------------////
     ////
@@ -4351,6 +4424,31 @@ function validateLinks(link, i) {
       createLinkErrorRow(link, "remove utm");
     }
 
+    ////-----------------------------////
+    ////
+    // Check tracking links to see if the URL is consistent with the rest of the links.
+    // eg. If most links say trk-sep-17-davenport, but this one says trk-sep-17-walter, throw an error.
+    // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common.
+
+    if ( emailSubType === "ns" && isMarketingUrl && linkNeedsPromoCode ) {
+      if ( !commonTrkUrlRegex.test(linkHref) ) {
+        createLinkErrorRow(link, "tracking URL is missing or inconsistent, " + commonTrkUrl + " is more common");
+      }
+    }
+
+    if ( medbridgeOrMassageLink ) {
+      if ( commonUtmSource ) {
+        if ( !commonUtmSourceRegex.test(linkHref) ) {
+          createLinkErrorRow(link, "utm_source is missing or inconsistent, " + commonUtmSource + " is more common");
+        }
+      }
+      if ( commonUtmCampaign ) {
+        if ( !commonUtmCampaignRegex.test(linkHref) ) {
+          createLinkErrorRow(link, "utm_campaign is missing or inconsistent, " + commonUtmCampaign + " is more common");
+        }
+      }
+    }
+
     ////
     // Check for whitelabeling versus www
     if ( outsideOrg && !blogLink && medbridgeEdLink ) {
@@ -4369,7 +4467,14 @@ function validateLinks(link, i) {
 
     ////
     // Validate querystring pattern if it looks like there is one
-    if ( /[^#]+\&.+\=/.test(linkHref) || /[^#]+\?.+\=/.test(linkHref) && ( !/after_signin_url/.test(linkHref) ) ) {
+
+    // http://stackoverflow.com/a/23959662/556079
+    // http://rubular.com/r/kyiKS9OlsM
+
+    // Check the query string without any ending hash
+    var linkHrefNoHash = linkHref.replace(/\#.+/, "");
+
+    if ( /[^#]+\&.+\=/.test(linkHrefNoHash) || /[^#]+\?.+\=/.test(linkHrefNoHash) && ( !/after_signin_url/.test(linkHrefNoHash) ) ) {
 
       if ( /\&.+\=/.test(linkHref) && !/\?./.test(linkHref) ) {
         createLinkErrorRow(link, "missing ? in query string");
@@ -4379,13 +4484,7 @@ function validateLinks(link, i) {
         createLinkErrorRow(link, "replace ? with & in query string");
       }
 
-      // http://stackoverflow.com/a/23959662/556079
-      // http://rubular.com/r/kyiKS9OlsM
-
-      // Check the query string without any ending hash
-      var linkHrefNoHash = linkHref.replace(/#.+/, "");
-
-      if ( !/\?([\.\w-]+(=[\!\|\*\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
+      if ( !/\?([\.\w-]+(=[\!\|\*\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\*\|\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
         createLinkErrorRow(link, "invalid query string");
       }
 
@@ -4397,8 +4496,10 @@ function validateLinks(link, i) {
     ////
     if ( linkNeedsPromoCode ) {
 
+      console.error("hi");
+
       // Links to MedBridge in -ns emails need to use a marketing URL
-      if ( !/\.com\/trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) ) {
+      if ( !/\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) ) {
         createLinkErrorRow(link, "use a marketing URL");
       }
 
@@ -4413,7 +4514,7 @@ function validateLinks(link, i) {
       }
 
       // Watch out for extra hyphens!
-      if ( /\-\-/gi.test(linkHref) ) {
+      if ( /\-\-.+?after_affiliate_url/gi.test(linkHref) ) {
         createLinkErrorRow(link, "investigate consecutive hyphens");
       }
       // Watch out for extra forward slashes!
@@ -4421,9 +4522,11 @@ function validateLinks(link, i) {
         createLinkErrorRow(link, "investigate consecutive forward slashes");
       }
 
+      console.log("emailDate.getMonth(); " + emailDate.getMonth());
+
       // Check the date in a tracking URL if the email's filename has a date in it to match against
       if ( emailDate.getMonth() ) {
-        var monthPattern = new RegExp("\\/trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
+        var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
         if ( !monthPattern.test(linkHref) ) {
           createLinkErrorRow(link, "link should included '-" + emailMonthAbbr + "-' to match current month");
         }
@@ -4491,7 +4594,7 @@ function validateLinks(link, i) {
 
     ////
     // Check for old fashioned marketing URLS in sub, ent, or outsideOrg
-    if ( (outsideOrg || emailSubType === "sub" || emailDisc === "ent" ) && (medbridgeOrMassageLink && /\.com\/trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
+    if ( (outsideOrg || emailSubType === "sub" || emailDisc === "ent" ) && (medbridgeOrMassageLink && /\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
       createLinkErrorRow(link, "do not use a marketing url");
     }
 
@@ -4541,11 +4644,12 @@ function validateLinks(link, i) {
     }
 
     ////
+    /// DEPREACTED - Phil fixed the blog! 09/2017
     // Use p=#### to force Wordpress to redirect to http.
     // Check for existence of https in blog links in sub version when NOT using p=####
-    if ( blogLink && !linkNeedsPromoCode && /https:\/\//gi.test(linkHref) && !/p=\d\d\d/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "full blog/article links cannot be https");
-    }
+        // if ( blogLink && !linkNeedsPromoCode && /https:\/\//gi.test(linkHref) && !/p=\d\d\d/gi.test(linkHref) ) {
+        //   createLinkErrorRow(link, "full blog/article links cannot be https");
+        // }
 
     ////
     // https required
@@ -4570,7 +4674,7 @@ function validateLinks(link, i) {
 
     ////
     // Link Text Hints
-    if ( (/Request (Group|a Demo|Info)/gi.test(link.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Part of an organization|Request (Group|a Demo|Info))/gi.test(link.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
+    if ( (/Request (Group|a Demo|Info|EMR Integration)/gi.test(link.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Part of an organization|Request (Group|a Demo|Info|EMR Integration))/gi.test(link.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
       createLinkErrorRow(link, "link text does not match url");
     }
     if ( /Article/gi.test(link.textContent) && !/(\/blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
@@ -4579,9 +4683,10 @@ function validateLinks(link, i) {
 
     ////
     // Enterprise
-    if ( medbridgeOrMassageLink && emailSubType === "sub" && emailDisc === "ent" && /request\-a\-demo/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "no demo requests in enterprise sub");
-    }
+    // Deprecated - Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
+    // if ( medbridgeOrMassageLink && emailSubType === "sub" && emailDisc === "ent" && /request\-a\-demo/gi.test(linkHref) ) {
+    //   createLinkErrorRow(link, "no demo requests in enterprise sub");
+    // }
 
 
     ////
@@ -4598,23 +4703,23 @@ function validateLinks(link, i) {
     }
 
     ////
-    // Traking URL - Discipline Check
+    // Tracking URL - Discipline Check
 
     if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && medbridgeOrMassageLink && !/\/courses\/details\//g.test(linkHref) && isMarketingUrl ) {
 
-      if ( emailDisc === "pt" && !/-pt(\-|\/|\?)/g.test(linkHref) ) {
+      if ( emailDisc === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
         createLinkErrorRow(link, "missing discipline");
       }
-      if ( emailDisc === "at" && !/-at(\-|\/|\?)/g.test(linkHref) ) {
+      if ( emailDisc === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
         createLinkErrorRow(link, "missing discipline");
       }
-      if ( emailDisc === "ot" && !/-ot(\-|\/|\?)/g.test(linkHref) ) {
+      if ( emailDisc === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
         createLinkErrorRow(link, "missing discipline");
       }
-      if ( emailDisc === "slp" && !/-slp(\-|\/|\?)/g.test(linkHref) ) {
+      if ( emailDisc === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
         createLinkErrorRow(link, "missing discipline");
       }
-      if ( emailDisc === "other" && !/-other(\-|\/|\?)/g.test(linkHref) ) {
+      if ( emailDisc === "other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
         createLinkErrorRow(link, "missing discipline");
       }
     }
@@ -4623,26 +4728,26 @@ function validateLinks(link, i) {
     // Checking NS and SUB.
     if ( emailDisc !== "multi" && emailDisc !== null && !outsideOrg && medbridgeOrMassageLink ) { //&& isMarketingUrl
 
-      if ( (emailDisc !== "pt") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) || /\.com\/physical-therapy(\?|$)/gi.test(linkHref)) ) {
+      if ( (emailDisc !== "pt") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) || /\.com\/physical-therapy\/?(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
       if ( (emailDisc !== "other" && emailDisc !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(linkHref) || /\.com\/(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
-      if ( emailDisc !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(linkHref) || /\.com\/athletic-training(\?|$)/gi.test(linkHref)) ) {
+      if ( emailDisc !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(linkHref) || /\.com\/athletic-training\/?(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
-      if ( emailDisc !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(linkHref) || /\.com\/occupational-therapy(\?|$)/gi.test(linkHref)) ) {
+      if ( emailDisc !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(linkHref) || /\.com\/occupational-therapy\/?(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
-      if ( emailDisc !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(linkHref) || /\.com\/speech-language-pathology(\?|$)/gi.test(linkHref)) ) {
+      if ( emailDisc !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(linkHref) || /\.com\/speech-language-pathology\/?(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
     }
 
 
     // Courses Page - Discipline Check
-    if ( emailDisc !== "multi" && !outsideOrg && emailDisc !== null && /#/g.test(linkHref) && /courses/g.test(linkHref) ) { //  && medbridgeOrMassageLink
+    if ( emailDisc !== "multi" && !outsideOrg && emailDisc !== null && /#/g.test(linkHref) && /(\/|=)courses/g.test(linkHref) ) { //  && medbridgeOrMassageLink
 
       // if ( (emailDisc !== "pt" && emailDisc !== "other") && /#\/?physical-therapy/gi.test(linkHref) ) {
       //   createLinkErrorRow(link, "wrong hashtag");
@@ -4656,8 +4761,8 @@ function validateLinks(link, i) {
       // if ( emailDisc !== "slp" && /#\/?speech-language-pathology/gi.test(linkHref) ) {
       //   createLinkErrorRow(link, "wrong hashtag");
       // }
-      
-      if ( (emailDisc === "pt" && emailDisc === "other") && !/#\/?physical-therapy/gi.test(linkHref) ) {
+
+      if ( (emailDisc === "pt" || emailDisc === "other") && !/#\/?physical-therapy/gi.test(linkHref) ) {
         createLinkErrorRow(link, "wrong hashtag");
       }
       if ( emailDisc === "at" && !/#\/?athletic-training/gi.test(linkHref) ) {
@@ -4698,7 +4803,7 @@ function validateLinks(link, i) {
         createLinkErrorRow(link, "link to pricing/slp");
       }
       // Other
-      else if ( emailDisc === "other" && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
+      else if ( (emailDisc === "other" || !emailDisc) && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
         createLinkErrorRow(link, "link to standard pricing page");
       }
 
@@ -4715,6 +4820,12 @@ function validateLinks(link, i) {
     // NO //support. in outsideOrg
     if ( /\/support\./gi.test(linkHref) && outsideOrg ) {
       createLinkErrorRow(link, "://support. not allowed in outsideOrg, use mailto:support@medbridgeed.com");
+    }
+
+    ////
+    // Do not advertise Enterprise products to outsideOrg
+    if ( /enterprise/gi.test(linkHref) && outsideOrg ) {
+      createLinkErrorRow(link, "do not advertise enterprise to outsideOrg");
     }
 
   ///////
@@ -4797,6 +4908,7 @@ AOTA (only in OT)
 if ( isRecentEmail ) {
 
   countCitations();
+
 } else {
   console.error("Text was not checked for errors.")
 }
@@ -4815,10 +4927,31 @@ function highlightTextErrors() {
 //
 // Click|Click below|Click here|Click to remove|
 findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Being a member|Beneficiary|Best price|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Congratulations|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Lowest Price|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No middleman|No obligation|No purchase necessary|No questions asked|No selling|No strings attached|No\-?obligation|Not intended|Notspam|Now only|Obligation|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Please read|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Prizes?|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|Round the world|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
+  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Being a member|Beneficiary|Best price|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Congratulations|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Lowest Price|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No middleman|No obligation|No purchase necessary|No questions asked|No selling|No strings attached|No\-?obligation|Not intended|Notspam|Now only|Obligation|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Please read|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|Round the world|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
   wrap: 'span', wrapClass: "text-error"
 });
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// Platform Checks
+if ( emailPlatform === "gr" ) {
+  // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /\*\|.+?\|\*/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+}
+
+if ( emailPlatform === "mc" ) {
+  // Do not use [[getresponse]] merge tags with a MailChimp email.
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /\[\[.+?\]\]/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+}
 
 /////////////////////////////////
 ////                         ////
@@ -4826,35 +4959,36 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 ////                         ////
 /////////////////////////////////
 
+
 // Promo Codes
   if ( emailDisc !== "pt" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-      find: /(Promo.+?\b[A-Za-z0-9]+?PT\b)/gi,
+      find: /(Promo Code.+?\b[A-Za-z0-9]+?PT\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "at" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-      find: /(Promo.+?\b[A-Za-z0-9]+?AT\b)/gi,
+      find: /(Promo Code.+?\b[A-Za-z0-9]+?AT\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "ot" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-      find: /(Promo.+?\b[A-Za-z0-9]+?OT\b)/gi,
+      find: /(Promo Code.+?\b[A-Za-z0-9]+?OT\b)/gi,
       wrap: 'span',
       wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "slp" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-      find: /(Promo.+?\b[A-Za-z0-9]+?SLP\b)/gi,
+      find: /(Promo Code.+?\b[A-Za-z0-9]+?SLP\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc === "other" ) {
     findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-      find: /(Promo.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
+      find: /(Promo Code.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
@@ -4867,7 +5001,7 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 if ( emailDisc === "pt" || emailDisc === "other" ) {
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|BOC\-Approved|Athletic Training|Occupational Therapy|CCC\-SLP|\$95|\$145)/g,
+    find: /(ASHA|\bAOTA|BOC\-Approved|Athletic Training|Occupational Therapy|(only )?\$95|(only )?\$145)/g,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -4879,14 +5013,15 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "at" ) {
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(ASHA|\bAOTA|Physical Therapy|Occupational Therapy|CCC\-SLP|\$95|\$145)/g,
+    find: /(ASHA|\bAOTA|Physical Therapy|Occupational Therapy|(only )?\$95|(only )?\$145)/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(patients? [^education]|outcomes?)/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
+  // 11-13-17 - We use this patients and outcomes a lot in AT afterall. Can't justify tagging them.
+  // findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  //   find: /(patients? [^education]|outcomes?)/gi,
+  //   wrap: 'span', wrapClass: "text-error"
+  // });
 
 //////////
 ////
@@ -4896,7 +5031,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "ot" ) {
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(ASHA|BOC\-Approved|Physical Therapy|Athletic Training|CCC\-SLP|\$95|\$145)/g,
+    find: /(ASHA|BOC\-Approved|Physical Therapy|Athletic Training|(only )?\$95|(only )?\$145)/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
@@ -4913,7 +5048,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "slp" ) {
 
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(\bAOTA|BOC\-Approved|Physical Therapy|Athletic Training|Occupational Therapy|\$200|\$250)/g,
+    find: /(\bAOTA|BOC\-Approved|Physical Therapy|Athletic Training|Occupational Therapy|(only )?\$200|(only )?\$250)/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
@@ -4939,6 +5074,11 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
     wrap: 'span', wrapClass: "text-error"
   });
 
+//////////
+////
+//// Enterprise
+////
+//////////
 } else if ( emailDisc === "ent" ) {
   // Enterprise
 
@@ -4951,12 +5091,20 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 // ALL
 //
 
-  // NOTES ---
-  // 17-06-14 - Decided to stop saying "Unlimited CEUs" and instead say "Unlimited Access to CEUs" or "Unlimited CEU Access".
+  // NOTES ABOUT TEXT WARNINGS ---
+  ////////////////////////////////
+
+  // 17-11-06 - Subscribers don't win a free subscription, they win a subscription extension and vice versa for non-subscribers.
+  // 17-06-14 - Decided to stop saying "Unlimited CEUs" and instead say "Unlimited Access to CEUs" or "Unlimited CEU Access". We don't literally have unlimited CEUs, but we can provide unlimited ACCESS. Thanks ASHA! -_-
+    // - 10/30/17 Update: Per ASHA, "Unlimited Access to CEUs" is still not right. We have to say "Unlimited Access to CE Courses". This only applies to SLP.
+  // 17-09-05 - Justin does not like "From the Blog" or even referring to our blog site as a blog at all.
+
+  ////////////////////////////////
+  ////////////////////////////////
 
   // All (case INsensitive)
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
+    find: /(from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
     // Update to add "word &nbsp;&rarr;" as an error
     wrap: 'span', wrapClass: "text-error"
   });
@@ -4979,10 +5127,10 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
 
 //
-// NUMBERS - COMMAS
+// NUMBERS - MISSING COMMAS
 //
 findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /\b\d\d\d\d\b/g,
+  find: /\b[1-9]\d\d\d\b/g,
   wrap: 'span', wrapClass: "text-error"
 });
 
@@ -4998,12 +5146,12 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 // Prep-Program
 //
 findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /\b(MedBridge|.CS) Prep Program\b/gi,
+  find: /\b(MedBridge|.CS) prep [Pp]rogram\b/g,
   wrap: 'span', wrapClass: "text-error"
 });
 
 findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /\bprep\-program\b/g,
+  find: /\bprep\-programs?\b/gi,
   wrap: 'span', wrapClass: "text-error"
 });
 
@@ -5012,7 +5160,7 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 //
 if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /(Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|in a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
+    find: /(win a free subscription|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|in a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 }
@@ -5042,7 +5190,7 @@ if ( outsideOrg ) {
 //
 if ( !emailAnySale ) {
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /\$(200|95|145|250)( |!|\.)/gi,
+    find: /(only )?\$(200|95|145|250)( |!|\.)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 }
@@ -5052,10 +5200,11 @@ if ( !emailAnySale ) {
 //
 
 // MedBridge Pricing
-findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /([^r] 40% off)/gi,
-  wrap: 'span', wrapClass: "text-error"
-});
+// What was this for?!
+// findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+//   find: /([^r] 40% off)/gi,
+//   wrap: 'span', wrapClass: "text-error"
+// });
 if ( emailAnySale && emailDisc !== "lmt" ) {
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
     find: /50%/gi,
@@ -5087,12 +5236,36 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 //
 // Enterprise
 //
-if ( emailDisc === "ent" && emailSubType === "sub" ) {
+///// Deprecated -  Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
+/////
+// if ( emailDisc === "ent" && emailSubType === "sub" ) {
+//   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+//     find: /request a demo/gi,
+//     wrap: 'span', wrapClass: "text-error"
+//   });
+// }
+
+
+if ( outsideOrg ) {
+
   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /request a demo/gi,
+    find: /(request a demo|part of an? (group|organization)|sign(\-| )up|\bsubscribe\b)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
+
 }
+
+
+if ( emailDisc === "slp" ) {
+
+  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    find: /Unlimited (Access to )?(CE'?s|CEU'?s)/gi,
+    // Must say CE Courses
+    wrap: 'span', wrapClass: "text-error"
+  });
+
+}
+
 
 
 }
@@ -5391,9 +5564,14 @@ if ( getParameterByName("imgdims") === "1" ) {
 
 dFrameContents.addEventListener('scroll', function(e) {
   syncScroll(dFrameContents, document.querySelector("#desktop-view"));
+  // console.groupCollapsed("dFrame is being scrolled");
+  // console.log("dFrameContents / targetFrame: ", dFrameContents);
+  // console.log("document.querySelector('#desktop-view') / iFrameObj: ", document.querySelector("#desktop-view"));
+  // console.groupEnd();
 });
 mFrameContents.addEventListener('scroll', function(e) {
   syncScroll(mFrameContents, document.querySelector("#mobile-view"));
+  // console.log("mFrame is being scrolled");
 });
 
     // dFrameContents.removeEventListener('scroll', makeBackgroundYellow, false);
@@ -5403,22 +5581,32 @@ function syncScroll(targetFrame, iFrameObj) {
 
   // console.log("syncScroll function activated.")
 
+  // If this function is called on a frame with "syncing" in the classList, return false.
   if ( iFrameObj.classList.contains("syncing") ) {
+
+    // console.log("'syncing' FOUND in classList of ", iFrameObj);
+
     iFrameObj.classList.remove("syncing");
     return false;
+
+  // Else, continue running the function to sync scrolling across frames.
   } else {
 
-    // var targetFrameHeight = targetFrame.body.scrollHeight - targetFrame.body.clientHeight;
-    // var targetFrameHeight = targetFrame.body.scrollHeight - targetFrame.clientHeight;
+    // console.log("'syncing' NOT FOUND in classList of ", iFrameObj);
+
+    // Grab relevent variables
+    //////////////////////////
     var targetFrameHeight = targetFrame.body.scrollHeight - iFrameObj.clientHeight;
-    var targetScrollPos = targetFrame.body.scrollTop;
+
+    // DEPRECATED in Chrome 61 ref: https://stackoverflow.com/questions/45061901/chrome-61-body-doesnt-scroll
+    // - var targetScrollPos = targetFrame.body.scrollTop;
+
+    var targetScrollPos = targetFrame.scrollingElement.scrollTop;
     var targetScrollPerc = targetScrollPos / targetFrameHeight;
 
-    // console.log("targetFrame.body.scrollHeight: " + targetFrame.body.scrollHeight + ", targetFrame.body.clientHeight: " + targetFrame.body.clientHeight);
-    // console.log("targetFrame.body.scrollHeight: " + targetFrame.body.scrollHeight + ", targetFrame.clientHeight: " + targetFrame.clientHeight);
-    // console.log("targetFrame.body.scrollHeight: " + targetFrame.body.scrollHeight + ", iFrameObj.clientHeight: " + iFrameObj.clientHeight);
-    // console.log("targetFrameHeight: " + targetFrameHeight + ", targetScrollPos: " + targetScrollPos + ", targetScrollPerc: " + targetScrollPerc);
+    // console.log("targetFrameHeight: ", targetFrameHeight, "targetScrollPos: ", targetScrollPos, "targetScrollPerc: ", targetScrollPerc);
 
+    // Modify the scrolling position of the frame that we weren't scrolling.
     if ( iFrameObj.id === "desktop-view" ) {
       // var matchingFramePos = (mFrameContents.body.scrollHeight - mFrameContents.body.clientHeight) * targetScrollPerc;
       var matchingFramePos = (mFrameContents.body.scrollHeight - document.querySelector("#mobile-view").clientHeight) * targetScrollPerc;

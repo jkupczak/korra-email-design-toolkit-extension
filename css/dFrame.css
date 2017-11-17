@@ -111,7 +111,7 @@ html, body {
   color:#d20758;
   font-family: Roboto, Helvetica, Arial, sans-serif;
   position:fixed;
-  font-size:14px;
+  font-size:12px;
   bottom:0; left:0;
   width:100%;
   /*min-height:60px;*/
@@ -192,7 +192,7 @@ html, body {
 
 .link-errors .link-errors-url {
   font-family: 'Courier New';
-  font-size:14px;
+  font-size:12px;
   line-height:20px;
   color:#fff;
   padding:15px 15px 15px 20px;

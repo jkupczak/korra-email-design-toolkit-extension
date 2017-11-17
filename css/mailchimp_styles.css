@@ -35,6 +35,46 @@
 /***********/
 /***********/
 /*
+  Member/Contact View
+*/
+/***********/
+/***********/
+
+.page-lists-members-view #list-content > div:first-child .full-width-mobile > div > div:last-child,
+.page-lists-members-view #list-content > div:first-child {
+  margin-bottom:0 !important;
+}
+
+.page-lists-members-view #view-profile > .size1of2 {
+  width:25%;
+}
+.page-lists-members-view #view-profile > .size1of2 li {
+  padding:0px 0 10px;
+
+}
+
+/* Edit Profile */
+.page-lists-members-view #edit-profile {
+  display: flex;
+  flex-wrap: wrap;
+}
+.page-lists-members-view #edit-profile > div {
+  width: 50%
+}
+
+/***********/
+/***********/
+/*
+  Header
+*/
+/***********/
+/***********/
+
+.header { margin:22px 0 !important; }
+
+/***********/
+/***********/
+/*
   Buttons
 */
 /***********/
@@ -71,14 +111,34 @@
 */
 /***********/
 /***********/
-.campaign-list-row {
+/*.campaign-list-row {
   display: flex;
 }
 .campaign-list-row .meta-actions.campaign.lastGroup {
   display: flex;
   align-items:center;
   justify-content: flex-end;
+}*/
+
+.campaign-list-row .c-campaignManager_slat_stat_secondary,
+.campaign-list-row .c-campaignManager_slat_stat_primary {
+  height: 30px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
 }
+.campaign-list-row .c-campaignManager_slat_stat_secondary p:first-child,
+.campaign-list-row .c-campaignManager_slat_stat_primary p:first-child {
+  font-size:12px;
+  line-height:16px;
+}
+.campaign-list-row .c-campaignManager_slat_stat_secondary p:nth-child(2),
+.campaign-list-row .c-campaignManager_slat_stat_primary p:nth-child(2) {
+  font-size:10px;
+  line-height:14px;
+}
+
 
 /***********/
 /***********/
@@ -423,13 +483,24 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
 /***********/
 
 
-#campaigns-list .c-campaignManager_slat:nth-child(odd) {
-  background: rgb(250, 250, 250);
+#campaigns-list .c-campaignManager_slat_details_listName {
+  font-size:10px;
+  line-height:14px;
+  opacity:.5;
 }
+
+#campaigns-list .c-campaignManager_slat_actions {
+  transform: scale(.8,.8);
+  transform-origin: 100% 50%;
+}
+
+/*#campaigns-list .c-campaignManager_slat:nth-child(odd) {
+  background: rgb(250, 250, 250);
+}*/
 #campaigns-list .c-campaignManager_slat {
   border-bottom:0;
   border-top: 1px solid rgb(230,230,230);
-  padding: 5px 18px 5px 18px;
+  padding: 4px 18px 4px 18px;
   align-items: center;
 }
 #campaigns-list .status-draft + .c-campaignManager_slat {
@@ -446,11 +517,11 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
 
 /* Hidden */
 .c-campaignManager_slat_details p:last-child { display: none; }
+.status-scheduled .c-campaignManager_slat_details p:last-child { display: block; }
 
 /* Spacing */
 .campaigns-list .c-campaignManager_actionBar { padding-top:15px; padding-bottom:45px; }
 .campaigns-list .mc-content { max-width: 1440px; }
-.campaigns-list .content > .header { margin:18px 0 !important; }
 
 /* Sidebar */
 .c-campaignManager_sidebar { width:245px !important; }
@@ -858,6 +929,41 @@ li[data-status="draft"] .c-campaignManager_slat_actions>.dijitComboButton { opac
 /*++++++++++++++++++++++++*
  *                        *
  *                        *
+ *   SEND TEST MODAL      *
+ *                        *
+ *                        *
+ *++++++++++++++++++++++++*/
+
+ #send-test-modal {
+
+   left:0 !important;
+   right:0 !important;
+   top:0 !important;
+   bottom:0 !important;
+
+   margin:auto !important;
+
+   height:100% !important;
+   width:100% !important;
+
+   max-width:calc(100% - 100px) !important;
+   max-height:calc(100% - 100px) !important;
+ }
+
+ #send-test-modal label {
+   max-width:initial !important;
+ }
+
+ #send-test-modal .dijitDialogPaneContentArea,
+ #send-test-modal .dijitDialogPaneContent {
+   max-height:initial !important;
+ }
+
+ #send-test-modal #sendtest-users li { width:20% !important; }
+
+/*++++++++++++++++++++++++*
+ *                        *
+ *                        *
  *   DISCIPLINE FILTERS   *
  *                        *
  *                        *
@@ -971,4 +1077,91 @@ body.campaigns-list #content .line.\!margin-bottom--lv3.action-bar {
 }
 .toolbox-bar *:hover {
   text-decoration: underline;
+}
+
+/************/
+/************/
+/************/
+
+.iframe-tools-wrapper {
+  display: flex;
+  position: absolute;
+  margin-top:8px;
+  margin-left:8px;
+  background: rgba(0,0,0,0.2);
+  border-radius:2px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.5), 0 0 0 3px rgba(0,0,0,0.2);
+}
+.iframe-tools-wrapper a {
+  color:#fff;
+  text-align:center;
+  line-height:25px;
+  font-weight:bold;
+  font-size:18px;
+  display: block;
+  width:25px;
+  height:25px;
+}
+.iframe-tools-wrapper .iframe-tool-fullscreen {
+  background: #398beb;
+} .iframe-tools-wrapper .iframe-tool-fullscreen:hover { background: hsl(212, 81%, 62%); }
+.iframe-tools-wrapper .iframe-tool-new-window {
+  background: #4839eb;
+} .iframe-tools-wrapper .iframe-tool-new-window:hover { background: hsl(245, 81%, 62%); }
+
+.iframe-tools-wrapper a:hover {
+  cursor:pointer;
+  color:#fff;
+}
+
+#wrap {
+  flex-direction: column;
+}
+.side-by-side-view {
+  display: flex;
+  height:600px;
+  min-height:600px;
+}
+.side-by-side-view .iframe-single-wrapper {
+  width:25%;
+  padding:10px;
+  background:#ccc;
+  box-shadow:0 0 3px rgba(0,0,0,0.5);
+}
+.side-by-side-view iframe {
+
+}
+
+
+
+.page-campaigns-show .mc-content,
+.page-reports-show .mc-content {
+  max-width: 100% !important;
+}
+
+.page-campaigns-show #content-tabs,
+.page-reports-show #content-tabs,
+.page-campaigns-show #content-tabs .unit.size1of1,
+.page-reports-show #content-tabs .unit.size1of1 {
+ overflow: visible !important;
+}
+
+.stitched-preview {
+  display: flex; flex-direction:row;
+  padding: 0 14px;
+}
+.stitched-preview iframe {
+  width:50% !important;
+  min-width:340px !important;
+  box-shadow:0 0 7px rgba(0,0,0,0.3);
+  background: #e7eaeb !important;
+}
+.stitched-preview table {
+  width: calc(50% - 20px) !important;
+  margin-right:20px;
+}
+.stitched-preview tr th:first-child,
+.stitched-preview tr td:first-child {
+  width:180px;
 }

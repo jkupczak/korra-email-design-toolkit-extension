@@ -1,4 +1,6 @@
-console.warn("[medbridge-home-extension] loaded /js/medbridge-blog.js");
+console.warn("[medbridge-home-extension] loaded /js/medbridge/medbridge-blog.js");
+//////////////////////////////////////////////////////////////////////////////////
+
 // Only run script if the referrer is empty.
 // Clicking from newsletters where target="_blank" is set will result in an empty referrer.
 
@@ -87,6 +89,23 @@ if ( getParameterByName("blog-check") ) {
   console.groupEnd();
 }
 
+
+////////////////////////
+////////////////////////
+////                ////
+////                ////
+////   PROTECTED!   ////
+////                ////
+////                ////
+////////////////////////
+////////////////////////
+
+var isProtected = document.querySelector(".post-title a").getAttribute("title");
+
+if ( /^Protected:/.test(isProtected) ) {
+  isProtected = true;
+  document.body.classList.add("post-protected");
+}
 
 ////////////////////////
 ////////////////////////
