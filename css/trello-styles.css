@@ -88,3 +88,63 @@
 #board .js-add-list.list-wrapper {
   display: none;
 }
+
+
+.list-card[data-type="event"] {
+  background:#434343;
+  background: linear-gradient(to right, #434343 40%,#6c6c6c 100%);
+}
+.list-card[data-icomoon-parent] {
+  margin-left:24px;
+}
+  /* Webinar */
+  .list-card[data-subtype="webinar"] {
+    background:#240c2d;
+    background: linear-gradient(to right, #4a195c 40%,#611d7a 100%);
+  }
+    .list-card[data-subtype="webinar"] .list-card-cover {
+      color:#611d7a;
+    }
+
+.list-card[data-type="event"] .list-card-title {
+  color:#fff !important;
+}
+
+
+[data-icomoon] { display:block; }
+
+/* Board Canvas */
+
+.board-canvas .list-card {
+
+}
+.board-canvas .list-card .badges {
+
+}
+
+
+.list-card[data-icomoon-parent] .list-card-cover {
+  font-family: 'IcoMoon-Free' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  letter-spacing: 0;
+  font-feature-settings: "liga";
+
+  -webkit-font-smoothing: antialiased;
+
+  /**/
+  margin-left: -22px;
+  position: absolute;
+  top: 4px;
+  left: 3px;
+  font-size: 13px;
+}
+
+.list-card[data-icomoon-parent][data-subtype="webinar"] .list-card-cover:before {
+  content:"\e95b"
+}

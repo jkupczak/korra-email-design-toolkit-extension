@@ -35,6 +35,19 @@
 /***********/
 /***********/
 /*
+ Footer
+*/
+/***********/
+/***********/
+
+#main-content > #content + div:last-child > .hide-print {
+  display: none !important;
+}
+
+
+/***********/
+/***********/
+/*
   Member/Contact View
 */
 /***********/
@@ -143,6 +156,18 @@
 /***********/
 /***********/
 /*
+  Main nav
+  Height adjustment
+*/
+/***********/
+/***********/
+.main-navigation { height:44px !important; }
+.main-navigation li { line-height:44px !important; }
+.main-navigation li a { padding:0 9px !important; }
+
+/***********/
+/***********/
+/*
   Campaign Wizard
    - Recipients
 */
@@ -190,7 +215,7 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
   .discipline-pt .main-navigation .line.selfclear
    { background: var(--pt-dark); }
   .discipline-pt .main-navigation .c-wizardNavigation.selfclear,
-  .discipline-pt .main-navigation .line.selfclear,
+  /*.discipline-pt .main-navigation .line.selfclear,*/
   .discipline-pt .main-navigation #freddielink,
   .discipline-pt .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--pt);
@@ -215,7 +240,7 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
   .discipline-at .main-navigation .line.selfclear
    { background: var(--at-dark); }
   .discipline-at .main-navigation .c-wizardNavigation.selfclear,
-  .discipline-at .main-navigation .line.selfclear,
+  /*.discipline-at .main-navigation .line.selfclear,*/
   .discipline-at .main-navigation #freddielink,
   .discipline-at .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--at);
@@ -240,7 +265,7 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
   .discipline-ot .main-navigation .line.selfclear
    { background: var(--ot-dark); }
   .discipline-ot .main-navigation .c-wizardNavigation.selfclear,
-  .discipline-ot .main-navigation .line.selfclear,
+  /*.discipline-ot .main-navigation .line.selfclear,*/
   .discipline-ot .main-navigation #freddielink,
   .discipline-ot .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--ot);
@@ -265,7 +290,7 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
   .discipline-slp .main-navigation .line.selfclear
    { background: var(--slp-dark); }
   .discipline-slp .main-navigation .c-wizardNavigation.selfclear,
-  .discipline-slp .main-navigation .line.selfclear,
+  /*.discipline-slp .main-navigation .line.selfclear,*/
   .discipline-slp .main-navigation #freddielink,
   .discipline-slp .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--slp);
@@ -290,7 +315,7 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
   .discipline-other .main-navigation .line.selfclear
    { background: var(--other-dark); }
   .discipline-other .main-navigation .c-wizardNavigation.selfclear,
-  .discipline-other .main-navigation .line.selfclear,
+  /*.discipline-other .main-navigation .line.selfclear,*/
   .discipline-other .main-navigation #freddielink,
   .discipline-other .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--other);
@@ -315,7 +340,7 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
   .discipline-lmt .main-navigation .line.selfclear
    { background: var(--lmt-dark); }
   .discipline-lmt .main-navigation .c-wizardNavigation.selfclear,
-  .discipline-lmt .main-navigation .line.selfclear,
+  /*.discipline-lmt .main-navigation .line.selfclear,*/
   .discipline-lmt .main-navigation #freddielink,
   .discipline-lmt .main-navigation .wizard-freddie {
     box-shadow: inset 0 4px 0px var(--lmt);
@@ -454,13 +479,13 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
   content:"";
   font-family:Roboto;
   color:#fff;
-  line-height:40px;
+  line-height:30px;
   text-align: center;
   font-size:26px;
   display:block;
-  width:40px; height:40px;
+  width:30px; height:30px;
   background:transparent;
-  position:absolute; left:16px; top:3px; bottom:0; margin:auto;
+  position:absolute; left:16px; top:0px; bottom:0; margin:auto;
   border-radius:100%;
 }
 .discipline-pt li.branding + li.hide-mobile:before { content:"P"; background:var(--pt); }
@@ -471,7 +496,7 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
 .discipline-lmt li.branding + li.hide-mobile:before { content:"M"; background:var(--lmt); }
 
 .discipline-ready li.branding + li.hide-mobile a {
-  margin-left:70px;
+  margin-left:50px;
 }
 
 /***********/
@@ -1120,16 +1145,65 @@ body.campaigns-list #content .line.\!margin-bottom--lv3.action-bar {
 }
 .side-by-side-view {
   display: flex;
+  flex-direction: column;
   height:600px;
   min-height:600px;
+  padding:7px;
+  background: #ccc;
+  border-radius:5px;
+  overflow: hidden;
+  margin-top:10px;
 }
+.side-by-side-view.fullscreen {
+  position: fixed; top: 0; z-index: 9999; left: 0; border-radius: 0; width: 100vw; height: 100vh; margin: 0;
+}
+
+.side-by-side-view .iframe-toolbar {
+  height: auto;
+  padding: 0 7px;
+  display:flex;
+  flex-direction: row-reverse;
+}
+.side-by-side-view .iframe-toolbar .iframe-maximize {
+  border-radius:4px;
+  background:rgba(0,0,0,0.2);
+  cursor:pointer;
+  font-size:12px;
+  width:auto; height:30px; line-height:30px; text-align:center;
+  padding:0 10px;
+  font-weight:bold;
+}
+.side-by-side-view .iframe-toolbar .iframe-maximize:before {
+  margin-right:6px;
+}
+.side-by-side-view .iframe-toolbar .iframe-maximize span {
+  font-family:Roboto, Helvetica;
+  vertical-align: bottom;
+}
+.side-by-side-view .iframe-toolbar .iframe-maximize:hover {
+    background:#5193c2; color:#ffffff;
+}
+
+
+.side-by-side-view .iframe-ab-container {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
 .side-by-side-view .iframe-single-wrapper {
-  width:25%;
-  padding:10px;
-  background:#ccc;
-  box-shadow:0 0 3px rgba(0,0,0,0.5);
+  flex: 1;
+  margin:7px !important;
+  display:flex;
+  flex-direction: column;
+  box-shadow:0 2px 4px rgba(0,0,0,0.2);
+  border-radius:3px;
+  overflow:hidden;
 }
 .side-by-side-view iframe {
+
+  width:100%;
+  height:100%;
 
 }
 
@@ -1164,4 +1238,63 @@ body.campaigns-list #content .line.\!margin-bottom--lv3.action-bar {
 .stitched-preview tr th:first-child,
 .stitched-preview tr td:first-child {
   width:180px;
+}
+
+
+
+/*
+
+ Lists PAGE
+
+*/
+
+.automate-modal .tingle-modal-box { width:400px !important; }
+
+#member-grid-wrap .table-pagination > div:first-child { width: 66%; }
+#member-grid-wrap .table-pagination > div:last-child { width: 34%; }
+
+#member-grid-wrap .table-pagination > div > * {
+  margin-right:6px !important;
+}
+#member-grid-wrap .table-pagination > div > *:last-child {
+  margin-right:0 !important;
+}
+
+#member-grid-wrap .table-pagination .button {
+  padding:0 10px !important;
+}
+
+/* Success! */
+.members-list .feedback-block {
+  position: fixed;
+  top: 70px;
+  right: 42px;
+}
+
+.btn-input-wrapper {
+  display: inline-flex;
+  background: #ccc;
+  padding: 3px;
+  border-radius: 3px;
+  margin-right:18px;
+  max-height:32px !important;
+  overflow:hidden;
+}
+.btn-input-wrapper input {
+  width:30px !important;
+  max-width:30px !important;
+  min-width: unset !important;
+  margin:0 4px 0 0 !important;
+  text-align:center !important;
+  padding:0 !important;
+  border-radius:3px !important;
+  border:0 !important;
+  height:26px !important;
+  line-height:26px !important;
+  min-height:unset !important;
+}
+.btn-input-wrapper div {
+  margin:0 !important;
+  height:auto !important;
+  line-height:26px !important;
 }

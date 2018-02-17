@@ -1,4 +1,5 @@
 console.warn("[sonic-toolkit-extension] loaded /js/email-labeling.js");
+///////////////////////////////////////////////////////////////////////
 
 //
 // Remove default favicon
@@ -40,7 +41,7 @@ if ( !onMailchimp ) {
 	var fileName = getFilename(pageUrl);
 	var disciplineSearch = fileName;
 } else {
-	var availableNode = document.querySelector(".wizard-header") || document.querySelector("h1");
+	var availableNode = document.querySelector(".wizard-header") || document.querySelector("h1") || document.querySelector(".c-checklistEditor div.header > h2:first-child");
 	var disciplineSearch = availableNode.innerText;
 	// console.log("disciplineSearch = " + disciplineSearch)
 }

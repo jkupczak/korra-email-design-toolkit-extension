@@ -203,7 +203,7 @@ function generateTestLabeler() {
   }
 
   // Grab the preheader!
-  var preheader   = document.body.dataset.preheader;
+  var preheader   = document.body.dataset.preheader.substring(0,90);
 
   // Subscriber or Non-Subscriber?
   var audience;
@@ -214,7 +214,7 @@ function generateTestLabeler() {
   } else if ( /\-MX?\-/gi.test(campaignNameTrunc) ) {
    audience = "Mixed";
   } else {
-    audience = "Unknown";
+    audience = "Unknown Subscription Status";
   }
 
   var tableData = '<table cellpadding="3" cellspacing="2" border="0"><tr><td class="t"><font size="2" color="#cccccc">' + preheader + '...</font></td></tr><tr><td class="t"><font color="#ffffff" size="4"><b>' + insertFullLabel + audience + '</b></font>' + versionNum + '</td></tr><tr><td><font color="#cccccc" size="2">Campaign: ' + campaignNameTrunc + '</font></td></tr></table>'

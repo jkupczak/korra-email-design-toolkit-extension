@@ -242,7 +242,7 @@
 
 @font-face {
     font-family: 'IcoMoon-Free';
-    src: url(chrome-extension://__MSG_@@extension_id__/fonts/IcoMoon-Free.ttf) format('truetype');
+    src: url(chrome-extension://__MSG_@@extension_id__/fonts/icomoon.ttf) format('truetype');
     font-weight: normal;
     font-style: normal;
 }

@@ -64,11 +64,46 @@
 
 /* Taken from https://litmus.com/builder/045a56e */
 .debug-show-dims-highlight body *:not(section) {
-    box-shadow: inset 0 0 0 1px white, 0 0 0 1px rgb(37, 167, 253);
+  outline-style: dashed;
+  outline-width: 1px;
 }
 .debug-show-dims-highlight body *:not(section):hover {
-    box-shadow: 0 0 0 2px rgb(37, 167, 253);
+  outline-style: solid;
 }
+.debug-show-dims-highlight [data-dims-color="0"] { outline-color: #2d8df2; }
+.debug-show-dims-highlight [data-dims-color="1"] { outline-color: #2d52f2; }
+.debug-show-dims-highlight [data-dims-color="2"] { outline-color: #3b2df2; }
+.debug-show-dims-highlight [data-dims-color="3"] { outline-color: #642df2; }
+.debug-show-dims-highlight [data-dims-color="4"] { outline-color: #932df2; }
+.debug-show-dims-highlight [data-dims-color="5"] { outline-color: #c12df2; }
+.debug-show-dims-highlight [data-dims-color="6"] { outline-color: #f22df0; }
+.debug-show-dims-highlight [data-dims-color="7"] { outline-color: #f22da1; }
+.debug-show-dims-highlight [data-dims-color="8"] { outline-color: #f22d6e; }
+.debug-show-dims-highlight [data-dims-color="9"] { outline-color: #f22d3b; }
+.debug-show-dims-highlight [data-dims-color="10"] { outline-color: #f22d6e; }
+.debug-show-dims-highlight [data-dims-color="11"] { outline-color: #2d8df2; }
+.debug-show-dims-highlight [data-dims-color="12"] { outline-color: #2df277; }
+.debug-show-dims-highlight [data-dims-color="13"] { outline-color: #3bf22d; }
+.debug-show-dims-highlight [data-dims-color="14"] { outline-color: #80f22d; }
+.debug-show-dims-highlight [data-dims-color="15"] { outline-color: #cbf22d; }
+.debug-show-dims-highlight [data-dims-color="16"] { outline-color: #431863; }
+.debug-show-dims-highlight [data-dims-color="17"] { outline-color: #f2772d; }
+.debug-show-dims-highlight [data-dims-color="18"] { outline-color: #b44400; }
+.debug-show-dims-highlight [data-dims-color="18"] { outline-color: #b49400; }
+.debug-show-dims-highlight [data-dims-color="19"] { outline-color: #83b400; }
+.debug-show-dims-highlight [data-dims-color="20"] { outline-color: #3bb400; }
+.debug-show-dims-highlight [data-dims-color="21"] { outline-color: #00b419; }
+.debug-show-dims-highlight [data-dims-color="22"] { outline-color: #00b46a; }
+.debug-show-dims-highlight [data-dims-color="23"] { outline-color: #00b2b4; }
+.debug-show-dims-highlight [data-dims-color="24"] { outline-color: #006eb4; }
+.debug-show-dims-highlight [data-dims-color="25"] { outline-color: #002fb4; }
+.debug-show-dims-highlight [data-dims-color="26"] { outline-color: #2a00b4; }
+.debug-show-dims-highlight [data-dims-color="27"] { outline-color: #7200b4; }
+.debug-show-dims-highlight [data-dims-color="28"] { outline-color: #a900b4; }
+.debug-show-dims-highlight [data-dims-color="29"] { outline-color: #b4004c; }
+.debug-show-dims-highlight [data-dims-color="30"] { outline-color: #811116; }
+
+
 
 /*.debug-show-dims-highlight td {
   box-shadow: inset 0 0 0 1px rgba(255,0,0,.25);

@@ -1,5 +1,5 @@
 console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
-///////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 //
 // MAILCHIMP!!!!
@@ -14,6 +14,7 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 // KNOWN-ERROR!!
 // tables that are 100% width should not be aligned left, always align center.
 // theres a bug in outlook that causes the next <table> element to be hidden if the previous one was 100% width and left aligned. This happens even if the two tables are not direct siblings. For example, if they are separated by a </td><td> this bug will still happen.
+// CLIENTS: Outlook 2003, 2002, 2000.
 /////
 /////
 
@@ -71,6 +72,12 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 
 ///--------
 
+// Edit view
+// When editing text, duplicate the desktop frame so that you can see a before and after.
+// hide the left and right columns to make room.
+
+///--------
+
 // A/B Testing View
 // Show versions A and B side-by-side with a click of a button.
 // Sync scrolling and dedicate 50% of the window to each version.
@@ -103,13 +110,13 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 
 // Measure all images against their natural non-resized dimensions.
 
-//// - Throw an error if they are wildly off (images being squished out of proportion)
+//// - Throw an error if they are more than slightly off (images being squished out of proportion)
 //// - Show a warning if we're using an image at exactly the natural dims, because its best practice to delivery hi-res images
 
 ///--------
 
 // Switch to a =1001 setup for determining visible layout. Handle it all at once as early as possible to have a smooth page load
-// See codepen: https://codepen.io/pen/?editors=0010
+// See how codepen does it: https://codepen.io/pen/?editors=0010
 
 ////////////////////////////////
 ////////////////////////////////
@@ -507,8 +514,16 @@ if ( getParameterByName("presentation") === "1" ) {
 ////////////////////
 ////////////////////
 
-// console.log(document);
-// console.log(document.body);
+  // ========== METHOD 1 =============
+  // ======== ASYNC / XHR ============
+  // =================================
+  // We'll use xhr to access the filesystem and grab the original files HTML code.
+  // This is great because it will be a string that was never rendered by the browser.
+  // Previously we were grabiing the code after render, meaning things like <tbody> were being added.
+  // This also opens the door for using emailcomb.com's API on the original code using a function.
+
+  // See newsletter-async.js for the xhr call.
+
 
   ////
   //////
@@ -519,244 +534,85 @@ if ( getParameterByName("presentation") === "1" ) {
   ////
   //////
   // Grab all of the HTML in the document before we start manipulating the HTML
-  // var htmlTags = document.body.outerHTML; // http://stackoverflow.com/a/19032002/556079
-  // console.log(htmlTags)
 
-  //////
-  //// Get the page's HTML and Doctype
-  //////
-  console.groupCollapsed("doctype");
 
-  var savedDocType = "";
-
-  // We need a doctype first. Reassemble the doctype if there is one in the code.
-  if (document.doctype && document.doctype.name) {
-    savedDocType = "<!doctype " + document.doctype.name;
-    console.log(savedDocType)
-    if (document.doctype.publicId) {
-      savedDocType += " PUBLIC \"" + document.doctype.publicId;
-      console.log(savedDocType)
-    }
-    if (document.doctype.systemId) {
-      savedDocType += "\" \"" + document.doctype.systemId + '">';
-      console.log(savedDocType)
-    }
-    if (!document.doctype.publicId && !document.doctype.systemId) {
-      savedDocType += ">";
-    }
-  }
-  console.log(savedDocType)
-  console.groupEnd();
-
-
-
-  // Create a copy of the original HTML
-  var cleanedOriginalHtml = savedDocType;
-  cleanedOriginalHtml += document.documentElement.outerHTML;
-
-  // Create the desktop and mobile versions
-  var cleanedDesktopHtml = savedDocType;
-  var cleanedMobileHtml = savedDocType;
-
-    // Add dFrame.css/dFrame.css
-    var toolkitStyle = document.createElement("link");
-    toolkitStyle.href = chrome.extension.getURL('css/dFrame.css');
-    toolkitStyle.id = "debug-unique-style-block";
-    toolkitStyle.className = "debug";
-    toolkitStyle.rel = "stylesheet";
-    toolkitStyle.type = "text/css";
-    document.head.appendChild(toolkitStyle);
-
-    // Add allFrames.css
-    var globalToolkitStyle = document.createElement("link");
-    globalToolkitStyle.href = chrome.extension.getURL('css/allFrames.css');
-    globalToolkitStyle.id = "debug-global-style-block";
-    globalToolkitStyle.className = "debug";
-    globalToolkitStyle.rel = "stylesheet";
-    globalToolkitStyle.type = "text/css";
-    document.head.appendChild(globalToolkitStyle);
-
-    // Next add in the document's markup. Everything inside the <html> tag and including the <html> tag.
-    cleanedDesktopHtml += document.documentElement.outerHTML;
-
-    document.getElementById("debug-unique-style-block").setAttribute("href", chrome.extension.getURL('css/mFrame.css'))
-    cleanedMobileHtml += document.documentElement.outerHTML;
-
-  // Remove all <script> tags. HTML emails cannot have them. We don't design them in there, but if you're viewing this page with Middleman then there will be some injected <script> tags that can cause us issues. These <script> tags allow Middleman to reload the page when changes to the file are made. We don't need them in our dFrame or mFrameContents potentially mucking things up.
-  // Also removes <object> tags. Which is also injected by Middleman (and MM sometimes tries to remove it itself and fails)
-  // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-
-  cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-  cleanedDesktopHtml  = cleanedDesktopHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-  cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-
-  //////
-  //////
-  //////
-
-
-  //////////////////////////////////////////////
-  //////////////////////////////////////////////
-  //////////////////////////////////////////////
-  //////////////////////////////////////////////
-  //////////////////////////////////////////////
-  ////                                     /////
-  ////                                     /////
-  ////    MAILCHIMP CONDITIONALS PARSER    /////
-  ////                                     /////
-  ////                                     /////
-  //////////////////////////////////////////////
-  //////////////////////////////////////////////
-  //////////////////////////////////////////////
-  //////////////////////////////////////////////
-
-  // Conditionals Reference
-  // http://kb.mailchimp.com/merge-tags/use-conditional-merge-tag-blocks
-
-  // Only parse the conditionals if we see that they are in the plain text HTML
-  if ( conditionsParser && cleanedDesktopHtml.match(/\*\|IF:/gi) && cleanedDesktopHtml.match(/\*\|END:IF\|\*/gi)  ) {
-
-      // Remove all linebreaks/newlines from HTML plain text so that we can REGEX more easily.
-      cleanedDesktopHtml = cleanedDesktopHtml.trim();
-      cleanedDesktopHtml = cleanedDesktopHtml.replace(/(\r\n|\n|\r)/gm,"");
-
-      // Count the total ifs so that we can mark our <condition> tag.
-      var totalConditions = 0;
-
-      ////////////////////
-      ////////////////////
-      ////     IF    /////
-      ////////////////////
-      ////////////////////
-      matchIfs();
-      function matchIfs() {
-
-        totalConditions++;
-
-        var ifMatch = cleanedDesktopHtml.match(/\*\|IF:.+?\|\*.+?\*\|/i);
-        // ifMatch = ifMatch[0].replace(/\*\|$/, "");
-        // console.log(ifMatch);
-        // var ifMatch = ifMatch[0].replace(/p=/gi,"");
-
-        // cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch, "<if>" + ifMatch[0] + "</if>" );
-
-        var conditionType = getConditionText(ifMatch[0]);
-
-        var modifiedMatch = ifMatch[0].replace(/\*\|$/, "");
-        var ifData = ifMatch[0].match(/^\*\|.+?\|\*/);
-        modifiedMatch = modifiedMatch.replace(ifData[0], "");
-
-        ifData = ifData[0].replace(/\*\|IF:/gi, "");
-        ifData = ifData.replace(/\|\*/gi, "");
-
-        var ifTag = "<if data-step='if' data-type='merge' data-conditions='" + conditionType + "'>"
-
-        cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch[0], "<condition data-step='condition' data-condition-count='" + totalConditions + "'>" + ifTag + modifiedMatch + "</if>*|");
-
-        if ( cleanedDesktopHtml.match(/\*\|IF:.+?\|\*.+?\*\|/i) ) {
-          console.log("true");
-          matchIfs();
-        } else {
-          console.log("false");
-        }
-      }
-
-
-      ////////////////////
-      ////////////////////
-      ///   END IF   /////
-      ////////////////////
-      ////////////////////
-      // Close <condition> tags
-      cleanedDesktopHtml = cleanedDesktopHtml.replace(/\*\|END:IF\|\*/gi, "</condition>");
-
-
-      ////////////////////
-      ////////////////////
-      ////  ELSE IF  /////
-      ////////////////////
-      ////////////////////
-      matchElseIfs();
-      function matchElseIfs() {
-
-        // Look for instances of *|ELSEIF in the string.
-        var ifMatch = cleanedDesktopHtml.match(/\*\|ELSEIF:.+?\|\*.+?(<\/condition>|\*\|ELSE)/i);
-
-        // elseifs aren't required in a condition. If the .match above did not find any, skip this section
-        if ( ifMatch !== null ) {
-
-            var conditionType = getConditionText(ifMatch[0]);
-
-            if ( ifMatch[0].endsWith("</condition>") ) {
-
-              var modifiedMatch = ifMatch[0].replace(/^\*\|ELSEIF:/, "");
-
-              var elseifTag = "<elseif data-step='elseif' data-conditions='" + conditionType + "'>";
-
-              var cleanedMatch = modifiedMatch.replace(/.+\|\*/, "");
-
-              cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch[0], elseifTag + cleanedMatch + "</elseif>");
-
-            } else {
-
-              var modifiedMatch = ifMatch[0].replace(/^\*\|ELSEIF:/, "");
-
-              var elseifTag = "<elseif data-step='elseif' data-conditions='" + conditionType + "'>";
-
-              var cleanedMatch = modifiedMatch.replace(/.+\|\*/, "");
-                  cleanedMatch = cleanedMatch.replace(/\*\|ELSE/, "");
-
-              cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch[0], elseifTag + cleanedMatch + "</elseif>*|ELSE");
-
-            }
-
-            if ( cleanedDesktopHtml.match(/\*\|ELSEIF:.+?\|\*.+?(<\/condition>|\*\|ELSE)/i) ) {
-              matchElseIfs();
-            }
-
-        }
-      }
-
-      ////////////////////
-      ////////////////////
-      ////    ELSE   /////
-      ////////////////////
-      ////////////////////
-      matchElse();
-      function matchElse() {
-        var ifMatch = cleanedDesktopHtml.match(/\*\|ELSE:\|\*.+?<\/condition>/i);
-
-        var modifiedMatch = ifMatch[0].replace(/^\*\|ELSE:\|\*/, "");
-
-        var cleanedMatch = modifiedMatch.replace(/<\/condition>/, "");
-
-        cleanedDesktopHtml = cleanedDesktopHtml.replace(ifMatch[0], "<else data-step='else'>" + cleanedMatch + "</else></condition>");
-
-
-        if ( cleanedDesktopHtml.match(/\*\|ELSE:\|\*.+?<\/condition>/i) ) {
-          matchElse();
-        }
-      }
-
-      /////////////////
-      /////////////////
-      /////////////////
-      function getConditionText(string) {
-
-        var conditionText = string.replace(/^\*\|.+?:/, "");
-            conditionText = conditionText.replace(/\|\*.+/, "");
-
-        return conditionText;
-      }
-
-      console.log(cleanedDesktopHtml);
-
-
-  } //// End of MailChimp Conditionals Parser
-  //////
-  //////
-
-
+  // ========== METHOD 2 =============
+  // ======= SERIALIZE XML ===========
+  // =================================
+  // This method serializes the DOM as XML and spits out a string.
+  // This may be better than the current method I am using. But I don't have time to test it.
+  // https://stackoverflow.com/a/17451014/556079
+      // var generatedSource = new XMLSerializer().serializeToString(document);
+      // console.log(generatedSource);
+
+
+  // ========== METHOD 3 =============
+  // ========== ORIGINAL =============
+  // =================================
+  // Originally I didn't know I could use xhr to get the pages original un-rendered HTML.
+  // As a substitute I took the rendered code, and sort of frankenstein'd it together to create our desktop and mobile views.
+  // This code has been commented out because we are now using xhr instead.
+
+          //////
+          //// Get the page's HTML and Doctype
+          //////
+
+              //
+              // //// We need a doctype first. Reassemble the doctype if there is one in the code.
+              // var savedDocType = "";
+              //
+              // if (document.doctype && document.doctype.name) {
+              //   savedDocType = "<!doctype " + document.doctype.name;
+              //   if (document.doctype.publicId) {
+              //     savedDocType += " PUBLIC \"" + document.doctype.publicId;
+              //   }
+              //   if (document.doctype.systemId) {
+              //     savedDocType += "\" \"" + document.doctype.systemId + '">';
+              //   }
+              //   if (!document.doctype.publicId && !document.doctype.systemId) {
+              //     savedDocType += ">";
+              //   }
+              // }
+              //
+              // //// Create a copy of the original HTML
+              // var cleanedOriginalHtml = savedDocType;
+              // cleanedOriginalHtml += document.documentElement.outerHTML;
+              //
+              // //// Create the desktop and mobile versions
+              // var cleanedDesktopHtml = savedDocType;
+              // var cleanedMobileHtml = savedDocType;
+              //
+              //   // Add dFrame.css to the desktop view
+              //   var toolkitStyle = document.createElement("link");
+              //   toolkitStyle.href = chrome.extension.getURL('css/newsletter/newsletter-dFrame.css');
+              //   toolkitStyle.id = "debug-unique-style-block";
+              //   toolkitStyle.className = "debug";
+              //   toolkitStyle.rel = "stylesheet";
+              //   toolkitStyle.type = "text/css";
+              //   document.head.appendChild(toolkitStyle);
+              //
+              //   // Add allFrames.css to both views
+              //   var globalToolkitStyle = document.createElement("link");
+              //   globalToolkitStyle.href = chrome.extension.getURL('css/newsletter/newsletter-allFrames.css');
+              //   globalToolkitStyle.id = "debug-global-style-block";
+              //   globalToolkitStyle.className = "debug";
+              //   globalToolkitStyle.rel = "stylesheet";
+              //   globalToolkitStyle.type = "text/css";
+              //   document.head.appendChild(globalToolkitStyle);
+              //
+              //   // Next add in the document's markup. Everything inside the <html> tag and including the <html> tag.
+              //   cleanedDesktopHtml += document.documentElement.outerHTML;
+              //
+              //   document.getElementById("debug-unique-style-block").setAttribute("href", chrome.extension.getURL('css/newsletter/newsletter-mFrame.css'))
+              //   cleanedMobileHtml += document.documentElement.outerHTML;
+              //
+              // // Remove all <script> tags. HTML emails cannot have them. We don't design them in there, but if you're viewing this page with Middleman then there will be some injected <script> tags that can cause us issues. These <script> tags allow Middleman to reload the page when changes to the file are made. We don't need them in our dFrame or mFrameContents potentially mucking things up.
+              // // Also removes <object> tags. Which is also injected by Middleman (and MM sometimes tries to remove it itself and fails)
+              // // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+              //
+              // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+              // cleanedDesktopHtml  = cleanedDesktopHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+              // cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
 
 
 
@@ -899,6 +755,7 @@ if ( getParameterByName("presentation") === "1" ) {
 
     // Apply the desktop iframes document object to a variable
     var dFrameContents = desktopIframe.contentDocument;
+    var dFrameBody = dFrameContents.body;
 
 
     // Quick <style> Injection
@@ -909,7 +766,7 @@ if ( getParameterByName("presentation") === "1" ) {
     //
     var dStyleElement = dFrameContents.createElement("style");
     // Experimenting with position .debug on page load to prevent the scrollbar from jumping around while the HTML waits for dFrame.css to load.
-    dStyleElement.appendChild(dFrameContents.createTextNode("html { overflow-y: scroll; } /* .spellcheck body { color:transparent; } */ elseif, else { display: none; }") );
+    dStyleElement.appendChild(dFrameContents.createTextNode("html { overflow-y: scroll; }") );
     dFrameContents.getElementsByTagName("head")[0].appendChild(dStyleElement);
 
     //////////////
@@ -1063,6 +920,9 @@ var emailPlatformName;
 if ( /^GR\-/i.test(fileName) ) {
   emailPlatform = "gr";
   emailPlatformName = "GetResponse";
+} else if ( /^SG\-/i.test(fileName) ) {
+  emailPlatform = "sg";
+  emailPlatformName = "SendGrid";
 } else {
   emailPlatform = "mc";
   emailPlatformName = "MailChimp";
@@ -1145,8 +1005,8 @@ if ( /\-Fox\-/gi.test(pageUrl) ) {
   emailSubType = "fox"
   emailSubTypeName = "Subscribers"
 }
-if ( /\-HS\-/gi.test(pageUrl) ) {
-  emailSubType = "hs"
+if ( /\-(EH|HS)\-/gi.test(pageUrl) ) {
+  emailSubType = "eh"
   emailSubTypeName = "Subscribers"
 }
 if ( /\-DR\-/gi.test(pageUrl) ) {
@@ -1160,7 +1020,7 @@ if ( /\-DR\-/gi.test(pageUrl) ) {
 ///////////
 
 var outsideOrg = false;
-if ( /\-(HS|DR|Fox)\-/gi.test(pageUrl) ) {
+if ( /\-(EH|HS|DR|Fox)\-/gi.test(pageUrl) ) {
   outsideOrg = true;
 }
 
@@ -1516,7 +1376,7 @@ if ( getParameterByName("layout") ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/drayer.png') + "' class='organization-logo'>"
         console.error(orgLogo);
       }
-      if ( emailSubType === "hs" ) {
+      if ( emailSubType === "hs" || emailSubType === "eh" ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/hs.png') + "' class='organization-logo'>"
         console.error(orgLogo);
       }
@@ -2135,10 +1995,13 @@ function swapUrl() {
 
 //////////
 ////
-////  Check Links
+////  Check Links - Manual Button Click
 ////
 /////////
 
+// Show/hide link checking orb.
+// Used to activate link checking on older emails (> 1 month).
+// By default we don't link check old emails.
 if ( !isRecentEmail ) {
   var checkLinksOrb = document.createElement("div");
   checkLinksOrb.id = "check-links-orb";
@@ -2212,14 +2075,22 @@ function showDims() {
 
   if ( showDimsToggle ) {
     history.replaceState(null,null, updateQueryString("showdims", "1") );
+
+    [].forEach.call(dFrameContents.querySelectorAll("*:not(section)"),function(a){ a.dataset.dimsColor = Math.floor(Math.random() * Math.floor(30)) });
+    [].forEach.call(mFrameContents.querySelectorAll("*:not(section)"),function(a){ a.dataset.dimsColor = Math.floor(Math.random() * Math.floor(30)) });
+
   } else {
     history.replaceState(null,null, updateQueryString("showdims") );
+    [].forEach.call(dFrameContents.querySelectorAll("*"),function(a){a.style.outline=""});
+    [].forEach.call(mFrameContents.querySelectorAll("*"),function(a){a.style.outline=""});
   }
 
   document.getElementById("show-dims-orb").classList.toggle("on");
 
   dFrameContents.documentElement.classList.toggle("debug-show-dims-highlight");
   mFrameContents.documentElement.classList.toggle("debug-show-dims-highlight");
+
+
 
   // if ( elExists(dFrameContents.getElementById("debug")) ) {
   //   destroy(dFrameContents.getElementById("debug"));
@@ -2612,7 +2483,7 @@ function editEmail() {
   var editDesktop = dFrameContents.getElementsByTagName('html')[0].contentEditable = editToggle;
   document.getElementById("desktop-view").classList.toggle("editing");
   document.getElementById("edit-orb").classList.toggle("on");
-  dFrameContents.getElementsByTagName('body')[0].focus();
+  dFrameBody.focus();
 }
 
 
@@ -3156,7 +3027,7 @@ function processModuleText(moduleType) {
 function appendQaBar(newBar) {
 
   newBar.className = "qa-bar"
-  newBar.innerHTML = "<div class='qa-title'><div class='qa-icon'></div><div class='qa-text'></div></div>"
+  newBar.innerHTML = "<div class='qa-title'><div class='qa-icon'></div><div class='qa-text'>Processing...</div></div>"
   qaResults.appendChild(newBar);
 
 }
@@ -3258,10 +3129,10 @@ if ( !preheader90Pattern.test(textMinusPreheader) ) {
 }
 
 
-var preheaderMatchText = "Preheader at <span class='preheader-match-rating'>" + matchRating + "%</span> match.";
+var preheaderMatchText = "Preheader at <span class='preheader-match-rating'>" + matchRating + "%</span> Match";
 
 // Test finished, determine status
-if ( matchRating > 85 ) {
+if ( matchRating > 69 ) {
   applyQaResults(preheaderQaBar, "success", preheaderMatchText);
 } else {
   applyQaResults(preheaderQaBar, "error", preheaderMatchText);
@@ -3269,7 +3140,7 @@ if ( matchRating > 85 ) {
 
 setTimeout(function() {
 
-  if ( matchRating < 95 ) {
+  if ( matchRating < 70 ) {
     toast("suppress", "error", "Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.</div>", 0);
     // alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.", 0);
     // preheaderMatchDiv.classList.add("error");
@@ -3310,6 +3181,29 @@ appendQaBar(articlesQaBar);
 
 //////////
 ////
+////  QA Bar: Audience
+////
+/////////
+
+// We need to know if an email is going to be sent NS, SUB, or Both/Neither.
+// Some link checking relies on this.
+// Append a value of -sub, -ns, or ??? (tbd) to the filename to find out the audience.
+
+var audienceQaBar = document.createElement("div");
+audienceQaBar.id = "qa-audience";
+audienceQaBar.className = "qa-audience";
+appendQaBar(audienceQaBar);
+
+if ( emailSubType ) {
+  applyQaResults(audienceQaBar, "success", "Audience Value Found");
+} else {
+  applyQaResults(audienceQaBar, "error", "Audience Value Missing");
+}
+
+
+
+//////////
+////
 ////  QA Bar: Mobile Layout
 ////
 /////////
@@ -3319,13 +3213,13 @@ mobileLayoutQaBar.id = "qa-mobile-layout";
 mobileLayoutQaBar.className = "qa-mobile-layout";
 appendQaBar(mobileLayoutQaBar);
 
-console.log(mFrameContents.body.scrollWidth);
-console.log(mobileIframe.offsetWidth);
+// console.log(mFrameContents.body.scrollWidth);
+// console.log(mobileIframe.offsetWidth);
 
 if ( mFrameContents.body.scrollWidth > mobileIframe.offsetWidth ) {
-  applyQaResults(mobileLayoutQaBar, "error", "Mobile layout too wide.");
+  applyQaResults(mobileLayoutQaBar, "error", "Mobile Layout Too Wide");
 } else {
-  applyQaResults(mobileLayoutQaBar, "success", "Mobile layout approved.");
+  applyQaResults(mobileLayoutQaBar, "success", "Mobile Layout Approved");
 }
 
 
@@ -3340,6 +3234,46 @@ zoomLevelsQaBar.id = "qa-zoom-levels";
 zoomLevelsQaBar.className = "qa-zoom-levels";
 appendQaBar(zoomLevelsQaBar);
 
+
+//////////
+////
+////  QA Bar: Filsize
+////
+/////////
+
+// The Gmail limit for emails is 102kb. After that the email will be truncated.
+
+// Inspired by: https://www.sendwithus.com/resources/gmail_size_test
+// Uses: - https://stackoverflow.com/a/7343013/556079
+//       - https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder
+
+var filesizeQaBar = document.createElement("div");
+filesizeQaBar.id = "qa-filesize";
+filesizeQaBar.className = "qa-filesize";
+appendQaBar(filesizeQaBar);
+
+// We need to calculate the email size.
+// Let's take our original HTML (kinda) and make some modifications to try and make its contents more accurate.
+
+  // MailChimp's tracking links are a fairly consistent length. Let's replace all of ours with them.
+    htmlForSizeCalc = cleanedOriginalHtml.replace(/(href=".+?"|href='.+?')/gi, 'href="https://medbridgeeducation.us2.list-manage.com/track/click?u=9929f5c1548f4f842c9470a5f&id=620d233a43&e=46a1f0c393"');
+  // Let's also remove MailChimp conditionals.
+  // If some exist, I should add an alert that explains that.
+    var conditionalsExist = htmlForSizeCalc.match(/\*\|.+?\|\*/gi);
+      htmlForSizeCalc = htmlForSizeCalc.replace(/\*\|(END|IF).+?\|\*/gi, "");
+
+// Calculate the size with our extra clean string.
+var emailSize = Math.round( ( new TextEncoder('utf-8').encode(htmlForSizeCalc).length / 1024 ) * 10 ) / 10;
+
+if ( emailSize > 100 ) {
+  if ( conditionalsExist ) {
+    applyQaResults(filesizeQaBar, "error", "Email Too Big* (~" + emailSize + " Kb)");
+  } else {
+    applyQaResults(filesizeQaBar, "error", "Email Too Big (~" + emailSize + " Kb)");
+  }
+} else {
+  applyQaResults(filesizeQaBar, "success", "Email is ~" + emailSize + " Kb");
+}
 
 //////////
 ////
@@ -3528,13 +3462,6 @@ alertify.set('notifier','position', 'bottom-right');
 ///////////////////////////////////////////////////////////////////////////////
 
 
-//////////
-/////
-//      !!!!!!!!!!!!!!!!!!
-//      Prevent zoom of the top level document when the shortcut is pressed. And instead initiate a zoom on dFrame only. That would be awesome!
-////
-/////////
-
 var zoomLevelChecked = false;
 function checkZoomLevel() {
 // https://stackoverflow.com/a/6365777/556079
@@ -3579,17 +3506,17 @@ function checkZoomLevel() {
   // console.error(Number(dFrameContents.documentElement.style.zoom));
   // console.error(currentZoomLevel);
 
-  setTimeout(function(){
+  // setTimeout(function(){
 
     var currentZoomLevel = dFrameContents.documentElement.style.zoom || 1;
 
     if ( currentZoomLevel && currentZoomLevel <= 0.85 ) {
       zoomLevelChecked = true;
-      console.log("Zoom level checked!");
+      // console.log("Zoom level checked!");
     }
-    console.error(currentZoomLevel);
+    console.log("Current Zoom Level:", currentZoomLevel);
 
-  }, 1000);
+  // }, 1000);
 
 
 }
@@ -3673,11 +3600,13 @@ if (typeof moduleSettingsMenu != 'undefined') {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////// ==  xxxxxxxxxxxxxxx  == //////////////////////////////
-//////////////////////// ==                   == //////////////////////////////
-//////////////////////// ==  LINK VALIDATION  == //////////////////////////////
-//////////////////////// ==                   == //////////////////////////////
-//////////////////////// ==  xxxxxxxxxxxxxxx  == //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+////
+////
+////    LINK VALIDATION
+////
+////
+///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3714,7 +3643,7 @@ if (typeof moduleSettingsMenu != 'undefined') {
       // console.log(linkMarker);
 
       var errorRow = document.createElement("section");
-      var errorRowText = document.createElement("div");
+      var errorRowText = document.createElement("section");
           errorRowText.innerHTML = msg
       errorRow.appendChild(errorRowText);
 
@@ -3902,225 +3831,230 @@ dFrameContents.documentElement.appendChild(linkMarkerWrapper);
 /////
 /////
 
-
-
-linkValidationLoop("false");
+// Wait until the desktop iframe has finished loading.
+// Images loading in late can alter the layout. Wait until they've loaded in to check the links.
+// Links with errors will get a badge that is positioned above them. The layout needs to be solid before we place them.
+// desktopIframe.onload = () => {
+  // Run the function that will loop through all links.
+  // Optional content states that we don't want to check the age of the email while we're link checking.
+  linkValidationLoop("false");
+// }
 
 function linkValidationLoop(ageCheck) {
 
-  let linkList = dFrameContents.querySelectorAll("a");
+      let linkList = dFrameContents.querySelectorAll("a");
 
-  console.groupCollapsed("Links Group for Validation - Total Links Processed: " + linkList.length);
+      console.groupCollapsed("Links Group for Validation - Total Links Processed: " + linkList.length);
 
-  // Loop through each link on the page first before we validate individually.
-  var allLinkUrlsList = [];
-  var medbridgeLinkUrlsList = [];
+      // Loop through each link on the page first before we validate individually.
+      var allLinkUrlsList = [];
+      var medbridgeLinkUrlsList = [];
 
-  for (let link of linkList) {
+      for (let link of linkList) {
 
-    allLinkUrlsList.push(link.href);
+        allLinkUrlsList.push(link.href);
 
-    if ( /medbridge(ed(ucation)?|massage)\.com\//gi.test(link.href) ) {
-      medbridgeLinkUrlsList.push(link.href);
-    }
+        if ( /medbridge(ed(ucation)?|massage)\.com\//gi.test(link.href) ) {
+          medbridgeLinkUrlsList.push(link.href);
+        }
 
-  }
+      }
 
-  // Grab all MedBridge links and output them to the console for a quick helpful view.
-  console.groupCollapsed("All MedBridge Links Listed");
-    console.log(medbridgeLinkUrlsList);
-  console.groupEnd();
-
-
-  // Determine if portions of links in -ns emails match each other by finding the most common string and checking against it later when we loop through the links again for validation.
-  // This is important for marketing tracking urls, utm_source, and utm_campaign
-  //////////////////
-  if ( emailSubType === "ns" ) {
-    // tracking url
-    commonTrkUrl = mostCommonString("tracking", medbridgeLinkUrlsList);
-    if ( commonTrkUrl ) {
-      commonTrkUrlRegex = new RegExp(escapeRegExp(commonTrkUrl) + "\/?\\?","i");
-    }
-  }
-
-  // utm_source
-  commonUtmSource = mostCommonString("utm_source", medbridgeLinkUrlsList);
-  if ( commonUtmSource ) {
-    commonUtmSourceRegex = new RegExp(escapeRegExp(commonUtmSource) + "(&|$)","i");
-  }
-  // utm_campaign
-  commonUtmCampaign = mostCommonString("utm_campaign", medbridgeLinkUrlsList);
-  if ( commonUtmCampaign ) {
-    commonUtmCampaignRegex = new RegExp(escapeRegExp(commonUtmCampaign) + "(&|$)","i");
-  }
+      // Grab all MedBridge links and output them to the console for a quick helpful view.
+      console.groupCollapsed("All MedBridge Links Listed");
+        console.log(medbridgeLinkUrlsList);
+      console.groupEnd();
 
 
+      // Determine if portions of links in -ns emails match each other by finding the most common string and checking against it later when we loop through the links again for validation.
+      // This is important for marketing tracking urls, utm_source, and utm_campaign
+      //////////////////
+      if ( emailSubType === "ns" ) {
+        // tracking url
+        commonTrkUrl = mostCommonString("tracking", medbridgeLinkUrlsList);
+        if ( commonTrkUrl ) {
+          commonTrkUrlRegex = new RegExp(escapeRegExp(commonTrkUrl) + "\/?\\?","i");
+        }
+      }
 
+      // utm_source
+      commonUtmSource = mostCommonString("utm_source", medbridgeLinkUrlsList);
+      if ( commonUtmSource ) {
+        commonUtmSourceRegex = new RegExp(escapeRegExp(commonUtmSource) + "(&|$)","i");
+      }
+      // utm_campaign
+      commonUtmCampaign = mostCommonString("utm_campaign", medbridgeLinkUrlsList);
+      if ( commonUtmCampaign ) {
+        commonUtmCampaignRegex = new RegExp(escapeRegExp(commonUtmCampaign) + "(&|$)","i");
+      }
 
-  // ageCheck = true | false
-  //////////////////////////
-  console.log("ageCheck is set to: " + ageCheck);
-
-
-  // Loop through each link and run a validation function on each.
-  /////////////////
-
-  var i = 0
-  for (let link of linkList) {
-
-    var linkErrors = 0;
-    i++
-
-    // Set link to a variable and clean it if it's local.
-    var linkHref = link.href;
-    if ( /^file:.+\//gi.test(linkHref) ) {
-      linkHref = linkHref.replace(/^file:.+\//gi, "");
-    }
-
-
-    // if ( !/^(\*%7C.+?%7C\*|\[.+?\])/gi.test(linkHref) ) { // If this isn't a MailChimp or SendGrid link (eg. *|ARCHIVE|* or [weblink]), continue processing.
-
-      // Create link module ROW in left column.
-      // var linkRowsWrapper = document.querySelector(".mod-link-checker .mod-body");
-      //
-      // var linkRow = document.createElement("div");
-      // linkRow.className = "link-row";
-      // linkRowsWrapper.appendChild(linkRow);
-      //
-      // var linkRowNum = document.createElement("div");
-      // linkRowNum.className = "link-row-num";
-      // var textLinkNum = document.createTextNode(i);
-      // linkRowNum.appendChild(textLinkNum);
-      // linkRow.appendChild(linkRowNum);
-      //
-      // var linkRowHref = document.createElement("div");
-      // linkRowHref.className = "link-row-href";
-      //
-      // if ( /\.medbridgeeducation\.com/gi.test(linkHref) ) {
-      //   var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\.medbridgeeducation\.com/gi, ""));
-      // } else {
-      //   var textLinkHref = document.createTextNode(linkHref.replace(/https?\:\/\/www\./gi, ""));
-      // }
-      //
-      // linkRowHref.appendChild(textLinkHref);
-      // linkRow.appendChild(linkRowHref);
+      // ageCheck = true | false
+      //////////////////////////
+      console.log("ageCheck is set to: " + ageCheck);
 
 
 
       //////////////////////////////
       //////////////////////////////
-      //    Validate Links
+      //  Validate Links
+      //  Loop through each link and run a validation function on each.
       //////////////////////////////
       //////////////////////////////
 
-      validateLinks(link, i);
+      var i = 0
+      for (let link of linkList) {
 
-              // if ( isRecentEmail || ageCheck === "false" ) {
-              //   // Only validate the link if the date on the email filename is recent.
-              //   validateLinks(link, i);
-              // } else {
-              //   // Else, skip validation of this link.
-              //   if ( i < 10 ) {
-              //     var iLog = "0" + i;
-              //   } else { iLog = i; }
-              //   console.log("[" + iLog + "] VALIDATION SKIPPED - " + linkHref + " (This IS NOT a recent email, skipping automatic link validation.)");
-              // }
+        var linkErrors = 0;
+        i++
+
+        validateLinks(link, i);
+
+      }
+
+      console.groupEnd();
+
+      var totalLinksWithErrors = dFrameContents.querySelectorAll(".link-marker.error").length;
+      console.log("Links with Errors", totalLinksWithErrors);
+
+      console.log("Combined Link Errors", totalLinkErrors);
 
 
-    // }
-  }
-  console.groupEnd();
+
+      if ( totalLinksWithErrors > 0 ) {
+        applyQaResults(linksQaBar, "error", "<b>" + totalLinksWithErrors + "</b> Links with Errors");
+      } else {
+        applyQaResults(linksQaBar, "success", "All Links Approved");
+      }
+
+      // Wait for the desktop iframe to finish loading.
+      // Once it's done, run a function that will position our link markers.
+      desktopIframe.onload = () => {
+        var i = 0
+        for (let link of linkList) {
+          i++
+          positionLinkMarkers(link, i)
+        }
+      }
 
 }
+console.groupEnd();
 
 //////////
 //////////
 //////////
-function validateLinks(link, i) {
 
-    // Set link to a variable and clean it if it's local.
-    var linkHref = link.href;
-    if ( /^(file\:|(https?\:\/\/)?localhost)/gi.test(linkHref) ) {
-      linkHref = linkHref.replace(/^.+\//gi, "");
-    }
+function positionLinkMarkers(link, i) {
 
-    // Making our counter for console.log 2 digits instead of 1. (1 vs 01)
-    if ( i < 10 ) {
-      var iLog = "0" + i;
-    } else { iLog = i; }
-
-    console.groupCollapsed("[" + iLog + "] VALIDATION RESULTS - " + linkHref);
-    console.log(link);
-    console.log( getPosition(link, dFrameContents) );
-
-
-    // Create Link Markers in HTML Email
+    // Get the position of the current link.
     var linkPosition = getPosition(link, dFrameContents);
 
-    link.classList.add("marked");
-    link.dataset.number = i;
+    // Find the matching link marker in the DOM.
+    var linkMarker = dFrameContents.querySelector("#link-marker-" + i);
 
-    var linkMarker = document.createElement("section");
-    linkMarker.className = "link-marker";
-    linkMarker.style.top = (linkPosition.y - 10) + "px";
-    linkMarker.style.left = (linkPosition.x - 10) + "px";
-    linkMarker.dataset.href = linkHref;
-    linkMarker.dataset.number = i;
-    linkMarker.addEventListener("click", pinLinkMarker, false);
-    dFrameContents.getElementById("link-markers").appendChild(linkMarker);
-
-
-    var linkErrorLog = document.createElement("section");
-    linkErrorLog.className = "link-errors";
-    linkErrorLog.dataset.number = i;
-    linkErrorLog.addEventListener("mousedown", unpinLinkMarker, false);
-    insertAfter(linkErrorLog, linkMarker);
-
-
-    var linkErrorLogURL = document.createElement("section");
-    linkErrorLogURL.className = "link-errors-url";
-
-    linkErrorLogURL.innerHTML = "<div class='link-number'>" + i + "</div>"
-
-    var linkErrorLogURLTextNode = document.createTextNode(linkHref);
-    linkErrorLogURL.appendChild(linkErrorLogURLTextNode);
-    linkErrorLog.appendChild(linkErrorLogURL);
-
-    var linkErrorLogNoticeWrapper = document.createElement("section");
-    linkErrorLogNoticeWrapper.className = "link-errors-wrapper";
-    linkErrorLog.appendChild(linkErrorLogNoticeWrapper);
-
-
-    ////////////////
-    ////////////////
-    //
-    //  TO DO
-    //
-    //  - Check for medium=email in blog links during sale weeks. Look for -Presale- or -Sale- in filename.
-    //  - Same as above, but look at required text for sale periods.
-    //  - Verify pearl versus blog by creating an array of all the instructors. Show a warning if no match is found so that I can update the array.
-    //  - Count modules and check if the utm_content has the right mod# for each link.
-    //
-    //
-    ////////////////
-    ////////////////
-
-// If this is a merge tag link - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
-if ( /^(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[\[?.+\]\]?)/gi.test(linkHref) ) {
-
-    // Links in an email for the GetResponse Platform
-    if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
-      createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
-    }
-    // Links in an email for the MailChimp Platform
-    else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(linkHref) ) { // Look for SendGrid and GR merge tags.
-      createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
+    // Check if the position of this link is 0,0. This indicates that it's a hidden link.
+    // As a result, our marker will appear at the very top left of the page.
+    // Adjust it's position for better visibility.
+    if ( linkPosition.y === 0 || linkPosition.x === 0 ) {
+      linkMarker.style.top = (linkPosition.y + 20) + "px";
+      linkMarker.style.left = (linkPosition.x + 20) + "px";
+    } else {
+    // Else it's visible, position it just above and to the left of the link.
+      linkMarker.style.top = (linkPosition.y - 10) + "px";
+      linkMarker.style.left = (linkPosition.x - 10) + "px";
     }
 
 }
 
-// All other links
-else if ( !/^mailto/.test(linkHref) ) {
+function validateLinks(link, i) {
+
+  // Set link to a variable and clean it if it's local.
+  var linkHref = link.href;
+  if ( /^(file\:|(https?\:\/\/)?localhost)/gi.test(linkHref) ) {
+    linkHref = linkHref.replace(/^.+\//gi, "");
+  }
+
+  // Making our counter for console.log 2 digits instead of 1. (1 vs 01)
+  if ( i < 10 ) {
+    var iLog = "0" + i;
+  } else { iLog = i; }
+
+  console.groupCollapsed("[" + iLog + "] VALIDATION RESULTS - " + linkHref);
+  console.log(link);
+
+  //
+  link.classList.add("marked");
+  link.dataset.number = i;
+
+  // Create a corresponding link marker (#) for this link and append it to a container
+  /////////
+  var linkMarker = document.createElement("section");
+  linkMarker.id = "link-marker-" + i;
+  linkMarker.className = "link-marker";
+
+  linkMarker.dataset.href = linkHref;
+  linkMarker.dataset.number = i;
+  linkMarker.addEventListener("click", pinLinkMarker, false);
+  dFrameContents.getElementById("link-markers").appendChild(linkMarker);
+
+  // Create a container that will hold all of the errors associated with this link.
+  /////////
+  var linkErrorLog = document.createElement("section");
+  linkErrorLog.className = "link-errors";
+  linkErrorLog.dataset.number = i;
+  linkErrorLog.addEventListener("mousedown", unpinLinkMarker, false);
+  insertAfter(linkErrorLog, linkMarker);
+
+  // Create a container for the link href to show with the errors
+  /////////
+  var linkErrorLogURL = document.createElement("section");
+  linkErrorLogURL.className = "link-errors-url";
+  linkErrorLogURL.innerHTML = "<div class='link-number'>" + i + "</div>"
+
+  var linkErrorLogURLTextNode = document.createTextNode(linkHref);
+  linkErrorLogURL.appendChild(linkErrorLogURLTextNode);
+  linkErrorLog.appendChild(linkErrorLogURL);
+
+  var linkErrorLogNoticeWrapper = document.createElement("section");
+  linkErrorLogNoticeWrapper.className = "link-errors-wrapper";
+  linkErrorLog.appendChild(linkErrorLogNoticeWrapper);
+
+
+  ////////////////
+  ////////////////
+  //
+  //  TO DO
+  //
+  //  - Check for medium=email in blog links during sale weeks. Look for -Presale- or -Sale- in filename.
+  //  - Same as above, but look at required text for sale periods.
+  //  - Verify pearl versus blog by creating an array of all the instructors. Show a warning if no match is found so that I can update the array.
+  //  - Count modules and check if the utm_content has the right mod# for each link.
+  //
+  //
+  ////////////////
+  ////////////////
+
+  // If this is a merge tag link - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
+  if ( /^(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[\[?.+\]\]?)/gi.test(linkHref) ) {
+
+      // Links in an email for the GetResponse Platform
+      if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
+        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
+      }
+      // Links in an email for the MailChimp Platform
+      else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(linkHref) ) { // Look for SendGrid and GR merge tags.
+        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
+      }
+      // Links in an email for the SendGrid Platform
+      else if ( emailPlatform === "sg" && /(^\[\[.+\]\]|\*\|.+?\|\*|\*\%7C.+?%7C\*)/gi.test(linkHref) ) { // Look for MailChimp and GR merge tags.
+        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
+      }
+
+  }
+
+  // All other links
+  else if ( !/^mailto/.test(linkHref) ) {
+
+    console.log("url - " + linkHref);
 
     // Global link testing variables
     var medbridgeEdLink
@@ -4201,11 +4135,6 @@ else if ( !/^mailto/.test(linkHref) ) {
       linkNeedsPromoCode = false;
     }
     console.log("linkNeedsPromoCode - " + linkNeedsPromoCode);
-
-    ////
-    console.groupEnd();
-    ////
-
 
     ///////////////////////
     ///////////////////////
@@ -4451,17 +4380,17 @@ else if ( !/^mailto/.test(linkHref) ) {
 
     ////
     // Check for whitelabeling versus www
-    if ( outsideOrg && !blogLink && medbridgeEdLink ) {
+    if ( outsideOrg && medbridgeEdLink ) {
 
       if ( /https?:\/\/(www\.)?med/.test(linkHref) ) {
         createLinkErrorRow(link, "missing whitelabeling");
       }
-      else if ( (emailSubType === "hs" && !/\/healthsouth\./i.test(linkHref)) || (emailSubType === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailSubType === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
+      else if ( ( (emailSubType === "hs" || emailSubType === "eh") && !/\/(encompasshealth|healthsouth)\./i.test(linkHref)) || (emailSubType === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailSubType === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
         createLinkErrorRow(link, "incorrect whitelabeling");
       }
 
     }
-    if ( !outsideOrg && medbridgeEdLink && !/https?:\/\/(www\.|medbridgeed(ucation)?\.com\/)/gi.test(linkHref) ) {
+    if ( !outsideOrg && medbridgeEdLink && !/https?:\/\/(support\.|www\.|medbridgeed(ucation)?\.com\/)/gi.test(linkHref) ) {
       createLinkErrorRow(link, "remove whitelabeling");
     }
 
@@ -4490,13 +4419,18 @@ else if ( !/^mailto/.test(linkHref) ) {
 
     }
 
+    // Leftover & or ? from a removed querystring
+    if ( /(\?|&)$/g.test(linkHref) ) {
+      createLinkErrorRow(link, "link ending with ? or &");
+    }
+
 
 
     ////-----------------------------////
     ////
     if ( linkNeedsPromoCode ) {
 
-      console.error("hi");
+      // console.error("hi");
 
       // Links to MedBridge in -ns emails need to use a marketing URL
       if ( !/\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) ) {
@@ -4522,7 +4456,7 @@ else if ( !/^mailto/.test(linkHref) ) {
         createLinkErrorRow(link, "investigate consecutive forward slashes");
       }
 
-      console.log("emailDate.getMonth(); " + emailDate.getMonth());
+      // console.log("emailDate.getMonth(); " + emailDate.getMonth());
 
       // Check the date in a tracking URL if the email's filename has a date in it to match against
       if ( emailDate.getMonth() ) {
@@ -4555,7 +4489,8 @@ else if ( !/^mailto/.test(linkHref) ) {
         var moduleNumber = moduleNumber.getAttribute("data-module-count");
         var moduleNumberMatch = new RegExp("utm_content=mod" + moduleNumber, "gi");
 
-        if ( /utm_content=mod\d/gi.test(linkHref) ) {
+        // mod followed by 1 or 2 digits, followed by - or # or & or the link ends.
+        if ( /utm_content=mod\d(\d)?([\-&#]|$)/gi.test(linkHref) ) {
 
           if ( !moduleNumberMatch.test(linkHref) ) {
             // console.log( "no match: " + !moduleNumberMatch.test(linkHref) );
@@ -4566,7 +4501,7 @@ else if ( !/^mailto/.test(linkHref) ) {
 
         } else {
 
-          createLinkErrorRow(link, "missing mod #, use " + "mod" + moduleNumber);
+          createLinkErrorRow(link, "missing or mistyped mod #, use mod" + moduleNumber);
 
         }
       }
@@ -4674,11 +4609,11 @@ else if ( !/^mailto/.test(linkHref) ) {
 
     ////
     // Link Text Hints
-    if ( (/Request (Group|a Demo|Info|EMR Integration)/gi.test(link.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Part of an organization|Request (Group|a Demo|Info|EMR Integration))/gi.test(link.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
-      createLinkErrorRow(link, "link text does not match url");
+    if ( (/Request (Group|a Demo|Info|EMR Integration)/gi.test(link.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))/gi.test(link.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
+      createLinkErrorRow(link, "link text does not match url (demo related)");
     }
-    if ( /Article/gi.test(link.textContent) && !/(\/blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "link text does not match url");
+    if ( /Article/gi.test(link.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "link text does not match url (article related)");
     }
 
     ////
@@ -4728,7 +4663,7 @@ else if ( !/^mailto/.test(linkHref) ) {
     // Checking NS and SUB.
     if ( emailDisc !== "multi" && emailDisc !== null && !outsideOrg && medbridgeOrMassageLink ) { //&& isMarketingUrl
 
-      if ( (emailDisc !== "pt") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) || /\.com\/physical-therapy\/?(\?|$)/gi.test(linkHref)) ) {
+      if ( (emailDisc !== "pt" && emailDisc !== "other") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) || /\.com\/physical-therapy\/?(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(link, "wrong homepage");
       }
       if ( (emailDisc !== "other" && emailDisc !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(linkHref) || /\.com\/(\?|$)/gi.test(linkHref)) ) {
@@ -4747,7 +4682,7 @@ else if ( !/^mailto/.test(linkHref) ) {
 
 
     // Courses Page - Discipline Check
-    if ( emailDisc !== "multi" && !outsideOrg && emailDisc !== null && /#/g.test(linkHref) && /(\/|=)courses/g.test(linkHref) ) { //  && medbridgeOrMassageLink
+    if ( emailDisc !== "multi" && emailDisc !== null && /#/g.test(linkHref) && /(\.com\/|=\/?)courses/gi.test(linkHref) ) { //  && medbridgeOrMassageLink
 
       // if ( (emailDisc !== "pt" && emailDisc !== "other") && /#\/?physical-therapy/gi.test(linkHref) ) {
       //   createLinkErrorRow(link, "wrong hashtag");
@@ -4803,7 +4738,11 @@ else if ( !/^mailto/.test(linkHref) ) {
         createLinkErrorRow(link, "link to pricing/slp");
       }
       // Other
-      else if ( (emailDisc === "other" || !emailDisc) && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
+      else if ( emailDisc === "other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(linkHref) ) {
+        createLinkErrorRow(link, "link to pricing/other");
+      }
+      // No Discipline
+      else if ( !emailDisc && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
         createLinkErrorRow(link, "link to standard pricing page");
       }
 
@@ -4815,6 +4754,12 @@ else if ( !/^mailto/.test(linkHref) ) {
       createLinkErrorRow(link, "unecessary hashtag");
     }
 
+
+    ////
+    // Do not link to medbridgeed.com. Use the full medbridgeeducation.com URL.
+    if ( /(\:\/\/|\.)medbridgeed\.com/gi.test(linkHref) ) {
+      createLinkErrorRow(link, "use medbridgeeducation.com");
+    }
 
     ////
     // NO //support. in outsideOrg
@@ -4834,14 +4779,10 @@ else if ( !/^mailto/.test(linkHref) ) {
   }
   ///////
   ///////
-  ///////
 
-
-    // unused... what was I doing?
-
-    var linkText = link.innerText;
-
-
+  ////
+  console.groupEnd();
+  ////
 }
 //////////
 //////////
@@ -4852,7 +4793,9 @@ else if ( !/^mailto/.test(linkHref) ) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+////
+////    IMG CHECK - UNFINISHED
+////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -4862,7 +4805,7 @@ else if ( !/^mailto/.test(linkHref) ) {
 // Iterate through ALL IMAGES - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
 let imgList = dFrameContents.querySelectorAll("img");
 var i = 0
-console.log("Total Images: " + imgList.length)
+console.log("Images", + imgList.length)
 for (let img of imgList) {
 
   i++
@@ -4877,7 +4820,9 @@ for (let img of imgList) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+////
+////    GRAMMAR AND VERBIAGE CHECKS
+////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -4921,13 +4866,36 @@ function countCitations() {
 
 // Run a check on all text in the email
 highlightTextErrors();
+
+
+
+// This function allows findAndReplaceDOMText to exclude matches. This functionality is not built-in to the script so we need this function.
+// Visit this closed issue on GitHub for more info: https://github.com/padolsey/findAndReplaceDOMText/issues/64
+
+    function globalRegexWithFilter(regex, filterFn) {
+      if (!regex.global) {
+        throw new Error('Regex must be global');
+      }
+      function exec(text) {
+        var result = regex.exec(text);
+        if (result && !filterFn(result[0])) {
+          return exec(text);
+        }
+        return result;
+      }
+      return {
+        global: true,
+        exec: exec
+      };
+    }
+
 function highlightTextErrors() {
 //
 // SPAM TRIGGER WORD
 //
 // Click|Click below|Click here|Click to remove|
-findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Being a member|Beneficiary|Best price|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Congratulations|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Lowest Price|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No middleman|No obligation|No purchase necessary|No questions asked|No selling|No strings attached|No\-?obligation|Not intended|Notspam|Now only|Obligation|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Please read|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|Round the world|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
+findAndReplaceDOMText(dFrameBody, {
+  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Please read|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
   wrap: 'span', wrapClass: "text-error"
 });
 
@@ -4939,16 +4907,24 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 // Platform Checks
 if ( emailPlatform === "gr" ) {
   // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /\*\|.+?\|\*/gi,
+  findAndReplaceDOMText(dFrameBody, {
+    find: /(\*\|.+?\|\*|\[[^\[\]]+?\][^\]])/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 }
 
 if ( emailPlatform === "mc" ) {
   // Do not use [[getresponse]] merge tags with a MailChimp email.
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-    find: /\[\[.+?\]\]/gi,
+  findAndReplaceDOMText(dFrameBody, {
+    find: /\[\[?.+?\]\]?/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+}
+
+if ( emailPlatform === "sg" ) {
+  // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
+  findAndReplaceDOMText(dFrameBody, {
+    find: /(\*\|.+?\|\*|\[\[.+?\]\])/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 }
@@ -4962,32 +4938,32 @@ if ( emailPlatform === "mc" ) {
 
 // Promo Codes
   if ( emailDisc !== "pt" ) {
-    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    findAndReplaceDOMText(dFrameBody, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?PT\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "at" ) {
-    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    findAndReplaceDOMText(dFrameBody, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?AT\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "ot" ) {
-    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    findAndReplaceDOMText(dFrameBody, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?OT\b)/gi,
       wrap: 'span',
       wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "slp" ) {
-    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    findAndReplaceDOMText(dFrameBody, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?SLP\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc === "other" ) {
-    findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+    findAndReplaceDOMText(dFrameBody, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
@@ -5000,7 +4976,7 @@ if ( emailPlatform === "mc" ) {
 //////////
 if ( emailDisc === "pt" || emailDisc === "other" ) {
 
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(ASHA|\bAOTA|BOC\-Approved|Athletic Training|Occupational Therapy|(only )?\$95|(only )?\$145)/g,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5012,13 +4988,13 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //////////
 } else if ( emailDisc === "at" ) {
 
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(ASHA|\bAOTA|Physical Therapy|Occupational Therapy|(only )?\$95|(only )?\$145)/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
   // 11-13-17 - We use this patients and outcomes a lot in AT afterall. Can't justify tagging them.
-  // findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  // findAndReplaceDOMText(dFrameBody, {
   //   find: /(patients? [^education]|outcomes?)/gi,
   //   wrap: 'span', wrapClass: "text-error"
   // });
@@ -5030,12 +5006,12 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //////////
 } else if ( emailDisc === "ot" ) {
 
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(ASHA|BOC\-Approved|Physical Therapy|Athletic Training|(only )?\$95|(only )?\$145)/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /home exercise program/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5047,12 +5023,12 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //////////
 } else if ( emailDisc === "slp" ) {
 
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(\bAOTA|BOC\-Approved|Physical Therapy|Athletic Training|Occupational Therapy|(only )?\$200|(only )?\$250)/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(patient outcomes?|home exercise program|clinician)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5064,12 +5040,12 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //////////
 } else if ( emailDisc === "lmt" ) {
 
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy|CCC\-SLP|\$95|\$145|\$200|\$250)/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /patient engagement tool/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5103,24 +5079,24 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   ////////////////////////////////
 
   // All (case INsensitive)
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
     // Update to add "word &nbsp;&rarr;" as an error
     wrap: 'span', wrapClass: "text-error"
   });
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(?:(?!\u00a0).{1}|^.{0,0})(\u2192)(?!\u00a0)/g,
     // find: /?:(?!\\u00a0).{6}|^.{0,5})(\\u2192)(?!\\u00a0)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
-  // findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  // findAndReplaceDOMText(dFrameBody, {
   //   find: //gi,
   //   // find: /?:(?!\\u00a0).{6}|^.{0,5})(\\u2192)(?!\\u00a0)/gi,
   //   wrap: 'span', wrapClass: "text-error"
   // });
 
   // All (case sensitive)
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5128,16 +5104,24 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
 //
 // NUMBERS - MISSING COMMAS
+// Ignore numbers that start with 0, the end of phone numbers (-####), common years (1990-1999, 2001-2040), MedBridge address (1633, 98109)
 //
-findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
-  find: /\b[1-9]\d\d\d\b/g,
-  wrap: 'span', wrapClass: "text-error"
-});
+  findAndReplaceDOMText(dFrameBody, {
+  	find: globalRegexWithFilter(/[^-–:#]\b[1-9]\d\d\d\b/g, function(theMatch) {
+    	return !/(98109|1633|199[0-9]|20[0-4][0-9])/g.test(theMatch);
+    }),
+    wrap: 'span', wrapClass: "text-error"
+  })
+//
+// findAndReplaceDOMText(dFrameBody, {
+//   find: /\b[1-9]\d\d\d\b/g,
+//   wrap: 'span', wrapClass: "text-error"
+// });
 
 //
 // PRODUCT CAPITALIZATION
 //
-findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+findAndReplaceDOMText(dFrameBody, {
   find: /MedBridge ((?:patient [Ee]|Patient e)ngagement|Prep\-program|prep\-[Pp]rogram)/g,
   wrap: 'span', wrapClass: "text-error"
 });
@@ -5145,12 +5129,12 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 //
 // Prep-Program
 //
-findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+findAndReplaceDOMText(dFrameBody, {
   find: /\b(MedBridge|.CS) prep [Pp]rogram\b/g,
   wrap: 'span', wrapClass: "text-error"
 });
 
-findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+findAndReplaceDOMText(dFrameBody, {
   find: /\bprep\-programs?\b/gi,
   wrap: 'span', wrapClass: "text-error"
 });
@@ -5159,7 +5143,7 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 // Subscriber
 //
 if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(win a free subscription|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|in a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5169,7 +5153,7 @@ if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
 // Non-Subscribers
 //
 if ( emailSubType === "ns" ) {
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(Start Now|Refer(\-| )a(\-| )Friend|in(?:cluded with)? your (?:(?:MedBridge )?s|annual (?:MedBridge )?s)ubscription)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5179,17 +5163,24 @@ if ( emailSubType === "ns" ) {
 // outsideOrg
 //
 if ( outsideOrg ) {
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+
+  findAndReplaceDOMText(dFrameBody, {
     find: /additional cost|Refer(\-| )a(\-| )Friend/gi,
     wrap: 'span', wrapClass: "text-error"
   });
+
+  findAndReplaceDOMText(dFrameBody, {
+    find: /Enterprise/g,
+    wrap: 'span', wrapClass: "text-error"
+  });
+
 }
 
 //
 // emailAnySale
 //
-if ( !emailAnySale ) {
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+if ( (emailSubType === "ns" || emailSubType === "sub") && !emailAnySale ) {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(only )?\$(200|95|145|250)( |!|\.)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5201,19 +5192,19 @@ if ( !emailAnySale ) {
 
 // MedBridge Pricing
 // What was this for?!
-// findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+// findAndReplaceDOMText(dFrameBody, {
 //   find: /([^r] 40% off)/gi,
 //   wrap: 'span', wrapClass: "text-error"
 // });
 if ( emailAnySale && emailDisc !== "lmt" ) {
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /50%/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 }
 // Massage Pricing
 if ( emailAnySale && emailDisc === "lmt" ) {
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /40%/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5223,15 +5214,27 @@ if ( emailAnySale && emailDisc === "lmt" ) {
 //
 // Grammar
 //
-findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+findAndReplaceDOMText(dFrameBody, {
   find: /evidence based EBP/gi,
   wrap: 'span', wrapClass: "text-error"
 });
 
-findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+findAndReplaceDOMText(dFrameBody, {
   find: /evidence\-based EBP/gi,
   wrap: 'span', wrapClass: "text-error"
 });
+
+
+//
+// Personalization
+//
+// findAndReplaceDOMText(dFrameBody, {
+//   find: /Valued Customer/gi,
+//   wrap: 'span', wrapClass: "text-error"
+// });
+
+
+
 
 //
 // Enterprise
@@ -5239,7 +5242,7 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 ///// Deprecated -  Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
 /////
 // if ( emailDisc === "ent" && emailSubType === "sub" ) {
-//   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+//   findAndReplaceDOMText(dFrameBody, {
 //     find: /request a demo/gi,
 //     wrap: 'span', wrapClass: "text-error"
 //   });
@@ -5248,7 +5251,7 @@ findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
 
 if ( outsideOrg ) {
 
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /(request a demo|part of an? (group|organization)|sign(\-| )up|\bsubscribe\b)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5258,7 +5261,7 @@ if ( outsideOrg ) {
 
 if ( emailDisc === "slp" ) {
 
-  findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+  findAndReplaceDOMText(dFrameBody, {
     find: /Unlimited (Access to )?(CE'?s|CEU'?s)/gi,
     // Must say CE Courses
     wrap: 'span', wrapClass: "text-error"
@@ -5267,21 +5270,26 @@ if ( emailDisc === "slp" ) {
 }
 
 
+// Check for words that would typically be linked by stupid Gmail. Like "tomorrow" linking to the calendar.
+findAndReplaceDOMText(dFrameBody, {
+  find: /tomorrow/gi,
+  wrap: 'span', wrapClass: "text-error gmail-fix", forceContext: true
+});
+
+
 
 }
 // end function
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// == ALERTS == /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-////////////
-////////////
-////////////
-//
-//    Alerts!!
-//
-////////////
-////////////
-////////////
-
+// Refer-a-Friend Reminder
 if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrameContents.body.textContent) ) {
   alertify.error("Refer a Friend<div>Remember update the MailChimp database and use conditional statements to only show Refer a Friend content to eligible contacts.</div>", 0);
 }
@@ -5291,7 +5299,7 @@ if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrameContents.body.textContent) ) {
 //   alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
 // }
 // if ( emailSubType === "ns" && ) {
-//   findAndReplaceDOMText(dFrameContents.getElementsByTagName('body')[0], {
+//   findAndReplaceDOMText(dFrameBody, {
 //     find: /(Start Now|in (an|your) annual|Register Now|Refer(\-| )a(\-| )Friend)/gi,
 //     wrap: 'span',
 //     wrapClass: "text-error"
@@ -5301,14 +5309,12 @@ if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrameContents.body.textContent) ) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////// == PERSISTENT PARAMETERS == /////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function toggleHelpers() {
-  dFrameContents.documentElement.classList.toggle("all-helpers-off");
-}
+
 ////////////
 ////////////
 ////////////
@@ -5322,63 +5328,69 @@ function toggleHelpers() {
 ////////////
 ////////////
 
+function toggleHelpers() {
+  dFrameContents.documentElement.classList.toggle("all-helpers-off");
+}
+
+// Turns off link error badges
 if ( getParameterByName("helpers") === "0" ) {
   toggleHelpers();
   console.log("helpers off");
 }
 
-if ( getParameterByName("img") === "0" ) {
-  toggleImages();
-  console.log("images off");
+window.onload = function () {
+  // Wait until all images are downloaded before running functions that alter or enhance the email preview.
+  // These functions rely on the layout being set in its place.
+  // https://stackoverflow.com/a/588048/556079
+
+  if ( getParameterByName("img") === "0" ) {
+    toggleImages();
+    console.log("images off");
+  }
+
+  if ( getParameterByName("style") === "0" ) {
+    toggleStyles();
+    console.log("style blocks off");
+  }
+
+  if ( getParameterByName("showdims") === "1" ) {
+    showDims();
+    console.log("container outlines shown");
+  }
+
+  if ( getParameterByName("links") === "0" ) {
+    toggleLinkMarkers();
+    console.log("links hidden");
+  }
+
+  if ( getParameterByName("imgdims") === "1" ) {
+    toggleImgDims();
+    console.log("img dimensions revealed");
+  }
+
 }
 
-if ( getParameterByName("style") === "0" ) {
-  toggleStyles();
-  console.log("styles off");
-}
-
-if ( getParameterByName("showdims") === "1" ) {
-  showDims();
-  console.log("box-shadow borders shown");
-}
+// These functions don't need to wait for the layout to settle down.
 
 if ( getParameterByName("guides") === "1" ) {
   toggleGuides();
   console.log("guides shown");
 }
 
-if ( getParameterByName("links") === "0" ) {
-  toggleLinkMarkers();
-  console.log("links hidden");
-}
-
-if ( getParameterByName("imgdims") === "1" ) {
-  toggleImgDims();
-  console.log("img dimensions revealed");
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+////////////////////////// == SPELL CHECK == //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-
-////////////
-////////////
-////////////
-//
-//    Spell Check
-//
-////////////
-////////////
-////////////
 
 // 05-25-17 - DEPRECATED
 // A recent update to Google Chrome cause the built-in spellchecking feature to no longer function as expected.
+// The feature was a bug in chrome. But since it's fixed now, it doesn't work for us.
+// Research possible replacements.
 
 //
 // function checkSpelling() {
@@ -5386,7 +5398,7 @@ if ( getParameterByName("imgdims") === "1" ) {
 //   //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
 //   dFrameContents.getElementsByTagName('html')[0].contentEditable = 'true';
 //   dFrameContents.getElementsByTagName('html')[0].classList.add("spellcheck");
-//   dFrameContents.getElementsByTagName('body')[0].focus();
+//   dFrameBody.focus();
 //
 //   // For some reason, if contenteditable is turned off too quickly, the red squiggles are sometimes misaligned with the text they are indicating as incorrectly spelled. For this reason we're using a setTimeout here.
 //   setTimeout(function() {
@@ -5410,12 +5422,15 @@ if ( getParameterByName("imgdims") === "1" ) {
 //     document.querySelector('.mod-preheader .mod-body').contentEditable = 'false';
 //   }, 600);
 //
-//   dFrameContents.getElementsByTagName('body')[0].spellcheck = true;
+//   dFrameBody.spellcheck = true;
 //
 //   console.log("Spell check function complete.");
 // }
 //
 // checkSpelling();
+
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -5555,7 +5570,7 @@ if ( getParameterByName("imgdims") === "1" ) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-///////////////////////////// == Scroll Syncing == ////////////////////////////
+/////////////////////////// == SCROLL SYNCING == //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -5629,7 +5644,7 @@ function syncScroll(targetFrame, iFrameObj) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+//////////////////////////// == PRE-FLIGHT == /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -5645,6 +5660,7 @@ function syncScroll(targetFrame, iFrameObj) {
   // You can't remove eventlisteners if the function is anonymous - https://stackoverflow.com/a/10444156/556079 / https://stackoverflow.com/a/5825519/556079
   // Naming a function so that you can pass extra variables and also remove the event later - https://stackoverflow.com/a/16651942/556079
   // Bubbling/false vs Capturing/true - https://stackoverflow.com/a/14807507/556079
+
 window.addEventListener('visibilitychange', activatePreflightNotifier, true);
 
 function activatePreflightNotifier() {
@@ -5653,8 +5669,8 @@ function activatePreflightNotifier() {
 
   setTimeout(function() {
 
+    // Check if the current tab is visible using the Page Visibility API
     if ( !document.hidden ) { // https://stackoverflow.com/a/12186061/556079
-      console.log("document.hidden = false");
 
       preflightStatus.classList.remove("initial-load");
       preflightStatus.classList.add("load-finished");
@@ -5663,15 +5679,16 @@ function activatePreflightNotifier() {
         preflightNotifierSuccess();
       }
 
+      // Document is visible, remove the eventlistener
       window.removeEventListener('visibilitychange', activatePreflightNotifier, true);
       // window.removeEventListener('visibilitychange', true);
 
        // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener
       // Events https://developers.google.com/web/tools/chrome-devtools/console/events
-      console.log("listener removed");
+
 
     } else {
-      console.log("document.hidden = true");
+      // document is hidden, do nothing
     }
 
   }, 1000);
@@ -5738,7 +5755,7 @@ function preflightError() {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+////////////////////////// == DRAG TO RESIZE == ///////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -5757,25 +5774,8 @@ function preflightError() {
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////
-
 document.querySelector("html").classList.toggle("errors");
-console.log("// end of newsletter.js")
-//
-// var scrolltest = document.querySelector("#desktop-view");
-//
-// scrolltest.addEventListener('scroll', function(e) {
-//
-//   console.log(window.scrollY);
-//
-// });
-
-
-
-
 
 } // END TEST
-//
-//
-//
 
-// console.error( "newsletter.js - " + document.documentElement.clientWidth );
+console.log("// end of newsletter.js");

@@ -5,92 +5,87 @@ console.warn("[sonic-toolkit-extension] loaded /js/aws.js");
 // var dupedMoreBtn = moreBtn.cloneNode(true);
 
 
-
-// Listen for the table rows to appear
-document.arrive(".action-strip", function() {
-
-  console.log(".action-strip arrived");
-  createMPbutton();
-
-});
-
-// Listen for the table rows to appear
-document.arrive("button + div.awsui-button-dropdown", function() {
-
-  console.log("dropdown button menu arrived");
-
-});
-
-
-
-
-function createMPbutton() {
-
-  console.log(makePublicWrapper);
-
-  if ( makePublicWrapper ) {
-    console.log("button exists");
-  } else {
-    console.log("button doesn't exist");
-    var makePublicWrapper = document.createElement("awsui-button");
-    makePublicWrapper.className = "bucket-action-strip-button action-button-spacing";
-    makePublicWrapper.addEventListener("click", makePublic, false);
-
-    var makePublicBtn = document.createElement("button");
-    makePublicBtn.className = "awsui-button awsui-button-size-normal awsui-button-variant-primary awsui-hover-child-icons";
-    makePublicBtn.innerHTML = "<span>Make Public</span>";
-
-    makePublicWrapper.appendChild(makePublicBtn);
-    //
-    var uploadBtn = document.querySelector("[text='Upload']");
-    //
-    // insertAfter(makePublicWrapper, uploadBtn);
-    document.querySelector(".action-strip").appendChild(makePublicWrapper);
-  }
-
-}
-
+///// HIDE BY FILETYPE!
+///// destroyAll( document.querySelectorAll("td[data-img-type='jpg']") );
 
 document.arrive("tbody[ng-hide] > tr:first-child", function() {
 
   // Auto click the sort field for "data modified" on page load
-  document.querySelectorAll(".columbia-table th:nth-child(3)")[0].click();
+  if ( !document.querySelectorAll(".columbia-table th:nth-child(3) span.sorting-icon")[0].classList.contains("sorting-descending") ) {
+    document.querySelectorAll(".columbia-table th:nth-child(3)")[0].click();
+  }
 
-  console.log("arrived!");
+  // Loop through all tr's
+  // let imgLinks = document.querySelectorAll("tr[ng-repeat*='obj'] td.truncate a.list-view-item-name");
+  let rows = document.querySelectorAll("table.table > thead + tbody[ng-hide] > tr");
+  for (let row of rows) {
 
-  // Loop through all image links
-  let imgLinks = document.querySelectorAll("tr[ng-repeat*='obj'] td.truncate a.list-view-item-name");
-  for (let imgLink of imgLinks) {
+    row.querySelectorAll("td.truncate")[0].style = "display:flex; align-items:center; height:auto;";
 
-    imgLink.closest("td.truncate").style = "display:flex; align-items:center; height:auto;";
+    var imgLink = row.querySelectorAll("td.truncate a.list-view-item-name")[0];
 
-    // Only process imgLinks that haven't had our special class applied to them yet.
-    if ( !imgLink.classList.contains("powered-up") ) {
+    // Only process tr's that haven't had our special class applied to them yet.
+    //////////////////////////////////////
+
+    if ( !row.classList.contains("powered-up") ) {
 
       var currUrl = document.URL.replace(/^.+?\/s3\/buckets\//i,"");
           currUrl = currUrl.replace(/\?.+/i,"");
 
-      var imgUrl = "https://s3.amazonaws.com/" + currUrl + imgLink.textContent.trim();
+      var imgTextUrl = row.querySelectorAll("td.truncate > a.list-view-item-name")[0].textContent.trim();
 
-      // var copyIcon = document.createElement("span");
-      // copyIcon.className = "icomoon icomoon-copy";
-      // createCopyBtn(copyIcon, imgUrl);
-      //
-      // insertBefore(copyIcon, imgLink);
+      // These steps only apply to rows that are images. Not folders.
+      ///////////////////////////////
+      if ( !imgTextUrl.match(/\.(bmp|svg|gif|jpe?g|a?png|mp4|mov|mpe?g|ogg)$/gi) ) {
+        row.classList.add("folder-row");
+      } else {
+        row.classList.add("img-row");
+        var imgUrl = "https://s3.amazonaws.com/" + currUrl + imgTextUrl;
 
-      var inlineImgWrapper = document.createElement("div");
-      inlineImgWrapper.style = "display:inline-flex; justify-content:center; align-items:center; align-content:center; margin-left:10px; margin-right:5px; min-width:120px; width:120px; max-width:120px; min-height:80px; height:80px; max-height:80px; background:#f5f7f7; overflow:hidden;";
+        // Show the File Type
+        /////////////////////////////////
 
-      var inlineImg = document.createElement("img");
-      inlineImg.src = imgUrl;
-      createCopyBtn(inlineImg, imgUrl);
-      inlineImg.style = "width:auto; height:80px; max-height:80px;";
+        var type = document.createElement("div");
+        type.style = "font-weight: bold; height: 22px; left: 18px; top: 0; position: absolute; line-height: 22px; padding: 0 6px 0 6px; background: #ccc;";
 
-      inlineImgWrapper.appendChild(inlineImg);
-      insertBefore(inlineImgWrapper, imgLink);
+        if ( imgUrl.match(/\.png/gi) ) {
+          type.innerText = "PNG";
+          row.dataset.imgType = "png";
+        } else if ( imgUrl.match(/\.jpe?g/gi) ) {
+          type.innerText = "JPG";
+          row.dataset.imgType = "jpg";
+        } else if ( imgUrl.match(/\.svg/gi) ) {
+          type.innerText = "SVG";
+          row.dataset.imgType = "svg";
+        } else if ( imgUrl.match(/\.gif/gi) ) {
+          type.innerText = "GIF";
+          row.dataset.imgType = "gif";
+        } else if ( imgUrl.match(/\.(mov|mp4|mpeg)/gi) ) {
+          type.innerText = "VID";
+          row.dataset.imgType = "vid";
+        }
+        row.querySelectorAll("td:first-child")[0].appendChild(type);
+
+
+        // Insert the image
+        ////////////////////////////////////
+
+        var inlineImgWrapper = document.createElement("div");
+        inlineImgWrapper.style = "display:inline-flex; justify-content:center; align-items:center; align-content:center; margin-left:10px; margin-right:5px; min-width:120px; width:120px; max-width:120px; min-height:80px; height:80px; max-height:80px; background:#f5f7f7; overflow:hidden;";
+
+        var inlineImg = document.createElement("img");
+        inlineImg.src = imgUrl;
+        createCopyBtn(inlineImg, imgUrl);
+        inlineImg.style = "width:auto; height:80px; max-height:80px;";
+
+        inlineImgWrapper.appendChild(inlineImg);
+        insertBefore(inlineImgWrapper, imgLink);
+
+      }
 
       // Apply a class to the imgLink to show we've processed it.
-      imgLink.classList.add("powered-up");
+      row.classList.add("powered-up");
+
     }
 
   }
@@ -99,25 +94,27 @@ document.arrive("tbody[ng-hide] > tr:first-child", function() {
 
 
 
-//
+//////
 
-function makePublic() {
+// open new tab = https://stackoverflow.com/a/7924248/556079
+// event.target = https://stackoverflow.com/a/1250567/556079
+// detect middle click (mousedown/up) = https://stackoverflow.com/a/21224428/556079
 
-console.log("!");
+document.arrive("tbody[ng-hide] > tr:first-child", {onceOnly: true, existing: true}, function() {
 
-// Dropdown button
-var dropdownBtn = document.querySelector(".action-strip action-dropdown awsui-button-dropdown");
-console.log(dropdownBtn);
+  var imgTable = document.querySelectorAll(".object-table table.table > tbody")[0];
 
-dropdownBtn.onmouseup();
+  imgTable.onmouseup = function (e) {
 
-// document.getElementById("nav-shortcutMenu").click();
+    console.log(e);
+    console.log(e.target);
 
-for (const a of document.querySelectorAll("a")) {
-  // console.log(a.textContent);
-  if (a.textContent.includes("Make public")) {
-    console.log(a.textContent);
+    if (e && ( e.which == 2 || e.button == 4 ) && e.target.src) {
+      console.log('middleclicked')
+      window.open(e.target.src, '_blank');
+    } else {
+      console.log('no middleclick')
+    }
   }
-}
 
-}
+});

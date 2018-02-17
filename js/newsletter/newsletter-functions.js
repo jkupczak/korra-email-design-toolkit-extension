@@ -183,7 +183,7 @@ function mostCommonString(searchTerm, linkList) {
   });
 
   // Create a regex with the most common url + the optional ending / and the mandatory ?
-  console.error(result[0]);
+  // console.error(result[0]);
   return result[0];
 
 }

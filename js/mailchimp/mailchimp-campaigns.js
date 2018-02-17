@@ -2,11 +2,6 @@ console.warn("[sonic-toolkit-extension] loaded /js/mailchimp/mailchimp-campaigns
 //////////////////////////////////////////////////////////////////////////////////////
 
 
-// Global Variables
-///////////////////
-
-var totalUrgentDrafts;
-
 ///////
 ///////
 //
@@ -152,133 +147,9 @@ var totalUrgentDrafts;
         // var headerBtns = document.querySelector("div.selfclear > div.float-right.hide-phone:last-child");
         // console.log(headerBtns);
 
-///////
-///////
-//
-// HARVEST A/B DATA
-//
-//=================
-//
-// The purpose of this function is to load the report pages of A/B campaigns.
-// This does not capture data from NON-A/B campaigns, or campaigns that have not been delivered.
-// Once the page is loaded, a separate script called mailchimp-capture.js scans the page for data.
-// That data is then saved to the extensions chrome.local.storage for export later.
-// This data pertains to IDs of each A/B test that cannot be extracted from just the main campaigns overview page.
-// Go to Extensions > Background page > Storage Explorer to find the saved data.
-// Add this data to the local Excel reporting file.
-// Once all of the data is extracted from a page, the tab is closed and the function continues by opening the next link as a new tab.
-//
-///////
-///////
 
 
 
-
-var leftNav = document.querySelector("#campaigns-nav");
-
-var harvestDataBtn = document.createElement("a");
-    harvestDataBtn.className = "button !margin-right--lv0 jk-btn jk-export-extra-data";
-    harvestDataBtn.innerHTML = "Harvest A/B Data";
-    harvestDataBtn.addEventListener("click", harvestData, false);
-
-    // Add it to the DOM with the rest of the buttons
-    leftNav.prepend(harvestDataBtn);
-
-function harvestData() {
-
-    // let arr = document.querySelectorAll("a[title='Campaign Name']");
-    let arr = document.querySelectorAll("li[data-type='A/B'][data-status='delivered'] a.c-campaignManager_slat_details_link");
-    let genObj = genFunc();
-
-    let val = genObj.next();
-
-    console.log(val);
-    console.log(val.value);
-    console.log(val.value.href.replace(/^.+?id=/gi,""));
-    window.open('https://us2.admin.mailchimp.com/reports/show?id=' + val.value.href.replace(/^.+?id=/gi,"") + "&capture=1", '_blank');
-
-    let interval = setInterval(() => {
-      val = genObj.next();
-
-      if (val.done) {
-        clearInterval(interval);
-      } else {
-
-        console.log(val.value.href);
-        console.log(val.value.href.replace(/^.+?id=/gi,""));
-        window.open('https://us2.admin.mailchimp.com/reports/show?id=' + val.value.href.replace(/^.+?id=/gi,"") + "&capture=1", '_blank');
-
-      }
-    }, 3500);
-
-    function* genFunc() {
-      for(let item of arr) {
-        yield item;
-      }
-    }
-
-}
-
-
-///////
-///////
-//
-// Export Extra Data
-//
-//
-// Grabs data from every row in the campaigns page and displays it in a modal.
-// Used for matching campaign types "A/B" or "Regular" using UID's in our excel report.
-//
-///////
-///////
-
-  var exportExtraCampaignData = document.createElement("a");
-      exportExtraCampaignData.className = "button !margin-right--lv0 jk-btn jk-export-extra-data";
-      exportExtraCampaignData.innerHTML = "Export Extra Data";
-      exportExtraCampaignData.addEventListener("click", processExtraData, false);
-
-  // Add it to the DOM with the rest of the buttons
-  leftNav.prepend(exportExtraCampaignData);
-
-function processExtraData() {
-
-  var data = "";
-
-  // let rows = document.querySelectorAll(".campaign-list-row");
-  let rows = document.querySelectorAll(".c-campaignManager_list_group > ul > li");
-  for (let row of rows) {
-
-    if ( row.dataset.status === "delivered" )  {
-      data += row.dataset.id + "|" + row.dataset.type + "|" + row.querySelector("h4 a").textContent + "\n"
-    }
-
-  }
-
-  data = data.trim();
-
-
-  // instanciate new modal
-  tingleExportData = new tingle.modal({
-      footer: false,
-      stickyFooter: false,
-      cssClass: ['fill'],
-
-      onOpen: function() {
-          console.log('modal open');
-      },
-      onClose: function() {
-          console.log('modal closed');
-          // plainTextTingle.destroy();
-      }
-  });
-
-  var plainTextContainer = createPlainTextContainer(data);
-  tingleExportData.setContent(plainTextContainer);
-
-  tingleExportData.open();
-  selectElementContents(plainTextContainer);
-
-}
 
 
 ///////
@@ -401,15 +272,26 @@ sideBarWrapper.prepend(createBtn);
 //
 // });
 
+var i = 0;
 document.arrive("#campaigns-list .c-campaignManager_list_group .c-campaignManager_slat", function(e) {
 
-  // console.log("campaign list arrived!");
+  // Listen for when campaign rows are added to the DOM.
+  console.log("campaign list item arrived! - " + i++);
   processCampaignList();
 
 });
 
 
-function processCampaignList() {
+function clickedReportDLButton() {
+  console.log("Running clickedReportDLButton() function.");
+  this.style.opacity = ".85";
+  this.style.background = "#fff";
+  this.style.boxShadow = "inset 0 0 0 2px #e0e0e0, 0 0 0 1px #e0e0e0";
+  this.classList.remove("icomoon-arrow-down");
+  this.classList.add("icomoon-checkmark");
+}
+
+function processCampaignList(campaignListParent) {
 
 
   // Iterate through DOM nodes
@@ -457,6 +339,8 @@ function processCampaignList() {
 
         campaignRow.getElementsByClassName("c-campaignManager_slat_stats")[0].prepend(dupNode);
 
+
+
         if ( campaignStatusText === "Sent" ) {
           console.log(scheduledObject.textContent);
           var totalSent = scheduledObject.textContent.replace(/(^.+ to| recipients)/gi,"");
@@ -465,6 +349,17 @@ function processCampaignList() {
           var totalSent = "TBD"
         }
         dupNode.children[0].children[0].innerText = totalSent;
+
+        // Add a "Report Download" Button
+        ///////////
+        var reportDlLink = document.createElement("a");
+            reportDlLink.href = "/reports/excel?id=" + campaignId;
+            reportDlLink.classList.add("icomoon", "icomoon-arrow-down", "button", "campaign-report-dl-button");
+            reportDlLink.style = "line-height:24px; height:22px; padding:0 8px; font-size:12px; margin:0;"
+            reportDlLink.addEventListener("click", clickedReportDLButton, false);
+
+        insertAfter(reportDlLink, campaignRow.getElementsByClassName("c-campaignManager_slat_stats")[0]);
+
     }
 
 
@@ -550,148 +445,6 @@ function processCampaignList() {
   }
   console.groupEnd();
 
-
-  // Set it to chrome.storage if it's recent.
-  // Only set it if we're on the main Campaigns page. Olders drafts on past pages are irrelvant.
-  if ( /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
-
-
-    ////
-    ////  Doesn't work sometimes! Fix!
-    ////
-
-    totalDraftsOnPage = 0;
-    totalUrgentDrafts = 0;
-
-    // Iterate through rows listed as .status-draft
-    /////
-    let campaignStatusList = document.querySelectorAll(".status-draft");
-    for (let pendingCampaign of campaignStatusList) {
-
-      var draftName = pendingCampaign.nextElementSibling.querySelector("a").textContent.trim();
-      draftName = draftName.replace(/[^\d]/gi, "");
-
-      if ( draftName !== "" ) {
-
-        // console.log( draftName.substring(0,2) );
-        // console.log( draftName.substring(2,4) );
-
-        // Use / and not - http://stackoverflow.com/a/31732581/556079
-        var draftDate = new Date(new Date().getFullYear() + "/" + draftName.substring(0,2) + "/" + draftName.substring(2,4));
-        // console.log(draftDate);
-
-        // console.log("Draft: " + draftName + " - Draft Date: " + draftDate);
-
-        var draftDeadline = calcWorkingDays(new Date(), 2);
-
-        if ( draftDate <= draftDeadline ) {
-          totalUrgentDrafts++
-          pendingCampaign.closest("li").classList.add("urgent");
-          // console.log("totalUrgentDrafts: " + totalUrgentDrafts);
-        }
-
-      }
-
-      totalDraftsOnPage++
-      pendingCampaign.closest("li").classList.add("draft");
-      console.log("totalDraftsOnPage: " + totalDraftsOnPage);
-
-    }
-
-    // Save to localStorage (do not use)
-    // localStorage.setItem('pendingDrafts', totalDraftsOnPage);
-
-    // Save it using the Chrome extension storage API.
-    // http://stackoverflow.com/a/14533446/556079
-    chrome.storage.sync.set({'pendingDrafts': totalDraftsOnPage}, function() {
-      // Notify that we saved.
-      // message('Settings saved');
-      // console.log('Saved', key, testPrefs);
-      // console.log('Saved', 'pendingDrafts', totalDraftsOnPage);
-      // console.log('Saved', 'pendingDrafts');
-    });
-    chrome.storage.sync.set({'urgentDrafts': totalUrgentDrafts}, function() {
-      // Notify that we saved.
-      // message('Settings saved');
-      // console.log('Saved', key, testPrefs);
-      // console.log('Saved', 'pendingDrafts', totalDraftsOnPage);
-      // console.log('Saved', 'pendingDrafts');
-    });
-  }
-
-
-
-
-  destroyIfExists( document.querySelector(".total-drafts") );
-
-  // if ( elExists(document.querySelector(".total-drafts")) ) {
-  //
-  //   document.querySelector(".total-drafts-number").innerHTML = totalDraftsOnPage;
-  //
-  // } else {
-
-    // Create menu item to show total drafts
-    var draftsEle = document.createElement("li");
-    draftsEle.className = "total-drafts nav-link small-meta fwb hide-mobile"
-    if ( totalDraftsOnPage > 0 ) {
-      draftsEle.classList.add("drafts-exist");
-    }
-
-    var totalDraftsNumber = document.createElement("div");
-    totalDraftsNumber.className = "total-drafts-number"
-    var draftTotalWrapperText = document.createTextNode(totalDraftsOnPage);
-    totalDraftsNumber.appendChild(draftTotalWrapperText);
-
-
-    var draftTotalTextWrapper = document.createElement("div");
-    draftTotalTextWrapper.className = "alignc padding--lv3 gray-link !padding-top-bottom--lv0"
-
-    draftTotalTextWrapper.appendChild(totalDraftsNumber);
-
-    var draftPluralTextNode = document.createTextNode("Pending Drafts");
-    var draftPluralWrapper = document.createElement("div");
-    draftPluralWrapper.appendChild(draftPluralTextNode);
-    draftTotalTextWrapper.appendChild(draftPluralWrapper);
-
-    draftsEle.appendChild(draftTotalTextWrapper);
-
-
-    var lastMenuItem = document.querySelector("li.nav-link:last-child");
-    insertAfter(draftsEle, lastMenuItem);
-
-  // }
-
-
-
-  //////////////
-  //////////////
-  //////////////
-  //////////////
-  //
-  //  NOTIFICATIONS
-  //
-  //  request permission on page load
-  //
-  // !!! - THe notify function exists here and in mailchimp.js. Can I have it in just one place?
-  //
-  //////////////
-  //////////////
-  //////////////
-  document.addEventListener('DOMContentLoaded', function () {
-    if (!Notification) {
-      alert('Desktop notifications not available in your browser. Try Chromium.');
-      return;
-    }
-
-    if (Notification.permission !== "granted")
-      Notification.requestPermission();
-  });
-
-
-  // On page load (once the observer picks up the DOM)
-  if ( totalUrgentDrafts && totalUrgentDrafts > 0 && /\/campaigns\/(\#t\:campaigns\-list)?$/gi.test(document.URL) ) {
-    notifyMe();
-  }
 
 
 

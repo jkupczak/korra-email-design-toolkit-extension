@@ -17,11 +17,13 @@ if ( /courses\/details/gi.test(document.URL) ) {
 // https://github.com/lovasoa/tidy-html5
 // https://stackoverflow.com/questions/12843252/html-tidy-new-empty-line-after-closing-tags
 options = {
+  "clean":false,
   "indent":true,
   "indent-spaces":2,
   "wrap":0,
   "markup":true,
   "output-xml":false,
+  "output-html":true,
   "numeric-entities":true,
   "quote-marks":true,
   "quote-nbsp":false,
@@ -29,7 +31,7 @@ options = {
   "show-body-only":true,
   "quote-ampersand":false,
   "break-before-br":true,
-  "drop-font-tags":true,
+  "drop-font-tags":false, // Actually drops <b> tags too.
   "drop-empty-elements":false
 }
 
@@ -98,12 +100,14 @@ function exportSingleModule() {
   var courseTitle = document.querySelector(".course-details__section h1").textContent;
     console.log(courseTitle);
 
-    var courseImg = document.querySelector("#video_player_1").style.backgroundImage;
-    courseImg = courseImg.replace(/_hero\./gi, "_catalog.");
+    var courseImgSrc = document.querySelectorAll("#video_location .jw-preview")[0].style.backgroundImage;
+    courseImg = courseImgSrc.replace(/_hero\./gi, "_catalog.");
     courseImg = courseImg.replace(/(^.+?"|"\))/gi, "");
     console.log(courseImg);
 
-    var courseShortLink = document.URL.replace(/^.+?\.com\//gi,"");
+    // var courseShortLink = document.URL.replace(/^.+?\.com\//gi,"");
+    var courseShortLink = "courses/details/" + courseImgSrc.match(/\/\d+?\//g)[0].replace(/\//g,"");
+    console.log(courseShortLink);
 
     var courseInstructor = "";
     let instructors = document.querySelectorAll(".media-item--instructor h3 a");
@@ -136,9 +140,11 @@ function exportSingleModule() {
 
   var apos = "'";
   if ( selectLayout.value === "col" ) {
-    var singleModule = '<table border="0" cellpadding="0" cellspacing="0" width="174" class="fullWidth course-module-wrapper" align="left" style="width: 174px; min-width: 174px;"><tr><td align="center" valign="top" class="fullWidth course-module-inner"><!-- // Content Wrap --><table border="0" cellpadding="0" cellspacing="0" align="center"><tr><td valign="top" align="center"><a href="' + courseLink + '" style="text-decoration: none; color: #ffffff;"><img src="' + courseImg + '" alt="" class="respImg" width="174" height="98" hspace="0" vspace="0" style="width: 174px; min-width: 174px; -ms-interpolation-mode: bicubic; border:0; outline: none; background-color: #cccccc; display: block;"></a></td></tr></table></td></tr><tr><td valign="top" class="course-title textCenter" align="left" style="padding-top:10px; font-size: 14px; line-height: 20px; color: #434343;"><span style="font-family: \47Roboto-Medium\47, Roboto, sans-serif !important; font-weight:500;">' + courseTitle + '</span></td></tr><tr><td valign="top" class="course-instructor textCenter" align="left" style="padding-top: 2px; font-size: 13px; line-height: 20px; color: #434343;"><span style="font-family: \47Roboto-Regular\47, Roboto, sans-serif !important; font-weight:300;">' + courseInstructor + '</span></td></tr><tr><td valign="top" class="course-cta textCenter" align="left" style="padding-top: 10px; font-size: 16px; line-height: 20px; color: #2f76bb;"><a href="' + courseLink + '" style="text-decoration: none; color: #2f76bb;"><span style="font-family: \47Roboto-Medium\47, Roboto, sans-serif !important; font-weight:500;">' + ctaText + '</span></a></td></tr></table>'
+    // Columns
+    var singleModule = '<table role="presentation" cellpadding="0" cellspacing="0" align="left" class="fullWidth course-module-wrapper" width="174" style="width: 174px; min-width: 174px"><tr><td class="pt-2"><table role="presentation" cellpadding="0" cellspacing="0" width="100%" align="center"><tr><td><a href="' + courseLink + '" style="text-decoration: none; color: #FFFFFF"><img src="' + courseImg + '" alt="" class="respImg box-shadow" width="174" height="98" style="width: 174px; min-width: 174px; background-color: #CCCCCC"></a></td></tr></table></td></tr><tr><td class="course-title text-center" style="padding-top:10px; font-size: 14px; line-height: 20px; color: #434343"><b>' + courseTitle + '</b></td></tr><tr><td class="course-instructor text-center" style="padding-top: 2px; font-size: 13px; line-height: 20px; color: #434343">' + courseInstructor + '</td></tr><tr><td class="course-cta text-center" style="padding-top: 10px; font-size: 16px; line-height: 20px; color: #2f76bb"><a href="' + courseLink + '" style="text-decoration: none; color: #2f76bb"><b>' + ctaText + '</b></a></td></tr></table>'
   } else {
-    var singleModule = '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="fullWidth"><tr><td valign="top" align="left" style="border-top: 1px solid #eaeaea; padding: 15px 0px 10px 0px;"><table border="0" cellpadding="0" cellspacing="0" width="590" class="fullWidth" style="border-collapse: separate; width: 590px; min-width: 590px;"><tr><td valign="top" align="left"><table border="0" cellpadding="0" cellspacing="0" width="125" class="fullWidth" align="left" style="border-collapse: separate; width: 125px; min-width: 125px;"><tr><td valign="top" align="center"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td valign="top" align="center" style="padding-bottom: 10px;"><a href="' + courseLink + '" style="text-decoration: none; color: #000001;"><img src="' + courseImg + '" class="img218" alt="" title="" width="125" height="72" hspace="0" vspace="0" style="width: 125px; min-width: 125px; -ms-interpolation-mode: bicubic; border:0; outline: none; display: block;" /></a></td></tr></table></td></tr></table><!--[if gte mso 9]></td><td valign="top" align="left" width="330" style="width: 330px; min-width: 330px;"><![endif]--><table border="0" cellpadding="0" cellspacing="0" width="330" class="fullWidth" align="left" style="border-collapse: separate; width: 330px; min-width: 330px;"><tr><td class="courseDescCell" valign="top" align="center"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="textCenter" valign="top" align="left" style="padding-left: 10px; padding-right: 10px; font-size: 18px;line-height: 23px;color: #434343;"><a href="' + courseLink + '" style="text-decoration: none; color: #434343; font-family: \47Roboto-Regular\47, Roboto, sans-serif !important; font-weight:400;">' + courseTitle + '</a></td></tr><tr><td class="textCenter" valign="top" align="left" style="padding-left: 10px; padding-right: 10px; font-size: 16px;line-height: 21px;color: #777777;"><a href="' + courseLink + '" style="text-decoration: none; color: #777777; font-family: \47Roboto-Light\47, Roboto, sans-serif !important; font-weight:300;">presented by ' + courseInstructor + '</a></td></tr></table></td></tr></table><!--[if gte mso 9]></td><td valign="top" align="left" width="135" style="width: 135px; min-width: 135px;"><![endif]--><table border="0" cellpadding="0" cellspacing="0" width="135" class="fullWidth" align="left" style="border-collapse: separate; width: 135px; min-width: 135px;"><tr><td valign="top" align="center" style="padding-top: 10px;"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td valign="top" align="center" style="padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 15px; font-size: 16px;line-height: 21px;color: #2b2b2b;"><a href="' + courseLink + '" style="text-decoration: none; color: #076ad2; font-family: \47Roboto-Medium\47, Roboto, sans-serif !important; font-weight:500;">' + ctaText + '&nbsp;&rarr;</a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>';
+    // Rows
+    var singleModule = '<table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td align="left" style="border-top: 1px solid #EAEAEA; padding: 15px 0px 10px 0px"><table role="presentation" cellpadding="0" cellspacing="0" class="fullWidth" width="560" style="width: 560px; min-width: 560px"><tr><td align="left"><table role="presentation" cellpadding="0" cellspacing="0" align="left" class="fullWidth" width="125" style="width: 125px; min-width: 125px"><tr><td align="center"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding-bottom: 10px"><a href="' + courseLink + '" style="text-decoration: none; color: #434343"><img src="' + courseImg + '" class="respImg75" alt="" width="125" height="72" style="width: 125px; min-width: 125px"></a></td></tr></table></td></tr></table><!--[if gte mso 9]></td><td align="left" width="320"><![endif]--><table role="presentation" cellpadding="0" cellspacing="0" align="left" class="fullWidth" width="320" style="width: 320px; min-width: 320px"><tr><td align="center"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td class="text-center" align="left" style="padding-left: 10px; padding-right: 10px; font-size: 18px;line-height: 23px;color: #434343"><a href="' + courseLink + '" style="text-decoration: none; color: #434343"><b>' + courseTitle + '</b></a></td></tr><tr><td class="text-center" align="left" style="padding-left: 10px; padding-right: 10px; font-size: 15px; line-height: 32px;color: #777777"><a href="' + courseLink + '" style="text-decoration: none; color: #777777">presented by ' + courseInstructor + '</a></td></tr></table></td></tr></table><!--[if gte mso 9]></td><td align="right" width="115"><![endif]--><table role="presentation" cellpadding="0" cellspacing="0" align="right" class="fullWidth" width="115" style="width: 115px; min-width: 115px"><tr><td align="right" style="padding-top: 10px"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td class="text-center" align="right" style="padding-top: 2px; padding-bottom: 15px; font-size: 16px; line-height: 21px"><a href="' + courseLink + '" style="text-decoration: none; color: #076AD2"><b>' + ctaText + '&nbsp;&rarr;</b></a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>';
   }
 
   console.groupCollapsed("tidy");
@@ -189,7 +195,7 @@ document.body.appendChild(settingsBar);
 
 // If we're on a course details page, make an export button and append it to the settings bar we just created.
 if ( courseDetail ) {
-  settingsBar.innerHTML += '<div class="settings-group export-btn"><div style="width:120px; padding:12px 0;" class="btn btn-primary btn-block smtm">Export Course</div></div>';
+  settingsBar.innerHTML += '<div class="settings-group export-btn"><div style="width:120px; padding:12px 0" class="btn btn-primary btn-block smtm">Export Course</div></div>';
   // Export Course btn
   var exportCoursebtn = document.querySelector(".export-btn");
   exportCoursebtn.addEventListener("click", exportSingleModule, false);
@@ -369,18 +375,21 @@ if ( !courseDetail ) {
             var ngHref = courseWrapper.querySelector(".course-listing__text > a").getAttribute("ng-href");
             if ( ngHref ) {
 
-              // open in new window
-              var openCourse = document.createElement("a");
-              openCourse.className = "icomoon icomoon-new-tab";
-              openCourse.target = "_blank";
-              openCourse.href = courseWrapper.querySelector(".course-listing__text > a").getAttribute("href");
-              quickInfo.appendChild(openCourse);
+              var thisCourseImg = courseWrapper.querySelector(".course-listing__img").src;
+              var thisCourseId = thisCourseImg.match(/\/\d+?\//g)[0].replace(/\//g,"");
+
+              // copy ID
+              var copyId = document.createElement("a");
+              copyId.innerHTML = thisCourseId;
+              copyId.className = "quick-copy course-id";
+              createCopyBtn(copyId, thisCourseId);
+              quickInfo.appendChild(copyId);
 
               // Copy Link
               var quickCourseLink = document.createElement("div");
               quickCourseLink.innerHTML = "URL";
               quickCourseLink.className = "quick-copy course-link";
-              createCopyBtn(quickCourseLink, courseWrapper.querySelector(".course-listing__text > a").getAttribute("href"));
+              createCopyBtn(quickCourseLink, "courses/details/" + thisCourseId);
               quickInfo.appendChild(quickCourseLink);
 
             }
@@ -437,10 +446,15 @@ if ( !courseDetail ) {
         var dataSetLink = courseParent.querySelector(".course-listing__media a").getAttribute("ng-href");
 
         if ( dataSetLink ) {
+
+          var thisCourseImg = courseParent.querySelector(".course-listing__media a img").src;
+          var thisCourseId = thisCourseImg.match(/\/\d+?\//g)[0].replace(/\//g,"");
+
           courseParent.classList.add("course-parent");
           courseParent.dataset.title = courseParent.querySelector(".course-listing__title").textContent;
-          courseParent.dataset.img = courseParent.querySelector(".course-listing__media a img").src;
-          courseParent.dataset.link = dataSetLink.replace(/^\//,"");
+          courseParent.dataset.img = thisCourseImg;
+          courseParent.dataset.id = thisCourseId;
+          courseParent.dataset.link = "courses/details/" + thisCourseId;
 
           // Author may be more than one and exist in two separate spans. Grab all of them and then loop through them.
           let authorList = courseParent.querySelectorAll(".course-listing__instructors span");

@@ -1,3 +1,6 @@
+console.warn("[sonic-toolkit-extension] loaded /js/libs/alertify.js");
+//////////////////////////////////////////////////////////////////////////////
+
 /**
  * alertifyjs 1.8.0 http://alertifyjs.com
  * AlertifyJS is a javascript framework for developing pretty browser dialogs and notifications.

@@ -164,3 +164,57 @@ document.arrive(".description-content .markeddown", function() {
   }
 
 });
+//
+// document.arrive(".list-card:not(.styled)", function() {
+//
+//   console.log(this);
+//
+// });
+
+// Style cards in calendar view.
+
+
+// Run the function to process all list cards on page load.
+loopListCards();
+
+function loopListCards() {
+
+  let listCards = document.querySelectorAll("a.list-card:not([data-processed])");
+
+  for (let listCard of listCards) {
+    processListCard(listCard);
+  }
+
+}
+
+
+// Oh, what's that? We have to wait for them to load? Ok.
+document.arrive("a.list-card:not([data-processed])", function() {
+
+  processListCard(this);
+
+});
+
+
+
+function processListCard(card) {
+
+  var cardTitle = card.querySelector(".list-card-title");
+  var cardTitleText = card.querySelector(".list-card-title").innerText;
+
+  if ( /^(\[E\]|#)/gi.test(cardTitleText) ) {
+    card.dataset.type = "event";
+    card.dataset.icomoonParent = "true";
+
+    if ( /webinar/gi.test(cardTitleText) ) {
+      card.dataset.subtype = "webinar";
+    }
+
+    var newCardTitle = cardTitleText.replace(/\[.+?\] ?/gi, "");
+    cardTitle.innerText = newCardTitle;
+
+  }
+
+  card.dataset.processed = "true";
+
+}

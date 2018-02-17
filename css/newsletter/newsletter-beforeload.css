@@ -1,0 +1,13 @@
+html:not(.powered-up) body {
+  display:none;
+}
+
+html:not(.powered-up):before {
+  background: rgb(43, 43, 51);
+  content:"";
+  display:block;
+  width:100%;
+  height:100%;
+  position:fixed;
+  top:0; left:0;
+}

@@ -1,4 +1,26 @@
 console.warn("[sonic-toolkit-extension] loaded /js/global.js");
+///////////////////////////////////////////////////////////////
+
+////////////////////
+////////////////////
+/////
+/////
+/////   Helpful Sites
+/////
+/////
+/////   1. Curated collection of useful Javascript snippets that you can understand in 30 seconds or less.
+/////      - https://github.com/Chalarangelo/30-seconds-of-code
+/////
+/////
+/////
+/////
+////////////////////
+////////////////////
+
+
+
+
+
 
 ////
 ////// Global Functions
@@ -219,6 +241,36 @@ function injectScript(file, node) {
 
 
 //
+// Push a Browser Notification
+//
+function browserNotification(title, tag, icon, requireClick, timer) {
+  console.warn("notification fired", title, tag, icon, requireClick, timer);
+
+  if (Notification.permission !== "granted")
+    Notification.requestPermission();
+  else {
+
+    var notification = new Notification(title, {
+      tag: tag,
+      icon: chrome.extension.getURL(icon),
+      requireInteraction: requireClick,
+    });
+
+    // Automatically close after x seconds if a time was given.
+    if ( timer ) {
+      setTimeout(notification.close.bind(notification), timer);
+    }
+
+    notification.onclick = function () {
+      notification.close();
+    };
+
+  }
+
+}
+
+
+//
 // Get Email Title
 //
 function getEmailTitle(fileName, disciplineId) {
@@ -294,8 +346,8 @@ function subtractFromDate(date, days) {
 function getOrgId(string) {
 
   var trimmedString = string.trim();
-  
-       if ( /-HS(\s|-|\.|$)/gi.test(trimmedString)  )      { var orgId = "hs";    }
+
+       if ( /-(EH|HS)(\s|-|\.|$)/gi.test(trimmedString)  )      { var orgId = "hs";    }
   else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString)  )      { var orgId = "dr";    }
   else if ( /-FOX(\s|-|\.|$)/gi.test(trimmedString) )      { var orgId = "fox";   }
   else    { var orgId = "mb"; }
@@ -319,7 +371,7 @@ function getDisciplineId(string) {
 
   else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";    }
   else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { var disciplineId = "fox";   }
-  else if ( /-HS(-|\.|$)/gi.test(trimmedString) )                  { var disciplineId = "hs";    }
+  else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )                  { var disciplineId = "hs";    }
   else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "multi"; }
   else if ( /-(ENT|Enterprise|MFB)(\s|-|\.|$)/gi.test(trimmedString) ) { var disciplineId = "ent";   }
 
@@ -374,7 +426,7 @@ function getDisciplineName(id) {
   else if (id === "fox") {
     return "Fox Rehab"
   }
-  else if (id === "hs") {
+  else if (id === "hs" || id === "eh") {
     return "HealthSouth"
   }
   else if (id === "multi") {
@@ -491,17 +543,18 @@ function toTitleCaseRestricted(str) {
 // Getting the background-image using plain js: http://stackoverflow.com/a/24520183/556079
 // BETTER: Getting the background-image from parent nodes if the clicked element doesn't have one: http://stackoverflow.com/a/40407848/556079
 //
-document.body.addEventListener('contextmenu', function(ev) {
+window.onload = function() {
+  document.body.addEventListener('contextmenu', function(ev) {
 
-    var src = getBackgroundImage(ev.target);
+      var src = getBackgroundImage(ev.target);
 
-  //  console.log("message to send: " + src);
+    //  console.log("message to send: " + src);
 
-		chrome.runtime.sendMessage({bkgUrl: src});
+  		chrome.runtime.sendMessage({bkgUrl: src});
 
-    return false;
-}, false);
-
+      return false;
+  }, false);
+}
 
 //Where el is the DOM element you'd like to test for visibility
 // http://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
@@ -610,12 +663,25 @@ function getPosition(el, frame) {
 
 //
 function destroy(el) {
+  if ( el.target ) {
+    var el = this;
+  }
   el.parentNode.removeChild(el);
+}
+
+//
+function destroyAll(el) {
+  for (let o of el) {
+    o.parentNode.removeChild(o);
+  }
 }
 
 //
 function destroyIfExists(el) {
   if ( elExists(el) ) {
+    if ( el.target ) {
+      var el = this;
+    }
     el.parentNode.removeChild(el);
   }
 }
@@ -694,12 +760,12 @@ function htmlEntities(str) {
 // Conditional Alerts
 function toast(suppress, type, string, int) {
   if ( suppress === "suppress" && suppressAlerts === true ) {
-    console.log("Alert suppressed: \"" + string + "\"");
+    // console.log("Alert suppressed: \"" + string + "\"");
     return false;
   }
 
   alertify.error(string, int);
-  console.log("Alert fired: \"" + string + "\"");
+  // console.log("Alert fired: \"" + string + "\"");
 
 }
 
