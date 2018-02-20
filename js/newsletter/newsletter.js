@@ -737,17 +737,20 @@ if ( getParameterByName("presentation") === "1" ) {
   qaWrapper.appendChild(iframeWrapper);
 
   var desktopIframeWrapper = document.createElement("div");
-  desktopIframeWrapper.className = "desktop-view-wrapper";
+  desktopIframeWrapper.className = "desktop-view-wrapper resize-container";
   iframeWrapper.appendChild(desktopIframeWrapper);
 
-  var desktopResizeHandle = document.createElement("div");
-  desktopResizeHandle.className = "dframe-resize-handle";
-  desktopIframeWrapper.appendChild(desktopResizeHandle);
+  var desktopIframeResizeWrapper = document.createElement("div");
+  desktopIframeResizeWrapper.className = "desktop-view-resize-wrapper resize-drag";
+  desktopIframeWrapper.appendChild(desktopIframeResizeWrapper);
 
     var desktopIframe = document.createElement("iframe");
     desktopIframe.className = "iframe-desktop-view";
     desktopIframe.id = "desktop-view"
-    desktopIframeWrapper.appendChild(desktopIframe)
+    desktopIframeResizeWrapper.appendChild(desktopIframe)
+
+    var desktopResizeHtml = '<div data-resize="top-right" class="resize-handler resize-corner resize-point-top resize-point-right resize-point-top-right"></div><div data-resize="bottom-right" class="resize-handler resize-corner resize-point-right resize-point-bottom resize-point-bottom-right"></div><div data-resize="bottom-left" class="resize-handler resize-corner resize-point-bottom resize-point-left resize-point-bottom-left"></div><div data-resize="top-left" class="resize-handler resize-corner resize-point-left resize-point-top resize-point-top-left"></div><div data-resize="top" class="resize-handler resize-side resize-point-top  resize-point-top-right resize-point-top-left"></div><div data-resize="right" class="resize-handler resize-side resize-point-right resize-point-top-right  resize-point-bottom-right"></div><div data-resize="bottom" class="resize-handler resize-side resize-point-bottom resize-point-bottom-right resize-point-bottom-left"></div><div data-resize="left" class="tap-to-resize resize-handler resize-side resize-point-left resize-point-bottom-left resize-point-top-left"></div>';
+    desktopIframeResizeWrapper.insertAdjacentHTML('beforeend', desktopResizeHtml);
 
     desktopIframe.contentWindow.document.open();
     desktopIframe.contentWindow.document.write(cleanedDesktopHtml);
@@ -1145,7 +1148,7 @@ dFrameZoomStatus.className = "iframe-zoom-status iframe-status-container";
 dFrameZoomStatus.innerHTML = "100%";
 dFrameSizeStatus.appendChild(dFrameZoomStatus);
 
-desktopIframeWrapper.appendChild(dFrameSizeStatus);
+desktopIframeResizeWrapper.appendChild(dFrameSizeStatus);
 
 var fadeWidthStatus;
 
@@ -1561,11 +1564,6 @@ function paneToggle(infobar, mobile) {
       mobilePaneStatus = 1;
     }
 
-  // console.log("1: infobar: " + infobar);
-  // console.log("1: infobarPaneStatus: " + infobarPaneStatus);
-  // console.log("1: mobile: " + mobile);
-  // console.log("1: mobilePaneStatus: " + mobilePaneStatus);
-
   // If we got some data, process it.
   if ( infobar >= 0 || mobile >= 0 ) {
 
@@ -1603,36 +1601,31 @@ function paneToggle(infobar, mobile) {
   // console.log("2: mobilePaneStatus: " + mobilePaneStatus);
 
   // Update the css based on our values calculated above.
-  // if ( infobarPaneStatus !== 2 ) {
     if ( infobarPaneStatus === 0 ) {
+      document.querySelectorAll("html")[0].classList.add("infobar-off");
       infoBar.classList.add("off");
       history.replaceState(null,null, updateQueryString("infobar", "0") ); // http://stackoverflow.com/a/32171354/556079
     } else {
+      document.querySelectorAll("html")[0].classList.remove("infobar-off");
       infoBar.classList.remove("off");
       history.replaceState(null,null, updateQueryString("infobar") );
     }
-  // }
 
-  // if ( mobilePaneStatus !== 2 ) {
     if ( mobilePaneStatus === 0 ) {
+      document.querySelectorAll("html")[0].classList.add("mobile-off");
       mobileIframeWrapper.classList.add("off");
       history.replaceState(null,null, updateQueryString("mobile", "0") );
     } else {
+      document.querySelectorAll("html")[0].classList.remove("mobile-off");
       mobileIframeWrapper.classList.remove("off");
       history.replaceState(null,null, updateQueryString("mobile") );
     }
-  // }
 
-  // if ( infobarPaneStatus = 2 ) {
-  //   if (infoBar.classList.contains('off')) {
-  //     infobarPaneStatus = 0;
-  //   }
-  // }
-  // if ( mobilePaneStatus = 2 ) {
-  //   if (mobileIframeWrapper.classList.contains('off')) {
-  //     mobilePaneStatus = 0;
-  //   }
-  // }
+    if ( mobilePaneStatus === 1 && infobarPaneStatus === 1 ) {
+      resetDesktopResize();
+    }
+
+    showdFrameWidthStatus();
 
 }
 
@@ -3166,6 +3159,8 @@ linksQaBar.id = "qa-links";
 linksQaBar.className = "qa-links";
 appendQaBar(linksQaBar);
 
+// Value for this bar is calculated further down when we validate the links.
+
 
 //////////
 ////
@@ -3173,10 +3168,12 @@ appendQaBar(linksQaBar);
 ////
 /////////
 
-var articlesQaBar = document.createElement("div");
-articlesQaBar.id = "qa-articles";
-articlesQaBar.className = "qa-articles";
-appendQaBar(articlesQaBar);
+// var articlesQaBar = document.createElement("div");
+// articlesQaBar.id = "qa-articles";
+// articlesQaBar.className = "qa-articles";
+// appendQaBar(articlesQaBar);
+
+// NOT IN USE RIGHT NOW
 
 
 //////////
@@ -3213,9 +3210,6 @@ mobileLayoutQaBar.id = "qa-mobile-layout";
 mobileLayoutQaBar.className = "qa-mobile-layout";
 appendQaBar(mobileLayoutQaBar);
 
-// console.log(mFrameContents.body.scrollWidth);
-// console.log(mobileIframe.offsetWidth);
-
 if ( mFrameContents.body.scrollWidth > mobileIframe.offsetWidth ) {
   applyQaResults(mobileLayoutQaBar, "error", "Mobile Layout Too Wide");
 } else {
@@ -3229,10 +3223,12 @@ if ( mFrameContents.body.scrollWidth > mobileIframe.offsetWidth ) {
 ////
 /////////
 
+// OFF
+
 var zoomLevelsQaBar = document.createElement("div");
 zoomLevelsQaBar.id = "qa-zoom-levels";
 zoomLevelsQaBar.className = "qa-zoom-levels";
-appendQaBar(zoomLevelsQaBar);
+// appendQaBar(zoomLevelsQaBar);
 
 
 //////////
@@ -3281,15 +3277,18 @@ if ( emailSize > 100 ) {
 ////
 /////////
 
+
+// OFF
+
 var citationsQaBar = document.createElement("div");
 citationsQaBar.id = "qa-citations";
 citationsQaBar.className = "qa-citations";
-appendQaBar(citationsQaBar);
+// appendQaBar(citationsQaBar);
 
 
 //////////
 ////
-////  QA Bar: Images
+////  QA Bar: Loaded Images
 ////
 /////////
 
@@ -3298,6 +3297,26 @@ imagesQaBar.id = "qa-images";
 imagesQaBar.className = "qa-images";
 appendQaBar(imagesQaBar);
 
+if ( !navigator.onLine ) {
+  applyQaResults(imagesQaBar, "warning", "Can't Check Images (Offline)");
+}
+
+
+//////////
+////
+////  QA Bar: Stretched Images
+////
+/////////
+
+var imgRatioQaBar = document.createElement("div");
+imgRatioQaBar.id = "qa-images-ratio";
+imgRatioQaBar.className = "qa-images-ratio";
+appendQaBar(imgRatioQaBar);
+
+if ( !navigator.onLine ) {
+  applyQaResults(imgRatioQaBar, "warning", "Can't Check Images (Offline)");
+}
+
 
 //////////
 ////
@@ -3305,10 +3324,12 @@ appendQaBar(imagesQaBar);
 ////
 /////////
 
+// OFF
+
 var textWarningsQaBar = document.createElement("div");
 textWarningsQaBar.id = "qa-text-warnings";
 textWarningsQaBar.className = "qa-text-warnings";
-appendQaBar(textWarningsQaBar);
+// appendQaBar(textWarningsQaBar);
 
 
 //////////
@@ -3317,69 +3338,12 @@ appendQaBar(textWarningsQaBar);
 ////
 /////////
 
+// OFF
+
 var spellcheckQaBar = document.createElement("div");
 spellcheckQaBar.id = "qa-spellcheck";
 spellcheckQaBar.className = "qa-spellcheck";
-appendQaBar(spellcheckQaBar);
-
-
-
-/////////
-////
-////  Create Link Checker Module
-////
-/////////
-
-    // var linkCheckerWrapper = document.createElement("div");
-    // linkCheckerWrapper.id = "link-checker";
-    // linkCheckerWrapper.className = "link-checker-wrapper mod-wrapper";
-    // infoBar.appendChild(linkCheckerWrapper);
-    //
-    // var linkCheckerHtml = "<div class='mod mod-link-checker'><div class='title'>MedBridge Links</div><div class='mod-body'></div></div>";
-    // linkCheckerWrapper.innerHTML = linkCheckerHtml;
-    //
-    // var modLinkToggle = document.createElement("div");
-    // modLinkToggle.className = "toggle";
-    // modLinkToggle.addEventListener("click", toggleLinkMarkers, false);
-    // document.querySelector(".mod-link-checker .title").appendChild(modLinkToggle);
-    //
-    // var linkMarkersToggle = false;
-    //
-    // function toggleLinkMarkers() {
-    //
-    //   if ( this.nodeType !== 1 ) {
-    //     dFrameContents.getElementById("link-markers").classList.add("on-page-load");
-    //   } else if ( dFrameContents.querySelector(".on-page-load") ) {
-    //     dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
-    //   } else {
-    //     dFrameContents.getElementById("link-markers").classList.toggle("hidden");
-    //   }
-    //
-    //   linkMarkersToggle = !linkMarkersToggle;
-    //
-    //   if ( linkMarkersToggle ) {
-    //     history.replaceState(null,null, updateQueryString("links", "0") );
-    //   } else {
-    //     history.replaceState(null,null, updateQueryString("links") );
-    //   }
-    //
-    // }
-
-
-
-//////////
-////
-////  Create Image Checker Module
-////
-/////////
-
-    // var imgCheckerWrapper = document.createElement("div");
-    // imgCheckerWrapper.id = "img-checker";
-    // imgCheckerWrapper.className = "img-checker-wrapper mod-wrapper";
-    // infoBar.appendChild(imgCheckerWrapper);
-    //
-    // var imgCheckerHtml = "<div class='mod mod-img-checker'><div class='title'>Images</div><div class='mod-body'></div></div>";
-    // imgCheckerWrapper.innerHTML = imgCheckerHtml;
+// appendQaBar(spellcheckQaBar);
 
 
 
@@ -3926,15 +3890,43 @@ function linkValidationLoop(ageCheck) {
         applyQaResults(linksQaBar, "success", "All Links Approved");
       }
 
-      // Wait for the desktop iframe to finish loading.
+      // Otherwise, wait for the desktop iframe to finish loading.
       // Once it's done, run a function that will position our link markers.
-      desktopIframe.onload = () => {
+      // I can only use .onload once per document. So instead we use an eventlistner.
+      // After we're done, we need to remove the eventlistner.
+      // Resource: https://stackoverflow.com/a/27032611/556079
+
+      desktopIframe.addEventListener("load", function positionLinkMarkers(e) {
+
         var i = 0
         for (let link of linkList) {
           i++
-          positionLinkMarkers(link, i)
+
+          // Get the position of the current link.
+          var linkPosition = getPosition(link, dFrameContents);
+
+          // Find the matching link marker in the DOM.
+          var linkMarker = dFrameContents.querySelector("#link-marker-" + i);
+
+          // Check if the position of this link is 0,0. This indicates that it's a hidden link.
+          // As a result, our marker will appear at the very top left of the page.
+          // Adjust it's position for better visibility.
+          if ( linkPosition.y === 0 || linkPosition.x === 0 ) {
+            linkMarker.style.top = (linkPosition.y + 20) + "px";
+            linkMarker.style.left = (linkPosition.x + 20) + "px";
+          } else {
+          // Else it's visible, position it just above and to the left of the link.
+            linkMarker.style.top = (linkPosition.y - 10) + "px";
+            linkMarker.style.left = (linkPosition.x - 10) + "px";
+          }
+          linkMarker.classList.add("positioned");
+
         }
-      }
+
+        desktopIframe.removeEventListener("load", positionLinkMarkers, false);
+
+      }, false);
+
 
 }
 console.groupEnd();
@@ -3943,27 +3935,28 @@ console.groupEnd();
 //////////
 //////////
 
-function positionLinkMarkers(link, i) {
-
-    // Get the position of the current link.
-    var linkPosition = getPosition(link, dFrameContents);
-
-    // Find the matching link marker in the DOM.
-    var linkMarker = dFrameContents.querySelector("#link-marker-" + i);
-
-    // Check if the position of this link is 0,0. This indicates that it's a hidden link.
-    // As a result, our marker will appear at the very top left of the page.
-    // Adjust it's position for better visibility.
-    if ( linkPosition.y === 0 || linkPosition.x === 0 ) {
-      linkMarker.style.top = (linkPosition.y + 20) + "px";
-      linkMarker.style.left = (linkPosition.x + 20) + "px";
-    } else {
-    // Else it's visible, position it just above and to the left of the link.
-      linkMarker.style.top = (linkPosition.y - 10) + "px";
-      linkMarker.style.left = (linkPosition.x - 10) + "px";
-    }
-
-}
+// function positionLinkMarkers(link, i) {
+//
+//   console.log("positionLinkMarkers() running");
+//   // Get the position of the current link.
+//   var linkPosition = getPosition(link, dFrameContents);
+//
+//   // Find the matching link marker in the DOM.
+//   var linkMarker = dFrameContents.querySelector("#link-marker-" + i);
+//
+//   // Check if the position of this link is 0,0. This indicates that it's a hidden link.
+//   // As a result, our marker will appear at the very top left of the page.
+//   // Adjust it's position for better visibility.
+//   if ( linkPosition.y === 0 || linkPosition.x === 0 ) {
+//     linkMarker.style.top = (linkPosition.y + 20) + "px";
+//     linkMarker.style.left = (linkPosition.x + 20) + "px";
+//   } else {
+//   // Else it's visible, position it just above and to the left of the link.
+//     linkMarker.style.top = (linkPosition.y - 10) + "px";
+//     linkMarker.style.left = (linkPosition.x - 10) + "px";
+//   }
+//
+// }
 
 function validateLinks(link, i) {
 
@@ -4058,14 +4051,14 @@ function validateLinks(link, i) {
 
     // Global link testing variables
     var medbridgeEdLink
-    if ( /^https?:\/\/([^.]+\.)?medbridge(ed|education)\.com/gi.test(linkHref) ) {
+    if ( /\.medbridge(ed|education)\.com/gi.test(linkHref) ) {
       medbridgeEdLink = true;
     } else {
       medbridgeEdLink = false;
     }
 
     var massageLink
-    if ( /^https?:\/\/(www\.)?medbridgemassage\.com/gi.test(linkHref) ) {
+    if ( /\.medbridgemassage\.com/gi.test(linkHref) ) {
       massageLink = true;
     } else {
       massageLink = false;
@@ -4349,7 +4342,7 @@ function validateLinks(link, i) {
     ////-----------------------------////
     ////
     // DON'T USE UTM - outsideOrg and off domain urls should not have utms
-    if ( /utm_content/gi.test(linkHref) && !linkNeedsGoogleTracking ) {
+    if ( /utm_content/gi.test(linkHref) && !medbridgeEdLink ) {
       createLinkErrorRow(link, "remove utm");
     }
 
@@ -4390,7 +4383,7 @@ function validateLinks(link, i) {
       }
 
     }
-    if ( !outsideOrg && medbridgeEdLink && !/https?:\/\/(support\.|www\.|medbridgeed(ucation)?\.com\/)/gi.test(linkHref) ) {
+    if ( !outsideOrg && medbridgeEdLink && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(linkHref) ) {
       createLinkErrorRow(link, "remove whitelabeling");
     }
 
@@ -4803,17 +4796,57 @@ function validateLinks(link, i) {
 ////
 //////
 // Iterate through ALL IMAGES - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-let imgList = dFrameContents.querySelectorAll("img");
-var i = 0
-console.log("Images", + imgList.length)
-for (let img of imgList) {
 
-  i++
+// I can only use .onload once per document. So instead we use an eventlistner.
+// After we're done, we need to remove the eventlistner.
+// Resource: https://stackoverflow.com/a/27032611/556079
 
-  // console.log(img);
-  // console.log("[" + i + "] " + img.src);
+if ( navigator.onLine ) {
 
-  img.classList.add("test");
+  var totalBrokenImages = 0;
+  var totalStretchedImages = 0;
+
+  desktopIframe.addEventListener("load", function checkImages(e) {
+
+    var i = 0
+
+    let imgList = dFrameContents.querySelectorAll("img");
+    for (let img of imgList) {
+
+      i++
+
+      var widthRatio = Math.round(img.naturalWidth / img.naturalHeight*10) / 10;
+      var heightRatio = Math.round(img.width / img.height*10) / 10;
+
+      if ( img.naturalWidth === 0 && img.naturalHeight === 0 ) {
+        totalBrokenImages++;
+      } else if ( widthRatio - heightRatio > 0.2 || widthRatio - heightRatio < -0.2 ) {
+        totalStretchedImages++;
+      }
+
+    }
+    console.log("totalStretchedImages", totalStretchedImages);
+
+    desktopIframe.removeEventListener("load", checkImages, false);
+
+    if ( totalBrokenImages === 1 ) {
+      applyQaResults(imagesQaBar, "error", totalBrokenImages + " Broken Image");
+    } else if ( totalBrokenImages > 0 ) {
+      applyQaResults(imagesQaBar, "error", totalBrokenImages + " Broken Images");
+    } else {
+      applyQaResults(imagesQaBar, "success", "All Images Loaded");
+    }
+
+    if ( totalStretchedImages === 1 ) {
+      applyQaResults(imgRatioQaBar, "error", totalStretchedImages + " Stretched Image");
+    } else if ( totalStretchedImages > 0) {
+      applyQaResults(imgRatioQaBar, "error", totalStretchedImages + " Stretched Images");
+    } else {
+      applyQaResults(imgRatioQaBar, "success", "All Images to Scale");
+    }
+
+
+  }, false);
 
 }
 
@@ -5761,8 +5794,178 @@ function preflightError() {
 ///////////////////////////////////////////////////////////////////////////////
 
 // Drag to Resize
+// WINNER: http://interactjs.io/
+// DEMO: https://codepen.io/jimmykup/pen/PQQPpy
+// Others:
+// https://codepen.io/arctelix/pen/RWVoMv?editors=1010
 // https://codepen.io/zz85/post/resizing-moving-snapping-windows-with-js-css
 // http://codepen.io/zz85/pen/gbOoVP?editors=0100
+
+
+/*
+
+TO-DO ==========
+
+  - Interact.js does NOT like it when the window itself is resized. Or more specificially, when the containers container changes size.
+  ----
+    If the parent container changes size, the resized container should react to that.
+    For example, if the parent container gets smaller and touches an edge of my iframe, the iframe should continue to stay within its parent instead of spilling out.
+    Also, if the parent container becomes smaller than the resize container, the resize container should change its size to match (width:100%/height:100%)
+    Might need to submit an issue for this on the interact.js repo
+
+  - Should I reset the resize container (100%/100%) if the infobar or mobile view are hidden?
+
+  - Double click a handler to restore the full width and height of the resize container.
+
+  - When a handler is clicked, add a class to indicate which one is being interacted with. Should make styling easier.
+
+  - Also, if the resize window ever goes back to being the full width and height of its container,
+  (e.g., I use the handlers myself to make the window full width and height) remove all of the inlined resizing CSS to "reset" the resize process.
+
+  - Hold Command to reveal a dragging container that is laid over the entite iframe. Then while holding command, allow click and dragging.
+
+COMPLETE ==========
+
+  - [DONE]: Double-clicking a resize handler resets the resized container. (Add a button or keyboard shortcut to reset the resized container.)
+  - [DONE]: Added a function that I can call to reset the container size. It also removes any relevant classes. (Remove any classes that I've added that indicate that a resize is happening once the container is full size again.)
+  - [DONE]: Turning off pointer-events on iframes while dragging a resize handler fix this issue. (Something about letting go of a drag handler while hovering over the mobile iframe causes the resize process to not stop. Consider disabling pointer events on the mobile view while a resize is in process.)
+
+*/
+
+function resetDesktopResize() {
+  document.documentElement.classList.remove("desktop-view-resized");
+  desktopIframeResizeWrapper.removeAttribute("style");
+  desktopIframeResizeWrapper.removeAttribute("data-x");
+  desktopIframeResizeWrapper.removeAttribute("data-y");
+  showdFrameWidthStatus();
+  desktopIframeWrapper.classList.add("full-sized");
+  resizeActive = false;
+};
+
+interact('.resize-handler')
+  .on('doubletap', function (event) {
+    // event.currentTarget.classList.toggle('switch-bg');
+    resetDesktopResize();
+    event.preventDefault();
+  });
+
+interact('.resize-container')
+  .on('doubletap', function (event) {
+    // event.currentTarget.classList.toggle('switch-bg');
+    resetDesktopResize();
+    event.preventDefault();
+  });
+
+
+interact('.resize-drag')
+  // .draggable({
+  //   // enable inertial throwing
+  //   inertia: true,
+  //   // keep the element within the area of it's parent
+  //   restrict: {
+  //     restriction: "parent",
+  //     endOnly: false,
+  //     elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+  //   },
+  //   // enable autoScroll
+  //   autoScroll: true,
+  //
+  //   // call this function on every dragmove event
+  //   onmove: dragMoveListener,
+  //   // call this function on every dragend event
+  //   onend: function (event) {
+  //     var textEl = event.target.querySelector('p');
+  //
+  //     textEl && (textEl.textContent =
+  //       'moved a distance of '
+  //       + (Math.sqrt(Math.pow(event.pageX - event.x0, 2) +
+  //                    Math.pow(event.pageY - event.y0, 2) | 0))
+  //           .toFixed(2) + 'px');
+  //   }
+  // })
+  .resizable({
+    // resize from all edges and corners
+    edges: { left: '.resize-point-left', right: '.resize-point-right', bottom: '.resize-point-bottom', top: '.resize-point-top' },
+
+    // keep the edges inside the parent
+    restrictEdges: {
+      outer: 'parent',
+      endOnly: false,
+    },
+
+    // minimum size
+    restrictSize: {
+      min: { width: 100, height: 100 },
+    },
+
+    inertia: true,
+  })
+  .on('resizemove', listener)
+  .on('resizemove', function (event) {
+    var target = event.target,
+        x = (parseFloat(target.getAttribute('data-x')) || 0),
+        y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+    // update the element's style
+    target.style.width  = event.rect.width + 'px';
+    target.style.height = event.rect.height + 'px';
+
+    // translate when resizing from top or left edges
+    x += event.deltaRect.left;
+    y += event.deltaRect.top;
+
+    target.style.webkitTransform = target.style.transform =
+        'translate(' + x + 'px,' + y + 'px)';
+
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
+
+  })
+  .on('resizestart', function (event) {
+    document.documentElement.classList.add("resizing", "resizing-" + event.interaction.downEvent.target.dataset.resize);
+    desktopIframeWrapper.classList.remove("full-sized");
+    resizeActive = true;
+  })
+  .on('resizeend', function (event) {
+    document.documentElement.classList.remove("resizing", "resizing-" + event.interaction.downEvent.target.dataset.resize);
+
+    if ( ( event.target.offsetWidth === desktopIframeWrapper.offsetWidth ) && ( event.target.offsetHeight === desktopIframeWrapper.offsetHeight ) ) {
+      resetDesktopResize();
+    }
+  });
+
+
+function listener (event) {
+  // console.log("event.target", event.target, "event.interactable", event.interactable, "event.interaction", event.interaction, "event.axes", event.axes, "event.type", event.type, "event.pageX", event.pageX, "event.pageY", event.pageY);
+  showdFrameWidthStatus();
+  document.documentElement.classList.add("desktop-view-resized");
+
+}
+
+
+// When I click and hold on a drag handler...
+interact('.resize-drag').on('hold', showdFrameWidthStatus);
+
+
+
+function dragMoveListener (event) {
+  var target = event.target,
+      // keep the dragged position in the data-x/data-y attributes
+      x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+      y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+  // translate the element
+  target.style.webkitTransform =
+  target.style.transform =
+    'translate(' + x + 'px, ' + y + 'px)';
+
+  // update the posiion attributes
+  target.setAttribute('data-x', x);
+  target.setAttribute('data-y', y);
+}
+
+// this is used later in the resizing and gesture demos
+window.dragMoveListener = dragMoveListener;
 
 
 ///////////////////////////////////////////////////////////////////////////////

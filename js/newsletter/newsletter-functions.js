@@ -1,6 +1,21 @@
 console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter-functions.js");
 ////////////////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Global Variables
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+
+// Used to determine if the resizable dFrame is currently being resized.
+let resizeActive = false;
 
 
 ///////////////////////////////////////
@@ -49,12 +64,18 @@ function KeyPress(e) {
 ///////////////////////////////////////
 
 
-function pinLinkMarker() {
+function pinLinkMarker(e) {
   // http://stackoverflow.com/a/8454104/556079
+  this.classList.toggle("pinned");
   this.nextSibling.style.display = this.nextSibling.style.display === 'block' ? '' : 'block';
 }
 
-function unpinLinkMarker() {
+function unpinLinkMarker(e) {
+
+  var linkNum = this.dataset.number;
+
+  dFrameContents.querySelectorAll("#link-marker-" + linkNum)[0].classList.toggle("pinned");
+
   // http://stackoverflow.com/a/6042235/556079
   var flag = 0;
 
@@ -102,8 +123,6 @@ function changeMobileSize(width) {
         var clickedSize = event.target;
         var selectedSize = event.target.dataset.mobileWidth;
 
-        var widthToSet = selectedSize + "px";
-
         if ( selectedSize !== "320" ) {
           history.replaceState(null,null, updateQueryString("mobilewidth", selectedSize) );
         } else {
@@ -116,8 +135,15 @@ function changeMobileSize(width) {
     }
 
   }
-  mobileDeviceWrapper.style.width = widthToSet
-  showdFrameWidthStatus();
+  if ( mobileDeviceWrapper.offsetWidth !== parseInt(selectedSize) ) {
+    // console.log("resizing mobile container", mobileDeviceWrapper.offsetWidth, parseInt(selectedSize));
+    mobileDeviceWrapper.style.width = selectedSize + "px";
+    showdFrameWidthStatus();
+    if ( resizeActive ) {
+      resetDesktopResize();
+    }
+  }
+
 }
 
 

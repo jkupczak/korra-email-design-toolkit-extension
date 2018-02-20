@@ -19,7 +19,6 @@ html.powered-up {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   font-size: 14px;
   color: #444;
-  /*background: linear-gradient(to bottom, rgba(19,19,24,1) 20px,rgba(43,43,51,1) 100px);*/
   background: rgba(43,43,51,1);
 }
 
@@ -34,6 +33,11 @@ html.powered-up {
 .disc-other ::selection  { background-color: var(--other); }
 .disc-lmt   ::selection  { background-color: var(--lmt); }
 .disc-dr    ::selection  { background-color: var(--drayer); }*/
+
+
+iframe {
+  user-select: none;
+}
 
 /* **** */
 /* **** */
@@ -112,11 +116,6 @@ html.powered-up {
   /*top: auto;*/
   /*left: auto;*/
 }
-.desktop-view-wrapper {
-  /*border-radius:4px;*/
-  /* margin: 0 0 12px 0px; */
-  /*overflow: hidden;*/
-}
 
 
 
@@ -133,10 +132,10 @@ html.powered-up {
 }
 .info-bar .document-title {
   padding-top:14px;
-  padding-bottom:14px;
+  padding-bottom:0px;
   position: relative;
 }
-.info-bar .document-title:after {
+/* .info-bar .document-title:after {
   content: "";
   display: block;
   position:absolute;
@@ -145,7 +144,7 @@ html.powered-up {
   bottom:0;
   left:0; right:0;
   margin:0 auto;
-}
+} */
 
 .info-bar .title-large, .info-bar .title-small {
   -webkit-font-smoothing: antialiased;
@@ -199,7 +198,7 @@ html.powered-up {
 /********************************************/
 
 .info-bar .document-desc {
-  padding-bottom:12px;
+  padding:6px 0 12px;
 }
 
 .info-bar .disc-img {
@@ -865,13 +864,23 @@ html.error-status.errors:before {
    *********** */
 
 .qa-bar {
-  background:#1b1b21;
-  border-radius:4px;
+  background:#131318;
+  border-radius:2px;
   overflow:hidden;
-  margin-bottom:5px;
+  margin-bottom:2px;
+  transition: all 0.35s;
 }
+.qa-bar:hover {
+  background:#1e1e25;
+  cursor:default;
+  transition: all 0s;
+}
+
 .qa-bar.success:hover {
-  box-shadow:  0 0 0 3px rgba(87, 184, 123, 0.2);
+  box-shadow:  0 0 0 2px rgba(87, 184, 123, 0.4);
+}
+.qa-bar.error:hover {
+  box-shadow:  0 0 0 2px rgba(245, 57, 97, 0.4);
 }
 
 .qa-bar .qa-title {
@@ -879,12 +888,13 @@ html.error-status.errors:before {
 }
 .qa-bar .qa-text {
   height:32px;
-  font-size:13px;
+  font-size:12px;
   color:#44444d;
   line-height:34px;
   padding-left:8px;
 }
-  .qa-bar.finished .qa-text { color:#9393a0; }
+  .qa-bar.finished       .qa-text { color:#9393a0; }
+  .qa-bar.finished:hover .qa-text { color:#d8d8e0; }
 
 /* QA Icon */
 /*****************/
@@ -901,7 +911,7 @@ html.error-status.errors:before {
 }
 
 .qa-bar .qa-icon {
-  background:#131318;
+  background:#000;
   width:32px; min-width:32px; max-width: 32px;
   height:32px; min-height:32px; max-height:32px;
   position: relative;
@@ -957,10 +967,10 @@ html.error-status.errors:before {
 /*****************/
 .qa-bar .preheader-preview-text {
   color:#9c9ca6;
-  padding:12px 12px 10px 12px;
+  padding: 8px 8px 8px 12px;
   background: #202027;
-  font-size: 13px;
-  line-height: 17px;
+  font-size: 12px;
+  line-height: 16px;
 }
 .qa-bar .preheader-preview-text .preheader-back {
   color:#666677;
@@ -985,56 +995,6 @@ html.error-status.errors:before {
   font-weight: 700;
 
 }
-
-/* ***********
-   ***********
-
-     RESIZER
-
-   ***********
-   *********** */
-
-.dframe-resize-handle:hover {
-  opacity: 1;
-}
-
-.dframe-resize-handle {
-  border-radius:0 3px 3px 0;
-  display: block;
-  position: absolute;
-  width: 10px;
-  height: 100%;
-  right: -8px;
-  top: 0px;
-  cursor: col-resize;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.3s;
-  background:#61616d;
-}
-.dframe-resize-handle:before {
-  content: ". . .";
-  font-size: 15px;
-  font-family: arial, sans-serif;
-  font-weight: 700;
-  color: rgb(255, 255, 255);
-  display: block;
-  width: 100%;
-  position: absolute;
-  top: 50%;
-  left: 0px;
-  line-height: 0.6;
-  white-space: normal;
-  text-align: center;
-  margin-top: -0.9em;
-}
-
-.disc-pt .dframe-resize-handle { background: var(--pt); }
-.disc-at .dframe-resize-handle { background: var(--at); }
-.disc-ot .dframe-resize-handle { background: var(--ot); }
-.disc-slp .dframe-resize-handle { background: var(--slp); }
-.disc-other .dframe-resize-handle { background: var(--other); }
-.disc-lmt .dframe-resize-handle { background: var(--lmt); }
 
 
 
@@ -1074,7 +1034,7 @@ body.split-view-on {
   /* height:100%; */
   height: calc(100% - 12px);
   display:flex;
-  padding-right:7px;
+  padding-right:12px;
   /* background:#19191f; */
 }
 .iframe-wrapper iframe {
@@ -1089,16 +1049,24 @@ body.split-view-on {
 .desktop-view-wrapper {
   width:100%;
   flex-grow:1;
+  z-index:2;
   position: relative;
   border-radius: 4px 0 0 4px;
+  /* background: #26262d; */
+  background:url("chrome-extension://__MSG_@@extension_id__/img/tempbg12.png") top left repeat #26262d;
+  box-shadow: inset 0 0px 0px 2px rgba(255,255,255,0.15);
+
 }
 .iframe-desktop-view {
   width:100%;
   position: relative;
-  z-index:5;
+  z-index:200;
   transition:border .125s;
   border:solid 0px #bf1d53;
   background: #19191f;
+}
+.desktop-view-resize-wrapper {
+  height:100%; width:100%; position:relative;
 }
 
 .iframe-desktop-view.editing {
@@ -1118,57 +1086,300 @@ body.split-view-on {
   90% { border-color: #bf1d53;}
 }
 
+
+
+/* ***********
+   ***********
+
+     RESIZER
+
+   ***********
+   *********** */
+
+
+
+@keyframes edgesSealed {
+  0%   { box-shadow:0 0 0 4px rgba(77,174,112,1) }
+  50%  { box-shadow:0 0 0 4px rgba(77,174,112,1) }
+  100% { box-shadow:0 0 0 8px rgba(77,174,112,0) }
+}
+
+@keyframes edgesSealed2 {
+  0%   { opacity:0; }
+  100% { opacity:1; }
+}
+
+.full-sized {
+  animation: edgesSealed 1.5s ease 1, edgesSealed2 .5s ease 1;
+}
+
+/* While iframe is resized... */
+.desktop-view-resized .iframe-desktop-view,
+.infobar-off.mobile-off .iframe-desktop-view {
+  border-radius: 4px;
+}
+.desktop-view-resized .iframe-desktop-view { box-shadow: 0 5px 100px 2px rgba(0,0,0,1), 0 8px 8px 0 #000; transition:box-shadow .5s; }
+.desktop-view-resized.resizing .iframe-desktop-view,
+.desktop-view-resized .resize-drag:hover .iframe-desktop-view { box-shadow: none; transition:box-shadow .5s; }
+
+  @keyframes grayResizePulse {
+    0%   { background:#1a1a22 }
+    40%  { background:#000 }
+    60%  { background:#000 }
+    100% { background:#1a1a22 }
+  }
+
+.resize-handler { position:absolute; background:#0a0a0d; opacity:0; }
+.desktop-view-resized:not(.resizing) .resize-drag iframe:hover ~ .resize-handler { background:#0e0e12; animation: grayResizePulse 1s ease infinite; opacity:1; }
+
+/* Discipline Styling for Resize Handlers */
+/******************************************/
+
+  /* Enterprise */
+  /* while resizing */
+  .resizing-top .disc-ent .resize-side.resize-point-top,
+  .resizing-right .disc-ent .resize-side.resize-point-right,
+  .resizing-bottom .disc-ent .resize-side.resize-point-bottom,
+  .resizing-left .disc-ent .resize-side.resize-point-left,
+  .resizing-top-right .disc-ent .resize-point-top-right,
+  .resizing-bottom-right .disc-ent .resize-point-bottom-right,
+  .resizing-bottom-left .disc-ent .resize-point-bottom-left,
+  .resizing-top-left .disc-ent .resize-point-top-left,
+  /* while hovered, not actuvely resizing */
+  .disc-ent .resize-side:hover,
+  .disc-ent .resize-corner:hover,
+  .disc-ent .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-ent .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-ent .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-ent .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--enterprise); opacity:1; }
+
+  /* undefined */
+  .resizing-top .disc-undefined .resize-side.resize-point-top,
+  .resizing-right .disc-undefined .resize-side.resize-point-right,
+  .resizing-bottom .disc-undefined .resize-side.resize-point-bottom,
+  .resizing-left .disc-undefined .resize-side.resize-point-left,
+  .resizing-top-right .disc-undefined .resize-point-top-right,
+  .resizing-bottom-right .disc-undefined .resize-point-bottom-right,
+  .resizing-bottom-left .disc-undefined .resize-point-bottom-left,
+  .resizing-top-left .disc-undefined .resize-point-top-left,
+  .disc-undefined .resize-side:hover,
+  .disc-undefined .resize-corner:hover,
+  .disc-undefined .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-undefined .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-undefined .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-undefined .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--undefined); opacity:1; }
+
+  /* multi */
+  .resizing-top .disc-multi .resize-side.resize-point-top,
+  .resizing-right .disc-multi .resize-side.resize-point-right,
+  .resizing-bottom .disc-multi .resize-side.resize-point-bottom,
+  .resizing-left .disc-multi .resize-side.resize-point-left,
+  .resizing-top-right .disc-multi .resize-point-top-right,
+  .resizing-bottom-right .disc-multi .resize-point-bottom-right,
+  .resizing-bottom-left .disc-multi .resize-point-bottom-left,
+  .resizing-top-left .disc-multi .resize-point-top-left,
+  .disc-multi .resize-side:hover,
+  .disc-multi .resize-corner:hover,
+  .disc-multi .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-multi .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-multi .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-multi .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--multi); opacity:1; }
+
+  /* all */
+  .resizing-top .disc-all .resize-side.resize-point-top,
+  .resizing-right .disc-all .resize-side.resize-point-right,
+  .resizing-bottom .disc-all .resize-side.resize-point-bottom,
+  .resizing-left .disc-all .resize-side.resize-point-left,
+  .resizing-top-right .disc-all .resize-point-top-right,
+  .resizing-bottom-right .disc-all .resize-point-bottom-right,
+  .resizing-bottom-left .disc-all .resize-point-bottom-left,
+  .resizing-top-left .disc-all .resize-point-top-left,
+  .disc-all .resize-side:hover,
+  .disc-all .resize-corner:hover,
+  .disc-all .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-all .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-all .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-all .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--all); opacity:1; }
+
+  /* PT */
+  .resizing-top .disc-pt .resize-side.resize-point-top,
+  .resizing-right .disc-pt .resize-side.resize-point-right,
+  .resizing-bottom .disc-pt .resize-side.resize-point-bottom,
+  .resizing-left .disc-pt .resize-side.resize-point-left,
+  .resizing-top-right .disc-pt .resize-point-top-right,
+  .resizing-bottom-right .disc-pt .resize-point-bottom-right,
+  .resizing-bottom-left .disc-pt .resize-point-bottom-left,
+  .resizing-top-left .disc-pt .resize-point-top-left,
+  .disc-pt .resize-side:hover,
+  .disc-pt .resize-corner:hover,
+  .disc-pt .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-pt .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-pt .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-pt .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--pt); opacity:1; }
+
+  /* AT */
+  .resizing-top .disc-at .resize-side.resize-point-top,
+  .resizing-right .disc-at .resize-side.resize-point-right,
+  .resizing-bottom .disc-at .resize-side.resize-point-bottom,
+  .resizing-left .disc-at .resize-side.resize-point-left,
+  .resizing-top-right .disc-at .resize-point-top-right,
+  .resizing-bottom-right .disc-at .resize-point-bottom-right,
+  .resizing-bottom-left .disc-at .resize-point-bottom-left,
+  .resizing-top-left .disc-at .resize-point-top-left,
+  .disc-at .resize-side:hover,
+  .disc-at .resize-corner:hover,
+  .disc-at .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-at .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-at .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-at .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--at); opacity:1; }
+
+  /* OT */
+  .resizing-top .disc-ot .resize-side.resize-point-top,
+  .resizing-right .disc-ot .resize-side.resize-point-right,
+  .resizing-bottom .disc-ot .resize-side.resize-point-bottom,
+  .resizing-left .disc-ot .resize-side.resize-point-left,
+  .resizing-top-right .disc-ot .resize-point-top-right,
+  .resizing-bottom-right .disc-ot .resize-point-bottom-right,
+  .resizing-bottom-left .disc-ot .resize-point-bottom-left,
+  .resizing-top-left .disc-ot .resize-point-top-left,
+  .disc-ot .resize-side:hover,
+  .disc-ot .resize-corner:hover,
+  .disc-ot .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-ot .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-ot .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-ot .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--ot); opacity:1; }
+
+  /* SLP */
+  .resizing-top .disc-slp .resize-side.resize-point-top,
+  .resizing-right .disc-slp .resize-side.resize-point-right,
+  .resizing-bottom .disc-slp .resize-side.resize-point-bottom,
+  .resizing-left .disc-slp .resize-side.resize-point-left,
+  .resizing-top-right .disc-slp .resize-point-top-right,
+  .resizing-bottom-right .disc-slp .resize-point-bottom-right,
+  .resizing-bottom-left .disc-slp .resize-point-bottom-left,
+  .resizing-top-left .disc-slp .resize-point-top-left,
+  .disc-slp .resize-side:hover,
+  .disc-slp .resize-corner:hover,
+  .disc-slp .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-slp .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-slp .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-slp .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--slp); opacity:1; }
+
+  /* Other */
+  .resizing-top .disc-other .resize-side.resize-point-top,
+  .resizing-right .disc-other .resize-side.resize-point-right,
+  .resizing-bottom .disc-other .resize-side.resize-point-bottom,
+  .resizing-left .disc-other .resize-side.resize-point-left,
+  .resizing-top-right .disc-other .resize-point-top-right,
+  .resizing-bottom-right .disc-other .resize-point-bottom-right,
+  .resizing-bottom-left .disc-other .resize-point-bottom-left,
+  .resizing-top-left .disc-other .resize-point-top-left,
+  .disc-other .resize-side:hover,
+  .disc-other .resize-corner:hover,
+  .disc-other .resize-corner.resize-point-top-right:hover ~ .resize-side.resize-point-top-right,
+  .disc-other .resize-corner.resize-point-bottom-right:hover ~ .resize-side.resize-point-bottom-right,
+  .disc-other .resize-corner.resize-point-bottom-left:hover ~ .resize-side.resize-point-bottom-left,
+  .disc-other .resize-corner.resize-point-top-left:hover ~ .resize-side.resize-point-top-left
+  { background: var(--other); opacity:1; }
+
+
+/* Resize Handler Sizing */
+/*************************/
+
+  .resize-side.resize-point-top, .resize-side.resize-point-bottom { width:100%; height:15px }
+  .resize-side.resize-point-right, .resize-side.resize-point-left { width:15px; height:100%; }
+
+  .resize-handler { }
+  .resize-side.resize-point-top { border-radius:4px 4px 0 0; top:-10px; left:0; }
+  .resize-side.resize-point-right { border-radius:0 4px 4px 0; right:-10px; top:0; }
+  .resize-side.resize-point-bottom { border-radius:0 0 4px 4px; bottom:-10px; left:0; }
+  .resize-side.resize-point-left { border-radius:4px 0 0 4px; left:-10px; top:0; }
+
+  .resize-corner { width:30px; height:30px; position:absolute; z-index:10; }
+  .resize-corner.resize-point-top.resize-point-right    { top:-10px; right:-10px; border-radius:0 4px 0 0; }
+  .resize-corner.resize-point-right.resize-point-bottom { right:-10px; bottom:-10px; border-radius:0 0 4px 0; }
+  .resize-corner.resize-point-bottom.resize-point-left  { bottom:-10px; left:-10px; border-radius:0 0 0 4px; }
+  .resize-corner.resize-point-left.resize-point-top     { left:-10px; top:-10px; border-radius:4px 0 0 0; }
+
+  .resize-drag .resize-handler:hover, .resize-drag .resize-handler:active { opacity:1 }
+
+  /* Top Right */
+  .resize-drag .resize-handler.resize-corner.resize-point-top.resize-point-right:hover ~ .resize-side.resize-point-top,
+  .resize-drag .resize-handler.resize-corner.resize-point-top.resize-point-right:active ~ .resize-side.resize-point-top
+  { border-radius:4px 0 0 0; opacity:1; }
+  .resize-drag .resize-handler.resize-corner.resize-point-top.resize-point-right:hover ~ .resize-side.resize-point-right,
+  .resize-drag .resize-handler.resize-corner.resize-point-top.resize-point-right:active ~ .resize-side.resize-point-right
+  { border-radius: 0px 0px 4px 0; opacity:1; }
+
+  /* Bottom Right */
+  .resize-drag .resize-handler.resize-corner.resize-point-bottom.resize-point-right:hover ~ .resize-side.resize-point-right,
+  .resize-drag .resize-handler.resize-corner.resize-point-bottom.resize-point-right:active ~ .resize-side.resize-point-right
+  { border-radius:0 4px 0 0; opacity:1; }
+  .resize-drag .resize-handler.resize-corner.resize-point-bottom.resize-point-right:hover ~ .resize-side.resize-point-bottom,
+  .resize-drag .resize-handler.resize-corner.resize-point-bottom.resize-point-right:active ~ .resize-side.resize-point-bottom
+  { border-radius: 0px 0px 0 4px; opacity:1; }
+
+  /* Bottom Left */
+  .resize-drag .resize-handler.resize-corner.resize-point-bottom.resize-point-left:hover ~ .resize-side.resize-point-bottom,
+  .resize-drag .resize-handler.resize-corner.resize-point-bottom.resize-point-left:active ~ .resize-side.resize-point-bottom
+  { border-radius:0 0 4px 0; opacity:1; }
+  .resize-drag .resize-handler.resize-corner.resize-point-bottom.resize-point-left:hover ~ .resize-side.resize-point-left,
+  .resize-drag .resize-handler.resize-corner.resize-point-bottom.resize-point-left:active ~ .resize-side.resize-point-left
+  { border-radius: 4px 0px 0 0; opacity:1; }
+
+  /* Left Top */
+  .resize-drag .resize-handler.resize-corner.resize-point-top.resize-point-left:hover ~ .resize-side.resize-point-top,
+  .resize-drag .resize-handler.resize-corner.resize-point-top.resize-point-left:active ~ .resize-side.resize-point-top
+  { border-radius:0 4px 0 0; opacity:1; }
+  .resize-drag .resize-handler.resize-corner.resize-point-top.resize-point-left:hover ~ .resize-side.resize-point-left,
+  .resize-drag .resize-handler.resize-corner.resize-point-top.resize-point-left:active ~ .resize-side.resize-point-left
+  { border-radius: 0 0 0 4px; opacity:1; }
+
+/* Prevents resize handlers from appearing if the mouse hovers over them while I'm dragging the container.  */
+/* html[style*="cursor: move"] .resize-handler { opacity:0 !important;} */
+
+
+/* Prevent pointer events on iframes while we are actively dragging the resize handlers. */
+.resizing iframe.iframe-mobile-view { pointer-events: none; }
+
+
+/**********************/
+/**********************/
+/**********************/
+
 .mobile-view-wrapper {
-
-  /*box-shadow: inset 0 0 0 2px rgba(255,255,255,.15);*/
-
-  margin:0 5px 0 0;
+  margin:0 0 0 0;
   padding:20px 20px 20px 20px;
-
   height: initial;
-
   border-radius: 0 4px 4px 0;
-
-  background: rgba(0,0,0,0.26);
-  background: #17171b;
-
-  /*max-width:480px;
-  min-width:320px;
-  width:320px;*/
+  background: #1f1f25;
   width:auto;
-  /*width:100%;*/
-  /*margin: auto;*/
-  /*max-width:520px;*/
-  /*min-width:360px;*/
-  /*padding:40px 0;*/
-  /*height:100%;*/
-  /*border:0;*/
-  /*overflow: hidden;*/
-  box-sizing: border-box;
-  /*background:#26272d;*/
   display:flex;
-  /*padding:40px;*/
-  /*max-width:540px;
-  min-width:540px;*/
-  /*transition:all .35s;*/
   z-index:1;
+
+  box-sizing: border-box;
 }
 .mobile-view-wrapper.off {
-  /*display:none;*/
   width:0px;
   max-width:0px;
   min-width:0px;
   padding-left:0; padding-right:0;
   margin-left:0; margin-right:0;
   z-index:-10;
-  /*transition:all .35s;*/
 }
 .mobile-view-wrapper.quick-off {
   display: none;
 }
 .mobile-view-wrapper.off .mobile-device-view {
   opacity:0;
-  /*transition:all .35s;*/
 }
 
 .mobile-view-wrapper .iframe-mobile-view {
@@ -1368,6 +1579,7 @@ body.split-view-on {
   z-index:100;
   bottom:20px; right:35px;
   display:flex;
+  z-index:1000;
 }
 
 .iframe-status-container {

@@ -362,23 +362,24 @@ function getDisciplineId(string) {
 
   var trimmedString = string.trim();
 
-       if ( /-PT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";    }
-  else if ( /-AT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "at";    }
-  else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "ot";    }
-  else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { var disciplineId = "slp";   }
-  else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { var disciplineId = "other"; }
-  else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "lmt";   }
+       if ( /-PT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";     }
+  else if ( /-AT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "at";     }
+  else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "ot";     }
+  else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { var disciplineId = "slp";    }
+  else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { var disciplineId = "other";  }
+  else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "lmt";    }
 
-  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";    }
-  else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { var disciplineId = "fox";   }
-  else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )                  { var disciplineId = "hs";    }
-  else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "multi"; }
-  else if ( /-(ENT|Enterprise|MFB)(\s|-|\.|$)/gi.test(trimmedString) ) { var disciplineId = "ent";   }
+  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";     }
+  else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { var disciplineId = "fox";    }
+  else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "hs";     }
+  else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "multi";  }
+  else if ( /-(ENT|Enterprise|MFB)(\s|-|\.|$)/gi.test(trimmedString) ) { var disciplineId = "ent";}
 
-  else if ( /-(Physical)(\s|-|\.|$)/gi.test(trimmedString) )       { var disciplineId = "pt";    }
-  else if ( /-Athletic(\s|-|\.|$)/gi.test(trimmedString) )         { var disciplineId = "at";    }
+  else if ( /-(Physical)(\s|-|\.|$)/gi.test(trimmedString) )       { var disciplineId = "pt";     }
+  else if ( /-Athletic(\s|-|\.|$)/gi.test(trimmedString) )         { var disciplineId = "at";     }
+  else if ( /-All(\-|\.|$)/gi.test(trimmedString) )                { var disciplineId = "all";    }
 
-  else { var disciplineId = null }
+  else { var disciplineId = undefined }
 
 
   ////

@@ -18,6 +18,18 @@
   --mb-blue:        #1e78d7;
   --mb-blue-hover:  #1964b3;
 
+  --all:             #838397;
+  --all-light:       #838397;
+  --all-dark:        #5e5e73;
+
+  --multi:             #838397;
+  --multi-light:       #838397;
+  --multi-dark:        #5e5e73;
+
+  --undefined:             #838397;
+  --undefined-light:       #838397;
+  --undefined-dark:        #5e5e73;
+
   --pt:             #FFBE12;
   --pt-light:       #FFBE12;
   --pt-dark:        #dba004;
@@ -42,9 +54,9 @@
   --lmt-light:      #1aa37a;
   --lmt-dark:       #0f7d5c;
 
-  --enterprise:      #4b657b;
-  --enterprise-light:      #565e61;
-  --enterprise-dark: #334656;
+  --enterprise:      #406d93;
+  --enterprise-light:#5481a7;
+  --enterprise-dark: #2b5171;
 
   --drayer:         #1caa90;
   --drayer-light:   #1caa90;

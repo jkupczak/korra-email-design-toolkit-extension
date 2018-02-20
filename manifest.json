@@ -32,7 +32,7 @@
   ],
 
   "description": "Helps automate email marketing tasks. Upgrades the user experience on MedBridge, MailChimp, AWS, and local HTML files.",
-  "version": "3.1",
+  "version": "3.2",
 
   "browser_action": {
     "default_icon": "icons/128-wrench.png",
@@ -97,7 +97,7 @@
     {
       "matches": ["file:///*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/newsletter/newsletter.js"],
+      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/newsletter.js"],
       "run_at": "document_end"
     },
 
