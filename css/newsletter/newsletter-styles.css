@@ -728,6 +728,9 @@ html.error-status.errors:before {
 .guides-orb { order:4; background:#13bfbf; }
 .guides-orb:before { content:"\4d"; margin-top:0px; }
 
+.baseline-orb { order:4; background:#fa56ce; }
+.baseline-orb:before { font-family:'IcoMoon-Free'; content:"\ea7a"; margin-top:0px; }
+
 
 .orb-divider-3 { order:3; }
 
@@ -1047,7 +1050,6 @@ body.split-view-on {
   border-width:0;
   border-style:solid;
   height:100%;
-  border-radius:4px 0 0 4px;
   overflow: hidden;
 }
 
@@ -1120,13 +1122,15 @@ body.split-view-on {
 }
 
 /* While iframe is resized... */
-.desktop-view-resized .iframe-desktop-view,
-.infobar-off.mobile-off .iframe-desktop-view {
+/* .desktop-view-resized .iframe-desktop-view,
+.infobar-off.mobile-off .iframe-desktop-view { */
+.desktop-view-resized .desktop-iframe-parent,
+.infobar-off.mobile-off .desktop-iframe-parent {
   border-radius: 4px;
 }
-.desktop-view-resized .iframe-desktop-view { box-shadow: 0 5px 100px 2px rgba(0,0,0,1), 0 8px 8px 0 #000; transition:box-shadow .5s; }
-.desktop-view-resized.resizing .iframe-desktop-view,
-.desktop-view-resized .resize-drag:hover .iframe-desktop-view { box-shadow: none; transition:box-shadow .5s; }
+.desktop-view-resized .desktop-iframe-parent { box-shadow: 0 5px 100px 2px rgba(0,0,0,1), 0 8px 8px 0 #000; transition:box-shadow .5s; }
+.desktop-view-resized.resizing .desktop-iframe-parent,
+.desktop-view-resized .resize-drag:hover .desktop-iframe-parent { box-shadow: none; transition:box-shadow .5s; }
 
   @keyframes grayResizePulse {
     0%   { background:#1a1a22 }
@@ -1136,7 +1140,7 @@ body.split-view-on {
   }
 
 .resize-handler { position:absolute; background:#0a0a0d; opacity:0; }
-.desktop-view-resized:not(.resizing) .resize-drag iframe:hover ~ .resize-handler { background:#0e0e12; animation: grayResizePulse 1s ease infinite; opacity:1; }
+.desktop-view-resized:not(.resizing) .resize-drag .desktop-iframe-parent:hover ~ .resize-handler { background:#0e0e12; animation: grayResizePulse 1s ease infinite; opacity:1; }
 
 /* Discipline Styling for Resize Handlers */
 /******************************************/
@@ -1388,12 +1392,25 @@ body.split-view-on {
   opacity:0;
 }
 
+/* The only child should be the iframe */
+  .mobile-iframe-parent {
+    display:flex;
+    flex-grow:1;
+    overflow: hidden;
+    position: relative;
+  }
+  .desktop-iframe-parent {
+    width:100%;
+    height:100%;
+    overflow: hidden;
+    position: relative;
+    border-radius:4px 0 0 4px;
+  }
+
 .mobile-view-wrapper .iframe-mobile-view {
   width:100%;
   margin: 0 auto;
 
-  /* [BUG] When the mobile iframe doesn't have a doctype, the heights of its containers all freak out. Use auto instead of 100%. */
-  /*height:100%;*/
   height:auto;
   min-height:0px;
 
@@ -1585,7 +1602,7 @@ body.split-view-on {
   z-index:100;
   bottom:20px; right:35px;
   display:flex;
-  z-index:1000;
+  z-index:99999; /* highest of all */
 }
 
 .iframe-status-container {
@@ -1813,6 +1830,31 @@ body.split-view-on {
     50%  { background:#51ad6e; }
     100% { background:#47915e; }
   }
+
+
+
+/***********
+
+  Baseline Overlay
+
+  **********/
+
+.baseline-overlay {
+  pointer-events: none;
+  width:100%;
+  height:100%;
+  position: absolute; top:0; left:0;
+  z-index:1000;
+}
+  .mobile-iframe-parent .baseline-overlay {
+    top:-20px;
+  }
+.baseline-overlay div {
+  height:1px;
+  background:rgba(223,58,179,.5);
+  width:100%;
+  margin-top:25px;
+}
 
 
 /***********

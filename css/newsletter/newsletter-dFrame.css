@@ -1,3 +1,8 @@
+/* Force dFrame to have a vertical scrollbar in case the email isn't long enough on its own to have one.  */
+html {
+  overflow-y: scroll;
+}
+
 @font-face {
   font-family: "medbridge-chrome-extension";
   src: url(chrome-extension://__MSG_@@extension_id__/fonts/medbridge-chrome-extension.woff);

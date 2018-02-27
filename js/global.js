@@ -806,6 +806,25 @@ function cut(text, length) {
 }
 
 
+
+// Round to fixed decimal place
+// both parameters can be string or number
+// https://stackoverflow.com/a/43998255/556079
+function roundTo(number, decimals) {
+
+  // Don't round if this is a whole number.
+  if ( number.toString().indexOf(".") == -1 ) { // https://stackoverflow.com/a/7878073/556079
+    return number;
+  } else {
+    var x = Math.pow(10, Number(decimals) + 1);
+    return (Number(number) + (1 / x)).toFixed(decimals)
+  }
+
+}
+
+
+
+
 // http://stackoverflow.com/a/22119674/556079
 function findAncestor (el, cls) {
     while ((el = el.parentElement) && !el.classList.contains(cls));

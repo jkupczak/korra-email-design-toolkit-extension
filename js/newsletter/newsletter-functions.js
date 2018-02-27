@@ -228,6 +228,72 @@ function changeMobileSize(width) {
 ///////////////////////////////////////
 /////
 /////
+/////    Allow multiple onload events for desktopIframe
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+// https://www.htmlgoodies.com/beyond/javascript/article.php/3724571/Using-Multiple-JavaScript-Onload-Functions.htm
+
+function addLoadEvent(window, func) {
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////   Check if Element is in Viewport /
+/////   Check if Element is Visibility
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+// https://stackoverflow.com/a/7557433/556079
+function isElementInViewport (el) {
+
+    var rect = el.getBoundingClientRect();
+
+    return rect.bottom > 0 &&
+        rect.right > 0 &&
+        rect.left < (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */ &&
+        rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */;
+}
+
+// A modification of isElementInViewport(el) from => https://stackoverflow.com/a/7557433/556079
+function isElementVisible (el) {
+
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.top === 0 &&
+        rect.left === 0 &&
+        rect.x === 0 &&
+        rect.y === 0
+    );
+}
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
 /////    Link Validation Function
 /////
 /////
@@ -236,16 +302,20 @@ function changeMobileSize(width) {
 ///////////////////////////////////////
 
 
-
-
-function linkValidationLoop(linkList, ageCheck) {
+function linkValidationLoop(linkList, dummyLinkList, ageCheck) {
 
       // Verify the visibility of all links in Desktop and Mobile.
       // Wait for the iframe to finish loading before we do though.
       // Modify this to use the dummyIframe for both desktop and mobile so that we can avoid errors.
-      desktopIframe.onload = () => {
-        verifyLinkVisibility(linkList);
-      }
+
+      addLoadEvent(dummyIframe, function() {
+        verifyLinkVisibility(dummyLinkList)
+      });
+
+      // addLoadEvent( verifyLinkVisibility(linkList) );
+      // desktopIframe.onload = () => {
+      //   verifyLinkVisibility(linkList);
+      // }
 
       // Array that contains only the link objects that have errors.
       linksWithErrorsArr = [];
@@ -399,7 +469,7 @@ console.log("linkInfoArray", linkInfoArray);
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-// This function gets run after desktopIframe is finished loading.
+// This function gets run after dummyIframe is finished loading.
 // The primary means of determining visibility is offsetTop and offsetLeft.
 // If we check these before the page is loaded they can often return a value of 0.
 
@@ -407,23 +477,44 @@ function verifyLinkVisibility(linkList) {
 
   // Modify this to use the dummyIframe for both desktop and mobile so that we can avoid errors.
 
+  // Get link position in desktop view and check desktop visibility
   var i = 0
   for (let link of linkList) {
 
-    linkInfoArray[i]['position'] = { "offsetTop": link.offsetTop, "offsetLeft": link.offsetLeft }
+    linkInfoArray[i]['desktopposition'] = { "top": link.getBoundingClientRect().top, "left": link.getBoundingClientRect().left }
 
-    // Link Visibility (Desktop / Mobile)
-    if ( (link.style.visibility === 'hidden' || link.style.display === 'none') || (link.offsetTop === 0 && link.offsetLeft === 0) ) {
+    // Link Visibility (Desktop)
+    if ( isElementVisible(link) ) {
       linkInfoArray[i]['desktop'] = false;
     } else {
       linkInfoArray[i]['desktop'] = true;
     }
-
     i++
-
   }
 
-  // Destroy the dummy iframe when we're done.
+
+  // Get link position in mobile view and check mobile visibility
+
+  // Change dummy iframe width to be mobile sized.
+  dummyIframe.style.width = "360px";
+
+  // Do another loop.
+  var j = 0
+  for (let link of linkList) {
+
+    linkInfoArray[j]['mobileposition'] = { "top": link.getBoundingClientRect().top, "left": link.getBoundingClientRect().left }
+
+    // Link Visibility (Mobile)
+    if ( isElementVisible(link) ) {
+      linkInfoArray[j]['mobile'] = false;
+    } else {
+      linkInfoArray[j]['mobile'] = true;
+    }
+    j++
+  }
+
+  // We're done here. Kill the dummy iframe.
+  destroy(dummyIframe);
 
 }
 
@@ -433,7 +524,7 @@ function verifyLinkVisibility(linkList) {
 ///////////////////////////////////////
 /////
 /////
-/////    Check if a Link Works using AJAX
+/////    Check if a Link works using AJAX to get the headers
 /////
 /////
 ///////////////////////////////////////
@@ -441,7 +532,7 @@ function verifyLinkVisibility(linkList) {
 ///////////////////////////////////////
 
 //// Check if links work or not by doing an XMLHttpRequest and getting the headers.
-//// Normally same-origin policy would prevent us from doing this. Luckily extensions are exempt from this/
+//// Normally same-origin policy would prevent us from doing this. Luckily extensions are exempt from this.
 
 //// https://developer.chrome.com/extensions/xhr
 //// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders
@@ -449,33 +540,48 @@ function verifyLinkVisibility(linkList) {
 
 function checkLinkStatus(i, url, linkObject) {
 
+  // Assign a type to the URL based on how its written
+  if ( url.match(/^mailto:/) ) {
+    linkInfoArray[i]['type'] = "mailto"; //mailto link
+  } else if ( url.match(/^file:\/\/\//) && url.match(/(\[\[?.+\]\]?|\*\|.+?\|\*)/) ) {
+    linkInfoArray[i]['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+  } else if ( url.match(/^https?\:\/\//) ) {
+    linkInfoArray[i]['type'] = "http"; //normal link
+  } else {
+    linkInfoArray[i]['type'] = "unknown"; //no idea what this link is
+  }
+
+  // Check if its in the cache first.
+  // if ( status is in cache ) {
+    // linkInfoArray[i]['status'] = { "Key": from.cache, "StatusCode": from.cache, "StatusText": from.cache, "FromCache": true }
+    // linkInfoArray[i]['statusrequest'] = "cached";
+
+  // else if
   if ( !navigator.onLine ) {
 
-    // if ( status is in cache ) {
-      // linkInfoArray[i]['status'] = { "Key": from.cache, "StatusCode": from.cache, "StatusText": from.cache, "Cached": from.cache }
-    // } else {
-      linkInfoArray[i]['status'] = { "Key": "Offline" }
-    // }
+    linkInfoArray[i]['status'] = { "Key": "Offline" }
+    linkInfoArray[i]['statusrequest'] = false;
 
-  } else if ( url.match(/^(mailto:|file:\/\/\/)/) ) {
+  // Do not check these URL's.
+  } else if ( !url.match(/^(mailto:|file:\/\/\/)/) ) {
 
-    console.log("local file link or mailto");
+    linkInfoArray[i]['statusrequest'] = "fresh";
 
-  } else {
-
-    // The mailchimp merge tag *|...|* doesn't play well with Twitter during our ajax request. We need to escape the pipes | in order to get a working URL.
+    // QUICK FIX: The mailchimp merge tag *|...|* doesn't play well with Twitter during our ajax request. We need to escape the pipes | in order to get a working URL.
     // These tags automatically change in MailChimp so it's no problem there. Just right now when we are testing the URL.
     // This may also be a problem with SendGrid, GetResponse, etc. Look into that.
     if ( url.match(/\*\|.+?\|\*/) ) {
       url = url.replace(/\|/g,"%7C");
     }
 
+    // Begin AJAX request
     var linkstatus = new XMLHttpRequest();
     linkstatus.open("GET", url, true);
 
-    // Typically because the domain does not exist at all (net::ERR_NAME_NOT_RESOLVED)
+    // This error will fire typically because the domain does not exist at all (net::ERR_NAME_NOT_RESOLVED)
     linkstatus.onerror = function () {
-      linkInfoArray[i]['status'] = { "Key": "Error", "StatusCode": "N/A", "StatusText": "net::ERR_NAME_NOT_RESOLVED", "Cached": false }
+      // DO NOT CACHE AN ERROR RESULT
+      linkInfoArray[i]['status'] = { "Key": "Error", "StatusCode": "N/A", "StatusText": "net::ERR_NAME_NOT_RESOLVED", "FromCache": false }
       createLinkErrorRow(linkObject, "Link Status: net::ERR_NAME_NOT_RESOLVED", "error");
     };
 
@@ -483,7 +589,7 @@ function checkLinkStatus(i, url, linkObject) {
 
     linkstatus.onreadystatechange = function() {
 
-      if(this.readyState == this.HEADERS_RECEIVED) {
+      if ( this.readyState == this.HEADERS_RECEIVED ) {
 
         //
         // RAW STRING OF HEADERS
@@ -495,20 +601,26 @@ function checkLinkStatus(i, url, linkObject) {
         // Unused.. decide if I need it.
         // var arr = headers.trim().split(/[\r\n]+/);
 
-        linkInfoArray[i]['status'] = { "Key": "OK", "StatusCode": linkstatus.status, "StatusText": linkstatus.statusText, "Cached": false }
-
         // Convert status code from integer to string so we can match against it with regex.
         var statusNum = linkstatus.status.toString();
 
         // Error Codes
         if ( statusNum.match(/^(4|5)\d\d/g) ) {
-          linkInfoArray[i]['status'] = { "Key": "Error", "StatusCode": linkstatus.status, "StatusText": linkstatus.statusText, "Cached": false }
+          // DO "NOT" CACHE ERRORS
+          linkInfoArray[i]['status'] = { "Key": "Error", "StatusCode": linkstatus.status, "StatusText": linkstatus.statusText, "FromCache": false }
           createLinkErrorRow(linkObject, "Link Status: " + linkstatus.status + " " + linkstatus.statusText, "error");
 
         // Warning Codes
         } else if (statusNum.match(/^(999|(1|3)\d\d)/g) ) {
-          linkInfoArray[i]['status'] = { "Key": "Warning", "StatusCode": linkstatus.status, "StatusText": linkstatus.statusText, "Cached": false }
+          // DO "NOT" CACHE WARNINGS
+          linkInfoArray[i]['status'] = { "Key": "Warning", "StatusCode": linkstatus.status, "StatusText": linkstatus.statusText, "FromCache": false }
           createLinkErrorRow(linkObject, "Link Status: " + linkstatus.status + " " + linkstatus.statusText, "warning");
+        }
+
+        // Success Codes
+        else {
+          // "DO" CACHE SUCCESSFUL ATTEMPTS
+          linkInfoArray[i]['status'] = { "Key": "OK", "StatusCode": linkstatus.status, "StatusText": linkstatus.statusText, "FromCache": false }
         }
 
       }
@@ -533,16 +645,46 @@ function checkLinkStatus(i, url, linkObject) {
 
 function createImgInfoArray(imgList) {
 
+  // Add all <img> images to array
   for (let img of imgList) {
 
     var singleImgInfoArray = {};
 
-    singleImgInfoArray['object'] = img; //link object
-    singleImgInfoArray['url'] = img.src; //link url
+    singleImgInfoArray['object'] = img; //img object
+    singleImgInfoArray['url'] = img.src; //img url
+    singleImgInfoArray['presentation'] = "img"; //kind (img)
 
     imgInfoArray.push(singleImgInfoArray);
   }
 
+  // Add all background-images to the same array, label them with ['presentation'] to tell them apart
+  // This loops through every node and finds nodes that have a computed style that shows a background image
+  // Unlike with <img>s, we can't get width, height, naturalwidth, or naturalheight here though.
+  // Later on when the page is finished loading another function will run that will get that data.
+  // Code taken from: https://blog.crimx.com/2017/03/09/get-all-images-in-dom-including-background-en/
+  const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i
+  Array.from(
+    Array.from(dFrameContents.querySelectorAll('*'))
+      .reduce((collection, node) => {
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle
+        let prop = window.getComputedStyle(node, null)
+          .getPropertyValue('background-image')
+        // match `url(...)`
+        let match = srcChecker.exec(prop)
+        if (match) {
+          // collection.add(match[1])
+          var singleBkgImgInfoArray = {}; // object that we will use to hold data about this specific image
+          singleBkgImgInfoArray['object'] = node; //img object
+          singleBkgImgInfoArray['url'] = match[1]; //img url
+          singleBkgImgInfoArray['presentation'] = "background-img"; //kind (background-image)
+          imgInfoArray.push(singleBkgImgInfoArray); // add it to the master img array
+        }
+        return collection
+      }, new Set())
+  );
+
+  // We're done creating our image array. More data will be added later once the page is finished loading.
+  // For now lets log it since it's been created successfully.
   console.log("imgInfoArray", imgInfoArray);
 
 }
@@ -553,29 +695,97 @@ function createImgInfoArray(imgList) {
 ///////////////////////////////////////
 /////
 /////
-/////    Get img size
+/////    Get img file sizes with fetch API
+/////     - Works with both <img> and background-image
 /////
 /////
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-function getImgSizes(imgList) {
+// Source: https://stackoverflow.com/a/43839304/556079
 
-  var i = 0
+// This function gets run only once dFrame is finished loading. See newsletter.js
+function getImgSizes(imgInfoArray) {
 
-  for (let img of imgList) {
+  // Loop through all images (<img> and background) in our array and use the fetch API to get their HTTP headers.
+  // This will get us their file size and file format (type)
 
-    img.onload = e => {
-      fetch(img.src).then(resp => resp.blob())
-      .then(blob => {
-        imgInfoArray[i]['size'] = { "size": blob.size, "prettysize": prettyFileSize(blob.size) + " Kb" }
-        imgInfoArray[i]['type'] = blob.type;
-        i++
-      });
-    };
+  var i = 0; // count our synchronous loops
+  var k = 0; // count our ASYNC loops
+  for (let img of imgInfoArray) {
+
+    // sync
+    imgInfoArray[i]['dimensions'] = { "width": imgInfoArray[i]['object'].width, "height": imgInfoArray[i]['object'].height, "naturalWidth": imgInfoArray[i]['object'].naturalWidth, "naturalHeight": imgInfoArray[i]['object'].naturalHeight, "displayratio": roundTo(imgInfoArray[i]['object'].naturalWidth / imgInfoArray[i]['object'].width, 2) }
+    i++
+
+    //async
+    fetch(img.url).then(resp => resp.blob())
+    .then(blob => {
+      imgInfoArray[k]['size'] = { "size": blob.size, "prettysize": prettyFileSize(blob.size, 1) }
+      imgInfoArray[k]['type'] = blob.type;
+      k++
+    });
 
   }
+
+  // While we're fetching <img> image data, lets load the background images into the DOM so that we can height their width and height.
+  // I don't think I need to wait for page load to be doing this, but I experienced trouble adding this earlier.
+  // Try again at a later date I guess.
+  var j = 0;
+  for (let img of imgInfoArray) {
+
+    if ( imgInfoArray[j]['presentation'] === "background-img" ) {
+      loadImgNow(j, img.url);
+    } else {
+      // console.error('not bg!')
+    }
+    j++;
+  }
+
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Get background-image naturalWidth and height
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+// Find the width and height of background images
+// They aren't in the DOM like normal <img> tags.
+// So we need to take the URL and load them as an image. Once loaded we can grab their natural width and height.
+// UNFINISHED: I can probably use info from background-size to determine the rendered width and height
+
+// Code below taken and modified from here:
+// https://blog.crimx.com/2017/03/09/get-all-images-in-dom-including-background-en/
+function loadImgNow (i, src, timeout = 500) {
+  var imgPromise = new Promise((resolve, reject) => {
+    let img = new Image()
+    img.onload = () => {
+      resolve({
+        src: src,
+        width: img.naturalWidth,
+        height: img.naturalHeight
+      })
+    }
+    img.onerror = reject
+    img.src = src
+  })
+  var timer = new Promise((resolve, reject) => {
+    setTimeout(reject, timeout)
+  })
+  // This code wasn't return data that I could use. This code was added on to make it work for me
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve
+  imgPromise.then(function(value) {
+    imgInfoArray[i]['dimensions'] = { "naturalWidth": value['width'], "naturalHeight": value['height'] }
+  });
+  return Promise.race([imgPromise, timer])
 
 }
 
@@ -592,9 +802,17 @@ function getImgSizes(imgList) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-function prettyFileSize(int) {
-  return Math.round( ( int / 1024 ) * 10 ) / 10;
+// https://stackoverflow.com/a/18650828/556079
+
+function prettyFileSize(bytes, decimals) {
+   if(bytes == 0) return '0 Bytes';
+   var k = 1000, // https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript#comment77017916_29127320
+       dm = decimals || 2,
+       sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+       i = Math.floor(Math.log(bytes) / Math.log(k));
+   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
+
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -609,6 +827,12 @@ function prettyFileSize(int) {
 ///////////////////////////////////////
 
 function loadIframe(iframe, html, base) {
+
+  // I should consider cloning the iframe instead of loading 2 more like this.
+  // Figure out if its better for performance.
+  // Apparently I should use importnode instead of clonenode for iframes
+    // https://developer.mozilla.org/en-US/docs/Web/API/Document/importNode
+    // https://www.w3schools.com/jsref/met_document_importnode.asp
 
   iframe.contentWindow.document.open();
   iframe.contentWindow.document.write(html);
@@ -840,7 +1064,6 @@ function preflightError() {
   preflightStatus.classList.add("error");
   preflightTotal.innerHTML = currentValue;
 }
-
 
 
 ///////////////////////////////////////
@@ -1517,7 +1740,7 @@ function validateLinks(link, i) {
     if ( (/Request (Group|a Demo|Info|EMR Integration)/gi.test(link.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))/gi.test(link.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
       createLinkErrorRow(link, "link text does not match url (demo related)");
     }
-    if ( /Article/gi.test(link.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
+    if ( /Article/gi.test(link.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/?blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
       createLinkErrorRow(link, "link text does not match url (article related)");
     }
 
@@ -1695,7 +1918,7 @@ function validateLinks(link, i) {
   singleLinkInfoArray['errors'] = allErrorMsgsForCurrentLink;
   linkInfoArray.push(singleLinkInfoArray);
 
-  // Now that we've created an object fo rthis link and added it to the array
+  // Now that we've created an object for this link and added it to the array
   // Check the links status (async) and add the results to the array.
   checkLinkStatus(i, link.href, link);
 }

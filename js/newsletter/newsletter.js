@@ -342,28 +342,6 @@ var view = getParameterByName("view");
 if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.test(document.URL) ) {
 
 
-///////////
-///////////
-///////////
-//// Pre-Load Variables
-//// The construction of our HTML is dependant on these variables being set first.
-///////////
-///////////
-///////////
-
-// MailChimp Conditions Parser
-// Conditional parsing is off by default
-if ( getParameterByName("conditions") === "1" ) {
-  var conditionsParser = true;
-} else {
-  var conditionsParser = false;
-}
-
-var suppressAlerts = false;
-if ( getParameterByName("presentation") === "1" ) {
-  suppressAlerts = true;
-  console.log("alerts suppressed");
-}
 
 ////////////////////
 ////////////////////
@@ -394,6 +372,31 @@ if ( getParameterByName("presentation") === "1" ) {
   // Create a new <body> tag.
   var newBody = document.createElement("body");
   insertAfter(newBody, document.head);
+
+
+///////////
+///////////
+///////////
+//// Pre-Load Variables
+//// The construction of our HTML is dependant on these variables being set first.
+///////////
+///////////
+///////////
+
+// MailChimp Conditions Parser
+// Conditional parsing is off by default
+if ( getParameterByName("conditions") === "1" ) {
+  var conditionsParser = true;
+} else {
+  var conditionsParser = false;
+}
+
+var suppressAlerts = false;
+if ( getParameterByName("presentation") === "1" ) {
+  suppressAlerts = true;
+  console.log("alerts suppressed");
+}
+
 
 
   // Create a new injected script.
@@ -458,10 +461,14 @@ if ( getParameterByName("presentation") === "1" ) {
     desktopIframeResizeWrapper.className = "desktop-view-resize-wrapper resize-drag";
     desktopIframeWrapper.appendChild(desktopIframeResizeWrapper);
 
+    var desktopIframeParent = document.createElement("div");
+    desktopIframeParent.className = "desktop-iframe-parent iframe-parent";
+
     var desktopIframe = document.createElement("iframe");
     desktopIframe.className = "iframe-desktop-view";
     desktopIframe.id = "desktop-view"
-    desktopIframeResizeWrapper.appendChild(desktopIframe)
+    desktopIframeParent.appendChild(desktopIframe)
+    desktopIframeResizeWrapper.appendChild(desktopIframeParent)
 
     var desktopResizeHtml = '<div data-resize="top-right" class="resize-handler resize-corner resize-point-top resize-point-right resize-point-top-right"></div><div data-resize="bottom-right" class="resize-handler resize-corner resize-point-right resize-point-bottom resize-point-bottom-right"></div><div data-resize="bottom-left" class="resize-handler resize-corner resize-point-bottom resize-point-left resize-point-bottom-left"></div><div data-resize="top-left" class="resize-handler resize-corner resize-point-left resize-point-top resize-point-top-left"></div><div data-resize="top" class="resize-handler resize-side resize-point-top  resize-point-top-right resize-point-top-left"></div><div data-resize="right" class="resize-handler resize-side resize-point-right resize-point-top-right  resize-point-bottom-right"></div><div data-resize="bottom" class="resize-handler resize-side resize-point-bottom resize-point-bottom-right resize-point-bottom-left"></div><div data-resize="left" class="tap-to-resize resize-handler resize-side resize-point-left resize-point-bottom-left resize-point-top-left"></div>';
     desktopIframeResizeWrapper.insertAdjacentHTML('beforeend', desktopResizeHtml);
@@ -479,15 +486,28 @@ if ( getParameterByName("presentation") === "1" ) {
     linkInfoArray = [];
 
     // Get all images
-    let imgList = dFrameContents.querySelectorAll("img");
+    let imgList = dFrameContents.images; // better?
     imgInfoArray = [];
     createImgInfoArray(imgList);
-    getImgSizes(imgList);
+
+    addLoadEvent(desktopIframe, function() {
+      getImgSizes(imgInfoArray);
+    });
+
+
 
     ////
     //////
     // Grab all of the TEXT in the document before we start manipulating the HTML
     var preheader = cleanPlainTxt(dFrameBody.textContent); // http://stackoverflow.com/a/19032002/556079
+
+
+
+    // desktopIframe.onload = () => {
+    //   console.log("wow");
+    //   getImgAll(dFrameContents).then(list => console.log(list))
+    // };
+
 
   //////////////////////
   //
@@ -501,13 +521,16 @@ if ( getParameterByName("presentation") === "1" ) {
   //////////////////////
 
     // Dummy Window for Desktop view
-    var iframeDummy = document.createElement("iframe");
-    iframeDummy.className = "dummy-iframe";
-    iframeDummy.style = "width:800px; display:none; position:absolute; z-index: -1; ";
-    document.body.appendChild(iframeDummy)
+    var dummyIframe = document.createElement("iframe");
+    dummyIframe.className = "dummy-iframe";
+    dummyIframe.style = "width:800px; position:absolute; left:-99999px; top:-9999px; z-index: -99999; opacity:0; pointer-events:none;";
+    document.body.appendChild(dummyIframe)
     // Function to load iframe with HTML.
-    loadIframe(iframeDummy, cleanedOriginalHtml);
-
+    loadIframe(dummyIframe, cleanedOriginalHtml);
+    // Set the dummy frame contents
+    var dummyFrameContents = dummyIframe.contentDocument;
+    // Get link list of dummy frame
+    dummyLinkList = dummyFrameContents.querySelectorAll("a");
 
   //////////////////////
   //
@@ -528,10 +551,14 @@ if ( getParameterByName("presentation") === "1" ) {
     mobileDeviceWrapper.className = "mobile-device-view";
     mobileIframeWrapper.appendChild(mobileDeviceWrapper)
 
+    var mobileIframeParent = document.createElement("div");
+    mobileIframeParent.className = "mobile-iframe-parent iframe-parent";
+
     var mobileIframe = document.createElement("iframe");
     mobileIframe.className = "iframe-mobile-view";
     mobileIframe.id = "mobile-view"
-    mobileDeviceWrapper.appendChild(mobileIframe)
+    mobileIframeParent.appendChild(mobileIframe)
+    mobileDeviceWrapper.appendChild(mobileIframeParent)
 
     // Function to load iframe with HTML.
     loadIframe(mobileIframe, cleanedMobileHtml, "base");
@@ -1966,6 +1993,98 @@ function toggleGuides() {
 
 //////////
 ////
+////  Create Baseline Overlay
+////
+/////////
+
+var baselineOrb = document.createElement("div");
+baselineOrb.id = "baseline-orb";
+baselineOrb.className = "baseline-orb orb glyph";
+baselineOrb.addEventListener("click", createBaselineOverlay, false);
+orbsBottom.appendChild(baselineOrb);
+var baselineToggle = false;
+
+function createBaselineOverlay() {
+
+  // Hand On/Off Settings
+    baselineToggle = !baselineToggle;
+
+    if ( baselineToggle ) {
+      history.replaceState(null,null, updateQueryString("baseline", "1") );
+    } else {
+      history.replaceState(null,null, updateQueryString("baseline") );
+    }
+
+    document.getElementById("baseline-orb").classList.toggle("on");
+
+  if ( !baselineToggle ) {
+    destroyAll(document.querySelectorAll(".baseline-overlay"));
+  } else {
+    var baselineContainer = document.createElement("div");
+    baselineContainer.className = "baseline-overlay";
+    baselineContainer.innerHTML = "<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>";
+    desktopIframeParent.appendChild(baselineContainer);
+    mobileIframeParent.appendChild(baselineContainer.cloneNode(true));
+  }
+}
+
+function toggleGuides() {
+
+  guidesToggle = !guidesToggle;
+
+  if ( guidesToggle ) {
+    history.replaceState(null,null, updateQueryString("guides", "1") );
+  } else {
+    history.replaceState(null,null, updateQueryString("guides") );
+  }
+
+  document.getElementById("guides-orb").classList.toggle("on");
+
+  if ( elExists(dFrameContents.getElementById("alignment-guides")) ) {
+    destroy(dFrameContents.getElementById("alignment-guides"));
+  } else {
+
+    var guidesStylingWrapper = dFrameContents.createElement("section");
+    guidesStylingWrapper.id = "alignment-guides";
+    guidesStylingWrapper.className = "debug alignment-guides-wrapper";
+
+      var guidesStyling1 = dFrameContents.createElement("section");
+      guidesStyling1.classList.add("alignment-guide");
+      guidesStyling1.style.left = "0";
+      guidesStyling1.style.right = "0";
+      guidesStylingWrapper.appendChild(guidesStyling1);
+
+      var guidesStyling2 = dFrameContents.createElement("section");
+      guidesStyling2.classList.add("alignment-guide");
+      guidesStyling2.style.left = "589px";
+      guidesStyling2.style.right = "0";
+      guidesStylingWrapper.appendChild(guidesStyling2);
+
+      var guidesStyling3 = dFrameContents.createElement("section");
+      guidesStyling3.classList.add("alignment-guide");
+      guidesStyling3.style.left = "619px";
+      guidesStyling3.style.right = "0";
+      guidesStylingWrapper.appendChild(guidesStyling3);
+
+      var guidesStyling4 = dFrameContents.createElement("section");
+      guidesStyling4.classList.add("alignment-guide");
+      guidesStyling4.style.left = "0";
+      guidesStyling4.style.right = "589px";
+      guidesStylingWrapper.appendChild(guidesStyling4);
+
+      var guidesStyling5 = dFrameContents.createElement("section");
+      guidesStyling5.classList.add("alignment-guide");
+      guidesStyling5.style.left = "0";
+      guidesStyling5.style.right = "619px";
+      guidesStylingWrapper.appendChild(guidesStyling5);
+
+
+    dFrameContents.getElementsByTagName("body")[0].appendChild(guidesStylingWrapper);
+  }
+}
+
+//////////
+////
 ////  Create Nav Up/Down Orb
 ////
 /////////
@@ -2955,16 +3074,16 @@ appendQaBar(filesizeQaBar);
 
 // Calculate the size with our extra clean string.
 // var emailSize = Math.round( ( new TextEncoder('utf-8').encode(htmlForSizeCalc).length / 1024 ) * 10 ) / 10;
-var emailSize = prettyFileSize(new TextEncoder('utf-8').encode(htmlForSizeCalc).length);
+var emailSize = prettyFileSize(new TextEncoder('utf-8').encode(htmlForSizeCalc).length, 1);
 
 if ( emailSize > 100 ) {
   if ( conditionalsExist ) {
-    applyQaResults(filesizeQaBar, "error", "Email Too Big* (~" + emailSize + " Kb)");
+    applyQaResults(filesizeQaBar, "error", "Email code too big* (~" + emailSize + ")");
   } else {
-    applyQaResults(filesizeQaBar, "error", "Email Too Big (~" + emailSize + " Kb)");
+    applyQaResults(filesizeQaBar, "error", "Email code too big (~" + emailSize + ")");
   }
 } else {
-  applyQaResults(filesizeQaBar, "success", "Email is ~" + emailSize + " Kb");
+  applyQaResults(filesizeQaBar, "success", "Email code is ~" + emailSize);
 }
 
 //////////
@@ -3291,7 +3410,7 @@ linkMarkerWrapper.style = "display:none";
 dFrameContents.documentElement.appendChild(linkMarkerWrapper);
 
 // Begin by running the loop function for all links.
-linkValidationLoop(linkList, "false");
+linkValidationLoop(linkList, dummyLinkList, "false");
 
 
 
@@ -3901,6 +4020,11 @@ window.onload = function () {
   if ( getParameterByName("showdims") === "1" ) {
     showDims();
     console.log("container outlines shown");
+  }
+
+  if ( getParameterByName("baseline") === "1" ) {
+    createBaselineOverlay();
+    console.log("baseline grids shown");
   }
 
   if ( getParameterByName("links") === "0" ) {

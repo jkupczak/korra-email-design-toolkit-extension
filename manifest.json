@@ -56,12 +56,6 @@
   "content_scripts": [
 
     {
-      "matches": ["file:///*", "http://localhost:4567/*"],
-      "exclude_matches": ["file:///*view=1*", "http://localhost:4567/__middleman/*"],
-      "css": ["css/newsletter/newsletter-beforeload.css"],
-      "run_at": "document_start"
-    },
-    {
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "js": ["js/global.js"],
@@ -74,8 +68,12 @@
       "js": ["js/newsletter/newsletter-async.js", "js/libs/Dropbox-sdk.min.js", "js/newsletter/newsletter-functions.js", "js/blog-check.js"],
       "run_at": "document_start"
     },
-
-
+    {
+      "matches": ["file:///*", "http://localhost:4567/*"],
+      "exclude_matches": ["file:///*view=1*", "http://localhost:4567/__middleman/*"],
+      "css": ["css/newsletter/newsletter-beforeload.css"],
+      "run_at": "document_start"
+    },
     {
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
