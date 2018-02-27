@@ -70,7 +70,7 @@ for (let group of groups) {
   dataListHtml += '<option value="' + groupId + '">' + groupText + '</option>';
 }
 
-var automateSettingsHtml = '<div><div><input id="automate-action-pages" value="1" type="text"></input></div><div><datalist id="group-names-list">' + dataListHtml + '</datalist><input id="group-name" type="text" name="group-names-list" list="group-names-list"></input></div><div><button class="button" id="start-automation">Start Automation</button></div></div>';
+var automateSettingsHtml = '<div><div><input id="automate-action-pages" value="1" type="text" placeholder="# of Pages to Automate"></input></div><div><datalist id="group-names-list">' + dataListHtml + '</datalist><input id="group-name" type="text" name="group-names-list" list="group-names-list" placeholder="Group to Remove From"></input></div><div><button class="button" id="start-automation">Start Automation</button></div></div>';
 
 // instanciate new modal
 automateSettingsModal = new tingle.modal({

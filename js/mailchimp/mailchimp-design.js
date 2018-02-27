@@ -141,6 +141,9 @@ function generateTestLabeler() {
   } else if ( pageDisciplineId === "multi" ) {
     discColor = "#ffffff";
     discLabel = "Multiple Disciplines";
+  } else if ( pageDisciplineId === "all" ) {
+    discColor = "#ffffff";
+    discLabel = "All Disciplines";
   } else if ( pageDisciplineId === "lmt" ) {
     discColor = "#1aa37a";
     discLabel = "Massage";

@@ -1,12 +1,8 @@
 {
 
-
-
-
-
   "manifest_version": 2,
 
-  "name": "Sonic Toolkit",
+  "name": "Email Toolkit",
 
   "background": {
     "scripts": ["js/eventPage.js"],
@@ -15,10 +11,6 @@
 
   "options_ui": {
     "page": "options.html",
-
-
-
-
     "open_in_tab": true
   },
 
@@ -32,15 +24,10 @@
   ],
 
   "description": "Helps automate email marketing tasks. Upgrades the user experience on MedBridge, MailChimp, AWS, and local HTML files.",
-  "version": "3.2",
+  "version": "3.3",
 
   "browser_action": {
     "default_icon": "icons/128-wrench.png",
-
-
-
-
-
     "default_title": "Toolkit Options"
   },
   "permissions": [
@@ -59,11 +46,13 @@
     "alarms",
     "file:///*"
   ],
+
   "icons": {
     "16": "icons/16-wrench.png",
     "48": "icons/48-wrench.png",
     "128": "icons/128-wrench.png"
   },
+
   "content_scripts": [
 
     {

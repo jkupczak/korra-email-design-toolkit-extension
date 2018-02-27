@@ -27,18 +27,6 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //  - LINKS WERE NOT CHECKED AT ALL
 //  - TEXT WAS NOT CHECKED AT ALL
 
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-
-// This: https://www.medbridgeeducation.com/h/pivot-physical-therapy-case-study/#request-a-demo
-// Versus THis: https://www.medbridgeeducation.com/h/pivot-physical-therapy-case-study#request-a-demo
-// Doesn't work without the / before the #. Make a link validator based on this nonsense.
-// EXCEPT NOW IT DOES??? 07/11/17
-
 ///--------
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -64,23 +52,15 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 
 ///--------
 
-// MULTI emails, do not say $200, $300, $250, $95, or $145 or any $ price at all because SLP is different now. Throw an error.
-
-///--------
-
-// Detect if a link is hidden/offscreen and create a module or alert to say that/how many.
-
-///--------
-
 // Edit view
 // When editing text, duplicate the desktop frame so that you can see a before and after.
-// hide the left and right columns to make room.
+// hide the infobar and mobile view to make room.
 
 ///--------
 
 // A/B Testing View
 // Show versions A and B side-by-side with a click of a button.
-// Sync scrolling and dedicate 50% of the window to each version.
+// Sync scrolling and dedicate 50% of the window to each version. (hide infobar and mobile)
 // Drag to resize both iframes for mobile view.
 
 ///--------
@@ -108,25 +88,12 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 
 ///--------
 
-// Measure all images against their natural non-resized dimensions.
-
-//// - Throw an error if they are more than slightly off (images being squished out of proportion)
 //// - Show a warning if we're using an image at exactly the natural dims, because its best practice to delivery hi-res images
 
 ///--------
 
 // Switch to a =1001 setup for determining visible layout. Handle it all at once as early as possible to have a smooth page load
 // See how codepen does it: https://codepen.io/pen/?editors=0010
-
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-
-
-
-// console.error( "newsletter.js - " + document.documentElement.clientWidth );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -187,8 +154,7 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //    ■ - Create a 'warning' class in addition to the 'error' class for link-markers. If an email is very old, mark link errors as warnings.
 //    ■ - Unlike errors, warnings should be hidden until you hover over the link.
 //    ■ - Create a button that will toggle/show all link-markers regardless of error/warning status.
-//    ■ - [Pinning] Clicking on markers will pin the info div to the bottom of the screen. Clicking the same or any other marker will unpin it.
-//
+//    ✓ - [COMPLETE] Pinning - Clicking on markers will pin the info div to the bottom of the screen. Clicking the same or any other marker will unpin it.
 //    ✓ - [COMPLETE] Check URL for correct querystring pattern (? vs &)
 //
 //  ## FOUT ---
@@ -227,11 +193,14 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //        -They show a status report for each link like [302 - Redirection : Found] and [200 - Success : OK].
 //    ■ - Throw an error if a URL shortener is being used.
 //
-//  ## Calculate page weight ---
-//    ■ - Determined the size of the HTML (in kb) and the percentage of text (eg. 29% text).
+//  ## Calculate email weight ---
+//    ✓ - [COMPLETE] Determine the size of the HTML (in kb)
+//    ■ - Determine the percentage of text (eg. 29% text).
+//    ■ - Determine the total size of all graphics combined.
 //
-//  ## Remove Comments for Production ---
+//  ## Remove Comments and Unused CSS for Production ---
 //    ■ - This should be added to MailChimp. When HTML is pasted it, run a script that removes <!-- --> comments.
+//    ■ - Integrate Emailcomb into the extension for use in MailChimp
 //
 //  ## Image Checker ---
 //    ■ - Check that all images have alt="" attributes.
@@ -280,6 +249,9 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //////////////
 //////////////
 //
+//  ## Links
+//    ■ - Search for duplicate (redundant) key value pairs in the querystring. (eg. p=2345 twice)
+//
 //  ## Errors log
 //    ■ - Hidden panel that expands to show a listing of all errors (sorted by category).
 //    ■ - Similar in look and functionality to the planned Tools Panel
@@ -295,6 +267,18 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //    ■ - If NPS verbiage is detected, remind me to add the fine print. - https://drive.google.com/open?id=0B_swaeZ9mgUMVERsZmlkNHJRak9XWVdSU3NDM2ZMdFh2V0Fv
 //    ■ - If a scrollbar exists in the mobile version at 320px wide.
 //
+//
+//
+//////////////
+//////////////
+//  FEATURE IDEAS
+//////////////
+//////////////
+//
+//    ■ - [dFrame Width Status] Click the dFrame size tracker to pin it, preventing it from disappearing after the timeout.
+//        - Consider adding options to allow exact size entry. Enter a width and height in px.
+//        - Maybe pin it across the bottom full width across the bottom? Might cause issues with the height attribute since
+//          right now its just floating and isn't a consideration.
 //
 //
 //////////////
@@ -332,8 +316,7 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //  QUESTIONS
 //////////////
 //////////////
-//
-//  - Do I need to be adding <span>'s with inline styling if the parent <td> already includes it all'
+
 //
 //
 //
@@ -343,7 +326,6 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //////////////
 //////////////
 //
-//  ## dFrame's scrollbar changes size on page load very briefly. Why?
 //
 //
 //
@@ -383,240 +365,6 @@ if ( getParameterByName("presentation") === "1" ) {
   console.log("alerts suppressed");
 }
 
-///////////
-///////////
-///////////
-//// async
-///////////
-///////////
-///////////
-
-// .onload is crap, if an image is having trouble being loaded in the DOM, this thing never fires. Not even after the image fully fails to load.
-// What was I waitng for the body to finish loading ANYWAY?
-
-// THIS HAS BEEN MOVED TO ITS OWN SCRIPT THAT LOADS AT document_start
-
-// document.body.onload = function() {
-
-  // // Get dropbox access token from chrome.storage.
-  // chrome.storage.sync.get("dpToken", function(items) {
-  //   if (!chrome.runtime.error) {
-  //     // console.log(items);
-  //     dbx = new Dropbox({ accessToken: items.dpToken });
-  //     console.warn("Dropbox access token retrieved.")
-  //   } else {
-  //     console.warn("Could not retrieve Dropbox access token from chrome.storage.sync.")
-  //   }
-  // });
-
-// }
-
-
-
-
-
-
-//////////////////////////////////////
-//////////////////////////////////////
-//////////////////////////////////////
-//////////////////////////////////////
-
-
-
-
-//
-// if ( onLocal ) {
-//
-//       // Get name for the key
-//       var emailId     = pageUrl.replace(/(.+\/|-ns\.html?|-sub\.html?)/gi, "");
-//       // console.log("emailId = " + emailId);
-//
-//       var emailId2 = "16-12-05-SLP-Lisa-Mitchell-CAS-ns-a.html"
-//      chrome.storage.sync.get(emailId2, function (result) {
-//         // console.log(result[emailId2]);
-//         // alert(result.channels);
-//         // $("#channels").val(channels);
-//       });
-//
-//       // get
-//       chrome.storage.promise.sync.get('foo').then(function(items) {
-//         // console.log("resolved");
-//         // console.log(items); // => {'foo': 'bar'}
-//       }, function(error) {
-//         // rejected
-//         // console.log(error);
-//       });
-//
-//
-//       // Get the local path
-//       var localPath = pageUrl.replace(fileName, "");
-//       // console.log("localPath = " + localPath);
-//
-//       // Is this sub or non-sub
-//       if ( /-ns(\.|-)/gi.test(pageUrl) ) {
-//         localIdNs = fileName
-//         // console.log("localIdNs = " + localIdNs);
-//       } else if ( /-ns(\.|-)/gi.test(pageUrl) ) {
-//         localIdSub = fileName
-//         // console.log("localIdSub = " + localIdSub);
-//       }
-//
-//       // var dropboxId = dropboxUrl.replace(/(.+s\/|\/.+$)/gi, "")
-//       // var trelloId  =  trelloUrl.replace(/(.+c\/|\/.+$)/gi, "")
-//
-//       // var ids = { "s": "", "n": "", "d": dropboxId, "t": trelloId, "m": "", "l": "" };
-//       // var obj= {};
-//       // var key = emailId
-//       // obj[key] = ids;
-//       // chrome.storage.sync.set(obj);
-//       //
-//       // chrome.storage.sync.get(key,function(result){
-//       //   console.log("key");
-//       //   console.log(result[key]["d"]);
-//       //   console.log(result[key]["t"]);
-//       // });
-//
-//
-// }
-
-  //     var emailId   = dropboxUrl.replace(/(.+\/)/gi, "")
-  //     var dropboxId = dropboxUrl.replace(/(.+s\/|\/.+$)/gi, "")
-  //     var trelloId  =  trelloUrl.replace(/(.+c\/|\/.+$)/gi, "")
-  //
-  //     var ids = { "d":dropboxId, "t":trelloId };
-  //     var obj= {};
-  //     var key = emailId
-  //     obj[key] = ids;
-  //     chrome.storage.sync.set(obj);
-  //
-  //     chrome.storage.sync.get(key,function(result){
-  //       console.log("key");
-  //       console.log(result[key]["d"]);
-  //       console.log(result[key]["t"]);
-  //     });
-  //
-  // chrome.storage.promise.sync.get(key).then(function(result) {
-  //   var trelloId = result[key]["t"];
-  //   if (trelloId !== "") {
-  //     trelloOrb.href = "https://www.trello.com/c/" + result[key]["t"];
-  //     trelloOrb.classList.remove("off");
-  //   }
-  // });
-
-
-////////////////////
-////////////////////
-////////////////////
-///
-///    Apply the original code to an iFrame to save it
-///
-////////////////////
-////////////////////
-////////////////////
-
-  // ========== METHOD 1 =============
-  // ======== ASYNC / XHR ============
-  // =================================
-  // We'll use xhr to access the filesystem and grab the original files HTML code.
-  // This is great because it will be a string that was never rendered by the browser.
-  // Previously we were grabiing the code after render, meaning things like <tbody> were being added.
-  // This also opens the door for using emailcomb.com's API on the original code using a function.
-
-  // See newsletter-async.js for the xhr call.
-
-
-  ////
-  //////
-  // Grab all of the TEXT in the document before we start manipulating the HTML
-  var preheader = cleanPlainTxt(document.body.textContent); // http://stackoverflow.com/a/19032002/556079
-  // var preheader = cleanPlainTxt(document.body.innerText); // http://stackoverflow.com/a/19032002/556079
-
-  ////
-  //////
-  // Grab all of the HTML in the document before we start manipulating the HTML
-
-
-  // ========== METHOD 2 =============
-  // ======= SERIALIZE XML ===========
-  // =================================
-  // This method serializes the DOM as XML and spits out a string.
-  // This may be better than the current method I am using. But I don't have time to test it.
-  // https://stackoverflow.com/a/17451014/556079
-      // var generatedSource = new XMLSerializer().serializeToString(document);
-      // console.log(generatedSource);
-
-
-  // ========== METHOD 3 =============
-  // ========== ORIGINAL =============
-  // =================================
-  // Originally I didn't know I could use xhr to get the pages original un-rendered HTML.
-  // As a substitute I took the rendered code, and sort of frankenstein'd it together to create our desktop and mobile views.
-  // This code has been commented out because we are now using xhr instead.
-
-          //////
-          //// Get the page's HTML and Doctype
-          //////
-
-              //
-              // //// We need a doctype first. Reassemble the doctype if there is one in the code.
-              // var savedDocType = "";
-              //
-              // if (document.doctype && document.doctype.name) {
-              //   savedDocType = "<!doctype " + document.doctype.name;
-              //   if (document.doctype.publicId) {
-              //     savedDocType += " PUBLIC \"" + document.doctype.publicId;
-              //   }
-              //   if (document.doctype.systemId) {
-              //     savedDocType += "\" \"" + document.doctype.systemId + '">';
-              //   }
-              //   if (!document.doctype.publicId && !document.doctype.systemId) {
-              //     savedDocType += ">";
-              //   }
-              // }
-              //
-              // //// Create a copy of the original HTML
-              // var cleanedOriginalHtml = savedDocType;
-              // cleanedOriginalHtml += document.documentElement.outerHTML;
-              //
-              // //// Create the desktop and mobile versions
-              // var cleanedDesktopHtml = savedDocType;
-              // var cleanedMobileHtml = savedDocType;
-              //
-              //   // Add dFrame.css to the desktop view
-              //   var toolkitStyle = document.createElement("link");
-              //   toolkitStyle.href = chrome.extension.getURL('css/newsletter/newsletter-dFrame.css');
-              //   toolkitStyle.id = "debug-unique-style-block";
-              //   toolkitStyle.className = "debug";
-              //   toolkitStyle.rel = "stylesheet";
-              //   toolkitStyle.type = "text/css";
-              //   document.head.appendChild(toolkitStyle);
-              //
-              //   // Add allFrames.css to both views
-              //   var globalToolkitStyle = document.createElement("link");
-              //   globalToolkitStyle.href = chrome.extension.getURL('css/newsletter/newsletter-allFrames.css');
-              //   globalToolkitStyle.id = "debug-global-style-block";
-              //   globalToolkitStyle.className = "debug";
-              //   globalToolkitStyle.rel = "stylesheet";
-              //   globalToolkitStyle.type = "text/css";
-              //   document.head.appendChild(globalToolkitStyle);
-              //
-              //   // Next add in the document's markup. Everything inside the <html> tag and including the <html> tag.
-              //   cleanedDesktopHtml += document.documentElement.outerHTML;
-              //
-              //   document.getElementById("debug-unique-style-block").setAttribute("href", chrome.extension.getURL('css/newsletter/newsletter-mFrame.css'))
-              //   cleanedMobileHtml += document.documentElement.outerHTML;
-              //
-              // // Remove all <script> tags. HTML emails cannot have them. We don't design them in there, but if you're viewing this page with Middleman then there will be some injected <script> tags that can cause us issues. These <script> tags allow Middleman to reload the page when changes to the file are made. We don't need them in our dFrame or mFrameContents potentially mucking things up.
-              // // Also removes <object> tags. Which is also injected by Middleman (and MM sometimes tries to remove it itself and fails)
-              // // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-              //
-              // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-              // cleanedDesktopHtml  = cleanedDesktopHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-              // cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-
-
-
-
 ////////////////////
 ////////////////////
 ////////////////////
@@ -652,44 +400,8 @@ if ( getParameterByName("presentation") === "1" ) {
   injectScript( chrome.extension.getURL('/js/newsletter/zoom.js'), 'body');
 
 
-
-  // var COMMENT_PSEUDO_COMMENT_OR_LT_BANG = new RegExp(
-  //     '<!--[\\s\\S]*?(?:-->)?'
-  //     + '<!---+>?'  // A comment with no body
-  //     + '|<!(?![dD][oO][cC][tT][yY][pP][eE]|\\[CDATA\\[)[^>]*>?'
-  //     + '|<[?][^>]*>?',  // A pseudo-comment
-  //     'g');
-
-
-
-  // Remove <body> contents
-  // var ogBody = document.body;
-  // while (ogBody.firstChild) {
-  //     ogBody.removeChild(ogBody.firstChild);
-  // }
-
-  // Remove inline styling from <body>
-  // ogBody.removeAttribute("style");
-
-
   // Apply class to the HTML element so that we can activate styles for this new page.
   document.getElementsByTagName('html')[0].classList.add("powered-up");
-
-/////////////
-/////////////
-
-  // Apply our cleaned and reassembled original code to an iFrame as a backup to save it.
-  // Commented out for now to save on loading time and console clutter
-
-      // var domCopy = document.createElement("iframe");
-      // domCopy.className = "og-dom";
-      // document.body.appendChild(domCopy)
-      //
-      // domCopy.contentWindow.document.open();
-      // domCopy.contentWindow.document.write(cleanedOriginalHtml);
-      // domCopy.contentWindow.document.close();
-      //
-      // var domCopy = domCopy.contentWindow.document;
 
 
 //////////
@@ -719,30 +431,32 @@ if ( getParameterByName("presentation") === "1" ) {
   infoBar.className = "info-bar";
   qaWrapper.appendChild(infoBar);
 
-
-  // if ( document.documentElement.clientWidth <= 1440 ) {
-  //   console.error("if");
-  //   console.error(document.documentElement.clientWidth);
-  // } else {
-  //   console.error("if");
-  //   console.error(document.documentElement.clientWidth);
-  // }
-
   // Create Split View
   // console.log("activate split mode");
   document.body.classList.toggle("split-view-on");
 
-  var iframeWrapper = document.createElement("div");
-  iframeWrapper.className = "iframe-wrapper";
-  qaWrapper.appendChild(iframeWrapper);
+  //////////////////////
+  //
+  //  DESKTOP VIEW
+  //
+  //     -
+  //
+  //
+  //
+  //
+  //////////////////////
 
-  var desktopIframeWrapper = document.createElement("div");
-  desktopIframeWrapper.className = "desktop-view-wrapper resize-container";
-  iframeWrapper.appendChild(desktopIframeWrapper);
+    var iframeWrapper = document.createElement("div");
+    iframeWrapper.className = "iframe-wrapper";
+    qaWrapper.appendChild(iframeWrapper);
 
-  var desktopIframeResizeWrapper = document.createElement("div");
-  desktopIframeResizeWrapper.className = "desktop-view-resize-wrapper resize-drag";
-  desktopIframeWrapper.appendChild(desktopIframeResizeWrapper);
+    var desktopIframeWrapper = document.createElement("div");
+    desktopIframeWrapper.className = "desktop-view-wrapper resize-container";
+    iframeWrapper.appendChild(desktopIframeWrapper);
+
+    var desktopIframeResizeWrapper = document.createElement("div");
+    desktopIframeResizeWrapper.className = "desktop-view-resize-wrapper resize-drag";
+    desktopIframeWrapper.appendChild(desktopIframeResizeWrapper);
 
     var desktopIframe = document.createElement("iframe");
     desktopIframe.className = "iframe-desktop-view";
@@ -752,54 +466,63 @@ if ( getParameterByName("presentation") === "1" ) {
     var desktopResizeHtml = '<div data-resize="top-right" class="resize-handler resize-corner resize-point-top resize-point-right resize-point-top-right"></div><div data-resize="bottom-right" class="resize-handler resize-corner resize-point-right resize-point-bottom resize-point-bottom-right"></div><div data-resize="bottom-left" class="resize-handler resize-corner resize-point-bottom resize-point-left resize-point-bottom-left"></div><div data-resize="top-left" class="resize-handler resize-corner resize-point-left resize-point-top resize-point-top-left"></div><div data-resize="top" class="resize-handler resize-side resize-point-top  resize-point-top-right resize-point-top-left"></div><div data-resize="right" class="resize-handler resize-side resize-point-right resize-point-top-right  resize-point-bottom-right"></div><div data-resize="bottom" class="resize-handler resize-side resize-point-bottom resize-point-bottom-right resize-point-bottom-left"></div><div data-resize="left" class="tap-to-resize resize-handler resize-side resize-point-left resize-point-bottom-left resize-point-top-left"></div>';
     desktopIframeResizeWrapper.insertAdjacentHTML('beforeend', desktopResizeHtml);
 
-    desktopIframe.contentWindow.document.open();
-    desktopIframe.contentWindow.document.write(cleanedDesktopHtml);
-    desktopIframe.contentWindow.document.close();
+    // Function to load iframe with HTML.
+    loadIframe(desktopIframe, cleanedDesktopHtml, "base");
+    // iframe loaded
 
     // Apply the desktop iframes document object to a variable
     var dFrameContents = desktopIframe.contentDocument;
     var dFrameBody = dFrameContents.body;
 
+    // Get all links
+    let linkList = dFrameContents.querySelectorAll("a");
+    linkInfoArray = [];
 
-    // Quick <style> Injection
-    // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the  styles aren't applied yet.
-    // http://stackoverflow.com/a/33079951/556079
-    //
-    // - Prevent flash of contenteditable cursor when spell check is activated.
-    //
-    var dStyleElement = dFrameContents.createElement("style");
-    // Experimenting with position .debug on page load to prevent the scrollbar from jumping around while the HTML waits for dFrame.css to load.
-    dStyleElement.appendChild(dFrameContents.createTextNode("html { overflow-y: scroll; }") );
-    dFrameContents.getElementsByTagName("head")[0].appendChild(dStyleElement);
+    // Get all images
+    let imgList = dFrameContents.querySelectorAll("img");
+    imgInfoArray = [];
+    createImgInfoArray(imgList);
+    getImgSizes(imgList);
 
-    //////////////
+    ////
+    //////
+    // Grab all of the TEXT in the document before we start manipulating the HTML
+    var preheader = cleanPlainTxt(dFrameBody.textContent); // http://stackoverflow.com/a/19032002/556079
 
-    // Add allFrames.js
-    var dFrameAllFramesScript = document.createElement("script");
-    dFrameAllFramesScript.src = chrome.extension.getURL('js/newsletter/allFrames.js');
-    insertAfter(dFrameAllFramesScript, dFrameContents.body);
+  //////////////////////
+  //
+  //  DUMMY VIEW
+  //
+  //     Used to gather data about the desktop and mobile views on page load.
+  //     Necessary because our normal, visible iframes for desktop and mobile could load at different widths.
+  //     For example, our normal desktop view might load at a mobile width because the browser window is too small.
+  //     Or the normal mobiel view might not load at all because it was set to hidden on the previous page load.
+  //
+  //////////////////////
 
-    // Add dFrame.js
-    var dFrameFrameScript = document.createElement("script");
-    dFrameFrameScript.src = chrome.extension.getURL('js/newsletter/dFrame.js');
-    insertAfter(dFrameFrameScript, dFrameContents.body);
+    // Dummy Window for Desktop view
+    var iframeDummy = document.createElement("iframe");
+    iframeDummy.className = "dummy-iframe";
+    iframeDummy.style = "width:800px; display:none; position:absolute; z-index: -1; ";
+    document.body.appendChild(iframeDummy)
+    // Function to load iframe with HTML.
+    loadIframe(iframeDummy, cleanedOriginalHtml);
 
-    // Add <base>
-    // Forces all links within the iFrame to open in their own separate tabs.
-    // <base target="_blank" />
-    var dFrameBase = document.createElement("base");
-    dFrameBase.target = "_blank";
-    dFrameContents.head.append(dFrameBase);
 
-  /////////
-  /////////
-  ///////// MOBILE
-  /////////
-  /////////
+  //////////////////////
+  //
+  //  MOBILE VIEW
+  //
+  //     -
+  //
+  //
+  //
+  //
+  //////////////////////
 
-  var mobileIframeWrapper = document.createElement("div");
-  mobileIframeWrapper.className = "mobile-view-wrapper";
-  iframeWrapper.appendChild(mobileIframeWrapper);
+    var mobileIframeWrapper = document.createElement("div");
+    mobileIframeWrapper.className = "mobile-view-wrapper";
+    iframeWrapper.appendChild(mobileIframeWrapper);
 
     var mobileDeviceWrapper = document.createElement("div");
     mobileDeviceWrapper.className = "mobile-device-view";
@@ -810,12 +533,29 @@ if ( getParameterByName("presentation") === "1" ) {
     mobileIframe.id = "mobile-view"
     mobileDeviceWrapper.appendChild(mobileIframe)
 
-    mobileIframe.contentWindow.document.open();
-    mobileIframe.contentWindow.document.write(cleanedMobileHtml);
-    mobileIframe.contentWindow.document.close();
+    // Function to load iframe with HTML.
+    loadIframe(mobileIframe, cleanedMobileHtml, "base");
+    // iframe loaded
+
 
     // Apply the mobile iframes document object to a variable
     var mFrameContents = mobileIframe.contentDocument;
+
+    // Quick <style> Injection
+    //
+    // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the styles aren't applied yet.
+    // Additionally, adding this string to the original un-parsed HTML before the iFrame is rendered does NOT work. Even at that stage it takes the CSS a bit to activate.
+    // Making this method the FASTEST and most unobstrusive method to get CSS to load without FOUT.
+    // http://stackoverflow.com/a/33079951/556079
+    //
+    // - Remove scrollbar from mobile view while still allowing scrolling
+    // - Prevent flash of contenteditable cursor when spell check is activated.
+    //
+    var mStyleElement = mFrameContents.createElement("style");
+        mStyleElement.className = "debug";
+    mStyleElement.appendChild(mFrameContents.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; }") );
+    mFrameContents.getElementsByTagName("head")[0].appendChild(mStyleElement);
+
 
     ////////
     ////////
@@ -833,51 +573,6 @@ if ( getParameterByName("presentation") === "1" ) {
       }
 
     mobileDeviceWrapper.appendChild(mobileIframeSetting);
-
-
-    // Quick <style> Injection
-    //
-    // Inject a style block into this iframe via javascript to quickly apply styles on page load. Loading a link to a css file takes a bit to activate. So any styles that are important to have right away should go here. We inject it here instead of adding it inside a .css link because it loads faster. If we used a .css file there would be a flash on page load where the styles aren't applied yet.
-    // http://stackoverflow.com/a/33079951/556079
-    //
-    // - Remove scrollbar from mobile view while still allowing scrolling
-    // - Prevent flash of contenteditable cursor when spell check is activated.
-    //
-    var mStyleElement = mFrameContents.createElement("style");
-        mStyleElement.className = "debug";
-    mStyleElement.appendChild(mFrameContents.createTextNode("html::-webkit-scrollbar-track { background:#fbfbfb; } html::-webkit-scrollbar { width:0px; background: transparent; } html::-webkit-scrollbar-thumb { border-radius:10px; background:#a6a6a6; border:4px solid #fbfbfb; }") );
-    mFrameContents.getElementsByTagName("head")[0].appendChild(mStyleElement);
-
-    // Add allFrames.js
-    var mFrameAllFramesScript = document.createElement("script");
-    mFrameAllFramesScript.src = chrome.extension.getURL('js/newsletter/allFrames.js');
-    insertAfter(mFrameAllFramesScript, mFrameContents.body);
-
-    // Add mFrame.js
-    var mFrameScript = document.createElement("script");
-    mFrameScript.src = chrome.extension.getURL('js/newsletter/mFrame.js');
-    insertAfter(mFrameScript, mFrameContents.body);
-
-    // Add <base>
-    // Forces all links within the iFrame to open in their own separate tabs.
-    // <base target="_blank" />
-    var mFrameBase = document.createElement("base");
-    mFrameBase.target = "_blank";
-    mFrameContents.head.append(mFrameBase);
-
-    // Add allFrames.css
-    // var allFramesStyles = document.createElement("link");
-    // allFramesStyles.href = chrome.extension.getURL('css/allFrames.css');
-    // allFramesStyles.rel = "stylesheet";
-    // allFramesStyles.type = "text/css";
-    // dFrameContents.head.appendChild(allFramesStyles);
-    // mFrameContents.head.appendChild(allFramesStyles.cloneNode(true));
-
-
-    // Allow touch events to mimic mobile behavior
-    // Pending
-
-
 
 
 //////////////////////
@@ -1120,8 +815,9 @@ console.groupEnd();
 
 
 
-    dFrameContents.body.classList.add("disc-" + emailDisc);
-    mFrameContents.body.classList.add("disc-" + emailDisc);
+  // 2/22/18 - I was adding disc-xx class to the body of dFrame and mFrame. Why? I don't seem to be using it.
+    // dFrameContents.body.classList.add("disc-" + emailDisc);
+    // mFrameContents.body.classList.add("disc-" + emailDisc);
 
 
 
@@ -1366,7 +1062,6 @@ if ( getParameterByName("layout") ) {
 
     // Organization Logos
     if ( outsideOrg ) {
-      console.error("!");
       var orgLogo;
       // var orgLogo = document.createElement("img");
       //     orgLogo.className = "organization-logo";
@@ -3122,7 +2817,7 @@ if ( !preheader90Pattern.test(textMinusPreheader) ) {
 }
 
 
-var preheaderMatchText = "Preheader at <span class='preheader-match-rating'>" + matchRating + "%</span> Match";
+var preheaderMatchText = "Preheader is at <span class='preheader-match-rating'>" + matchRating + "%</span> Match";
 
 // Test finished, determine status
 if ( matchRating > 69 ) {
@@ -3213,7 +2908,7 @@ appendQaBar(mobileLayoutQaBar);
 if ( mFrameContents.body.scrollWidth > mobileIframe.offsetWidth ) {
   applyQaResults(mobileLayoutQaBar, "error", "Mobile Layout Too Wide");
 } else {
-  applyQaResults(mobileLayoutQaBar, "success", "Mobile Layout Approved");
+  applyQaResults(mobileLayoutQaBar, "success", "Mobile Layout Width is Good");
 }
 
 
@@ -3259,7 +2954,8 @@ appendQaBar(filesizeQaBar);
       htmlForSizeCalc = htmlForSizeCalc.replace(/\*\|(END|IF).+?\|\*/gi, "");
 
 // Calculate the size with our extra clean string.
-var emailSize = Math.round( ( new TextEncoder('utf-8').encode(htmlForSizeCalc).length / 1024 ) * 10 ) / 10;
+// var emailSize = Math.round( ( new TextEncoder('utf-8').encode(htmlForSizeCalc).length / 1024 ) * 10 ) / 10;
+var emailSize = prettyFileSize(new TextEncoder('utf-8').encode(htmlForSizeCalc).length);
 
 if ( emailSize > 100 ) {
   if ( conditionalsExist ) {
@@ -3478,7 +3174,7 @@ function checkZoomLevel() {
       zoomLevelChecked = true;
       // console.log("Zoom level checked!");
     }
-    console.log("Current Zoom Level:", currentZoomLevel);
+    // console.log("Current Zoom Level:", currentZoomLevel);
 
   // }, 1000);
 
@@ -3587,1199 +3283,16 @@ if (typeof moduleSettingsMenu != 'undefined') {
 ////////////
 ////////////
 
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-
-    ////////
-    ////////
-    ////////
-
-    // Function to handle creating error markers, error tags (that explain the error), and incrementing the error counter.
-    function createLinkErrorRow(link, msg, type, icon) {
-
-      // console.log(link);
-      // console.log("[" + link.dataset.number + "] " + link);
-
-      console.error("Error Found: " + msg);
-
-      var linkMarker = dFrameContents.querySelector("#link-markers .link-marker[data-number='" + link.dataset.number + "']")
-      // console.log(linkMarker);
-
-      var errorRow = document.createElement("section");
-      var errorRowText = document.createElement("section");
-          errorRowText.innerHTML = msg
-      errorRow.appendChild(errorRowText);
-
-      // Instead of just assuming linkErrorLogNoticeWrapper is the right wrapper, we'll reset it to a variable by checking for this link data number. This is better because any errors that come in asynchronously can now be applied properly.
-      var currentErrorWrapper = dFrameContents.querySelector("section.link-errors[data-number='" + link.dataset.number + "'] .link-errors-wrapper");
-      // linkErrorLogNoticeWrapper.appendChild(errorRow);
-      currentErrorWrapper.appendChild(errorRow);
-
-      if ( type === "warning" ) {
-
-        errorRow.classList.add("warning");
-        totalLinkWarnings++
-
-      } else {
-
-        // Increment total preflight errors
-        preflightError();
-        totalLinkErrors++;
-
-        errorRow.classList.add("error");
-
-        link.dataset.error = "true";
-        linkMarker.classList.add("error");
-
-        // totalLinkErrors++
-        // linkErrors++
-        // totalErrors++
-
-        // Instead of relying on the variables above, read the innerHtml of the linkMarker object. Convert it to a number and increment it. Better for async!
-        if ( linkMarker.innerHTML === "" || linkMarker.innerHTML === "0" ) {
-          linkMarker.innerHTML = "1";
-        } else {
-          var currentLinkErrors = Number(linkMarker.innerHTML);
-          currentLinkErrors++
-          linkMarker.innerHTML = currentLinkErrors;
-        }
-
-      }
-
-      if ( icon ) {
-        errorRow.classList.add("fontastic-icon", "error-icon-" + icon);
-      } else {
-        errorRow.classList.add("error-icon-x");
-      }
-
-      // console.log(linkErrorLogNoticeWrapper);
-      // console.log(currentErrorWrapper);
-      // console.log(errorRow);
-
-
-    }
-
-    ////////
-    ////////
-    ////////
-
-                  // ///////////
-                  // //
-                  // //  Variables needed for checking the blog.
-                  // //
-                  // ///////////
-                  //
-                  // var totalProtectedArticles = 0;
-                  // var blogStatusSuccessArray = [];
-                  // var isBlogLoaded = false;
-                  // var totalBlogIframesOpen = 0; // Track the total amount of iframes we open to check the blog.
-                  //
-                  // ///////////
-                  // //
-                  // //  Function to check the blog for data on an article.
-                  // //
-                  // ///////////
-                  //
-                  // function checkTheBlog(linkHref, link) {
-                  //
-                  //   // If a URL was passed into this function...
-                  //   if ( linkHref ) {
-                  //
-                  //     // Grab the data-number from this link object. We're going to use it with the iframe to track what's going on.
-                  //     var blogLinkNumber = link.dataset.number;
-                  //
-                  //     console.groupCollapsed("Checking blog link for data: [" + blogLinkNumber + "]" + linkHref);
-                  //
-                  //     // Check if an iframe already exists with this URL by iterating through all relevant iframes in the DOM.
-                  //     console.log("Total iFrames currently open: " + totalBlogIframesOpen + " - Now beginning for...let loop to find iframes that have already been loaded.");
-                  //
-                  //     let blogCheckList = document.querySelectorAll("iframe.blog-check");
-                  //
-                  //     var iframesFoundinDOM = 0;
-                  //     for (let blogIframe of blogCheckList) {
-                  //
-                  //       iframesFoundinDOM++;
-                  //
-                  //       console.log("Current iFrame found in the DOM (#" + iframesFoundinDOM + ") during this loop has this src: " + blogIframe.getAttribute("src"));
-                  //
-                  //       if ( blogIframe.getAttribute("src").replace(/[?&]blog\-check\=.+/gi, "") === linkHref ) {
-                  //         isBlogLoaded = true;
-                  //         console.log("The current link we're checking MATCHES this iFrame that's already in the DOM.");
-                  //       } else {
-                  //         isBlogLoaded = false;
-                  //         console.log("The current link we're checking DOES NOT MATCH this iFrame that's already in the DOM.");
-                  //       }
-                  //
-                  //     }
-                  //     console.log("All iframes (" + iframesFoundinDOM + ") in the DOM have been checked. End of for...let loop.");
-                  //
-                  //     //
-                  //     if ( isBlogLoaded === false ) {
-                  //
-                  //       // Create an iframe for this link
-                  //       totalBlogIframesOpen++
-                  //       console.log("Creating an iframe for current link: " + totalBlogIframesOpen + " - " + linkHref);
-                  //
-                  //       var blogCheck = document.createElement("iframe");
-                  //           blogCheck.src = linkHref + "&blog-check=" + blogLinkNumber;
-                  //           blogCheck.className = "blog-check blog-check-" + blogLinkNumber;
-                  //           blogCheck.id = "iframe-" + blogLinkNumber;
-                  //       document.body.appendChild(blogCheck);
-                  //
-                  //       // Wait X seconds for the blog to send a reply. If it doesn't, throw an error.
-                  //       // I thought I needed this, but apparently not! - http://stackoverflow.com/a/9540320/556079
-                  //       // (function(link) {
-                  //           // setTimeout(function(){console.log(i)}, 1000);
-                  //
-                  //           var blogTimeout = 25000 + (totalBlogIframesOpen*10000);
-                  //           var blogTimeoutStr = blogTimeout.toString();
-                  //               blogTimeoutStr = blogTimeoutStr.substring(0, blogTimeoutStr.length-3);
-                  //
-                  //           console.log(totalBlogIframesOpen + " iframe(s) are open. Setting the blog check timer to " + blogTimeoutStr + " seconds.");
-                  //           setTimeout(function(){
-                  //             if ( blogStatusSuccessArray.indexOf(processBlogLinkBeingChecked(linkHref) ) > -1 ) {
-                  //               console.log("Blog loaded!");
-                  //             } else {
-                  //               console.log("Blog didn't load after " + blogTimeoutStr + " seconds. Verify the link.");
-                  //               console.log(link);
-                  //               createLinkErrorRow(link, "Blog took too long to load. Check the link.");
-                  //             }
-                  //           }, blogTimeout);
-                  //       // })(link);
-                  //
-                  //
-                  //
-                  //     } else {
-                  //       console.log("This link is already loaded in an iframe. End of check on this link.");
-                  //     }
-                  //
-                  //     console.info("Total iFrames now open: " + totalBlogIframesOpen);
-                  //
-                  //     console.groupEnd();
-                  //
-                  //   // *No* URL was passed into this function...
-                  //   } else {
-                  //
-                  //     console.log("No linkHref found. Looping through all links.");
-                  //
-                  //     let freshBlogCheck = dFrameContents.querySelectorAll("a");
-                  //     for (let link of freshBlogCheck) {
-                  //
-                  //       if ( /(after_affiliate_url=blog|blog\/2|\-article|\-blog\/)/gi.test(link.href) && !/p=2503/gi.test(link.href) ) {
-                  //         checkTheBlog(link.href, link);
-                  //       }
-                  //
-                  //     }
-                  //     console.log("Finished looping through all links.");
-                  //   }
-                  // }
-
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-
-
 // Create the wrapper for the link-markers.
 var linkMarkerWrapper = document.createElement("section");
 linkMarkerWrapper.id = "link-markers";
 linkMarkerWrapper.className = "debug link-markers-wrapper";
+linkMarkerWrapper.style = "display:none";
 dFrameContents.documentElement.appendChild(linkMarkerWrapper);
 
-//////
-//////
-//
-// Find and loop through all links
-//
-/////
-/////
+// Begin by running the loop function for all links.
+linkValidationLoop(linkList, "false");
 
-// Wait until the desktop iframe has finished loading.
-// Images loading in late can alter the layout. Wait until they've loaded in to check the links.
-// Links with errors will get a badge that is positioned above them. The layout needs to be solid before we place them.
-// desktopIframe.onload = () => {
-  // Run the function that will loop through all links.
-  // Optional content states that we don't want to check the age of the email while we're link checking.
-  linkValidationLoop("false");
-// }
-
-function linkValidationLoop(ageCheck) {
-
-      let linkList = dFrameContents.querySelectorAll("a");
-
-      console.groupCollapsed("Links Group for Validation - Total Links Processed: " + linkList.length);
-
-      // Loop through each link on the page first before we validate individually.
-      var allLinkUrlsList = [];
-      var medbridgeLinkUrlsList = [];
-
-      for (let link of linkList) {
-
-        allLinkUrlsList.push(link.href);
-
-        if ( /medbridge(ed(ucation)?|massage)\.com\//gi.test(link.href) ) {
-          medbridgeLinkUrlsList.push(link.href);
-        }
-
-      }
-
-      // Grab all MedBridge links and output them to the console for a quick helpful view.
-      console.groupCollapsed("All MedBridge Links Listed");
-        console.log(medbridgeLinkUrlsList);
-      console.groupEnd();
-
-
-      // Determine if portions of links in -ns emails match each other by finding the most common string and checking against it later when we loop through the links again for validation.
-      // This is important for marketing tracking urls, utm_source, and utm_campaign
-      //////////////////
-      if ( emailSubType === "ns" ) {
-        // tracking url
-        commonTrkUrl = mostCommonString("tracking", medbridgeLinkUrlsList);
-        if ( commonTrkUrl ) {
-          commonTrkUrlRegex = new RegExp(escapeRegExp(commonTrkUrl) + "\/?\\?","i");
-        }
-      }
-
-      // utm_source
-      commonUtmSource = mostCommonString("utm_source", medbridgeLinkUrlsList);
-      if ( commonUtmSource ) {
-        commonUtmSourceRegex = new RegExp(escapeRegExp(commonUtmSource) + "(&|$)","i");
-      }
-      // utm_campaign
-      commonUtmCampaign = mostCommonString("utm_campaign", medbridgeLinkUrlsList);
-      if ( commonUtmCampaign ) {
-        commonUtmCampaignRegex = new RegExp(escapeRegExp(commonUtmCampaign) + "(&|$)","i");
-      }
-
-      // ageCheck = true | false
-      //////////////////////////
-      console.log("ageCheck is set to: " + ageCheck);
-
-
-
-      //////////////////////////////
-      //////////////////////////////
-      //  Validate Links
-      //  Loop through each link and run a validation function on each.
-      //////////////////////////////
-      //////////////////////////////
-
-      var i = 0
-      for (let link of linkList) {
-
-        var linkErrors = 0;
-        i++
-
-        validateLinks(link, i);
-
-      }
-
-      console.groupEnd();
-
-      var totalLinksWithErrors = dFrameContents.querySelectorAll(".link-marker.error").length;
-      console.log("Links with Errors", totalLinksWithErrors);
-
-      console.log("Combined Link Errors", totalLinkErrors);
-
-
-
-      if ( totalLinksWithErrors > 0 ) {
-        applyQaResults(linksQaBar, "error", "<b>" + totalLinksWithErrors + "</b> Links with Errors");
-      } else {
-        applyQaResults(linksQaBar, "success", "All Links Approved");
-      }
-
-      // Otherwise, wait for the desktop iframe to finish loading.
-      // Once it's done, run a function that will position our link markers.
-      // I can only use .onload once per document. So instead we use an eventlistner.
-      // After we're done, we need to remove the eventlistner.
-      // Resource: https://stackoverflow.com/a/27032611/556079
-
-      desktopIframe.addEventListener("load", function positionLinkMarkers(e) {
-
-        var i = 0
-        for (let link of linkList) {
-          i++
-
-          // Get the position of the current link.
-          var linkPosition = getPosition(link, dFrameContents);
-
-          // Find the matching link marker in the DOM.
-          var linkMarker = dFrameContents.querySelector("#link-marker-" + i);
-
-          // Check if the position of this link is 0,0. This indicates that it's a hidden link.
-          // As a result, our marker will appear at the very top left of the page.
-          // Adjust it's position for better visibility.
-          if ( linkPosition.y === 0 || linkPosition.x === 0 ) {
-            linkMarker.style.top = (linkPosition.y + 20) + "px";
-            linkMarker.style.left = (linkPosition.x + 20) + "px";
-          } else {
-          // Else it's visible, position it just above and to the left of the link.
-            linkMarker.style.top = (linkPosition.y - 10) + "px";
-            linkMarker.style.left = (linkPosition.x - 10) + "px";
-          }
-          linkMarker.classList.add("positioned");
-
-        }
-
-        desktopIframe.removeEventListener("load", positionLinkMarkers, false);
-
-      }, false);
-
-
-}
-console.groupEnd();
-
-//////////
-//////////
-//////////
-
-// function positionLinkMarkers(link, i) {
-//
-//   console.log("positionLinkMarkers() running");
-//   // Get the position of the current link.
-//   var linkPosition = getPosition(link, dFrameContents);
-//
-//   // Find the matching link marker in the DOM.
-//   var linkMarker = dFrameContents.querySelector("#link-marker-" + i);
-//
-//   // Check if the position of this link is 0,0. This indicates that it's a hidden link.
-//   // As a result, our marker will appear at the very top left of the page.
-//   // Adjust it's position for better visibility.
-//   if ( linkPosition.y === 0 || linkPosition.x === 0 ) {
-//     linkMarker.style.top = (linkPosition.y + 20) + "px";
-//     linkMarker.style.left = (linkPosition.x + 20) + "px";
-//   } else {
-//   // Else it's visible, position it just above and to the left of the link.
-//     linkMarker.style.top = (linkPosition.y - 10) + "px";
-//     linkMarker.style.left = (linkPosition.x - 10) + "px";
-//   }
-//
-// }
-
-function validateLinks(link, i) {
-
-  // Set link to a variable and clean it if it's local.
-  var linkHref = link.href;
-  if ( /^(file\:|(https?\:\/\/)?localhost)/gi.test(linkHref) ) {
-    linkHref = linkHref.replace(/^.+\//gi, "");
-  }
-
-  // Making our counter for console.log 2 digits instead of 1. (1 vs 01)
-  if ( i < 10 ) {
-    var iLog = "0" + i;
-  } else { iLog = i; }
-
-  console.groupCollapsed("[" + iLog + "] VALIDATION RESULTS - " + linkHref);
-  console.log(link);
-
-  //
-  link.classList.add("marked");
-  link.dataset.number = i;
-
-  // Create a corresponding link marker (#) for this link and append it to a container
-  /////////
-  var linkMarker = document.createElement("section");
-  linkMarker.id = "link-marker-" + i;
-  linkMarker.className = "link-marker";
-
-  linkMarker.dataset.href = linkHref;
-  linkMarker.dataset.number = i;
-  linkMarker.addEventListener("click", pinLinkMarker, false);
-  dFrameContents.getElementById("link-markers").appendChild(linkMarker);
-
-  // Create a container that will hold all of the errors associated with this link.
-  /////////
-  var linkErrorLog = document.createElement("section");
-  linkErrorLog.className = "link-errors";
-  linkErrorLog.dataset.number = i;
-  linkErrorLog.addEventListener("mousedown", unpinLinkMarker, false);
-  insertAfter(linkErrorLog, linkMarker);
-
-  // Create a container for the link href to show with the errors
-  /////////
-  var linkErrorLogURL = document.createElement("section");
-  linkErrorLogURL.className = "link-errors-url";
-  linkErrorLogURL.innerHTML = "<div class='link-number'>" + i + "</div>"
-
-  var linkErrorLogURLTextNode = document.createTextNode(linkHref);
-  linkErrorLogURL.appendChild(linkErrorLogURLTextNode);
-  linkErrorLog.appendChild(linkErrorLogURL);
-
-  var linkErrorLogNoticeWrapper = document.createElement("section");
-  linkErrorLogNoticeWrapper.className = "link-errors-wrapper";
-  linkErrorLog.appendChild(linkErrorLogNoticeWrapper);
-
-
-  ////////////////
-  ////////////////
-  //
-  //  TO DO
-  //
-  //  - Check for medium=email in blog links during sale weeks. Look for -Presale- or -Sale- in filename.
-  //  - Same as above, but look at required text for sale periods.
-  //  - Verify pearl versus blog by creating an array of all the instructors. Show a warning if no match is found so that I can update the array.
-  //  - Count modules and check if the utm_content has the right mod# for each link.
-  //
-  //
-  ////////////////
-  ////////////////
-
-  // If this is a merge tag link - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
-  if ( /^(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[\[?.+\]\]?)/gi.test(linkHref) ) {
-
-      // Links in an email for the GetResponse Platform
-      if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
-        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
-      }
-      // Links in an email for the MailChimp Platform
-      else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(linkHref) ) { // Look for SendGrid and GR merge tags.
-        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
-      }
-      // Links in an email for the SendGrid Platform
-      else if ( emailPlatform === "sg" && /(^\[\[.+\]\]|\*\|.+?\|\*|\*\%7C.+?%7C\*)/gi.test(linkHref) ) { // Look for MailChimp and GR merge tags.
-        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
-      }
-
-  }
-
-  // All other links
-  else if ( !/^mailto/.test(linkHref) ) {
-
-    console.log("url - " + linkHref);
-
-    // Global link testing variables
-    var medbridgeEdLink
-    if ( /\.medbridge(ed|education)\.com/gi.test(linkHref) ) {
-      medbridgeEdLink = true;
-    } else {
-      medbridgeEdLink = false;
-    }
-
-    var massageLink
-    if ( /\.medbridgemassage\.com/gi.test(linkHref) ) {
-      massageLink = true;
-    } else {
-      massageLink = false;
-    }
-
-    var medbridgeOrMassageLink
-    if ( medbridgeEdLink || massageLink ) {
-      medbridgeOrMassageLink = true;
-    } else {
-      medbridgeOrMassageLink = false;
-    }
-
-    console.log("medbridgeEdLink - " + medbridgeEdLink);
-    console.log("massageLink - " + massageLink);
-    console.log("medbridgeOrMassageLink - " + medbridgeOrMassageLink);
-
-    ////
-    var blogLink
-    if ( medbridgeEdLink && (/\.com\/blog/.test(linkHref) || /url=\/?blog.+?p=/.test(linkHref) || /\-blog(\/|\?)/.test(linkHref) || /after_affiliate_url=blog/.test(linkHref)) ) {
-      blogLink = true;
-    } else {
-      blogLink = false;
-    }
-    console.log("blogLink - " + blogLink);
-
-    ////
-    var articleLink
-    if ( (/medbridge(ed|education)\.com\/blog\/20\d\d\//gi.test(linkHref) || /medbridge(ed|education)\.com\/.+?p=\d\d\d/gi.test(linkHref)) && !/p=2503/gi.test(linkHref) ) {
-      articleLink = true;
-    } else {
-      articleLink = false;
-    }
-    console.log("articleLink - " + articleLink);
-
-    ////
-    var isMarketingUrl
-    if ( medbridgeOrMassageLink && /\.com\/(gr|mc)?trk\-/gi.test(linkHref) ) {
-      isMarketingUrl = true;
-    } else {
-      isMarketingUrl = false;
-    }
-    console.log("isMarketingUrl - " + isMarketingUrl);
-
-    // Deprecated. No longer checking for https. - 4/18/17
-    // var needsHttps
-    // if ( medbridgeOrMassageLink && !blogLink && !articleLink ) {
-    //   needsHttps = true;
-    // } else {
-    //   needsHttps = false;
-    // }
-    // console.log("needsHttps - " + needsHttps);
-
-    ////
-    linkNeedsGoogleTracking = false;
-    if ( medbridgeEdLink && !outsideOrg ) {
-      linkNeedsGoogleTracking = true;
-    } else {
-      linkNeedsGoogleTracking = false;
-    }
-    console.log("linkNeedsGoogleTracking - " + linkNeedsGoogleTracking);
-
-    ////
-    var linkNeedsPromoCode
-    if ( (emailSubType === "ns" && !outsideOrg && emailDisc !== "ent") && medbridgeOrMassageLink ) {
-      linkNeedsPromoCode = true;
-    } else {
-      linkNeedsPromoCode = false;
-    }
-    console.log("linkNeedsPromoCode - " + linkNeedsPromoCode);
-
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-
-    ////
-    // Validate URL
-    // Ignore valid URLs, valid mailto:, and valid MailChimp links ( *|text|* converted to *%7Ctext%7C* )
-    // http://stackoverflow.com/a/15734347/556079
-    // http://stackoverflow.com/a/3809435/556079
-    // Unused - http://stackoverflow.com/questions/161738/what-is-the-best-regular-expression-to-check-if-a-string-is-a-valid-url
-    ////
-    // WTF IS THIS ===  !/^(http|https):\/\/[^ "]+$/.test(linkHref)
-
-
-  ///////
-  //// Begin Link Check ////
-  ///////
-
-  ///////
-  // Ignore mailto's and localhost:
-  ///////
-  ///////
-  ///////
-
-    if ( !/\*%7C.+?%7C\*/.test(linkHref) && !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(linkHref) ) {
-      createLinkErrorRow(link, "invalid URL scheme [1]");
-    }
-
-    // http://stackoverflow.com/a/9284473/556079
-    // https://gist.github.com/dperini/729294
-    // Edited by me to allow _ in subdomain.
-    // Does not support _ in domain, but it should.
-    // Does not support URL's ending with a - but it should.
-
-    else if ( !/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9](?:_|-)*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(linkHref) )
-    {
-      createLinkErrorRow(link, "invalid URL scheme [2]");
-    }
-
-    // Marketing URL's
-    // trk = mc, grtrk = getresponse
-    if ( emailPlatform === "gr" && linkNeedsPromoCode && !/\.com\/grtrk\-/i.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
-      createLinkErrorRow(link, "wrong tracking url for this email platform, use grtrk-");
-    }
-
-
-    //////
-    ////// Detect the use of merge tags.
-    ////// This is different than earlier where detected links that were JUST merge tags. Like [[email]] and *|UNSUB|*
-
-      // Wrong merge tags in a Link for the GetResponse Platform
-      if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
-        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
-      }
-      // Wrong merge tags in a Link for the MailChimp Platform
-      else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(linkHref) ) { // Look for SendGrid and GR merge tags.
-        createLinkErrorRow(link, "wrong merge tag for this platform (" + emailPlatformName + ")");
-      }
-
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-
-
-    ////-----------------------------////
-    ////
-    // Check if it's a link to the blog.
-    // Get its "Protected" status and ifs type (pearl or blog).
-
-    // To-Do Notes:
-    // ============
-    //
-    // Dropbox
-    //  - Broken on Dropbox: Although we can load blog articles with https into the iframe, they eventually redirect (in ns emails) to an http address. When viewing the email on Dropbox the iframes get blocked because Dropbox can only be loaded with https. The http content gets blocked because it's an insecure resource. Sigh.
-    //  - And since sessionsStorage we setup on file:/// doesn't transfer over to files viewed on Dropbox, it's always going to try to check the blog.
-    //
-    // ---
-    //
-    // sessionsStorage isn't good enough. I need to minimize my calls to the blog. chrome.storage.local might be necessary.
-    // Can I periodically purge chrome.storage.local so that it doesn't get too big?
-    //
-    // After the affiliate linkback is fixed, I can switch over to uses the actual blog URL. This will allow me the -sub version to not recheck each article because it will be able to look at the same object as -ns does in sessionsStorage.
-    //
-    // If the tracking link (or any article link) doesn't load the article properly (or at all), a message is never sent to the eventpage and in turn nothing is sent back to the newsletter.
-    //
-    // Display an indicator that tells me the iframes are still processing. Give the green light once they've all been destroyed.
-    //
-    // Should I modify so that it only re-checks if I click something?
-    // Should I consider looking the date in this files URL to help decide IF I should check?
-    // Run the check again AFTER the postMessage comes back.
-    // Do not fire alerts until I've determined that no more postMessages are comeing in from the blog.
-    // Alerts should reference which article is protected.
-    // What if when I land on the blog page and it's protected, and I haven't logged in yet to view the article?
-    //  - Return a message where the authorType is ambiguous. Deal with it when you read it back.
-    //
-    // Definitely create a button to FORCE a recheck of all linked articles. Just in case!
-    //
-    // Reminders:
-    // ==========
-    //
-    // A blog's author type should never change. As long as it's been set in sessionstorage, I don't need to check the blog more than once for this data.
-    // Once unprotected, articles should never go protected. So I don't think I need to bother checking.
-    //
-
-    if ( medbridgeOrMassageLink && /(blog\/2|\-article|p=\d\d\d)/gi.test(linkHref) && isRecentEmail && !/p=2503/gi.test(linkHref)) {
-      if ( onDropbox ) {
-        createLinkErrorRow(link, "cannot check blog while on dropbox.com");
-      } else {
-
-        console.groupCollapsed(" - Starting Blog Link Check");
-
-        console.info("This blog link is being published in a recent email.");
-
-        isBlogLoaded = false;
-
-        ////
-        ////
-        var blogLinkToCheck = processBlogLinkBeingChecked(linkHref);
-
-        //
-        console.log("Checking for blogStatus in sessionStorage using this name: " + blogLinkToCheck);
-
-        // Check if this URL is already in sessionStorage
-        blogStatus = sessionStorage.getItem(blogLinkToCheck);
-
-        // Run a check on this link using the object we found in sessionStorage.
-        if ( blogStatus ) {
-
-          console.log("Found blog data in sessionStorage.");
-
-          // blogStatus exists in sessionStorage. Check the link using data from sessionStorage.
-          var blogStatusFromStorage = sessionStorage.getItem(blogLinkToCheck).split(",");
-          console.log(blogStatusFromStorage);
-
-          console.log("Checking article link using fnction checkArticleLink(link, blogStatusFromStorage)")
-          checkArticleLink(link, blogStatusFromStorage);
-
-          if ( blogStatusFromStorage[2] === "protected" ) {
-
-            createLinkErrorRow(link, "run a blog check to update", "warning");
-
-            // //Article is still protected, open an iframe and check again.
-            // if ( getParameterByName("checkblog") !== "0" ) {
-            //   checkTheBlog(linkHref);
-            // }
-          }
-
-        } else {
-
-          // !!!!!!!!!!!!!!!!!!!!
-          // 11-3-17
-          // COMMENTED OUT UNTIL IT CAN BE FIXED!
-
-          // if ( getParameterByName("checkblog") !== "0" ) {
-          //   var updatedLinkObj = link;
-          //   checkTheBlog(linkHref, updatedLinkObj);
-          //   console.log("Could not find data in storage for this blog link, checking the blog for data.");
-          //   createLinkErrorRow(link, "blog data not found in storage, running check now");
-          // } else {
-          //   console.log("Could not find data in storage for this blog link, no check is being run.");
-          //   createLinkErrorRow(link, "blog data not found in storage, refresh to try again");
-          // }
-
-        }
-
-        console.groupEnd();
-      }
-    }
-
-    ////-----------------------------////
-    ////
-    // Every link needs a target attribute.
-    // Deprecated. This is an old idea. It's not needed in mobile or desktop apps. And web clients like Yahoo, Gmail, and Hotmail already open links in a new tab.
-          // if ( !link.hasAttribute("target") ) {
-          //   createLinkErrorRow(link, "missing target attribute");
-          // }
-
-    ////-----------------------------////
-    ////
-    // Link do NOT need a target attribute.
-    if ( link.hasAttribute("target") ) {
-      createLinkErrorRow(link, "target attribute not needed");
-    }
-
-    ////-----------------------------////
-    ////
-    // utm's other than content are unlikely to be used
-
-    // !!!! //////////////////// Re-active this when I can make a feature that allows you to ignore it.
-
-    // if ( /utm_(medium|source|campaign)/gi.test(linkHref) ) {
-    //   createLinkErrorRow(link, "extra utm's");
-    // }
-
-    ////-----------------------------////
-    ////
-    // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( linkNeedsGoogleTracking && !/utm_content/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "missing utm");
-    }
-
-    ////-----------------------------////
-    ////
-    // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( /\.com\/\//gi.test(linkHref) ) {
-      createLinkErrorRow(link, "remove extra /");
-    }
-
-    ////-----------------------------////
-    ////
-    // DON'T USE UTM - outsideOrg and off domain urls should not have utms
-    if ( /utm_content/gi.test(linkHref) && !medbridgeEdLink ) {
-      createLinkErrorRow(link, "remove utm");
-    }
-
-    ////-----------------------------////
-    ////
-    // Check tracking links to see if the URL is consistent with the rest of the links.
-    // eg. If most links say trk-sep-17-davenport, but this one says trk-sep-17-walter, throw an error.
-    // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common.
-
-    if ( emailSubType === "ns" && isMarketingUrl && linkNeedsPromoCode ) {
-      if ( !commonTrkUrlRegex.test(linkHref) ) {
-        createLinkErrorRow(link, "tracking URL is missing or inconsistent, " + commonTrkUrl + " is more common");
-      }
-    }
-
-    if ( medbridgeOrMassageLink ) {
-      if ( commonUtmSource ) {
-        if ( !commonUtmSourceRegex.test(linkHref) ) {
-          createLinkErrorRow(link, "utm_source is missing or inconsistent, " + commonUtmSource + " is more common");
-        }
-      }
-      if ( commonUtmCampaign ) {
-        if ( !commonUtmCampaignRegex.test(linkHref) ) {
-          createLinkErrorRow(link, "utm_campaign is missing or inconsistent, " + commonUtmCampaign + " is more common");
-        }
-      }
-    }
-
-    ////
-    // Check for whitelabeling versus www
-    if ( outsideOrg && medbridgeEdLink ) {
-
-      if ( /https?:\/\/(www\.)?med/.test(linkHref) ) {
-        createLinkErrorRow(link, "missing whitelabeling");
-      }
-      else if ( ( (emailSubType === "hs" || emailSubType === "eh") && !/\/(encompasshealth|healthsouth)\./i.test(linkHref)) || (emailSubType === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailSubType === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
-        createLinkErrorRow(link, "incorrect whitelabeling");
-      }
-
-    }
-    if ( !outsideOrg && medbridgeEdLink && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "remove whitelabeling");
-    }
-
-    ////
-    // Validate querystring pattern if it looks like there is one
-
-    // http://stackoverflow.com/a/23959662/556079
-    // http://rubular.com/r/kyiKS9OlsM
-
-    // Check the query string without any ending hash
-    var linkHrefNoHash = linkHref.replace(/\#.+/, "");
-
-    if ( /[^#]+\&.+\=/.test(linkHrefNoHash) || /[^#]+\?.+\=/.test(linkHrefNoHash) && ( !/after_signin_url/.test(linkHrefNoHash) ) ) {
-
-      if ( /\&.+\=/.test(linkHref) && !/\?./.test(linkHref) ) {
-        createLinkErrorRow(link, "missing ? in query string");
-      }
-
-      if ( /\?[^#]+\?.+\=/.test(linkHref) ) {
-        createLinkErrorRow(link, "replace ? with & in query string");
-      }
-
-      if ( !/\?([\.\w-]+(=[\!\|\*\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\*\|\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
-        createLinkErrorRow(link, "invalid query string");
-      }
-
-    }
-
-    // Leftover & or ? from a removed querystring
-    if ( /(\?|&)$/g.test(linkHref) ) {
-      createLinkErrorRow(link, "link ending with ? or &");
-    }
-
-
-
-    ////-----------------------------////
-    ////
-    if ( linkNeedsPromoCode ) {
-
-      // console.error("hi");
-
-      // Links to MedBridge in -ns emails need to use a marketing URL
-      if ( !/\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "use a marketing URL");
-      }
-
-      // Spell after_affiliate_url correctly!
-      if ( !/\-(blog|article)/gi.test(linkHref) && !/after_affiliate_url/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing after_affiliate_url");
-      }
-
-      // Too many leading /'s' during a redirect can cause a link to not work
-      if ( /after_affiliate_url=\/\/+/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "too many consecutive /'s'");
-      }
-
-      // Watch out for extra hyphens!
-      if ( /\-\-.+?after_affiliate_url/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "investigate consecutive hyphens");
-      }
-      // Watch out for extra forward slashes!
-      if ( /https?:\/\/.+?\/\//gi.test(linkHref) ) {
-        createLinkErrorRow(link, "investigate consecutive forward slashes");
-      }
-
-      // console.log("emailDate.getMonth(); " + emailDate.getMonth());
-
-      // Check the date in a tracking URL if the email's filename has a date in it to match against
-      if ( emailDate.getMonth() ) {
-        var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
-        if ( !monthPattern.test(linkHref) ) {
-          createLinkErrorRow(link, "link should included '-" + emailMonthAbbr + "-' to match current month");
-        }
-      }
-
-    }
-
-
-
-    ////
-    // Is the module # in the utm correct?
-    ////
-
-    // console.error("0");
-    //
-    // console.log("emailSubType: " + emailSubType);
-    // console.log("outsideOrg: " + outsideOrg);
-    // console.log("medbridgeOrMassageLink: " + medbridgeOrMassageLink);
-
-    if ( linkNeedsGoogleTracking ) {
-
-      var moduleNumber = link.closest("[data-module-count]");
-
-      if ( elExists(moduleNumber) ) {
-
-        var moduleNumber = moduleNumber.getAttribute("data-module-count");
-        var moduleNumberMatch = new RegExp("utm_content=mod" + moduleNumber, "gi");
-
-        // mod followed by 1 or 2 digits, followed by - or # or & or the link ends.
-        if ( /utm_content=mod\d(\d)?([\-&#]|$)/gi.test(linkHref) ) {
-
-          if ( !moduleNumberMatch.test(linkHref) ) {
-            // console.log( "no match: " + !moduleNumberMatch.test(linkHref) );
-            createLinkErrorRow(link, "wrong mod #, use " + "mod" + moduleNumber);
-          } else {
-            // console.log( "match: " + !moduleNumberMatch.test(linkHref) );
-          }
-
-        } else {
-
-          createLinkErrorRow(link, "missing or mistyped mod #, use mod" + moduleNumber);
-
-        }
-      }
-    }
-
-    ////
-    // Is color present in the style attribute?
-    // Ignore if there's no text, or it's an image (unless that image has alt text).
-    ////
-
-        // Get the img child first.
-        if ( elExists(link.getElementsByTagName('img')[0]) ) {
-          var linkedImg = link.getElementsByTagName('img')[0];
-        }
-
-    if ( link.style.color === '' && (link.textContent !== '' || linkedImg.alt !== '' ) ) {
-      createLinkErrorRow(link, "missing color in style attribute");
-    }
-
-    if ( link.style.textAlign !== '' && linkedImg ) {
-      createLinkErrorRow(link, "don't use text-align in links when linking images, it breaks in safari");
-    }
-
-
-
-    ////
-    // Check for old fashioned marketing URLS in sub, ent, or outsideOrg
-    if ( (outsideOrg || emailSubType === "sub" || emailDisc === "ent" ) && (medbridgeOrMassageLink && /\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
-      createLinkErrorRow(link, "do not use a marketing url");
-    }
-
-    ////
-    // Check for medium=email in Sale and Presale emails
-    if ( (emailSubType === "sub" || !emailAnySale) && /[\?&]medium=email/gi.test(linkHref) ) {
-
-      createLinkErrorRow(link, "remove medium=email");
-
-    }
-
-    else if ( emailSubType === "ns" && !outsideOrg && medbridgeOrMassageLink && ( articleLink || /\-article/gi.test(linkHref) ) ) {
-
-      if ( emailAnySale && !/medium=email/gi.test(linkHref)) { // Any sale email
-        createLinkErrorRow(link, "add medium=email");
-      }
-
-    }
-
-    ////
-    // Check for sub=yes
-    ////
-    // Check sub emails
-    if ( emailSubType === "sub" || outsideOrg ) {
-
-      // sub=yes is required in blog links.
-      if ( articleLink && !/sub=yes/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "add sub=yes");
-      }
-      // sub=yes should not be in any other links.
-      if ( ( !articleLink && !/\-article/gi.test(linkHref) ) && /sub=yes/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "remove sub=yes");
-      }
-
-    }
-
-    ////
-    // Check for broken article links in sub
-    if ( medbridgeEdLink && emailSubType === "sub" && /p=\d\d\d/gi.test(linkHref) && !/\.com\/blog(\/|\?)/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "article link is broken");
-    }
-
-    ////
-    // Check all links in non-subscriber emails for sub=yes, never use it in ns.
-    if ( emailSubType === "ns" && /sub=yes/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "remove sub=yes");
-    }
-
-    ////
-    /// DEPREACTED - Phil fixed the blog! 09/2017
-    // Use p=#### to force Wordpress to redirect to http.
-    // Check for existence of https in blog links in sub version when NOT using p=####
-        // if ( blogLink && !linkNeedsPromoCode && /https:\/\//gi.test(linkHref) && !/p=\d\d\d/gi.test(linkHref) ) {
-        //   createLinkErrorRow(link, "full blog/article links cannot be https");
-        // }
-
-    ////
-    // https required
-    // DEPRECATED - Links to MedBridge with http automatically switch to https on load. So we don't need to bother specifying.
-    // Since blog links require http, its much less maintenance to just make all links http.
-    // if ( needsHttps && /http:\//gi.test(linkHref) ) {
-    //   createLinkErrorRow(link, "https missing");
-    // }
-
-    ////
-    // Verify links in A/B emails if it looks like the link is using -a or -b.
-    if ( isMarketingUrl && abTesting === "a" && /\-b[\?\/]/i.test(linkHref) ) {
-      createLinkErrorRow(link, "fix a/b version");
-    }
-    if ( isMarketingUrl && abTesting === "b" && /\-a[\?\/]/i.test(linkHref) ) {
-      createLinkErrorRow(link, "fix a/b version");
-    }
-    if ( isMarketingUrl && (abTesting !== "a" && abTesting !== "b") && /\-(a|b)[\?\/]/i.test(linkHref) ) {
-      createLinkErrorRow(link, "remove -a/-b");
-    }
-
-
-    ////
-    // Link Text Hints
-    if ( (/Request (Group|a Demo|Info|EMR Integration)/gi.test(link.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))/gi.test(link.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
-      createLinkErrorRow(link, "link text does not match url (demo related)");
-    }
-    if ( /Article/gi.test(link.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "link text does not match url (article related)");
-    }
-
-    ////
-    // Enterprise
-    // Deprecated - Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
-    // if ( medbridgeOrMassageLink && emailSubType === "sub" && emailDisc === "ent" && /request\-a\-demo/gi.test(linkHref) ) {
-    //   createLinkErrorRow(link, "no demo requests in enterprise sub");
-    // }
-
-
-    ////
-    // outsideOrg and subs should not link to home-exercise-program.
-    // Use sign-in/?after_signin_url=patient_care/programs/create
-    if ( (outsideOrg || emailSubType === "sub") && /\.com\/home\-exercise\-program/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
-    }
-    if ( (outsideOrg || emailSubType === "sub") && /patient_care\/programs\/create/gi.test(linkHref) && !/after_signin_url/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
-    }
-    if ( (!outsideOrg && emailSubType !== "sub") && /patient_care\/programs\/create/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "use <code>home-exercise-program</code>");
-    }
-
-    ////
-    // Tracking URL - Discipline Check
-
-    if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && medbridgeOrMassageLink && !/\/courses\/details\//g.test(linkHref) && isMarketingUrl ) {
-
-      if ( emailDisc === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
-      }
-      if ( emailDisc === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
-      }
-      if ( emailDisc === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
-      }
-      if ( emailDisc === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
-      }
-      if ( emailDisc === "other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
-      }
-    }
-
-    // Homepage - Discipline Check
-    // Checking NS and SUB.
-    if ( emailDisc !== "multi" && emailDisc !== null && !outsideOrg && medbridgeOrMassageLink ) { //&& isMarketingUrl
-
-      if ( (emailDisc !== "pt" && emailDisc !== "other") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) || /\.com\/physical-therapy\/?(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong homepage");
-      }
-      if ( (emailDisc !== "other" && emailDisc !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(linkHref) || /\.com\/(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong homepage");
-      }
-      if ( emailDisc !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(linkHref) || /\.com\/athletic-training\/?(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong homepage");
-      }
-      if ( emailDisc !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(linkHref) || /\.com\/occupational-therapy\/?(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong homepage");
-      }
-      if ( emailDisc !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(linkHref) || /\.com\/speech-language-pathology\/?(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "wrong homepage");
-      }
-    }
-
-
-    // Courses Page - Discipline Check
-    if ( emailDisc !== "multi" && emailDisc !== null && /#/g.test(linkHref) && /(\.com\/|=\/?)courses/gi.test(linkHref) ) { //  && medbridgeOrMassageLink
-
-      // if ( (emailDisc !== "pt" && emailDisc !== "other") && /#\/?physical-therapy/gi.test(linkHref) ) {
-      //   createLinkErrorRow(link, "wrong hashtag");
-      // }
-      // if ( emailDisc !== "at" && /#\/?athletic/gi.test(linkHref) ) {
-      //   createLinkErrorRow(link, "wrong hashtag");
-      // }
-      // if ( emailDisc !== "ot" && /#\/?occupational-therapy/gi.test(linkHref) ) {
-      //   createLinkErrorRow(link, "wrong hashtag");
-      // }
-      // if ( emailDisc !== "slp" && /#\/?speech-language-pathology/gi.test(linkHref) ) {
-      //   createLinkErrorRow(link, "wrong hashtag");
-      // }
-
-      if ( (emailDisc === "pt" || emailDisc === "other") && !/#\/?physical-therapy/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "wrong hashtag");
-      }
-      if ( emailDisc === "at" && !/#\/?athletic-training/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "wrong hashtag");
-      }
-      if ( emailDisc === "ot" && !/#\/?occupational-therapy/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "wrong hashtag");
-      }
-      if ( emailDisc === "slp" && !/#\/?speech-language-pathology/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "wrong hashtag");
-      }
-    }
-
-
-
-    // Pricing
-    // SUB
-    if ( medbridgeOrMassageLink && emailSubType === "sub" && /\.com\/pricing/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "dont link to pricing in sub");
-    }
-    // NS
-    if ( medbridgeOrMassageLink && emailSubType === "ns" && /pricing/gi.test(linkHref) ) {
-
-      // PT
-      if ( emailDisc === "pt" && !/pricing\/pt/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/pt");
-      }
-      // AT
-      else if ( emailDisc === "at" && !/pricing\/at/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/at");
-      }
-      // OT
-      else if ( emailDisc === "ot" && !/pricing\/ot/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/ot");
-      }
-      // SLP
-      else if ( emailDisc === "slp" && !/pricing\/slp/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/slp");
-      }
-      // Other
-      else if ( emailDisc === "other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/other");
-      }
-      // No Discipline
-      else if ( !emailDisc && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to standard pricing page");
-      }
-
-    }
-
-
-    // Check for unecessary discipline hastags. Should only be used when linking to courses page
-    if ( /#\/?(speech-language-pathology|physical-therapy|athletic-training|occupational-therapy)/gi.test(linkHref) && ( !/(_url=courses|\/courses)(#|\/|\?|&|$)/gi.test(linkHref) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(linkHref) ) ) {
-      createLinkErrorRow(link, "unecessary hashtag");
-    }
-
-
-    ////
-    // Do not link to medbridgeed.com. Use the full medbridgeeducation.com URL.
-    if ( /(\:\/\/|\.)medbridgeed\.com/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "use medbridgeeducation.com");
-    }
-
-    ////
-    // NO //support. in outsideOrg
-    if ( /\/support\./gi.test(linkHref) && outsideOrg ) {
-      createLinkErrorRow(link, "://support. not allowed in outsideOrg, use mailto:support@medbridgeed.com");
-    }
-
-    ////
-    // Do not advertise Enterprise products to outsideOrg
-    if ( /enterprise/gi.test(linkHref) && outsideOrg ) {
-      createLinkErrorRow(link, "do not advertise enterprise to outsideOrg");
-    }
-
-  ///////
-  //// End Link Check ////
-  ///////
-  }
-  ///////
-  ///////
-
-  ////
-  console.groupEnd();
-  ////
-}
-//////////
-//////////
-//////////
 
 
 
@@ -4810,10 +3323,7 @@ if ( navigator.onLine ) {
 
     var i = 0
 
-    let imgList = dFrameContents.querySelectorAll("img");
     for (let img of imgList) {
-
-      i++
 
       var widthRatio = Math.round(img.naturalWidth / img.naturalHeight*10) / 10;
       var heightRatio = Math.round(img.width / img.height*10) / 10;
@@ -4824,8 +3334,10 @@ if ( navigator.onLine ) {
         totalStretchedImages++;
       }
 
+      i++
+
     }
-    console.log("totalStretchedImages", totalStretchedImages);
+    // console.log("totalStretchedImages", totalStretchedImages);
 
     desktopIframe.removeEventListener("load", checkImages, false);
 
@@ -4842,7 +3354,7 @@ if ( navigator.onLine ) {
     } else if ( totalStretchedImages > 0) {
       applyQaResults(imgRatioQaBar, "error", totalStretchedImages + " Stretched Images");
     } else {
-      applyQaResults(imgRatioQaBar, "success", "All Images to Scale");
+      applyQaResults(imgRatioQaBar, "success", "All Images are to Scale");
     }
 
 
@@ -4892,9 +3404,9 @@ if ( isRecentEmail ) {
 }
 
 function countCitations() {
-  console.log( "Citations", dFrameContents.getElementsByTagName('sup').length );
+  // console.log( "Citations", dFrameContents.getElementsByTagName('sup').length );
   var asters = (dFrameContents.body.innerText.match(/[^\|]\*[^\|]/g)||[]).length;
-  console.log( "Asterisks", asters);
+  // console.log( "Asterisks", asters);
 }
 
 // Run a check on all text in the email
@@ -5113,7 +3625,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
   // All (case INsensitive)
   findAndReplaceDOMText(dFrameBody, {
-    find: /(from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
+    find: /(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
     // Update to add "word &nbsp;&rarr;" as an error
     wrap: 'span', wrapClass: "text-error"
   });
@@ -5698,7 +4210,7 @@ window.addEventListener('visibilitychange', activatePreflightNotifier, true);
 
 function activatePreflightNotifier() {
 
-  console.log("activatePreflightNotifier initiated");
+  // console.log("activatePreflightNotifier initiated");
 
   setTimeout(function() {
 
@@ -5773,16 +4285,6 @@ function updatePreflightErrorTotal(type, i) {
 }
 
 
-
-function preflightError() {
-
-  var currentValue = parseInt(preflightTotal.innerHTML);
-
-  currentValue++;
-
-  preflightStatus.classList.add("error");
-  preflightTotal.innerHTML = currentValue;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5900,7 +4402,6 @@ interact('.resize-drag')
 
     inertia: true,
   })
-  .on('resizemove', listener)
   .on('resizemove', function (event) {
     var target = event.target,
         x = (parseFloat(target.getAttribute('data-x')) || 0),
@@ -5920,11 +4421,17 @@ interact('.resize-drag')
     target.setAttribute('data-x', x);
     target.setAttribute('data-y', y);
 
+    if ( ( event.target.offsetWidth !== desktopIframeWrapper.offsetWidth ) || ( event.target.offsetHeight !== desktopIframeWrapper.offsetHeight ) ) {
+      showdFrameWidthStatus();
+      document.documentElement.classList.add("desktop-view-resized");
+      document.documentElement.classList.add("resizing", "resizing-" + event.interaction.downEvent.target.dataset.resize);
+      desktopIframeWrapper.classList.remove("full-sized");
+      resizeActive = true;
+    }
+
   })
   .on('resizestart', function (event) {
-    document.documentElement.classList.add("resizing", "resizing-" + event.interaction.downEvent.target.dataset.resize);
-    desktopIframeWrapper.classList.remove("full-sized");
-    resizeActive = true;
+
   })
   .on('resizeend', function (event) {
     document.documentElement.classList.remove("resizing", "resizing-" + event.interaction.downEvent.target.dataset.resize);
@@ -5934,13 +4441,7 @@ interact('.resize-drag')
     }
   });
 
-
-function listener (event) {
-  // console.log("event.target", event.target, "event.interactable", event.interactable, "event.interaction", event.interaction, "event.axes", event.axes, "event.type", event.type, "event.pageX", event.pageX, "event.pageY", event.pageY);
-  showdFrameWidthStatus();
-  document.documentElement.classList.add("desktop-view-resized");
-
-}
+var j = 0;
 
 
 // When I click and hold on a drag handler...
@@ -5976,9 +4477,28 @@ window.dragMoveListener = dragMoveListener;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+
 ///////
 document.querySelector("html").classList.toggle("errors");
 
+} else {
+  document.documentElement.classList.add("plain-view");
 } // END TEST
 
-console.log("// end of newsletter.js");
+// console.log("// end of newsletter.js");

@@ -1,11 +1,3 @@
-html, body {
-  /*padding:0;*/
-  /*margin:0;*/
-}
-
-/* ********** */
-/* ********** */
-
 @font-face {
   font-family: "medbridge-chrome-extension";
   src: url(chrome-extension://__MSG_@@extension_id__/fonts/medbridge-chrome-extension.woff);
@@ -89,6 +81,7 @@ html, body {
   background:#d20758;
   box-shadow: 0 0 3px 2px #d20758;
   animation: linkMarkerColorPulse 1.5s ease infinite;
+  font-weight:500;
 }
 .link-marker.error.pinned {
   animation: linkMarkerColorPulsePinned  1.5s ease infinite;

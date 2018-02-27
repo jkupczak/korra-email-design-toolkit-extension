@@ -433,6 +433,12 @@ function getDisciplineName(id) {
   else if (id === "multi") {
     return "Multi-Discipline"
   }
+  else if (id === "all") {
+    return "All Disciplines"
+  }
+  else {
+    return "Unknown"
+  }
 }
 
 
