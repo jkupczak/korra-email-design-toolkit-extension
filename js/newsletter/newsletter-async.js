@@ -111,3 +111,13 @@ chrome.storage.sync.get("dpToken", function(items) {
     console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dpToken is " + items.dpToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
   }
 });
+
+var mailgunApiKey;
+// mailgun api key
+chrome.storage.sync.get("mailgunKey", function(items) {
+  if (!chrome.runtime.error && items.mailgunKey) {
+    mailgunApiKey = items.mailgunKey;
+  } else {
+    console.error("Could not retrieve Mailgun API Key from chrome.storage.sync.");
+  }
+});

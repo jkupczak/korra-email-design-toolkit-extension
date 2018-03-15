@@ -7,6 +7,8 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 
 
 function sendEmail() {
+  console.log(mailgunApiKey);
+  
   var data = new FormData();
   data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
   data.append("to", "james@medbridgeed.com");
@@ -22,7 +24,7 @@ function sendEmail() {
     }
   });
 
-  xhr.open("POST", "https://api:key-2453a548806cfab4a5b8dd4120d74e43@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
+  xhr.open("POST", "https://api:" + mailgunApiKey + "@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
   xhr.setRequestHeader("cache-control", "no-cache");
   xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
 

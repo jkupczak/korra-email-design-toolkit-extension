@@ -11,14 +11,13 @@ document.body.onload = function() {
 
 // Saves options to chrome.storage.sync.
 function save_options() {
-  var valdpToken = document.getElementById('dp-token').value;
-  var likesColor = document.getElementById('like').checked;
 
   chrome.storage.sync.set({
-    dpToken: valdpToken,
+    mailgunKey: document.getElementById('mailgun-key').value,
+    dpToken: document.getElementById('dp-token').value,
     dpLocalParentFolder: document.getElementById('dp-parent-folder').value,
     nwLocalUserPath: document.getElementById('nw-local-user-path').value,
-    likesColor: likesColor
+    likesColor: document.getElementById('like').checked
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
