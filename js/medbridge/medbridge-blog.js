@@ -1,6 +1,8 @@
 console.warn("[medbridge-home-extension] loaded /js/medbridge/medbridge-blog.js");
 //////////////////////////////////////////////////////////////////////////////////
 
+
+
 // Only run script if the referrer is empty.
 // Clicking from newsletters where target="_blank" is set will result in an empty referrer.
 
@@ -88,64 +90,3 @@ if ( getParameterByName("blog-check") ) {
 
   console.groupEnd();
 }
-
-
-////////////////////////
-////////////////////////
-////                ////
-////                ////
-////   PROTECTED!   ////
-////                ////
-////                ////
-////////////////////////
-////////////////////////
-
-var isProtected = document.querySelector(".post-title a").getAttribute("title");
-
-if ( /^Protected:/.test(isProtected) ) {
-  isProtected = true;
-  document.body.classList.add("post-protected");
-}
-
-////////////////////////
-////////////////////////
-////                ////
-////                ////
-////    Help Bar    ////
-////                ////
-////                ////
-////////////////////////
-////////////////////////
-
-// if ( /\/blog\//gi.test(document.URL) ) {
-
-  console.log("We're on an article page, activate blog ID copy button.");
-
-  var helpBar = document.createElement("div");
-  helpBar.className = "jk-helpBar"
-
-  var copyIdBtn = document.createElement("div");
-  copyIdBtn.innerHTML = "Copy Blog ID";
-  createCopyBtn(copyIdBtn, document.querySelector("link[rel='shortlink']").href.replace(/^.+?p=/gi,""));
-  copyIdBtn.className = "copy blog-id"
-
-  // helpBar.innerHTML = "<div class='copy blog-id'>Copy Blog ID</div>"
-  helpBar.appendChild(copyIdBtn);
-  document.body.appendChild(helpBar);
-
-  // Set Links
-  // var shortLink = document.querySelector("link[rel='shortlink']").href;
-
-  // document.querySelector("#jk-blog-id").value = shortLink.replace(/^.+?p=/gi,"");
-
-  //
-  // document.querySelector(".jk-helpBar .copy.blog-id").addEventListener("click", copyBlogId, false);
-
-  // function copyBlogId() {
-  //   copyToClipboard(document.querySelector(".jk-helpBar #jk-blog-id"));
-  // }
-
-
-// } else {
-//   console.log("This isn't an article page!");
-// }

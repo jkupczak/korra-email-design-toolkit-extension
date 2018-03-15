@@ -1,4 +1,5 @@
 // !!!!!!!!!!!!!
+// EVENT / BACKGROUND PAGE
 // NO DOM ACCESS
 // !!!!!!!!!!!!!
 
@@ -22,87 +23,245 @@
 // Instead, it's best to use the Chrome Alarms API: https://developer.chrome.com/extensions/alarms.html
 //
 //
+// ================================================================
+// ================================================================
+// ================================================================
 
 
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 //
-// FAILED ATTEMPT AT USING REQUEST BLOCKING TO SERVE MY OWN FILES INSTEAD.
 //
-// function logURL(requestDetails) {
-//   console.log("Loading: " + requestDetails.url);
-// }
+//    Protect Article Tracker - Badge Update
 //
-// chrome.webRequest.onBeforeRequest.addListener(
-//   logURL,
-//   {urls: ["<all_urls>"], types:["script"]}
-// );
 //
-// // MailChimp CKEditor Toolbar Replacement
-// // https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Intercept_HTTP_requests
-// //
-// var pattern = "*://*.mailchimp.com/*/mcneapolitanconfig.js*";
-//
-// function redirect(requestDetails) {
-//   console.log("Redirecting: " + requestDetails.url);
-//   return {
-//     redirectUrl: chrome.extension.getURL('/js/injected/mailchimp-config.js')
-//   };
-// }
-//
-// chrome.webRequest.onBeforeRequest.addListener(
-//   redirect,
-//   {urls:[pattern], types:["script"]},
-//   ["blocking"]
-// );
-//
-// ////
-//
-// var pluginPattern = "*://*.mailchimp.com/release/*/ckeditor/plugins/mergetags/plugin.js*";
-//
-// function redirectPlugin(requestDetails) {
-//   console.log("Redirecting: " + requestDetails.url);
-//   return {
-//     redirectUrl: chrome.extension.getURL('/js/injected/mailchimp-plugin.js')
-//   };
-// }
-//
-// chrome.webRequest.onBeforeRequest.addListener(
-//   redirectPlugin,
-//   {urls:[pluginPattern], types:["script"]},
-//   ["blocking"]
-// );
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+  // Update extension icon counter
+  // https://developer.chrome.com/extensions/browserAction
+  function updateBadgeText(value) {
+
+    // This function is delivered an array of all protected blog articles.
+    // Get the length of the array.
+    ids = value.length.toString();
+
+    // If the array is empty, we want to set the badge to '' to remove it.
+    if ( ids === "0" ) {
+      ids = '';
+    }
+    chrome.browserAction.setBadgeText({text: ids}); // We have 10+ protected articles
+    chrome.browserAction.setBadgeBackgroundColor([0,0,0,100]); // Black badge
+  }
+
+  // Get protectedarticles value from chrome.storage when background page loads
+  // Send the value over to updateBadgeText().
+  chrome.storage.local.get('protectedarticles', function (result) {
+    updateBadgeText(result.protectedarticles);
+  });
+
+  // Monitor chrome.storage for changes to "protectedarticles"
+  // Send the value over to updateBadgeText().
+  chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (key in changes) {
+      var storageChange = changes[key];
+
+      console.log(key, namespace, storageChange);
+
+      if ( key === "protectedarticles" ) {
+        updateBadgeText(storageChange.newValue);
+      }
+
+      console.log('Storage key "%s" in namespace "%s" changed. ' +
+                  'Old value was "%s", new value is "%s".',
+                  key,
+                  namespace,
+                  storageChange.oldValue,
+                  storageChange.newValue);
+    }
+  });
 
 
-//////////////////////////////////////////
-//////////////////////////////////////////
-//////////////////////////////////////////
-
-// console.log("a");
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 //
-// chrome.webRequest.onBeforeRequest.addListener(
 //
-//     function(details) {
+//    Icon Clicks
 //
-//       console.log("b");
-//         console.log(details);
 //
-//          //return {redirectUrl: 'https://developer.salesforce.com/forums/ckeditor/ckeditor-5.x/rel/sfdc-config.js'};
-// 		//  return {redirectUrl: 'https://na5.salesforce.com/resource/1447106281000/DFB__sfdcConfig'};
-//     },
-//     {
-//         urls: [
-//             "https://us2.admin.mailchimp.com/release/11.7.553/js/ckeditor4/ckeditor/mcneapolitanconfig.js?t=H2OF",
-//             "https://us2.admin.mailchimp.com/release/11.7.553/js/ckeditor4/ckeditor/mcneapolitanconfig.js"
-//         ],
-//         types: ["script", "main_frame", "sub_frame", "stylesheet", "image", "object", "xmlhttprequest", "other"]
-//     },
-//     ["blocking"]
-// );
-
-//////////////////////////////////////////
-//////////////////////////////////////////
-//////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 
 
+// Handle clicks on the icon.
+chrome.browserAction.onClicked.addListener(function(tab) {
+
+  if ( localStorage['fileAccessOff'] ) {
+    showStartPage(1);
+  } else {
+    // Show popup HTML with information.
+    // Until that's ready, show options.html instead
+    chrome.tabs.create({ url: chrome.extension.getURL('options.html') });
+  }
+
+});
+
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//
+//    Startup
+//
+//
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+
+// Listen for installation at runtime
+chrome.runtime.onInstalled.addListener(handleInstalled);
+
+
+// When onInstalled is detected, do this.
+function handleInstalled(details) {
+
+  console.log(details.reason);
+
+  // If this is a new install...
+  if ( details.reason == 'install') {
+    chrome.storage.sync.set({ 'newInstalled': true });
+    showStartPage();
+
+    // Set default values on install
+    chrome.storage.local.set({ 'protectedarticles': "" });
+
+  }
+
+}
+
+
+// Determine if the extension has access to local files.
+function checkForFileAccessOption() {
+
+	chrome.extension.isAllowedFileSchemeAccess(function (answer) {
+
+    console.log("chrome.extension.isAllowedFileSchemeAccess", answer);
+    console.log("localStorage['fileAccessOff']", localStorage['fileAccessOff']);
+
+			if (answer) {
+        console.log("a", localStorage['fileAccessOff']);
+					if (localStorage['fileAccessOff']) {
+							localStorage.removeItem('fileAccessOff');
+							showStartPage(2);
+              console.log(localStorage["b", 'fileAccessOff'])
+					}
+          console.log("c", localStorage['fileAccessOff']);
+			} else {
+				localStorage['fileAccessOff'] = true;
+        console.log("d", localStorage['fileAccessOff']);
+			}
+	});
+
+};
+checkForFileAccessOption();
+
+
+// Function to determine what content should be shown
+// Skip step 1 if needed (page that shows how to turn on file access)
+function showStartPage() {
+
+  console.log(arguments);
+
+    var step = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+
+  console.log(step);
+
+		var path = 'startpage/index.html';
+		if (step > 0) {
+				path += '#step-' + step;
+		}
+		chrome.tabs.create({ url: chrome.extension.getURL(path) });
+};
+
+
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//
+//
+//
+//
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+
+/*****************************************************************
+ * onMessage from the extension or tab (a content script)
+ *****************************************************************/
+// chrome.runtime.onMessage.addListener(
+//   function(request, sender, sendResponse) {
+//
+//     console.log(sender.tab ?
+//                 "from a content script:" + sender.tab.url :
+//                 "from the extension");
+//     if (request.greeting == "hello")
+//       sendResponse({farewell: "goodbye"});
+//
+//     // if (request.cmd == "any command") {
+//     //   sendResponse({ result: "any response from background" });
+//     // } else {
+//     //   // sendResponse({ result: "error", message: `Invalid 'cmd'` });
+//     //   sendResponse({ result: "error", message: request });
+//     // }
+//
+//     // Note: Returning true is required here!
+//     //  ref: http://stackoverflow.com/questions/20077487/chrome-extension-message-passing-response-not-sent
+//     return true;
+//   });
+
+
+function handleMessage(request, sender, sendResponse) {
+  console.log("Message from the content script: " +
+    request.greeting);
+  sendResponse({response: "Response from background script"});
+  return true;
+}
+
+chrome.runtime.onMessage.addListener(handleMessage);
+
+
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+
+    if (request.greeting == "hello")
+      sendResponse({farewell: "goodbye"});
+
+    if ( request.checkLinkDB ) {
+      // sendResponse({farewell: "thanks for the url!" + request.url});
+      //
+
+      sendResponse({farewell: indexedDBHelper.getLink( request.checkLinkDB )});
+
+    }
+
+
+    return true;
+  });
 
 
 
@@ -147,7 +306,7 @@ function getCurrentHour() {
     var alarmTime = 30;
   }
 
-  console.log("The current hour is " + currentHour + ".");
+  // console.log("The current hour is " + currentHour + ".");
 
   // Create the alarm:
   chrome.alarms.create('mailchimp-draft-reminder', {
@@ -168,11 +327,11 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 
 
   chrome.storage.sync.get( function(result) {
-    console.error("!");
-    console.log(result);
-    console.log(result.pendingDrafts);
-    console.log(result.urgentDrafts);
-    console.error("#");
+    // console.error("!");
+    // console.log(result);
+    // console.log(result.pendingDrafts);
+    // console.log(result.urgentDrafts);
+    // console.error("#");
   });
 
 var totalNotificationsSent;
@@ -192,12 +351,12 @@ function mailchimpCheckAndAlert() {
 
       mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromStorage);
       totalNotificationsSent++
-      console.log("Notifications Sent: " + totalNotificationsSent);
+      // console.log("Notifications Sent: " + totalNotificationsSent);
 
     }
   });
 
-  console.warn("10 minutes remaining until the next notification.");
+  // console.warn("10 minutes remaining until the next notification.");
 
 }
 
@@ -414,7 +573,7 @@ chrome.runtime.onInstalled.addListener(function() {
 	    var title = "Test '" + context + "' menu item";
 	    var id = chrome.contextMenus.create({"title": title, "contexts":[context],
 	                                         "id": "context" + context});
-	    console.log("'" + context + "' item:" + id);
+	    // console.log("'" + context + "' item:" + id);
 	  }
 
   // Create a parent item and two children.

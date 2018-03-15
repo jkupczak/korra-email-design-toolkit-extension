@@ -1,6 +1,77 @@
 console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //////////////////////////////////////////////////////////////////////////////
 
+// MailGun Send
+// Recipient must be an Authorized Recipient in order to send using the sandbox (300 messages a day max)
+  // https://app.mailgun.com/app/account/authorized
+
+
+function sendEmail() {
+  var data = new FormData();
+  data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
+  data.append("to", "james@medbridgeed.com");
+  data.append("subject", "Hello from Mailgun");
+  data.append("html", cleanedOriginalHtml);
+
+  var xhr = new XMLHttpRequest();
+  xhr.withCredentials = true;
+
+  xhr.addEventListener("readystatechange", function () {
+    if (this.readyState === 4) {
+      console.log(this.responseText);
+    }
+  });
+
+  xhr.open("POST", "https://api:key-2453a548806cfab4a5b8dd4120d74e43@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
+  xhr.setRequestHeader("cache-control", "no-cache");
+  xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
+
+  xhr.send(data);
+}
+
+
+
+//
+// // W3C Validator
+  // // https://github.com/validator/validator/wiki/Service-%C2%BB-HTTP-interface
+
+// var formData = new FormData();
+// formData.append('out', 'json');
+// formData.append('content', cleanedOriginalHtml);
+//
+// var xhr = new XMLHttpRequest();
+// xhr.withCredentials = true;
+//
+// xhr.addEventListener("readystatechange", function () {
+//   if (this.readyState === 4) {
+//     console.log(this.responseText);
+//   }
+// });
+//
+// xhr.open("POST", "http://html5.validator.nu/");
+//
+// xhr.setRequestHeader("dataType", "json");
+// xhr.setRequestHeader("processData", false);
+// xhr.setRequestHeader("contentType", false);
+//
+// xhr.send(formData);
+
+
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//
+//
+//
+//   Search ##PAUSED to see code that is only TEMPORARILY turned off.
+//
+//
+//
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
 //
 // MAILCHIMP!!!!
 // Check subject line against the preheader. Look for repeated sentences/phrases.
@@ -271,6 +342,17 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 //
 //////////////
 //////////////
+//  OPTIONS PAGE IDEAS
+//////////////
+//////////////
+//
+//    ■ - Turn On/Off utm_ checking. (for _content, _source, etc individually)
+//    ■ - Link markers
+//        ■ - Show just errors, errors and warnings, only warnings, all
+//
+//
+//////////////
+//////////////
 //  FEATURE IDEAS
 //////////////
 //////////////
@@ -474,25 +556,33 @@ if ( getParameterByName("presentation") === "1" ) {
     desktopIframeResizeWrapper.insertAdjacentHTML('beforeend', desktopResizeHtml);
 
     // Function to load iframe with HTML.
-    loadIframe(desktopIframe, cleanedDesktopHtml, "base");
+    loadIframe(desktopIframe, cleanedDesktopHtml, true, "desktop");
     // iframe loaded
 
     // Apply the desktop iframes document object to a variable
     var dFrameContents = desktopIframe.contentDocument;
     var dFrameBody = dFrameContents.body;
 
-    // Get all links
-    let linkList = dFrameContents.querySelectorAll("a");
+    // Get all links, global variable
+    linkList = dFrameContents.querySelectorAll("a");
     linkInfoArray = [];
 
     // Get all images
     let imgList = dFrameContents.images; // better?
-    imgInfoArray = [];
     createImgInfoArray(imgList);
 
-    addLoadEvent(desktopIframe, function() {
-      getImgSizes(imgInfoArray);
-    });
+    // ##PAUSED
+    // addLoadEvent(desktopIframe, function() {
+    //   getImgSizes(imgInfoArray);
+    // });
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -526,7 +616,7 @@ if ( getParameterByName("presentation") === "1" ) {
     dummyIframe.style = "width:800px; position:absolute; left:-99999px; top:-9999px; z-index: -99999; opacity:0; pointer-events:none;";
     document.body.appendChild(dummyIframe)
     // Function to load iframe with HTML.
-    loadIframe(dummyIframe, cleanedOriginalHtml);
+    loadIframe(dummyIframe, cleanedOriginalHtml, false);
     // Set the dummy frame contents
     var dummyFrameContents = dummyIframe.contentDocument;
     // Get link list of dummy frame
@@ -561,7 +651,7 @@ if ( getParameterByName("presentation") === "1" ) {
     mobileDeviceWrapper.appendChild(mobileIframeParent)
 
     // Function to load iframe with HTML.
-    loadIframe(mobileIframe, cleanedMobileHtml, "base");
+    loadIframe(mobileIframe, cleanedMobileHtml, true, "mobile");
     // iframe loaded
 
 
@@ -623,7 +713,10 @@ document.querySelector("html").classList.toggle("errors");
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
+
+///////////
 // Dropbox
+
 dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
 
 var localUserPath = "file:///Users/jameskupczak";
@@ -875,17 +968,40 @@ desktopIframeResizeWrapper.appendChild(dFrameSizeStatus);
 
 var fadeWidthStatus;
 
-window.addEventListener('resize', showdFrameWidthStatus, true);
 
-function showdFrameWidthStatus() {
-  dFrameWidthStatus.classList.add("show");
-  dFrameWidthStatus.innerHTML = (desktopIframe.clientWidth-15) + "px";
+// Watch window for resizing. If it's resized, reset the desktopIframe
+window.addEventListener('resize', resetDesktopResize, true);
 
-  clearTimeout(fadeWidthStatus); //https://www.w3schools.com/jsref/met_win_cleartimeout.asp
+function showdFrameWidthStatus(currentWidth, override, source) {
 
-  fadeWidthStatus = setTimeout(function() {
-    dFrameWidthStatus.classList.remove("show");
-  }, 4000);
+  // console.log("source", source, "currentWidth", currentWidth, "dFrameStartingWidth", dFrameStartingWidth, "resizeEndWidth", resizeEndWidth, "widthNow", desktopIframe.offsetWidth, "override", override)
+  // console.log(dFrameStartingWidth, desktopIframe.clientWidth, desktopIframe.offsetWidth)
+  // Only update frame width badge if the width has actually changed
+
+  if ( currentWidth !== desktopIframe.offsetWidth ) {
+    // console.log("desktopIframe.offsetWidth !== resizeEndWidth");
+  }
+  if ( desktopIframe.offsetWidth !== resizeEndWidth ) {
+    // console.log("desktopIframe.offsetWidth !== resizeEndWidth", desktopIframe.offsetWidth, resizeEndWidth);
+  }
+  if ( override === true ) {
+    // console.log("override === true")
+  }
+  if ( (currentWidth !== desktopIframe.offsetWidth || desktopIframe.offsetWidth !== resizeEndWidth ) || override === true ) {
+
+    // console.log("showing frame width");
+
+    dFrameWidthStatus.classList.add("show");
+    dFrameWidthStatus.innerHTML = (desktopIframe.clientWidth-15) + "px";
+
+    clearTimeout(fadeWidthStatus); //https://www.w3schools.com/jsref/met_win_cleartimeout.asp
+
+    fadeWidthStatus = setTimeout(function() {
+      dFrameWidthStatus.classList.remove("show");
+    }, 3000);
+
+  }
+
 }
 
 // https://stackoverflow.com/a/39312522/556079
@@ -1019,44 +1135,44 @@ if ( getParameterByName("layout") ) {
       // PT
       if ( emailDisc === "pt" ) {
           if ( emailSubType === "sub" ) {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#FFBE12"/><path d="M221.5 88.8c-5.6-9-13.5-15.9-23.6-20.8 -10.2-4.9-21.9-7.3-35.1-7.3h-69v172.8h41.7v-58.6h26.6c21 0 37.6-5 49.7-15.1 12.1-10.1 18.1-23.6 18.1-40.4C229.9 108 227.1 97.8 221.5 88.8zM181.3 136.7c-4.2 4-10.4 6.1-18.5 6.1h-27.3V92.9h27.8c7.5 0.1 13.5 2.5 17.8 7.4 4.4 4.8 6.5 11.3 6.5 19.3C187.7 127 185.5 132.6 181.3 136.7z" fill="#FFF"/></svg>';
+            iconCode = svgPTsub;
           } else {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#FFBE12"/><path d="M221.5 88.8c-5.6-9-13.5-15.9-23.6-20.8 -10.2-4.9-21.9-7.3-35.1-7.3h-69v172.8h41.7v-58.6h26.6c21 0 37.6-5 49.7-15.1 12.1-10.1 18.1-23.6 18.1-40.4C229.9 108 227.1 97.8 221.5 88.8zM181.3 136.7c-4.2 4-10.4 6.1-18.5 6.1h-27.3V92.9h27.8c7.5 0.1 13.5 2.5 17.8 7.4 4.4 4.8 6.5 11.3 6.5 19.3C187.7 127 185.5 132.6 181.3 136.7z" fill="#FFF"/></svg>';
+            iconCode = svgPTns;
           }
       // AT
       } else if ( emailDisc === "at" ) {
           if ( emailSubType === "sub" ) {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#FF620D"/><path d="M66.8 229.5h44.5l10-32.3h57.1l10.1 32.3h44.7L169.3 56.7h-39.2L66.8 229.5zM149.8 105.1l18.6 59.9h-37.2L149.8 105.1z" fill="#FFF"/></svg>';
+            iconCode = svgATsub;
           } else {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#FF620D"/><path d="M66.8 229.5h44.5l10-32.3h57.1l10.1 32.3h44.7L169.3 56.7h-39.2L66.8 229.5zM149.8 105.1l18.6 59.9h-37.2L149.8 105.1z" fill="#FFF"/></svg>';
+            iconCode = svgATns;
           }
       // OT
       } else if ( emailDisc === "ot" ) {
           if ( emailSubType === "sub" ) {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#BF002D"/><path d="M189 67.8c-11.5-7-24.5-10.4-39.2-10.4 -14.8 0-28 3.5-39.6 10.6 -11.6 7-20.5 17-26.7 30 -6.2 12.9-9.3 27.9-9.3 44.8v9.7c0.3 16.3 3.7 30.7 10 43.3 6.4 12.6 15.3 22.3 26.6 29 11.4 6.8 24.5 10.1 39.2 10.1s27.8-3.5 39.3-10.5c11.5-7 20.4-17 26.6-30 6.2-13 9.4-27.9 9.4-44.7v-8c-0.1-16.6-3.3-31.4-9.7-44.2C209.4 84.7 200.5 74.8 189 67.8zM183.1 150.4c-0.1 16.8-3 29.6-8.7 38.6 -5.7 8.9-13.8 13.4-24.3 13.4 -11.1 0-19.4-4.5-25-13.6 -5.6-9.1-8.4-22.1-8.4-39l0.1-12.7c1.2-31.3 12.2-47 33.1-47 10.7 0 18.9 4.5 24.6 13.4 5.7 8.9 8.6 21.9 8.6 39.1V150.4z" fill="#FFF"/></svg>';
+            iconCode = svgOTsub;
           } else {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#BF002D"/><path d="M189 67.8c-11.5-7-24.5-10.4-39.2-10.4 -14.8 0-28 3.5-39.6 10.6 -11.6 7-20.5 17-26.7 30 -6.2 12.9-9.3 27.9-9.3 44.8v9.7c0.3 16.3 3.7 30.7 10 43.3 6.4 12.6 15.3 22.3 26.6 29 11.4 6.8 24.5 10.1 39.2 10.1s27.8-3.5 39.3-10.5c11.5-7 20.4-17 26.6-30 6.2-13 9.4-27.9 9.4-44.7v-8c-0.1-16.6-3.3-31.4-9.7-44.2C209.4 84.7 200.5 74.8 189 67.8zM183.1 150.4c-0.1 16.8-3 29.6-8.7 38.6 -5.7 8.9-13.8 13.4-24.3 13.4 -11.1 0-19.4-4.5-25-13.6 -5.6-9.1-8.4-22.1-8.4-39l0.1-12.7c1.2-31.3 12.2-47 33.1-47 10.7 0 18.9 4.5 24.6 13.4 5.7 8.9 8.6 21.9 8.6 39.1V150.4z" fill="#FFF"/></svg>';
+            iconCode = svgOTns;
           }
       // SLP
       } else if ( emailDisc === "slp" ) {
           if ( emailSubType === "sub" ) {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#00C2E0"/><path d="M134.6 93.7c4.3-3.3 10.2-4.9 17.6-4.9 7.4 0 13.2 1.9 17.5 5.8 4.3 3.9 6.5 9.3 6.5 16.4h41.5c0-10.5-2.7-19.9-8.2-28.1 -5.5-8.2-13.1-14.5-23-18.9 -9.9-4.4-21-6.6-33.4-6.6 -12.7 0-24.2 2-34.4 6.1 -10.2 4.1-18.1 9.8-23.7 17.1 -5.6 7.3-8.4 15.8-8.4 25.3 0 19.2 11.2 34.3 33.6 45.3 6.9 3.4 15.7 6.9 26.6 10.6 10.8 3.6 18.4 7.2 22.7 10.6 4.3 3.4 6.5 8.2 6.5 14.2 0 5.4-2 9.6-6 12.5 -4 3-9.4 4.5-16.3 4.5 -10.8 0-18.5-2.2-23.3-6.6 -4.8-4.4-7.2-11.2-7.2-20.5H81.5c0 11.4 2.9 21.5 8.6 30.2 5.7 8.7 14.3 15.6 25.6 20.7 11.4 5 24 7.5 38 7.5 19.9 0 35.5-4.3 46.9-12.9 11.4-8.6 17.1-20.5 17.1-35.6 0-18.9-9.3-33.7-28-44.5 -7.7-4.4-17.5-8.6-29.4-12.4 -11.9-3.8-20.3-7.6-25-11.2 -4.7-3.6-7.1-7.6-7.1-12C128.1 101.2 130.3 97 134.6 93.7z" fill="#FFF"/></svg>';
+            iconCode = svgSLPsub;
           } else {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#00C2E0"/><path d="M134.6 93.7c4.3-3.3 10.2-4.9 17.6-4.9 7.4 0 13.2 1.9 17.5 5.8 4.3 3.9 6.5 9.3 6.5 16.4h41.5c0-10.5-2.7-19.9-8.2-28.1 -5.5-8.2-13.1-14.5-23-18.9 -9.9-4.4-21-6.6-33.4-6.6 -12.7 0-24.2 2-34.4 6.1 -10.2 4.1-18.1 9.8-23.7 17.1 -5.6 7.3-8.4 15.8-8.4 25.3 0 19.2 11.2 34.3 33.6 45.3 6.9 3.4 15.7 6.9 26.6 10.6 10.8 3.6 18.4 7.2 22.7 10.6 4.3 3.4 6.5 8.2 6.5 14.2 0 5.4-2 9.6-6 12.5 -4 3-9.4 4.5-16.3 4.5 -10.8 0-18.5-2.2-23.3-6.6 -4.8-4.4-7.2-11.2-7.2-20.5H81.5c0 11.4 2.9 21.5 8.6 30.2 5.7 8.7 14.3 15.6 25.6 20.7 11.4 5 24 7.5 38 7.5 19.9 0 35.5-4.3 46.9-12.9 11.4-8.6 17.1-20.5 17.1-35.6 0-18.9-9.3-33.7-28-44.5 -7.7-4.4-17.5-8.6-29.4-12.4 -11.9-3.8-20.3-7.6-25-11.2 -4.7-3.6-7.1-7.6-7.1-12C128.1 101.2 130.3 97 134.6 93.7z" fill="#FFF"/></svg>';
+            iconCode = svgSLPns;
           }
       // OTHER
       } else if ( emailDisc === "other" ) {
           if ( emailSubType === "sub" ) {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#BD00BF"/><polygon points="228.9 108.9 168.8 133.7 173.8 64.2 132.3 64.2 137.1 132.4 75.3 107 62.6 143.6 125.9 161.1 81.7 213.8 115.2 235.7 150.9 180.6 186.4 237.7 220 214.8 177.5 163.4 241.5 145.9" fill="#fff"/></svg>';
+            iconCode = svgOTHERsub;
           } else {
-            iconCode = '<svg  viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#BD00BF"/><polygon points="228.9 108.9 168.8 133.7 173.8 64.2 132.3 64.2 137.1 132.4 75.3 107 62.6 143.6 125.9 161.1 81.7 213.8 115.2 235.7 150.9 180.6 186.4 237.7 220 214.8 177.5 163.4 241.5 145.9" fill="#fff"/></svg>';
+            iconCode = svgOTHERns;
           }
       // MASSAGE
       } else if ( emailDisc === "lmt" ) {
           if ( emailSubType === "sub" ) {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#ff620d"/><path d="M80.4 222.2h37.2l8.3-27h47.7l8.4 27h37.4L166.2 77.8h-32.8L80.4 222.2zM149.8 118.2l15.6 50.1h-31.1L149.8 118.2z" fill="#fff"/></svg>';
+            iconCode = svgLMTsub
           } else {
-            iconCode = '<svg viewBox="0 0 300 300"><path d="M150 0C67.2 0 0 67.2 0 150s67.2 150 150 150 150-67.2 150-150S232.8 0 150 0z" fill="#ff620d"/><path d="M80.4 222.2h37.2l8.3-27h47.7l8.4 27h37.4L166.2 77.8h-32.8L80.4 222.2zM149.8 118.2l15.6 50.1h-31.1L149.8 118.2z" fill="#fff"/></svg>';
+            iconCode = svgLMTns
           }
       } else {
         iconCode = '<img class="disc-img" src="' + chrome.extension.getURL('favicons/' + emailDisc + iconSuffix + '.png') + '">'
@@ -1402,6 +1518,7 @@ function paneToggle(infobar, mobile) {
 
 var shareOrb = document.createElement("div");
 shareOrb.className = "share-orb orb glyph";
+shareOrb.innerHTML = svgIconShare;
 if ( onLocalServer ) { shareOrb.classList.add("off") };
 shareOrb.addEventListener("click", getDbShareLink, false);
 orbsTop.appendChild(shareOrb);
@@ -1609,9 +1726,9 @@ function processDbLink(shareableLink, action, source) {
 // orbDivider1.className = "orb-divider orb-divider-1";
 // orbsBottom.appendChild(orbDivider1);
 
-var orbDivider2 = document.createElement("div");
-orbDivider2.className = "orb-divider orb-divider-2";
-orbsBottom.appendChild(orbDivider2);
+// var orbDivider2 = document.createElement("div");
+// orbDivider2.className = "orb-divider orb-divider-2";
+// orbsBottom.appendChild(orbDivider2);
 
 var orbDivider3 = document.createElement("div");
 orbDivider3.className = "orb-divider orb-divider-3";
@@ -1999,11 +2116,16 @@ function toggleGuides() {
 
 var baselineOrb = document.createElement("div");
 baselineOrb.id = "baseline-orb";
-baselineOrb.className = "baseline-orb orb glyph";
+baselineOrb.className = "baseline-orb orb svg";
+baselineOrb.innerHTML = svgIconBaseline;
 baselineOrb.addEventListener("click", createBaselineOverlay, false);
 orbsBottom.appendChild(baselineOrb);
 var baselineToggle = false;
 
+// Chrome's performance takes a hit when I get fancy within a container that has border-radius.
+// For example, absolutely positioning a full width/height container over an iframe causes scrolling to jump around.
+// For this reason, and also because the baseline was covering our scrollbar, we're injecting the baseline grid inside of the iframe.
+// Rather than on top in the main document window.
 function createBaselineOverlay() {
 
   // Hand On/Off Settings
@@ -2018,13 +2140,18 @@ function createBaselineOverlay() {
     document.getElementById("baseline-orb").classList.toggle("on");
 
   if ( !baselineToggle ) {
-    destroyAll(document.querySelectorAll(".baseline-overlay"));
+    destroyAll(dFrameContents.querySelectorAll(".toolkit-element-baseline-overlay"));
+    destroyAll(mFrameContents.querySelectorAll(".toolkit-element-baseline-overlay"));
+    dFrameContents.documentElement.classList.remove("activate-toolkit-element-baseline-overlay");
+    mFrameContents.documentElement.classList.remove("activate-toolkit-element-baseline-overlay");
   } else {
-    var baselineContainer = document.createElement("div");
-    baselineContainer.className = "baseline-overlay";
-    baselineContainer.innerHTML = "<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>";
-    desktopIframeParent.appendChild(baselineContainer);
-    mobileIframeParent.appendChild(baselineContainer.cloneNode(true));
+    dFrameContents.documentElement.classList.add("activate-toolkit-element-baseline-overlay");
+    mFrameContents.documentElement.classList.add("activate-toolkit-element-baseline-overlay");
+    var baselineContainer = document.createElement("section");
+    baselineContainer.className = "toolkit-element toolkit-element-baseline-overlay";
+    baselineContainer.dataset.view = "fixed";
+    dFrameContents.documentElement.appendChild(baselineContainer);
+    mFrameContents.documentElement.appendChild(baselineContainer.cloneNode(true));
   }
 }
 
@@ -2139,40 +2266,38 @@ orbsBottom.appendChild(powerOrb);
 
 //////////
 ////
-////   Presentation Orb
+////   Custom Orb
 ////
 /////////
 
 var customOrb = document.createElement("div");
 customOrb.className = "custom-orb orb glyph";
 customOrb.id = "custom-orb";
-customOrb.addEventListener("click", togglePresentation, false);
+customOrb.addEventListener("click", sendEmail, false);
 orbsBottom.appendChild(customOrb);
 var presentationToggle = false
-
-// document.body.classList.toggle("beta");
-
-function togglePresentation() {
-
-  presentationToggle = !presentationToggle;
-
-  if ( presentationToggle ) {
-    history.replaceState(null,null, updateQueryString("presentation", "1") );
-  } else {
-    history.replaceState(null,null, updateQueryString("presentation") );
-  }
-
-  // document.body.classList.toggle("beta");
-
-  // history.replaceState(null,null, updateQueryString("presentation", "1") );
-
-  if ( document.body.classList.contains("presentation-mode") ) {
-    paneToggle(1,1);
-  } else {
-    paneToggle(0,1);
-  }
-
-  document.body.classList.toggle("presentation-mode");
+        //
+        // function togglePresentation() {
+        //
+        //   presentationToggle = !presentationToggle;
+        //
+        //   if ( presentationToggle ) {
+        //     history.replaceState(null,null, updateQueryString("presentation", "1") );
+        //   } else {
+        //     history.replaceState(null,null, updateQueryString("presentation") );
+        //   }
+        //
+        //   // document.body.classList.toggle("beta");
+        //
+        //   // history.replaceState(null,null, updateQueryString("presentation", "1") );
+        //
+        //   if ( document.body.classList.contains("presentation-mode") ) {
+        //     paneToggle(1,1);
+        //   } else {
+        //     paneToggle(0,1);
+        //   }
+        //
+        //   document.body.classList.toggle("presentation-mode");
 
   //
   // console.error(Notification.permission);
@@ -2214,7 +2339,7 @@ function togglePresentation() {
   // console.log(datetime);
   // console.log(currentdate.getHours());
   // console.log(new Date().getHours());
-}
+  // }
 
 
 
@@ -2842,6 +2967,11 @@ function appendQaBar(newBar) {
 // After a test has concluded, run this function to update the icon that shows the status.
 function applyQaResults(qaBar, status, msg) {
   qaBar.classList.add("finished", status);
+  if ( status === "success" ) {
+    qaBar.querySelector(".qa-icon").innerHTML = svgIconCheck;
+  } else if ( status === "error" ) {
+    qaBar.querySelector(".qa-icon").innerHTML = svgIconX;
+  }
   qaBar.querySelector(".qa-text").innerHTML = msg;
 }
 
@@ -3402,6 +3532,7 @@ if (typeof moduleSettingsMenu != 'undefined') {
 ////////////
 ////////////
 
+
 // Create the wrapper for the link-markers.
 var linkMarkerWrapper = document.createElement("section");
 linkMarkerWrapper.id = "link-markers";
@@ -3410,76 +3541,11 @@ linkMarkerWrapper.style = "display:none";
 dFrameContents.documentElement.appendChild(linkMarkerWrapper);
 
 // Begin by running the loop function for all links.
+// This will validate all links in dFrame and in dummy frame.
+
+// dframe links, dummy frame links, age check
 linkValidationLoop(linkList, dummyLinkList, "false");
 
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-////
-////    IMG CHECK - UNFINISHED
-////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-////
-//////
-// Iterate through ALL IMAGES - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-
-// I can only use .onload once per document. So instead we use an eventlistner.
-// After we're done, we need to remove the eventlistner.
-// Resource: https://stackoverflow.com/a/27032611/556079
-
-if ( navigator.onLine ) {
-
-  var totalBrokenImages = 0;
-  var totalStretchedImages = 0;
-
-  desktopIframe.addEventListener("load", function checkImages(e) {
-
-    var i = 0
-
-    for (let img of imgList) {
-
-      var widthRatio = Math.round(img.naturalWidth / img.naturalHeight*10) / 10;
-      var heightRatio = Math.round(img.width / img.height*10) / 10;
-
-      if ( img.naturalWidth === 0 && img.naturalHeight === 0 ) {
-        totalBrokenImages++;
-      } else if ( widthRatio - heightRatio > 0.2 || widthRatio - heightRatio < -0.2 ) {
-        totalStretchedImages++;
-      }
-
-      i++
-
-    }
-    // console.log("totalStretchedImages", totalStretchedImages);
-
-    desktopIframe.removeEventListener("load", checkImages, false);
-
-    if ( totalBrokenImages === 1 ) {
-      applyQaResults(imagesQaBar, "error", totalBrokenImages + " Broken Image");
-    } else if ( totalBrokenImages > 0 ) {
-      applyQaResults(imagesQaBar, "error", totalBrokenImages + " Broken Images");
-    } else {
-      applyQaResults(imagesQaBar, "success", "All Images Loaded");
-    }
-
-    if ( totalStretchedImages === 1 ) {
-      applyQaResults(imgRatioQaBar, "error", totalStretchedImages + " Stretched Image");
-    } else if ( totalStretchedImages > 0) {
-      applyQaResults(imgRatioQaBar, "error", totalStretchedImages + " Stretched Images");
-    } else {
-      applyQaResults(imgRatioQaBar, "success", "All Images are to Scale");
-    }
-
-
-  }, false);
-
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -4366,49 +4432,6 @@ function activatePreflightNotifier() {
 activatePreflightNotifier();
 
 
-function preflightNotifierSuccess() {
-  preflightStatus.classList.remove("error");
-  preflightTotal.textContent = "";
-  preflightStatus.classList.add("success");
-  preflightTotal.classList.add("icomoon", "icomoon-checkmark");
-}
-
-
-function updatePreflightErrorTotal(type, i) {
-
-  console.groupCollapsed("updatePreflightErrorTotal function initiated.")
-
-  var currentValue = parseInt(preflightTotal.innerHTML);
-
-  // Increment total by 1, reduce by 1, or increase by a given integer
-  if ( type === "error" ) {
-    console.log("Adding " + i + " to total error value.");
-    currentValue = currentValue + i;
-    preflightTotal.innerHTML = currentValue;
-  } else if ( type = "success" ) {
-    console.log("Subtracting " + i + " from total error value.");
-    currentValue = currentValue - i;
-    preflightTotal.innerHTML = currentValue;
-  }
-  console.log("currentValue: " + currentValue);
-  // if ( type === "zoom" ) {
-  //   if ( status = true ) {
-  //
-  //   }
-  // }
-
-  // Update Class
-  if ( currentValue <= 0 ) {
-    preflightNotifierSuccess();
-  } else if ( currentValue > 0 ) {
-    preflightStatus.classList.add("error");
-    preflightStatus.classList.remove("success");
-  }
-
-  console.groupEnd();
-}
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4459,14 +4482,20 @@ COMPLETE ==========
 */
 
 function resetDesktopResize() {
-  document.documentElement.classList.remove("desktop-view-resized");
-  desktopIframeResizeWrapper.removeAttribute("style");
-  desktopIframeResizeWrapper.removeAttribute("data-x");
-  desktopIframeResizeWrapper.removeAttribute("data-y");
-  showdFrameWidthStatus();
-  desktopIframeWrapper.classList.add("full-sized");
-  resizeActive = false;
+  if (resizeActive) {
+    console.log("resetDesktopResize initiated");
+    dFrameStartingWidth = desktopIframe.offsetWidth;
+    document.documentElement.classList.remove("desktop-view-resized");
+    desktopIframeResizeWrapper.removeAttribute("style");
+    desktopIframeResizeWrapper.removeAttribute("data-x");
+    desktopIframeResizeWrapper.removeAttribute("data-y");
+    showdFrameWidthStatus(desktopIframe.offsetWidth, true, "resetDesktopResize");
+    desktopIframeWrapper.classList.add("full-sized");
+    resizeActive = false;
+  }
 };
+
+
 
 interact('.resize-handler')
   .on('doubletap', function (event) {
@@ -4527,6 +4556,7 @@ interact('.resize-drag')
     inertia: true,
   })
   .on('resizemove', function (event) {
+    showdFrameWidthStatus(desktopIframe.offsetWidth, false, "resizemove");
     var target = event.target,
         x = (parseFloat(target.getAttribute('data-x')) || 0),
         y = (parseFloat(target.getAttribute('data-y')) || 0);
@@ -4546,7 +4576,7 @@ interact('.resize-drag')
     target.setAttribute('data-y', y);
 
     if ( ( event.target.offsetWidth !== desktopIframeWrapper.offsetWidth ) || ( event.target.offsetHeight !== desktopIframeWrapper.offsetHeight ) ) {
-      showdFrameWidthStatus();
+      // showdFrameWidthStatus();
       document.documentElement.classList.add("desktop-view-resized");
       document.documentElement.classList.add("resizing", "resizing-" + event.interaction.downEvent.target.dataset.resize);
       desktopIframeWrapper.classList.remove("full-sized");
@@ -4555,11 +4585,11 @@ interact('.resize-drag')
 
   })
   .on('resizestart', function (event) {
-
+    showdFrameWidthStatus(desktopIframe.offsetWidth, false, "resizestart");
   })
   .on('resizeend', function (event) {
     document.documentElement.classList.remove("resizing", "resizing-" + event.interaction.downEvent.target.dataset.resize);
-
+    resizeEndWidth = desktopIframe.offsetWidth;
     if ( ( event.target.offsetWidth === desktopIframeWrapper.offsetWidth ) && ( event.target.offsetHeight === desktopIframeWrapper.offsetHeight ) ) {
       resetDesktopResize();
     }
@@ -4569,9 +4599,7 @@ var j = 0;
 
 
 // When I click and hold on a drag handler...
-interact('.resize-drag').on('hold', showdFrameWidthStatus);
-
-
+// interact('.resize-drag').on('hold', showdFrameWidthStatus(desktopIframe.offsetWidth, false, "hold") );
 
 function dragMoveListener (event) {
   var target = event.target,
@@ -4593,21 +4621,6 @@ function dragMoveListener (event) {
 window.dragMoveListener = dragMoveListener;
 
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -4617,6 +4630,32 @@ window.dragMoveListener = dragMoveListener;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+// Used to determine if the desktopIframe width has changed from its original width.
+
+// The desktopIframe at full width. Gets re-assigned whenever the frame is resized/restored to its largest possible width (within its parent container)
+var dFrameStartingWidth = desktopIframe.offsetWidth;
+
+// Initially the same as the starting width above. This is reset whenever a drag-resize event ends.
+// Allows us to compare that new width with future resizes.
+var resizeEndWidth = dFrameStartingWidth;
+
+// Watch desktopIframe for size changes.
+// Helps to control the display of the desktopiframe's width in a little overlayed badge
+ro.observe(desktopIframe);
+
+// Watch the contents of the desktopIframe for size changes.
+// Modifies placement of link markers.
+lm.observe(dFrameContents.body);
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 ///////
 document.querySelector("html").classList.toggle("errors");
@@ -4624,5 +4663,3 @@ document.querySelector("html").classList.toggle("errors");
 } else {
   document.documentElement.classList.add("plain-view");
 } // END TEST
-
-// console.log("// end of newsletter.js");

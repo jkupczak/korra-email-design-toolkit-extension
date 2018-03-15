@@ -1,8 +1,6 @@
 console.warn("[sonic-toolkit-extension] loaded /js/mailchimp/mailchimp-block-scheduling.js");
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-
-//
 //
 // Disable Schedule Buttons
 //
@@ -61,30 +59,3 @@ mediaDiv.appendChild(confirmBlogBtn);
 // Add it all to the page.
 var checkListContainer = document.getElementById("predelivery-checklist") || document.querySelector(".predelivery-checklist");
 checkListContainer.prepend(checkListItem);
-
-
-
-//
-//
-// Check chrome.storage
-//
-///////////////
-///////////////
-///////////////
-
-var dbx;
-
-chrome.storage.sync.get("blogArticles", function(items) {
-  if (!chrome.runtime.error && items.blogArticles) {
-
-    dbx = new Dropbox({ accessToken: items.blogArticles });
-    console.groupCollapsed("blogArticles retrieved.");
-    console.log(items.blogArticles);
-    console.groupEnd();
-
-  } else {
-
-    console.error("Could not retrieve blogArticles from chrome.storage.sync. items.blogArticles is " + items.blogArticles);
-
-  }
-});

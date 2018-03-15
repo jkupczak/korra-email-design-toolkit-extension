@@ -3,6 +3,8 @@ html {
   overflow-y: scroll;
 }
 
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
 @font-face {
   font-family: "medbridge-chrome-extension";
   src: url(chrome-extension://__MSG_@@extension_id__/fonts/medbridge-chrome-extension.woff);
@@ -58,57 +60,112 @@ html {
 
 .link-marker {
   display:none;
-  background:#1e78d7;
+  background:#3291f5;
   position:absolute;
-  border-radius:50px;
-  width:18px; height:18px;
+  border-radius:100%;
+
+  width:22px; height:22px; line-height:22px;
+
   z-index:6000;
   cursor:default;
   user-select: none;
-  opacity:1;
-  margin-left:-4px !important;
-  margin-top:-4px !important;
-  border:2px solid transparent;
+  margin-left:-6px !important;
+  margin-top:-2px !important;
+
+  box-shadow: 0 0 0 3px #f0f0f0;
+
   color:#fff;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto-Medium', Roboto, Helvetica, Arial, sans-serif;
+  font-weight:500;
   text-align:center;
-  font-size:14px;
-  line-height:18px;
-  font-weight:400;
+  font-size:12px;
+  font-weight:500;
+
+  transition: background-color 1.5s, transform 1s;
 }
+
+.link-marker.loading {
+  display:block;
+  /* transform: scale(.95,.95); */
+}
+.link-marker.loading:before {
+  content:"" !important;
+  display:block;
+  border-radius: 100%;
+  margin:auto !important;
+  position:absolute; top:0; right:0; bottom:0; left:0;
+
+  animation: spinny 1s infinite ease-out;
+
+  width: 10px !important; height: 10px !important;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+}
+.link-marker.has-message.loading:before {
+  width: 16px !important; height: 16px !important;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+}
+/* .link-marker.loading.has-message:before {
+  width: 18px !important; height: 18px !important;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+} */
+
+.link-marker.done {
+  font-size: 12px;
+}
+
 .link-marker:hover {
   transform:scale(1.35,1.35);
   z-index:9001;
+  cursor:help;
 }
 
-.link-marker.error {
+.link-marker.has-message {
   display:block;
+}
+
+.link-marker.warning {
+  /* background:#e4b012; */
+  background:transparent;
+  box-shadow:none;
+}
+.link-marker.error {
   background:#d20758;
-  box-shadow: 0 0 3px 2px #d20758;
-  animation: linkMarkerColorPulse 1.5s ease infinite;
-  font-weight:500;
 }
+.link-marker.approved {
+  background:#3eb76c;
+}
+  .link-marker.animated-approval {
+    animation-name: quickHide;
+    animation-duration: 1s;
+    animation-timing-function: ease-out;
+    animation-delay: 9s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+
+    display:block;
+  }
+  @keyframes quickHide {
+    0%   {  transform:scale(1,1); opacity:1; }
+    25%  { transform:scale(1.1,1.1); opacity:1; }
+    100% {  transform:scale(0,0); opacity:0; }
+  }
+
+/* On page load, don't show approved links that came from cache */
+.link-marker.cache.approved {
+  display:none;
+}
+
 .link-marker.error.pinned {
-  animation: linkMarkerColorPulsePinned  1.5s ease infinite;
+
 }
-
-  @keyframes linkMarkerColorPulse {
-    0%   {  background:#d20758; box-shadow: 0 0 3px 2px #d20758; }
-    50%  {  background:#e43179; box-shadow: 0 0 3px 2px #e43179; }
-    100% {  background:#d20758; box-shadow: 0 0 3px 2px #d20758; }
-  }
-
-  @keyframes linkMarkerColorPulsePinned {
-    0%   {  background:#d20758; box-shadow: 0 0 0 4px #ff7bb0; }
-    50%  {  background:#e43179; box-shadow: 0 0 0 5px #f54f91; }
-    100% {  background:#d20758; box-shadow: 0 0 0 4px #ff7bb0; }
-  }
 
 
 .link-errors {
   display:none;
   font-weight:400;
-  color:#d20758;
   font-family: Roboto, Helvetica, Arial, sans-serif;
   position:fixed;
   font-size:12px;
@@ -116,7 +173,9 @@ html {
   width:100%;
   /*min-height:60px;*/
   height:auto;
-  background:#d20758;
+  /* background:#d20758; */
+  /* background:rgba(210,7,88,0.95); */
+  background:#1f1f25;
   box-shadow:0 0 30px rgba(0,0,0,0.3), 0 0 10px rgba(0,0,0,0.1);
   transition: margin 3s;
   z-index:9000;
@@ -132,9 +191,40 @@ html {
     100% {  margin-bottom:0; }
   }
 
-.link-errors .link-errors-wrapper {
-  padding:20px 20px 12px 20px;
+
+.link-errors .link-info-container {
+  display: flex;
 }
+
+.link-errors .link-errors-wrapper {
+  flex-grow:1;
+  padding:20px 20px 10px 20px;
+}
+
+
+.link-errors .link-status-wrapper {
+  padding:10px 10px 10px 0;
+  min-width: 166px;
+}
+  .link-errors .status-bubble {
+    background:#3eb76c;
+    color:#fff;
+    border-radius:3px;
+    padding:4px 14px 10px;
+  }
+    .link-errors .link-info-container.offline .status-bubble { background:#f1a511; }
+    .link-errors .link-info-container.error .status-bubble { background:#b10147; }
+
+  .link-errors .link-status-wrapper .status-code {
+    font-size:17px;
+    line-height: 28px;
+  }
+  .link-errors .link-status-wrapper .status-age {
+    font-size: 12px;
+  }
+
+
+
 .link-errors .link-errors-wrapper > section {
   display:inline-block;
   font-weight:400 !important;
@@ -152,7 +242,7 @@ html {
 .link-errors .link-errors-wrapper > section.warning {
   padding-left:18px;
   background: transparent;
-  box-shadow:0 0 0 2px #fff;
+  box-shadow: inset 0 0 0 2px #fff;
   color:#fff;
 }
 
@@ -191,38 +281,36 @@ html {
 
 
 .link-errors .link-errors-url {
-  font-family: 'Courier New';
   font-size:12px;
   line-height:20px;
   color:#fff;
-  padding:15px 15px 15px 20px;
   display:block;
   /*width:100%;*/
   word-break: break-word;
   word-wrap: break-word;
-  background:rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.05);
 
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: stretch;
 }
 
 .link-errors .link-errors-url .link-number {
 
-  width: 18px;
-  min-width: 18px;
-  max-width: 18px;
+  width:40px;
+  min-width: 40px;
+  min-height:40px;
 
-  height: 18px;
-  min-height: 18px;
-  max-height: 18px;
+  color: #fff;
 
-  line-height: 18px;
+  line-height: 1;
 
-  display: inline-block;
-  border-radius: 30px;
-  background: #fff;
+  background: rgba(0,0,0,0.5);
+  border-radius: 0;
 
-  color: #d20758;
+  display: flex;
+  align-items:center;
+  justify-content: center;
+
   text-align: center;
   position: relative;
   padding: 3px;
@@ -230,13 +318,16 @@ html {
   font-size:14px;
   white-space: nowrap;
   overflow: hidden;
-  margin-right:8px;
-  font-family: Helvetica, Arial, sans-serif;
 }
 
-/*.link-markers-off .link-marker {
-  displ
-}*/
+.link-errors .link-errors-url .link-url {
+  display:flex;
+  font-family: 'Courier New';
+  align-items:center;
+  word-break: break-all;
+  padding: 10px 10px 6px 15px;
+}
+
 .on-page-load .link-marker {
   /*display:none !important;*/
   animation: fadeOutOnLoad 1.25s ease forwards;
@@ -308,4 +399,27 @@ html {
 
 elseif, else {
   /*display: initial !important;*/
+}
+
+
+/***********************
+/***********************
+/***********************
+
+  Animations
+
+ ***********************
+ ***********************
+ **********************/
+
+
+@keyframes spinny {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
 }

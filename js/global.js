@@ -18,10 +18,6 @@ console.warn("[sonic-toolkit-extension] loaded /js/global.js");
 ////////////////////
 
 
-
-
-
-
 ////
 ////// Global Functions
 ////
@@ -79,6 +75,18 @@ function debounce(func, wait, immediate) {
 // window.addEventListener('resize', myEfficientFn);
 //
 
+
+//
+// Remove a value from an array by searching for that value
+// https://stackoverflow.com/a/3954451/556079
+//
+function removeValueFromArray(array, value) {
+  var index = array.indexOf(value);
+  if (index !== -1) {
+    array.splice(index, 1);
+  }
+  return array;
+}
 
 //
 // Select the contents of an element
@@ -561,6 +569,16 @@ window.onload = function() {
 
       return false;
   }, false);
+}
+
+// Greatest Common Factor
+// https://stackoverflow.com/a/17445322/556079
+function gcd_rec(a, b) {
+  if (b) {
+    return gcd_rec(b, a % b);
+  } else {
+    return Math.abs(a);
+  }
 }
 
 //Where el is the DOM element you'd like to test for visibility
@@ -1094,6 +1112,106 @@ chrome.storage.promise = {
     }
 
 }
+
+//
+/////////
+function isArticleProtected(document) {
+  if ( /title="Protected\: /.test(document) ) {
+    return true;
+  }
+  return false;
+}
+
+//
+////////
+function determineArticleStatus(document) {
+
+  var postId = document.match(/rel="shortlink".+?\>/i)[0].match(/\d\d\d+/)[0];
+  var isProtected = isArticleProtected(document);
+
+  console.log(postId, isProtected);
+
+  checkProtectedArticleStatus(postId, isProtected);
+}
+
+
+
+function checkProtectedArticleStatus(postId, isProtected) {
+
+  // get
+  chrome.storage.promise.local.get('protectedarticles').then(function(data) {
+    // resolved
+    // console.log(data); // => {'foo': 'bar'}
+    // console.log(data.length); // => {'foo': 'bar'}
+    // console.log(data.protectedarticles); // => {'foo': 'bar'}
+    // console.log(data.protectedarticles.length); // => {'foo': 'bar'}
+
+    if (typeof data.protectedarticles !== 'undefined') {
+
+      // "protectedarticles" exists
+
+      // Convert the value we got from chrome.storage into an array.
+      // https://stackoverflow.com/a/20881336/556079
+      var arr = Object.values(data.protectedarticles);
+      console.log(arr);
+
+      if ( !arr.includes(postId) ) {
+
+          console.error("postId NOT already included in 'protectedarticles'");
+
+          if ( isProtected ) {
+              arr.push(postId);
+          }
+
+      } else {
+
+          console.error("postId already included");
+
+          if ( !isProtected ) {
+            console.log("is not protected")
+            removeValueFromArray(arr, postId);
+          }
+
+      }
+
+      // now that we've determined whether or not we're adding/deleting, set our array back into storage
+      chrome.storage.promise.local.set({'protectedarticles': arr}).then(function() {
+        // resolved
+        console.log('set');
+      }, function(error) {
+        // rejected
+        console.log(error);
+      });
+
+      console.log(arr);
+
+    } else {
+      // "protectedarticles" does not exists
+      console.error("'protectedarticles' not set yet");
+    }
+
+  }, function(error) {
+    // rejected
+    console.log(error);
+  });
+
+  // console.log(postId);
+  //
+  // var key = {}
+  // var data = "protected";
+  //
+  // key[postId] = data;
+  //
+  // chrome.storage.promise.local.set(key).then(function() {
+  //   // resolved
+  //   console.log('set');
+  // }, function(error) {
+  //   // rejected
+  //   console.log(error);
+  // });
+
+};
+
 
 
 // View entire storage

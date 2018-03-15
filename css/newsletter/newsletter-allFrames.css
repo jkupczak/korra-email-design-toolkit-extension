@@ -182,3 +182,77 @@
 .img-dims-marker section:nth-child(2) {
   /*font-size:60%;*/
 }
+
+
+
+
+
+/***********
+
+  Baseline Overlay
+
+  **********/
+/*
+.baseline-overlay {
+  pointer-events: none;
+  width:100%;
+  height:100%;
+  position: absolute; top:0; left:0;
+  z-index:1000;
+} */
+
+.toolkit-element-baseline-overlay {
+  transition: opacity .2s;
+}
+
+.toolkit-element-baseline-overlay:after {
+  background: linear-gradient(rgb(243, 62, 198) 1px, transparent 1px) left top / 1px 26px;
+  width: auto;
+  height: 100%;
+  z-index: 9999;
+  content: "";
+  display: block;
+  pointer-events: none;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  top: 0px;
+}
+
+/* Fixed View, No Scrolling */
+.toolkit-element-baseline-overlay[data-view="fixed"]:after {
+  position: fixed;
+}
+
+/* Scroll with page */
+html.activate-toolkit-element-baseline-overlay .toolkit-element-baseline-overlay[data-view="absolute"] {
+  position: relative !important;
+}
+.toolkit-element-baseline-overlay[data-view="absolute"]:after {
+  position: absolute;
+}
+
+/* Adjust mobile to match desktop */
+html.toolkit-frame-mobile .toolkit-element-baseline-overlay:after {
+  top:-20px;
+}
+
+/* Hide on click */
+/* targeting <html> doesn't work because it activates when you click the scrollbar. not what we want. */
+body:active ~ .toolkit-element-baseline-overlay {
+  opacity:0;
+  transition: opacity .2s;
+}
+
+/* body:active .baseline-overlay:after {
+  display:none;
+} */
+  /* .mobile-iframe-parent .baseline-overlay {
+    top:-20px;
+  }
+.baseline-overlay div {
+  height:1px;
+  background:rgb(223,58,179);
+  width:100%;
+  margin-top:25px;
+} */
