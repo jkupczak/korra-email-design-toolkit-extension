@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/libs/interact.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/libs/interact.js");
 //////////////////////////////////////////////////////////////////////////////
 
 /* interact.js v1.3.3 | https://raw.github.com/taye/interact.js/master/LICENSE */

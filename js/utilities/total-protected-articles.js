@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/utilities/total-protected-articles.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/utilities/total-protected-articles.js");
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 // Get Protected Articles value from chrome.storage

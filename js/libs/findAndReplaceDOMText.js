@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/libs/findAndReplaceDOMText.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/libs/findAndReplaceDOMText.js");
 /**
  *
  * https://github.com/padolsey/findAndReplaceDOMText

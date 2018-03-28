@@ -53,27 +53,28 @@
 /***********/
 /***********/
 
-.page-lists-members-view #list-content > div:first-child .full-width-mobile > div > div:last-child,
+/* DEPRECATED BECAUSE MC UPDATED THEIR LAYOUT */
+
+/* .page-lists-members-view #list-content > div:first-child .full-width-mobile > div > div:last-child,
 .page-lists-members-view #list-content > div:first-child {
   margin-bottom:0 !important;
-}
+} */
 
-.page-lists-members-view #view-profile > .size1of2 {
+/* .page-lists-members-view #view-profile > .size1of2 {
   width:25%;
 }
 .page-lists-members-view #view-profile > .size1of2 li {
   padding:0px 0 10px;
-
-}
+} */
 
 /* Edit Profile */
-.page-lists-members-view #edit-profile {
+/* .page-lists-members-view #edit-profile {
   display: flex;
   flex-wrap: wrap;
 }
 .page-lists-members-view #edit-profile > div {
   width: 50%
-}
+} */
 
 /***********/
 /***********/

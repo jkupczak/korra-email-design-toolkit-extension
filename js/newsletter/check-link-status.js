@@ -1,4 +1,3 @@
-var logging = true;
 
 //
 // Inspiration
@@ -16,10 +15,9 @@ var logging = true;
 //  - Implement rate limiting. - https://github.com/ocodia/Check-My-Links/issues/57
 //
 //  - Figure out how to prevent client blocking errors, is another extension doing it??
+//     - Yes! Some of my extensions were causing errors.
 //
 //  - Add custom timeout values via options - https://github.com/ocodia/Check-My-Links/issues/33
-//
-//  - Skip non-unique URLs so that we aren't hitting the same link more than once per check. See: https://github.com/ocodia/Check-My-Links/issues/30
 //
 //  - Add option for blacklisting links - e.g. skip certain links when looping
 //
@@ -31,69 +29,17 @@ var logging = true;
 //    - provide manual clear cache button
 //    - try to get them to clear every X hours
 //
+//  - [DONE!] Skip non-unique URLs so that we aren't hitting the same link more than once per check. See: https://github.com/ocodia/Check-My-Links/issues/30
 //
 //
 /////////
 
-////////
-//
-////////
-function getOption(key) {
-    var value;
-    var defaultOptions = {
-        blacklist: "googleleads.g.doubleclick.net\n" +
-                    "doubleclick.net\n" +
-                    "googleadservices.com\n" +
-                    "www.googleadservices.com\n" +
-                    "googlesyndication.com\n" +
-                    "adservices.google.com\n" +
-                    "appliedsemantics.com",
-        checkType: "GET",
-        cache: "true",
-        noFollow: "false",
-        parseDOM: "false",
-        trailingHash: "false",
-        emptyLink: "false",
-        noHrefAttr: "false",
-        autoCheck: "false",
-        optionsURL: chrome.extension.getURL("options.html")
-    };
 
-    // Get Option from LocalStorage
-    value = getItem(key);
-
-    // Default the value if it does not exist in LocalStorage and a default value is defined above
-    if ( (value === null || value == "null") && (key in defaultOptions) ) {
-        setItem(key, defaultOptions[key]);
-        value = defaultOptions[key];
-    }
-    return value;
-}
-
-////////
-//
-////////
-function getOptions() {
-    var options = {};
-    options.blacklist = getOption("blacklist");
-    options.checkType = getOption("checkType");
-    options.cache = getOption("cache");
-    options.noFollow = getOption("noFollow");
-    options.parseDOM = getOption("parseDOM");
-    options.trailingHash = getOption("trailingHash");
-    options.emptyLink = getOption("emptyLink");
-    options.noHrefAttr = getOption("noHrefAttr");
-    options.autoCheck = getOption("autoCheck");
-    options.optionsURL = getOption("optionsURL");
-    return options;
-}
-
-////////
-//
-////////
+/////////////////
+/////////////////
+/////////////////
 function onRequest(i, linkHref, linkObj) {
 
-      var options = getOptions();
       var promise;
       var response = {source:null,status:null,statusText:null,responseURL:null,document:null,isRedirect:null,redirectOK:null};
 
@@ -107,6 +53,8 @@ function onRequest(i, linkHref, linkObj) {
       // We're online
       // If the DOM needs to be parsed, or if we aren't caching links, then we need to XHR right now.
       if ( XHRisNecessary(options) === true ) {
+
+        //TODO we need to check if we're offline...
 
           checkURL(i, linkHref, linkObj)
 
@@ -127,83 +75,143 @@ function onRequest(i, linkHref, linkObj) {
       // Caching is true or the DOM doesn't need to be parsed
       else {
 
-        linkStorage.getLink( linkHref ).then(function(link) {
-
-          // Is it already in chrome.storage?
-          if ( Object.getOwnPropertyNames(link).length > 0 ) {
-            if ( (200 <= link[linkHref]['status'] && link[linkHref]['status'] < 400) ) {
-              response.source      = "cache";
-              response.status      = link[linkHref]['status'];
-              response.statusText  = link[linkHref]['statusText'];
-              response.responseURL = link[linkHref]['responseURL'];
-              response.isRedirect  = link[linkHref]['isRedirect'];
-              response.timestamp   = link[linkHref]['timestamp'];
-            }
-          }
-          // Nope, could not find link in cache.
-          else {
-
-            // If we're offline..
-            if ( !navigator.onLine ) {
-              response.source      = "offline";
-              response.status      = "0";
-              response.statusText  = "Offline";
-              response.responseURL = "unavailable";
-              response.isRedirect  = null;
-              response.redirectOK  = null;
-            }
-            // Else, we're online. Let's check the URL using xhr.
-            else {
-              response = checkURL(i, linkHref, linkObj);
-            }
-
-          }
-          return new Promise(function(resolve, reject) { resolve(response); } );
-      })
-
-      // We've got our response, whether from XHR or from cache. Let's process it.
-      .then(function(response) {
-
-        // Is it safe to cache these results in chrome.storage?
-        // console.log("2");
-        processLinkStatusResponse(i, linkHref, linkObj, response, options);
-
-        return new Promise(function(resolve, reject){resolve(response);});
-
-      });
+        checkCacheElseXHR(i, linkHref, linkObj, response);
 
       return false;
 
   }
 }
 
-////////
-//
-////////
+////////////////
+////////////////
+////////////////
+function checkCacheElseXHR(i, linkHref, linkObj, response) {
+
+      linkStorage.getLink(linkHref).then(function(link) {
+
+        // Is it already in chrome.storage?
+        // If yes...
+        if ( Object.getOwnPropertyNames(link).length > 0 ) {
+          if ( (200 <= link[linkHref]['status'] && link[linkHref]['status'] < 400) ) {
+            response.source      = "cache";
+            response.status      = link[linkHref]['status'];
+            response.statusText  = link[linkHref]['statusText'];
+            response.responseURL = link[linkHref]['responseURL'];
+            response.isRedirect  = link[linkHref]['isRedirect'];
+            response.timestamp   = link[linkHref]['timestamp'];
+          }
+        }
+        // // Not in cache (yet). If this is a duplicate link it might show up in the cache soon.
+        // // In that case, return false to end the check on this link.
+        // // The matching link that IS being XHR'd will eventually finish and then use its results to apply to this link
+        // else if ( linkInfoArray[i]['firstInstance'] === false ) {
+        //   response = false;
+        // }
+        // Nope, definitely not in the cache and it isn't currently being XHR'd.
+        else {
+
+          // Let's check if we're offline..
+          if ( !navigator.onLine ) {
+            response.source      = "offline";
+            response.status      = "0";
+            response.statusText  = "Offline";
+            response.responseURL = "unavailable";
+            response.isRedirect  = null;
+            response.redirectOK  = null;
+          }
+          // Else, we're online. Let's check the URL using xhr.
+          else {
+            response = checkURL(i, linkHref, linkObj);
+          }
+
+        }
+        return new Promise(function(resolve, reject) { resolve(response); } );
+    })
+
+    // We've got our response, whether from XHR or from cache. Let's process it.
+    .then(function(response) {
+
+      // If our response is false then we're done.
+      // If our response is not false...
+      // if ( response !== false ) {
+
+        // then we process the response we got from cache or XHR
+        processLinkStatusResponse(i, linkHref, linkObj, response, options);
+
+        // Now that the response has been processed, was this link the first of other identical links?
+        if ( linkInfoArray[i]['firstInstance'] === true ) {
+          // if so, process these results again for all other matching links in the DOM
+          applyXHRResultsToDupeLinks(linkHref, response, options);
+        } else {
+          console.error("!!!! ERROR !!!! not the first instance of this link"); // technically this should never fire because the !== false above should stop it
+        }
+
+      // }
+
+      return new Promise(function(resolve, reject){resolve(response);});
+
+    });
+
+}
+
+
+/////////////////
+/////////////////
+/////////////////
+function applyXHRResultsToDupeLinks(linkHref, response, options) {
+
+  console.log("running applyXHRResultsToDupeLinks on links that match", linkHref);
+
+  // Start a new loop through all links in the DOM
+  var i = 0
+  for (let linkObj of linkList) {
+
+    if ( linkInfoArray[i]['url'] === linkHref && linkInfoArray[i]['firstInstance'] === false ) {
+
+      processLinkStatusResponse(i, linkHref, linkObj, response, options);
+
+    }
+
+    i++
+
+  }
+
+}
+
+////////////////
+////////////////
+////////////////
 function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
 
-  console.log(i, response);
-
-  // Read the response.document to find out if an article is protected. We don't cache protected articles.
-  checkIfArticleProtected(i, linkObj, response);
-
-  // Check if a MedBridge redirect isn't working correctly. We don't cache links with broken redirects.
-  checkRedirectErrors(i, linkObj, response);
+  console.log("response:", i, response);
 
   // Make sure we didn't deny caching due to MedBridge redirect errors or protected blog articles
   // If the source is a fresh XHR (and not cache), and the response status code is >= 200 and less than 400...
   if ( (response.source == "xhr") && (200 <= response.status && response.status < 400) ) {
 
+    // Check if a MedBridge redirect isn't working correctly. We don't cache links with broken redirects.
+    checkRedirectErrors(i, linkObj, response);
+
     if ( response.redirectOK === false ) {
+
       response.statusText = "Redirect Failed";
+
     } else if ( response.statusText === "" ) {
+
       response.statusText = "OK";
+      // This link has an OK status and it was a fresh XHR (not from cache), so let's check if it's a protected article.
+      // Read the response.document to find out if an article is protected. We don't cache protected articles.
+      checkIfArticleProtected(i, linkObj, response);
+
     } else if ( response.statusText === "Not Found" ) {
+
       response.addToCache = false;
       response.status = 404;
+
     }
 
     // Make sure there are no overrides in place to prevent caching. Either on all links or this specific link.
+    // If not, then add it to chrome.storage
     if ( options.cache == 'true' && response.addToCache !== false ) {
       linkStorage.addLink(linkHref, response);
     }
@@ -241,8 +249,10 @@ function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
 
 }
 
+
+
 ////////
-// Used to animate and hide checkboxes when links are approved on a fresh XHR
+// Used to animate and hide checkmarks when links are approved on a fresh XHR
 ////////
 function linkMarkerCheckedOff(linkMarker) {
   setTimeout(function(){
@@ -258,8 +268,8 @@ function checkIfArticleProtected(i, linkObj, response) {
   if ( linkInfoArray[i]['isArticle'] ) {
 
     // Save the protected status to chrome.storage for use elswhere.
-    determineArticleStatus(response.document);
-    
+    logArticleStatusInStorge(response.document);
+
     if ( isArticleProtected(response.document) ) {
     // if ( /title="Protected\: /.test(response.document) ) {
       linkInfoArray[i]['articleProtected'] = true;
@@ -363,7 +373,9 @@ var linkCheckTimeout = 30000;
 
 function checkURL(i, linkHref, linkObj) {
 
-  var response = {source:null,status:null,statusText:null,responseURL:null,document:null,isRedirect:null,redirectOK:null,articleProtected:null,cache:null};
+  totalXHRs++;
+
+  var response = {source:null,status:null,statusText:null,responseURL:null,document:null,isRedirect:null,redirectOK:true,articleProtected:null};
 
   return new Promise(function (resolve, reject) {
 
@@ -479,11 +491,11 @@ function assignErrorRows(i, linkHref, linkObj, response) {
 
 
 ////////
-// Should DOM be parsed || OR || is caching set to off?
+// Should DOM be parsed to check for #'s || OR || is caching set to off?
 // If so, XHR is necessary.
 ////////
 function XHRisNecessary(options, linkHref) {
-  if ( shouldDOMbeParsed(linkHref, options.parseDOM, options.checkType) === true || options.cache == 'false' ) {
+  if ( shouldDOMbeParsed(linkHref, options.parseDOM) === true || options.cache == 'false' ) {
     return true;
   }
   return false;
@@ -492,73 +504,10 @@ function XHRisNecessary(options, linkHref) {
 ////////
 //
 ////////
-function shouldDOMbeParsed(linkHref, parseDOMoption, checkTypeOption) {
-  if ( parseDOMoption === "true" && checkTypeOption == "GET" ) {
-    if ( (linkHref.lastIndexOf("#") > linkHref.lastIndexOf("/") ) && (linkHref.lastIndexOf("#") < linkHref.length-1) ) {
-      return true;
-    }
+function shouldDOMbeParsed(linkHref, parseDOMoption) {
+  // If the setting parseDOMoption is true (option specifically for #'s'), and this link has a hash... return shouldDOMbeParsed as true
+  if ( parseDOMoption === "true" && (linkHref.lastIndexOf("#") > linkHref.lastIndexOf("/") ) && (linkHref.lastIndexOf("#") < linkHref.length-1) ) {
+    return true;
   }
   return false;
-}
-
-//////////////////////
-//////////////////////
-
-// OPTIONS: Management
-
-//////////////////////
-//////////////////////
-
-////////
-// OPTIONS: Set items in localstore
-////////
-function setItem(key, value) {
-    try {
-      log("Inside setItem:" + key + ":" + value);
-      window.localStorage.removeItem(key);
-      window.localStorage.setItem(key, value);
-    }catch(e) {
-      log("Error inside setItem");
-      log(e);
-    }
-    log("Return from setItem" + key + ":" +  value);
-}
-
-////////
-// OPTIONS: Get items from localstore
-////////
-function getItem(key) {
-    var value;
-    log('Get Item:' + key);
-    try {
-      value = window.localStorage.getItem(key);
-      if(typeof value === 'undefined'){
-        return null;
-      }
-    }catch(e) {
-      log("Error inside getItem() for key:" + key);
-      log(e);
-      value = null;
-    }
-
-    log("Returning value: " + value);
-    return value;
-}
-
-////////
-// OPTIONS: Zap all items in localstore
-////////
-function clearStrg() {
-    log('about to clear local storage');
-    window.localStorage.clear();
-    log('cleared');
-}
-
-////////
-//
-////////
-function log(txt) {
-  if (logging) {
-    // console.log(txt);
-  }
 }

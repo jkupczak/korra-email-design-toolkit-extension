@@ -24,12 +24,12 @@
     "startpage/index.html"
   ],
 
-  "description": "Helps automate email design, testing, and marketing tasks. Upgrades the user experience of viewing local HTML files, MailChimp, AWS, and more.",
-  "version": "3.4",
+  "description": "Helps automate email design, testing, and marketing tasks. Upgrades the user experience of viewing local HTML files, MedBridgeeducation.com, and MailChimp.",
+  "version": "3.6",
 
   "browser_action": {
     "default_icon": "icons/192-korra.png",
-    "default_title": "Toolkit Options"
+    "default_title": "Korra"
   },
   "permissions": [
     "cookies",
@@ -107,7 +107,7 @@
     },
     {
       "matches": ["file:///*", "http://localhost:4567/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
-      "exclude_matches": ["http://localhost:4567/__middleman/*"],
+      "exclude_matches": ["http://localhost:4567/__middleman/*", "*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
       "js": ["js/email-labeling.js"],
       "run_at": "document_end"
     },
@@ -124,6 +124,7 @@
     },
     {
       "matches": ["*://*.mailchimp.com/*"],
+      "exclude_matches": ["*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
       "css": ["css/libs/tingle.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/mailchimp/mailchimp-global-styles.css"],
       "js": ["js/libs/arrive.js", "js/libs/tingle.js", "js/libs/alertify.js", "js/mailchimp/mailchimp-global.js"]
     },
@@ -138,7 +139,7 @@
         },
         {
           "matches": ["*://*.mailchimp.com/campaigns/*"],
-          "exclude_matches": ["*://*.mailchimp.com/campaigns/edit*"],
+          "exclude_matches": ["*://*.mailchimp.com/campaigns/edit*", "*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
           "js": ["js/mailchimp/mailchimp-campaigns.js"]
         },
         {
@@ -169,7 +170,7 @@
           "js": ["js/mailchimp/mailchimp-import-history.js"]
         },
         {
-          "matches": ["*://*.mailchimp.com/lists/members*"],
+          "matches": ["*://*.mailchimp.com/lists/members/?id=*"],
           "js": ["js/mailchimp/mailchimp-lists.js"]
         },
         {

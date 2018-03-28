@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/global.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/global.js");
 ///////////////////////////////////////////////////////////////
 
 ////////////////////
@@ -74,6 +74,15 @@ function debounce(func, wait, immediate) {
 //
 // window.addEventListener('resize', myEfficientFn);
 //
+
+//
+// Finding out how many times an array element appears
+// https://stackoverflow.com/a/41941954/556079
+//
+function countInArray(array, value) {
+  return array.reduce((n, x) => n + (x === value), 0);
+  // console.log(countInArray([1,2,3,4,4,4,3], 4)); // 3
+}
 
 
 //
@@ -1124,19 +1133,18 @@ function isArticleProtected(document) {
 
 //
 ////////
-function determineArticleStatus(document) {
+// Used in local HTML files and when visiting the blog.
+function logArticleStatusInStorge(document) {
 
-  var postId = document.match(/rel="shortlink".+?\>/i)[0].match(/\d\d\d+/)[0];
+  console.log(document);
+
+  var postId = document.match(/rel\=(\"|\')shortlink(\"|\').+?\>/i)[0].match(/\d\d\d+/)[0];
   var isProtected = isArticleProtected(document);
 
   console.log(postId, isProtected);
 
   checkProtectedArticleStatus(postId, isProtected);
-}
 
-
-
-function checkProtectedArticleStatus(postId, isProtected) {
 
   // get
   chrome.storage.promise.local.get('protectedarticles').then(function(data) {
@@ -1209,9 +1217,7 @@ function checkProtectedArticleStatus(postId, isProtected) {
   //   // rejected
   //   console.log(error);
   // });
-
-};
-
+}
 
 
 // View entire storage

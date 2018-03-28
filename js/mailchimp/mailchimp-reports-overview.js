@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/mailchimp/mailchimp-reports-overview.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/mailchimp/mailchimp-reports-overview.js");
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 document.arrive("ul#campaigns-list > li:first-child", function(e) {
@@ -220,7 +220,7 @@ function processExtraData() {
   for (let row of rows) {
 
     if ( row.dataset.status === "delivered" || row.dataset.status === null || row.dataset.status === undefined )  {
-      data += row.dataset.uniqueid + ";" + "" + ";" + row.dataset.campaignid + ";" + "" + ";" + row.dataset.type + ";" + row.querySelector("h4 a").textContent + ";" + row.dataset.sendDate + ";" + "" + "\n"
+      data += row.dataset.uniqueid + ";;" + row.dataset.campaignid + ";;" + row.dataset.type + ";" + row.querySelector("h4 a").textContent + ";;" + row.dataset.sendDate + ";" + "\n"
     } else {
       console.log("This row was not eligible for export.");
     }

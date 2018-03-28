@@ -206,7 +206,7 @@ function generateTestLabeler() {
   }
 
   // Grab the preheader!
-  var preheader   = document.body.dataset.preheader.substring(0,90);
+  var preheader   = document.body.dataset.preheader.substring(0,120) + "&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;";
 
   // Subscriber or Non-Subscriber?
   var audience;

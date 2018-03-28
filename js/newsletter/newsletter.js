@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/newsletter.js");
 //////////////////////////////////////////////////////////////////////////////
 
 // MailGun Send
@@ -8,10 +8,10 @@ console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter.js");
 
 function sendEmail() {
   console.log(mailgunApiKey);
-  
+
   var data = new FormData();
   data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
-  data.append("to", "james@medbridgeed.com");
+  data.append("to", "bleedlikeyou@gmail.com");
   data.append("subject", "Hello from Mailgun");
   data.append("html", cleanedOriginalHtml);
 
@@ -423,7 +423,8 @@ function sendEmail() {
 
 var view = getParameterByName("view");
 
-if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.test(document.URL) ) {
+// if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.test(document.URL) ) {
+if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 
 
 
@@ -484,6 +485,8 @@ if ( getParameterByName("presentation") === "1" ) {
 
 
   // Create a new injected script.
+  // Not sure why I decided to inject this script instead of adding it to the manifest.
+  // TODO: Figure out why.
   injectScript( chrome.extension.getURL('/js/newsletter/zoom.js'), 'body');
 
 
@@ -567,6 +570,7 @@ if ( getParameterByName("presentation") === "1" ) {
 
     // Get all links, global variable
     linkList = dFrameContents.querySelectorAll("a");
+    linkListArr = Array.from(linkList);
     linkInfoArray = [];
 
     // Get all images
@@ -716,64 +720,29 @@ document.querySelector("html").classList.toggle("errors");
 //////////////////////////////////////////////////////
 
 
-///////////
-// Dropbox
-
-dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
-
-var localUserPath = "file:///Users/jameskupczak";
-
-var pageUrl = document.URL;
-
-///////////
-///// Get the filename.
-///////////
-var fileName = getFilename(pageUrl);
-
-
-///////////
-///// Get the Platform
-///////////
-
-var emailPlatform;
-var emailPlatformName;
-if ( /^GR\-/i.test(fileName) ) {
-  emailPlatform = "gr";
-  emailPlatformName = "GetResponse";
-} else if ( /^SG\-/i.test(fileName) ) {
-  emailPlatform = "sg";
-  emailPlatformName = "SendGrid";
-} else {
-  emailPlatform = "mc";
-  emailPlatformName = "MailChimp";
-}
-
-///////////
-///// Get Discipline
-///////////
-var emailDisc = getDisciplineId(fileName);
-document.body.classList.add("disc-" + emailDisc);
-
-///////////
-///// Get the A/B Status.
-///////////
-
-var abTesting = getABstatus(fileName);
-
 
 ///////////
 ///// Determine location of the file you're currently viewing.
 ///////////
+var pageUrl = document.URL;
 
 if ( /dropboxusercontent/gi.test(pageUrl) ) {
   var onDropbox = true;
-} else if ( /file:\/\/\//gi.test(pageUrl) ) {
-  var onLocal = true;
+} else if ( /^file\:\/\/\//gi.test(pageUrl) ) {
+  var isLocalFile = true;
 } else if ( /\/\/localhost\:/gi.test(pageUrl) ) {
-  var onLocalServer = true;
+  var isLocalHost = true;
   if ( /localhost\:4567/gi.test(pageUrl) ) {
     var onMiddleman = true;
   }
+} else if ( /mailchimp\.com\/campaigns\/preview\-content\-html\?id\=/i.test(pageUrl) ) {
+  var isMailChimpCampaign = true;
+}
+
+if ( isLocalFile || isLocalHost ) {
+
+  var isLocalCampaign = true;
+
 }
 
 if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(pageUrl) ) {
@@ -783,29 +752,111 @@ if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(pageUrl) ) {
   // console.error("nuh-uh");
 }
 
+
 ///////////
-///// Get local parent folder path
+// Dropbox
+
+dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
+
+var localUserPath = "file:///Users/jameskupczak";
+
+
 ///////////
+///// Get Discipline
+///////////
+if ( isLocalCampaign ) {
 
-if ( inLocalDbFolder ) {
+      ///////////
+      ///// Get the filename.
+      ///////////
+      var fileName = getFilename(pageUrl);
 
-  var filenameEscaped = escapeRegExp(fileName)
-  var filenameReplacePattern = new RegExp(filenameEscaped + "($|.+?)", "gi");
+      ///////////
+      ///// Get the Discipline
+      ///////////
+      var emailDisc = getDisciplineId(fileName);
 
-  // console.error(filenameEscaped);
-  // console.error(filenameReplacePattern);
+      ///////////
+      ///// Get the A/B Status.
+      ///////////
+      var abTesting = getABstatus(fileName);
 
-  var localParentFolder = pageUrl.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, '')
+      ///////////
+      ///// Get Email Title
+      ///////////
+      var emailTitle = getEmailTitle(fileName, emailDisc);
 
-      // console.error(localParentFolder);
+      ///////////
+      ///// Get Date of Email
+      ///////////
+      var emailDate = getEmailDate(fileName) || new Date();
 
-      localParentFolder = localParentFolder.replace(filenameReplacePattern, "");
+      ///////////
+      ///// Get Date of Email
+      ///////////
+      var dateFormatted = formatDate(emailDate);
 
-      // console.error(localParentFolder);
+      // If no email date is found in the filename, set the emailDate variable to be today's date.
+      if ( isNaN(emailDate) == true ) { // ref - http://stackoverflow.com/a/1353710/556079
+        emailDate = new Date();;
+      }
+
+      var emailMonth = emailDate.getMonth();
+      var emailMonthAbbr = getMonthAbbr(emailDate);
+
+      ///////////
+      ///// Get the Platform
+      ///////////
+
+      var emailPlatform;
+      var emailPlatformName;
+      if ( /^GR\-/i.test(fileName) ) {
+        emailPlatform = "gr";
+        emailPlatformName = "GetResponse";
+      } else if ( /^SG\-/i.test(fileName) ) {
+        emailPlatform = "sg";
+        emailPlatformName = "SendGrid";
+      } else {
+        emailPlatform = "mc";
+        emailPlatformName = "MailChimp";
+      }
+
+
+      ///////////
+      ///// Get local parent folder path
+      ///////////
+
+      if ( inLocalDbFolder ) {
+
+        var filenameEscaped = escapeRegExp(fileName)
+        var filenameReplacePattern = new RegExp(filenameEscaped + "($|.+?)", "gi");
+
+        var localParentFolder = pageUrl.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, '')
+
+            localParentFolder = localParentFolder.replace(filenameReplacePattern, "");
+
+      }
 
 } else {
-  // console.error("nope!");
+
+    var emailDisc = "unknown"
+
+    var emailDate = null;
+    var emailMonth = null;
+    var emailMonthAbbr = null;
+    var dateFormatted = null;
+
+    var emailTitle = null;
+    var abTesting = null;
+
 }
+
+
+///////////
+///// Apply class based on discipline
+///////////
+document.body.classList.add("disc-" + emailDisc);
+
 
 ///////////
 ///// Determine type of email - Non-Subscriber versus Subscriber, fox, hs, etc.
@@ -864,25 +915,6 @@ if ( /\-Sale\-/gi.test(pageUrl) ) {
 
 
 ///////////
-///// Get Email Title
-///////////
-var emailTitle = getEmailTitle(fileName, emailDisc);
-
-
-///////////
-///// Get Date of Email
-///////////
-var emailDate = getEmailDate(fileName) || new Date();
-
-// If no email date is found in the filename, set the emailDate variable to be today's date.
-if ( isNaN(emailDate) == true ) { // ref - http://stackoverflow.com/a/1353710/556079
-  emailDate = new Date();;
-}
-
-var emailMonthAbbr = getMonthAbbr(emailDate);
-
-
-///////////
 ///// Is this a recent email?
 ///////////
 var isRecentEmail = isRecentEmail(emailDate);
@@ -923,7 +955,7 @@ console.groupCollapsed("Global variables based on filename");
 
   console.group("Date");
     console.log("emailDate = " + emailDate);
-    console.log("emailDate (month) = " + emailDate.getMonth() + " | " + getMonthAbbr(emailDate));
+    console.log("emailDate (month) = " + emailMonth + " | " + emailMonthAbbr);
     console.log("isRecentEmail = " + isRecentEmail);
   console.groupEnd();
 
@@ -1095,13 +1127,16 @@ if ( getParameterByName("layout") ) {
 
 /////
 
+
+if ( isLocalCampaign ) {
+
     // Create HTML for email date
-    var showEmailDate ="";
+    var showEmailDate = "";
     if ( isNaN(emailDate) == false ) { // ref - http://stackoverflow.com/a/1353710/556079
-      showEmailDate = '<div class="title-small"><span>' + formatDate(emailDate) + '</span></div>'
+      showEmailDate = '<div class="title-small"><span>' + dateFormatted + '</span></div>'
     }
-    var pageTitle = document.createElement("div");
-    pageTitle.className = "page-title";
+    // var pageTitle = document.createElement("div");
+    // pageTitle.className = "page-title";
 
 
     // Create HTML for A/B icon if we need to.
@@ -1193,16 +1228,15 @@ if ( getParameterByName("layout") ) {
     var documentDesc = document.createElement("div");
     documentDesc.className = "document-desc";
 
-    var documentIcon = document.createElement("div");
-    documentIcon.innerHTML = headerIcon;
-    documentIcon.className = "document-icon";
-    documentDesc.appendChild(documentIcon);
+    if ( headerIcon ) {
+      var documentIcon = document.createElement("div");
+      documentIcon.innerHTML = headerIcon;
+      documentIcon.className = "document-icon";
+      documentDesc.appendChild(documentIcon);
+    }
 
 
-    //
-
-
-    pageTitle.innerHTML += headerIcon;
+    // pageTitle.innerHTML += headerIcon;
 
 
     // Organization Logos
@@ -1224,7 +1258,7 @@ if ( getParameterByName("layout") ) {
         console.error(orgLogo);
       }
 
-      pageTitle.innerHTML += orgLogo;
+      // pageTitle.innerHTML += orgLogo;
     }
 
 
@@ -1245,13 +1279,13 @@ if ( getParameterByName("layout") ) {
 
       headerAudienceText += '</div>';
     }
-    pageTitle.innerHTML += headerAudienceText;
-
+    // pageTitle.innerHTML += headerAudienceText;
     //
-    pageTitle.innerHTML += abTitleIcon;
-
+    // //
+    // pageTitle.innerHTML += abTitleIcon;
     //
-    pageTitle.innerHTML += '<div class="email-title"><div class="title-large"><span>' + toTitleCaseRestricted(emailTitle) + '</span></div>' + showEmailDate + '</div>'
+    // //
+    // pageTitle.innerHTML += '<div class="email-title"><div class="title-large"><span>' + toTitleCaseRestricted(emailTitle) + '</span></div>' + showEmailDate + '</div>'
 
     // Inject content into the title bar
     // pageTitle.innerHTML = headerIcon + headerAudienceText + abTitleIcon + '<div class="email-title"><div class="title-large"><span>' + toTitleCaseRestricted(emailTitle) + '</span></div>' + showEmailDate + '</div>';
@@ -1261,12 +1295,21 @@ if ( getParameterByName("layout") ) {
 
     /////
     // Append document description to the the info-bar
-    var documentTitle = document.createElement("div");
-    documentTitle.innerHTML = headerAudienceText;
-    documentTitle.className = "document-title";
-    documentDesc.appendChild(documentTitle);
+    if ( headerAudienceText ) {
+      var documentTitle = document.createElement("div");
+      documentTitle.innerHTML = headerAudienceText;
+      documentTitle.className = "document-title";
+      documentDesc.appendChild(documentTitle);
+    }
 
-    infoBar.prepend(documentDesc);
+
+    if ( headerAudienceText || headerIcon ) {
+      infoBar.prepend(documentDesc);
+    }
+
+
+
+}
 
 /////
 
@@ -1521,7 +1564,7 @@ function paneToggle(infobar, mobile) {
 var shareOrb = document.createElement("div");
 shareOrb.className = "share-orb orb glyph";
 shareOrb.innerHTML = svgIconShare;
-if ( onLocalServer ) { shareOrb.classList.add("off") };
+if ( isLocalHost ) { shareOrb.classList.add("off") };
 shareOrb.addEventListener("click", getDbShareLink, false);
 orbsTop.appendChild(shareOrb);
 
@@ -1746,7 +1789,7 @@ orbsBottom.appendChild(orbDivider3);
 //
 // var swapOrb = document.createElement("div");
 // swapOrb.className = "swap-orb orb glyph";
-// if ( onLocalServer ) { swapOrb.classList.add("off") };
+// if ( isLocalHost ) { swapOrb.classList.add("off") };
 // swapOrb.addEventListener("click", swapUrl, false);
 // orbsTop.appendChild(swapOrb);
 
@@ -3206,16 +3249,19 @@ appendQaBar(filesizeQaBar);
 
 // Calculate the size with our extra clean string.
 // var emailSize = Math.round( ( new TextEncoder('utf-8').encode(htmlForSizeCalc).length / 1024 ) * 10 ) / 10;
-var emailSize = prettyFileSize(new TextEncoder('utf-8').encode(htmlForSizeCalc).length, 1);
+var emailSize       = new TextEncoder('utf-8').encode(htmlForSizeCalc).length;
+var prettyEmailSize = prettyFileSize(emailSize, 1);
 
-if ( emailSize > 100 ) {
+// console.log("emailSize", emailSize, "prettyEmailSize", prettyEmailSize, "conditionalsExist", conditionalsExist);
+
+if ( emailSize > 100000 ) {
   if ( conditionalsExist ) {
-    applyQaResults(filesizeQaBar, "error", "Email code too big* (~" + emailSize + ")");
+    applyQaResults(filesizeQaBar, "error", "Email too big* (~" + prettyEmailSize + ")");
   } else {
-    applyQaResults(filesizeQaBar, "error", "Email code too big (~" + emailSize + ")");
+    applyQaResults(filesizeQaBar, "error", "Email too big (~" + prettyEmailSize + ")");
   }
 } else {
-  applyQaResults(filesizeQaBar, "success", "Email code is ~" + emailSize);
+  applyQaResults(filesizeQaBar, "success", "Email is ~" + prettyEmailSize);
 }
 
 //////////
@@ -3730,6 +3776,11 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   //   find: /(patients? [^education]|outcomes?)/gi,
   //   wrap: 'span', wrapClass: "text-error"
   // });
+  // case-insensitive
+  findAndReplaceDOMText(dFrameBody, {
+    find: /patients?/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
 
 //////////
 ////
@@ -4004,7 +4055,7 @@ if ( emailDisc === "slp" ) {
 
 // Check for words that would typically be linked by stupid Gmail. Like "tomorrow" linking to the calendar.
 findAndReplaceDOMText(dFrameBody, {
-  find: /tomorrow/gi,
+  find: /tomorrow|noon/gi,
   wrap: 'span', wrapClass: "text-error gmail-fix", forceContext: true
 });
 
@@ -4070,7 +4121,31 @@ if ( getParameterByName("helpers") === "0" ) {
   console.log("helpers off");
 }
 
+
+    function toggleLinkMarkers() {
+
+      if ( this.nodeType !== 1 ) {
+        dFrameContents.getElementById("link-markers").classList.add("on-page-load");
+      } else if ( dFrameContents.querySelector(".on-page-load") ) {
+        dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
+      } else {
+        dFrameContents.getElementById("link-markers").classList.toggle("hidden");
+      }
+
+      linkMarkersToggle = !linkMarkersToggle;
+
+      if ( linkMarkersToggle ) {
+        history.replaceState(null,null, updateQueryString("links", "0") );
+      } else {
+        history.replaceState(null,null, updateQueryString("links") );
+      }
+
+    }
+
+
 window.onload = function () {
+
+
   // Wait until all images are downloaded before running functions that alter or enhance the email preview.
   // These functions rely on the layout being set in its place.
   // https://stackoverflow.com/a/588048/556079

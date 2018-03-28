@@ -162,6 +162,12 @@ html {
 
 }
 
+.link-marker svg {
+  display: block;
+  position: absolute;
+  top:-1px; right:0; bottom:0; left:0;
+  margin:auto;
+}
 
 .link-errors {
   display:none;

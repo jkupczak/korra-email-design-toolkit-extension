@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/newsletter/newsletter-functions.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/newsletter-functions.js");
 ////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////
@@ -54,20 +54,20 @@ var ro = new ResizeObserver( entries => {
 
 var lm = new ResizeObserver( entries => {
 
-  for (let link of linkList) {
+  for (let linkObj of linkList) {
 
-    var linkm = dFrameContents.querySelectorAll(".link-marker[data-number='" + link.getAttribute('data-number') + "']")[0];
+    var linkm = dFrameContents.querySelectorAll(".link-marker[data-number='" + linkObj.getAttribute('data-number') + "']")[0];
 
-    linkm.style.top  =  (link.offsetTop - 10) + "px";
-    linkm.style.left =  (link.offsetLeft - 10) + "px";
+    linkm.style.top  =  (linkObj.offsetTop - 10) + "px";
+    linkm.style.left =  (linkObj.offsetLeft - 10) + "px";
 
   }
-  // for (let link of linksWithErrorsArr) {
+  // for (let linkObj of linksWithErrorsArr) {
   //
-  //   var linkm = dFrameContents.querySelectorAll(".link-marker[data-number='" + link.getAttribute('data-number') + "']")[0];
+  //   var linkm = dFrameContents.querySelectorAll(".link-marker[data-number='" + linkObj.getAttribute('data-number') + "']")[0];
   //
-  //   linkm.style.top  =  (link.offsetTop - 10) + "px";
-  //   linkm.style.left =  (link.offsetLeft -10) + "px";
+  //   linkm.style.top  =  (linkObj.offsetTop - 10) + "px";
+  //   linkm.style.left =  (linkObj.offsetLeft -10) + "px";
   //
   // }
 
@@ -183,6 +183,138 @@ function KeyPress(e) {
 }
 
 
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Get Options
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+//////////////////////
+//////////////////////
+
+// OPTIONS: Management
+
+//////////////////////
+//////////////////////
+
+var logging = true;
+
+
+////////
+//
+////////
+function getOption(key) {
+    var value;
+    var defaultOptions = {
+        blacklist: "googleleads.g.doubleclick.net\n" +
+                    "doubleclick.net\n" +
+                    "googleadservices.com\n" +
+                    "www.googleadservices.com\n" +
+                    "googlesyndication.com\n" +
+                    "adservices.google.com\n" +
+                    "appliedsemantics.com",
+        checkType: "GET",
+        cache: "true",
+        noFollow: "false",
+        parseDOM: "false",
+        trailingHash: "false",
+        emptyLink: "false",
+        noHrefAttr: "false",
+        autoCheck: "false",
+        optionsURL: chrome.extension.getURL("options.html")
+    };
+
+    // Get Option from LocalStorage
+    value = getItem(key);
+
+    // Default the value if it does not exist in LocalStorage and a default value is defined above
+    if ( (value === null || value == "null") && (key in defaultOptions) ) {
+        setItem(key, defaultOptions[key]);
+        value = defaultOptions[key];
+    }
+    return value;
+}
+
+////////
+//
+////////
+function getOptions() {
+    var options = {};
+    options.blacklist = getOption("blacklist");
+    options.checkType = getOption("checkType");
+    options.cache = getOption("cache");
+    options.noFollow = getOption("noFollow");
+    options.parseDOM = getOption("parseDOM");
+    options.trailingHash = getOption("trailingHash");
+    options.emptyLink = getOption("emptyLink");
+    options.noHrefAttr = getOption("noHrefAttr");
+    options.autoCheck = getOption("autoCheck");
+    options.optionsURL = getOption("optionsURL");
+    return options;
+}
+
+
+////////
+// OPTIONS: Set items in localstore
+////////
+function setItem(key, value) {
+    try {
+      log("Inside setItem:" + key + ":" + value);
+      window.localStorage.removeItem(key);
+      window.localStorage.setItem(key, value);
+    }catch(e) {
+      log("Error inside setItem");
+      log(e);
+    }
+    log("Return from setItem" + key + ":" +  value);
+}
+
+////////
+// OPTIONS: Get items from localstore
+////////
+function getItem(key) {
+    var value;
+    log('Get Item:' + key);
+    try {
+      value = window.localStorage.getItem(key);
+      if(typeof value === 'undefined'){
+        return null;
+      }
+    }catch(e) {
+      log("Error inside getItem() for key:" + key);
+      log(e);
+      value = null;
+    }
+
+    log("Returning value: " + value);
+    return value;
+}
+
+////////
+// OPTIONS: Zap all items in localstore
+////////
+function clearStrg() {
+    log('about to clear local storage');
+    window.localStorage.clear();
+    log('cleared');
+}
+
+
+////////
+//
+////////
+function log(txt) {
+  if (logging) {
+    // console.log(txt);
+  }
+}
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -391,10 +523,10 @@ function linkValidationLoop(linkList, dummyLinkList, ageCheck) {
   // Loop through each link on the page first before we validate individually.
   var medbridgeLinkUrlsList = [];
 
-  for (let link of linkList) {
+  for (let linkObj of linkList) {
 
-    if ( /^https?\:\/\/(.+?\.)?medbridge(ed(ucation)?|massage)\.com\/?/gi.test(link.href) ) {
-      medbridgeLinkUrlsList.push(link.href);
+    if ( /^https?\:\/\/(.+?\.)?medbridge(ed(ucation)?|massage)\.com\/?/gi.test(linkObj.href) ) {
+      medbridgeLinkUrlsList.push(linkObj.href);
     }
 
   }
@@ -433,16 +565,16 @@ function linkValidationLoop(linkList, dummyLinkList, ageCheck) {
   //////////////////////////////
 
   var i = 0
-  for (let link of linkList) {
+  for (let linkObj of linkList) {
 
     var linkErrors = 0;
 
     // Give the link object an ID property.
-    // link.korraId = i;
-    // link.wow = "ok";
-    // console.log(link.korraId);
+    // linkObj.korraId = i;
+    // linkObj.wow = "ok";
+    // console.log(linkObj.korraId);
 
-    validateLinks(link, i);
+    validateLinks(linkObj, i);
 
     i++
 
@@ -470,10 +602,10 @@ function linkValidationLoop(linkList, dummyLinkList, ageCheck) {
   desktopIframe.addEventListener("load", function positionLinkMarkers(e) {
 
     var i = 0
-    for (let link of linkList) {
+    for (let linkObj of linkList) {
 
       // Get the position of the current link.
-      var linkPosition = getPosition(link, dFrameContents);
+      var linkPosition = getPosition(linkObj, dFrameContents);
 
       // Find the matching link marker in the DOM.
       var linkMarker = dFrameContents.querySelector("#link-marker-" + i);
@@ -532,12 +664,12 @@ function verifyLinkVisibility(linkList) {
 
   // Get link position in desktop view and check desktop visibility
   var i = 0
-  for (let link of linkList) {
+  for (let linkObj of linkList) {
 
-    linkInfoArray[i]['desktopposition'] = { "top": link.getBoundingClientRect().top, "left": link.getBoundingClientRect().left }
+    linkInfoArray[i]['desktopposition'] = { "top": linkObj.getBoundingClientRect().top, "left": linkObj.getBoundingClientRect().left }
 
     // Link Visibility (Desktop)
-    if ( isElementVisible(link) ) {
+    if ( isElementVisible(linkObj) ) {
       linkInfoArray[i]['desktopVisibile'] = false;
     } else {
       linkInfoArray[i]['desktopVisible'] = true;
@@ -553,12 +685,12 @@ function verifyLinkVisibility(linkList) {
 
   // Do another loop.
   var j = 0
-  for (let link of linkList) {
+  for (let linkObj of linkList) {
 
-    linkInfoArray[j]['mobileposition'] = { "top": link.getBoundingClientRect().top, "left": link.getBoundingClientRect().left }
+    linkInfoArray[j]['mobileposition'] = { "top": linkObj.getBoundingClientRect().top, "left": linkObj.getBoundingClientRect().left }
 
     // Link Visibility (Mobile)
-    if ( isElementVisible(link) ) {
+    if ( isElementVisible(linkObj) ) {
       linkInfoArray[j]['mobileVisible'] = false;
     } else {
       linkInfoArray[j]['mobileVisible'] = true;
@@ -585,7 +717,90 @@ function verifyLinkVisibility(linkList) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+
+// MailGun Send
+// Recipient must be an Authorized Recipient in order to send using the sandbox (300 messages a day max)
+  // https://app.mailgun.com/app/account/authorized
+
+
+function sendEmail() {
+  console.log(mailgunApiKey);
+
+  var data = new FormData();
+  data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
+  data.append("to", "james@medbridgeed.com");
+  data.append("subject", "Hello from Mailgun");
+  data.append("html", cleanedOriginalHtml);
+
+  var xhr = new XMLHttpRequest();
+  xhr.withCredentials = true;
+
+  xhr.addEventListener("readystatechange", function () {
+    if (this.readyState === 4) {
+      console.log(this.responseText);
+    }
+  });
+
+  xhr.open("POST", "https://api:" + mailgunApiKey + "@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
+  xhr.setRequestHeader("cache-control", "no-cache");
+  xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
+
+  xhr.send(data);
+}
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Create image info array
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+//
+// // W3C Validator
+  // // https://github.com/validator/validator/wiki/Service-%C2%BB-HTTP-interface
+
+// var formData = new FormData();
+// formData.append('out', 'json');
+// formData.append('content', cleanedOriginalHtml);
+//
+// var xhr = new XMLHttpRequest();
+// xhr.withCredentials = true;
+//
+// xhr.addEventListener("readystatechange", function () {
+//   if (this.readyState === 4) {
+//     console.log(this.responseText);
+//   }
+// });
+//
+// xhr.open("POST", "http://html5.validator.nu/");
+//
+// xhr.setRequestHeader("dataType", "json");
+// xhr.setRequestHeader("processData", false);
+// xhr.setRequestHeader("contentType", false);
+//
+// xhr.send(formData);
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Create image info array
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
 function createImgInfoArray(imgList) {
+
 
   // Create object to hold all of our image data
   imgInfoArray = [];
@@ -632,9 +847,6 @@ function createImgInfoArray(imgList) {
 
       for (let img of imgList) {
 
-        // imgInfoArray[i]['naturalRatio'] = Math.round(img.naturalWidth / img.naturalHeight*10) / 10;
-        // imgInfoArray[i]['desktopRatio'] = Math.round(img.width / img.height*10) / 10;
-
         // Check if image is broken
         if ( img.naturalWidth === 0 && img.naturalHeight === 0 ) {
           totalBrokenImages++;
@@ -670,12 +882,26 @@ function createImgInfoArray(imgList) {
 
             desktop['ratioDifference'] = desktop['scaledWidth'] - desktop['scaledHeight'];
 
+            // Testing Ratio/Scaling Data
+            //////////
+            // console.error( { resizeRatio: resizeRatio, expectedheight: expectedHeight, actualHeight: img.height } );
+            // if ( expectedHeight - img.height <= 1 && expectedHeight - img.height >= -1 ) {
+            //   console.log("scaled properly", expectedHeight - img.height, 1)
+            // } else {
+            //   console.log("scaled incorrectly", expectedHeight - img.height, 1)
+            // }
+            // var expectedHeight = calculateAspectRatioFit(img.naturalWidth, img.naturalHeight, img.width, img.height);
+            // var resizeRatio = Math.round(img.naturalWidth / img.width*10) / 10;
+
+            desktop['resizeRatio'] = img.naturalWidth / img.width;
+            var expectedHeight = img.naturalHeight / desktop['resizeRatio'];
+
             // Check if image is stretched
-            if ( desktop['ratioDifference'] > 0.001 || desktop['ratioDifference'] < -0.003 ) {
+            if ( expectedHeight - img.height <= 1 && expectedHeight - img.height >= -1 ) {
+              desktop['stretched'] = false;
+            } else {
               totalStretchedImages++;
               desktop['stretched'] = true;
-            } else {
-              desktop['stretched'] = false;
             }
 
           } else {
@@ -1028,7 +1254,7 @@ function containsObject(obj, list) {
 
 
 // Function to handle creating error markers, error tags (that explain the error), and incrementing the error counter.
-function createLinkErrorRow(link, msg, type, icon) {
+function createLinkErrorRow(linkObj, msg, type, icon) {
 
   // Set the 'type' to error if one wasn't passed.
   if ( !type ) {
@@ -1036,16 +1262,16 @@ function createLinkErrorRow(link, msg, type, icon) {
   }
 
   if ( type === "error" ) {
-    link.dataset.error = true;
+    linkObj.dataset.error = true;
   }
 
-  // console.log(link);
-  // console.log("[" + link.dataset.number + "] " + link);
+  // console.log(linkObj);
+  // console.log("[" + linkObj.dataset.number + "] " + link);
 
   // console.error("Error Found: " + msg);
 
   // Target the link marker in dFrame based on which link we're looking at right now
-  var linkMarker = dFrameContents.querySelector("#link-markers .link-marker[data-number='" + link.dataset.number + "']")
+  var linkMarker = dFrameContents.querySelector("#link-markers .link-marker[data-number='" + linkObj.dataset.number + "']")
   linkMarker.classList.add("has-message");
 
   // Create an error pill
@@ -1060,7 +1286,7 @@ function createLinkErrorRow(link, msg, type, icon) {
 
   // Instead of just assuming linkErrorLogNoticeWrapper is the right wrapper, we'll reset it to a variable by checking for this link data number.
   // This is better because any errors that come in asynchronously can now be applied properly.
-  var currentErrorWrapper = dFrameContents.querySelector("section.link-errors[data-number='" + link.dataset.number + "'] .link-errors-wrapper");
+  var currentErrorWrapper = dFrameContents.querySelector("section.link-errors[data-number='" + linkObj.dataset.number + "'] .link-errors-wrapper");
   currentErrorWrapper.appendChild(errorRow);
 
   if ( type === "warning" ) {
@@ -1078,7 +1304,7 @@ function createLinkErrorRow(link, msg, type, icon) {
     errorRow.classList.add("error");
     linkMarker.classList.add("error");
 
-    link.dataset.error = "true";
+    linkObj.dataset.error = "true";
 
     // Instead of relying on the variables above, read the innerHtml of the linkMarker object. Convert it to a number and increment it. Better for async!
     if ( linkMarker.innerHTML === "" || linkMarker.innerHTML === "0" ) {
@@ -1099,15 +1325,15 @@ function createLinkErrorRow(link, msg, type, icon) {
 
   //////
   //////
-  // if ( !containsObject(link, linksWithErrorsArr) ) {
-  //   linksWithErrorsArr.push(link);
+  // if ( !containsObject(linkObj, linksWithErrorsArr) ) {
+  //   linksWithErrorsArr.push(linkObj);
   // } else {
   //   linksWithErrorsArr.push("nope");
   // }
-  if ( linksWithErrorsArr.includes(link) ) { // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes
+  if ( linksWithErrorsArr.includes(linkObj) ) { // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes
     // linksWithErrorsArr.push("this link is already in the linksWithErrorsArr array"); // get ride of this eventually
   } else {
-    linksWithErrorsArr.push(link);
+    linksWithErrorsArr.push(linkObj);
   }
 
 
@@ -1196,13 +1422,21 @@ function updatePreflightErrorTotal(type, i) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+// An array that keeps track of which URL's we are doing an XHR for.
+// Allows us to skip an XHR for duplicate links. Used in the checkURL function.
+xhrLoopArray = [];
 
-function validateLinks(link, i) {
+// How many times did we XHR?
+totalXHRs = 0;
+
+// The options related to checking XHR status
+var options = getOptions();
+
+function validateLinks(linkObj, i) {
 
   // Set link URL to a variable.
-  // Use getAttribute instead of link.href because merge tag links get file:/// or localhost appended there.
-  var linkHref = link.getAttribute("href");
-
+  // Use getAttribute instead of linkObj.href because merge tag links get file:/// or localhost appended there when the page is loaded
+  var linkHref = linkObj.getAttribute("href");
 
   // Making our counter for console.log 2 digits instead of 1. (1 vs 01)
   if ( i < 10 ) {
@@ -1213,11 +1447,11 @@ function validateLinks(link, i) {
   if ( linkHref.length > 60 ) { var ell = "..." }
 
   console.groupCollapsed("[" + iLog + "] " + linkHref.substring(0,60) + ell);
-  console.log(link);
+  console.log(linkObj);
 
   //
-  link.classList.add("marked");
-  link.dataset.number = i;
+  linkObj.classList.add("marked");
+  linkObj.dataset.number = i;
 
   // Create a corresponding link marker (#) for this link and append it to parent container after the associated error log
   // innerHTML out empty. Eventually fills with error count (1, 2, 3)
@@ -1267,18 +1501,18 @@ function validateLinks(link, i) {
   // Holds all of the data for a single link.
   var singleLinkInfoArray = {};
 
-  singleLinkInfoArray['object'] = link; //link object
+  singleLinkInfoArray['object'] = linkObj; //link object
   singleLinkInfoArray['url'] = linkHref; //link url
-  singleLinkInfoArray['text'] = link.textContent; //link text
-  singleLinkInfoArray['img'] = link.querySelectorAll('img'); // images linked
-  singleLinkInfoArray['querystring'] = breakdownQuerystring(linkHref, link); //querystring
+  singleLinkInfoArray['text'] = linkObj.textContent; //link text
+  singleLinkInfoArray['img'] = linkObj.querySelectorAll('img'); // images linked
+  singleLinkInfoArray['querystring'] = breakdownQuerystring(linkHref, linkObj); //querystring
   singleLinkInfoArray['espMergeTag'] = false;
   singleLinkInfoArray['type'] = null;
   singleLinkInfoArray['checkStatus'] = null;
 
   // Assign a type to the URL based on how its written
   // mailto
-  if ( link.protocol === "mailto:" ) {
+  if ( linkObj.protocol === "mailto:" ) {
     singleLinkInfoArray['type'] = "mailto"; //mailto link
     singleLinkInfoArray['checkStatus'] = false;
 
@@ -1301,12 +1535,12 @@ function validateLinks(link, i) {
     }
 
   // http
-  } else if ( link.protocol === "http:" ) {
+  } else if ( linkObj.protocol === "http:" ) {
     singleLinkInfoArray['type'] = "http"; //normal link
     singleLinkInfoArray['checkStatus'] = true;
 
   // https
-  } else if ( link.protocol === "https:" ) {
+  } else if ( linkObj.protocol === "https:" ) {
     singleLinkInfoArray['type'] = "https"; //secure link
     singleLinkInfoArray['checkStatus'] = true;
 
@@ -1316,6 +1550,17 @@ function validateLinks(link, i) {
     singleLinkInfoArray['checkStatus'] = true;
 
   }
+
+  // Is this the first time this link appears in the DOM?
+	if ( xhrLoopArray.includes(linkHref) ) {
+    console.error("This link (" + i + ") is a duplicate.");
+    singleLinkInfoArray['firstInstance'] = false;
+  } else {
+    console.log("This link (" + i + ") is unique.");
+    singleLinkInfoArray['firstInstance'] = true;
+  }
+  xhrLoopArray.push(linkHref); // Add it to the array.
+  singleLinkInfoArray['instanceOrder'] = countInArray(xhrLoopArray, linkHref); // Apply an order #. (eg. the 4th instance of this exact link in the DOM)
 
 
   ////////////////
@@ -1335,22 +1580,22 @@ function validateLinks(link, i) {
 
   // Check if we're online. If not, we need to apply a warning badge.
   if ( !navigator.onLine ) {
-    createLinkErrorRow(link, "Be aware that you are currently offline.", "warning");
+    createLinkErrorRow(linkObj, "Be aware that you are currently offline.", "warning");
   }
 
   // If this is a merge tag link - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
   if ( singleLinkInfoArray['type'] === "merge tag" ) {
     // Links in an email for the GetResponse Platform
     if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
-      createLinkErrorRow(link, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+      createLinkErrorRow(linkObj, "Wrong merge tag for this platform (" + emailPlatformName + ").");
     }
     // Links in an email for the MailChimp Platform
     else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(linkHref) ) { // Look for SendGrid and GR merge tags.
-      createLinkErrorRow(link, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+      createLinkErrorRow(linkObj, "Wrong merge tag for this platform (" + emailPlatformName + ").");
     }
     // Links in an email for the SendGrid Platform
     else if ( emailPlatform === "sg" && /(^\[\[.+\]\]|\*\|.+?\|\*|\*\%7C.+?%7C\*)/gi.test(linkHref) ) { // Look for MailChimp and GR merge tags.
-      createLinkErrorRow(link, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+      createLinkErrorRow(linkObj, "Wrong merge tag for this platform (" + emailPlatformName + ").");
     }
 
     // QUICK FIX: The mailchimp merge tag *|...|* doesn't play well with Twitter during our ajax request. We need to escape the pipes | in order to get a working URL.
@@ -1462,11 +1707,11 @@ function validateLinks(link, i) {
   ///////
 
     if ( linkHref === "" ) {
-      createLinkErrorRow(link, "Empty Link.");
+      createLinkErrorRow(linkObj, "Empty Link.");
     }
 
     else if ( !/\*%7C.+?%7C\*/.test(linkHref) && !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(linkHref) ) {
-      createLinkErrorRow(link, "Invalid URL scheme [1].");
+      createLinkErrorRow(linkObj, "Invalid URL scheme [1].");
     }
 
     // http://stackoverflow.com/a/9284473/556079
@@ -1477,13 +1722,13 @@ function validateLinks(link, i) {
 
     else if ( !/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9](?:_|-)*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(linkHref) )
     {
-      createLinkErrorRow(link, "Invalid URL scheme [2].");
+      createLinkErrorRow(linkObj, "Invalid URL scheme [2].");
     }
 
     // Marketing URL's
     // trk = mc, grtrk = getresponse
     if ( emailPlatform === "gr" && linkNeedsPromoCode && !/\.com\/grtrk\-/i.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
-      createLinkErrorRow(link, "Wrong tracking url for this email platform, use grtrk-.");
+      createLinkErrorRow(linkObj, "Wrong tracking url for this email platform, use grtrk-.");
     }
 
 
@@ -1495,11 +1740,11 @@ function validateLinks(link, i) {
 
       // Wrong merge tags in a Link for the GetResponse Platform
       if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
-        createLinkErrorRow(link, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+        createLinkErrorRow(linkObj, "Wrong merge tag for this platform (" + emailPlatformName + ").");
       }
       // Wrong merge tags in a Link for the MailChimp Platform
       else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(linkHref) ) { // Look for SendGrid and GR merge tags.
-        createLinkErrorRow(link, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+        createLinkErrorRow(linkObj, "Wrong merge tag for this platform (" + emailPlatformName + ").");
       }
 
     ///////////////////////
@@ -1511,8 +1756,8 @@ function validateLinks(link, i) {
     ////-----------------------------////
     ////
     // Link do NOT need a target attribute.
-    if ( link.hasAttribute("target") ) {
-      createLinkErrorRow(link, "Target attribute not needed.");
+    if ( linkObj.hasAttribute("target") ) {
+      createLinkErrorRow(linkObj, "Target attribute not needed.");
     }
 
     ////-----------------------------////
@@ -1522,35 +1767,35 @@ function validateLinks(link, i) {
     // !!!! //////////////////// Re-active this when I can make a feature that allows you to ignore it.
 
     // if ( /utm_(medium|source|campaign)/gi.test(linkHref) ) {
-    //   createLinkErrorRow(link, "extra utm's");
+    //   createLinkErrorRow(linkObj, "extra utm's");
     // }
 
     ////-----------------------------////
     ////
     // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
     if ( linkNeedsGoogleTracking && !/utm_content/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "Missing <code>utm_content</code>.");
+      createLinkErrorRow(linkObj, "Missing <code>utm_content</code>.");
     }
 
     ////-----------------------------////
     ////
     // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
     if ( /\.com\/\//gi.test(linkHref) ) {
-      createLinkErrorRow(link, "Remove extra /.");
+      createLinkErrorRow(linkObj, "Remove extra /.");
     }
 
     ////-----------------------------////
     ////
     // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
     if ( /after_affiliate_url=&/i.test(linkHref) ) {
-      createLinkErrorRow(link, "Missing redirect URL for <code>after_affiliate_url</code>. ");
+      createLinkErrorRow(linkObj, "Missing redirect URL for <code>after_affiliate_url</code>. ");
     }
 
     ////-----------------------------////
     ////
     // DON'T USE UTM - outsideOrg and off domain urls should not have utms
     if ( /utm_content/gi.test(linkHref) && !singleLinkInfoArray['isMedBridgeEdLink'] ) {
-      createLinkErrorRow(link, "Remove <code>utm_content</code> parameter.");
+      createLinkErrorRow(linkObj, "Remove <code>utm_content</code> parameter.");
     }
 
     ////-----------------------------////
@@ -1561,19 +1806,19 @@ function validateLinks(link, i) {
 
     if ( emailSubType === "ns" && singleLinkInfoArray['isMarketingUrl'] && linkNeedsPromoCode ) {
       if ( !commonTrkUrlRegex.test(linkHref) ) {
-        createLinkErrorRow(link, "Tracking URL is missing or inconsistent, " + commonTrkUrl + " is most common.");
+        createLinkErrorRow(linkObj, "Tracking URL is missing or inconsistent, " + commonTrkUrl + " is most common.");
       }
     }
 
     if ( singleLinkInfoArray['isMedBridgeBrandLink'] ) {
       if ( commonUtmSource ) {
         if ( !commonUtmSourceRegex.test(linkHref) ) {
-          createLinkErrorRow(link, "<code>utm_source</code> is missing or inconsistent, " + commonUtmSource + " is most common.");
+          createLinkErrorRow(linkObj, "<code>utm_source</code> is missing or inconsistent, " + commonUtmSource + " is most common.");
         }
       }
       if ( commonUtmCampaign ) {
         if ( !commonUtmCampaignRegex.test(linkHref) ) {
-          createLinkErrorRow(link, "<code>utm_campaign</code> is missing or inconsistent, " + commonUtmCampaign + " is most common.");
+          createLinkErrorRow(linkObj, "<code>utm_campaign</code> is missing or inconsistent, " + commonUtmCampaign + " is most common.");
         }
       }
     }
@@ -1583,15 +1828,15 @@ function validateLinks(link, i) {
     if ( outsideOrg && singleLinkInfoArray['isMedBridgeEdLink'] ) {
 
       if ( /https?:\/\/(www\.)?med/.test(linkHref) ) {
-        createLinkErrorRow(link, "Missing whitelabeling.");
+        createLinkErrorRow(linkObj, "Missing whitelabeling.");
       }
       else if ( ( (emailSubType === "hs" || emailSubType === "eh") && !/\/(encompasshealth|healthsouth)\./i.test(linkHref)) || (emailSubType === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailSubType === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
-        createLinkErrorRow(link, "Incorrect whitelabeling.");
+        createLinkErrorRow(linkObj, "Incorrect whitelabeling.");
       }
 
     }
     if ( !outsideOrg && singleLinkInfoArray['isMedBridgeEdLink'] && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "Remove whitelabeling.");
+      createLinkErrorRow(linkObj, "Remove whitelabeling.");
     }
 
     ////
@@ -1606,22 +1851,22 @@ function validateLinks(link, i) {
     if ( /[^#]+\&.+\=/.test(linkHrefNoHash) || /[^#]+\?.+\=/.test(linkHrefNoHash) && ( !/after_signin_url/.test(linkHrefNoHash) ) ) {
 
       if ( /\&.+\=/.test(linkHref) && !/\?./.test(linkHref) ) {
-        createLinkErrorRow(link, "Missing ? in querystring.");
+        createLinkErrorRow(linkObj, "Missing ? in querystring.");
       }
 
       if ( /\?[^#]+\?.+\=/.test(linkHref) ) {
-        createLinkErrorRow(link, "Replace ? with & in query string.");
+        createLinkErrorRow(linkObj, "Replace ? with & in query string.");
       }
 
       if ( !/\?([\.\w-]+(=[\!\|\*\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\*\|\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
-        createLinkErrorRow(link, "Invalid querystring.");
+        createLinkErrorRow(linkObj, "Invalid querystring.");
       }
 
     }
 
     // Leftover & or ? from a removed querystring
     if ( /(\?|&)$/g.test(linkHref) ) {
-      createLinkErrorRow(link, "Link ending with ? or &.");
+      createLinkErrorRow(linkObj, "Link ending with ? or &.");
     }
 
 
@@ -1634,26 +1879,26 @@ function validateLinks(link, i) {
 
       // Links to MedBridge in -ns emails need to use a marketing URL
       if ( !/\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Use a Marketing URL.");
+        createLinkErrorRow(linkObj, "Use a Marketing URL.");
       }
 
       // Spell after_affiliate_url correctly!
       if ( !/\-(blog|article)/gi.test(linkHref) && !/after_affiliate_url/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Missing after_affiliate_url query parameter.");
+        createLinkErrorRow(linkObj, "Missing after_affiliate_url query parameter.");
       }
 
       // Too many leading /'s' during a redirect can cause a link to not work
       if ( /after_affiliate_url=\/\/+/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Too many consecutive /s.");
+        createLinkErrorRow(linkObj, "Too many consecutive /s.");
       }
 
       // Watch out for extra hyphens!
       if ( /\-\-.+?after_affiliate_url/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Investigate consecutive hyphens.");
+        createLinkErrorRow(linkObj, "Investigate consecutive hyphens.");
       }
       // Watch out for extra forward slashes!
       if ( /https?:\/\/.+?\/\//gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Investigate consecutive forward slashes.");
+        createLinkErrorRow(linkObj, "Investigate consecutive forward slashes.");
       }
 
       // console.log("emailDate.getMonth(); " + emailDate.getMonth());
@@ -1662,7 +1907,7 @@ function validateLinks(link, i) {
       if ( emailDate.getMonth() ) {
         var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
         if ( !monthPattern.test(linkHref) ) {
-          createLinkErrorRow(link, "Link should include '-" + emailMonthAbbr + "-' to match current month.");
+          createLinkErrorRow(linkObj, "Link should include '-" + emailMonthAbbr + "-' to match current month.");
         }
       }
 
@@ -1682,7 +1927,7 @@ function validateLinks(link, i) {
 
     if ( linkNeedsGoogleTracking ) {
 
-      var moduleNumber = link.closest("[data-module-count]");
+      var moduleNumber = linkObj.closest("[data-module-count]");
 
       if ( elExists(moduleNumber) ) {
 
@@ -1694,14 +1939,14 @@ function validateLinks(link, i) {
 
           if ( !moduleNumberMatch.test(linkHref) ) {
             // console.log( "no match: " + !moduleNumberMatch.test(linkHref) );
-            createLinkErrorRow(link, "Wrong mod #, use " + "mod" + moduleNumber + ".");
+            createLinkErrorRow(linkObj, "Wrong mod #, use " + "mod" + moduleNumber + ".");
           } else {
             // console.log( "match: " + !moduleNumberMatch.test(linkHref) );
           }
 
         } else {
 
-          createLinkErrorRow(link, "Missing or mistyped mod #, use mod" + moduleNumber + ".");
+          createLinkErrorRow(linkObj, "Missing or mistyped mod #, use mod" + moduleNumber + ".");
 
         }
       }
@@ -1713,16 +1958,16 @@ function validateLinks(link, i) {
     ////
 
         // Get the img child first.
-        if ( elExists(link.getElementsByTagName('img')[0]) ) {
-          var linkedImg = link.getElementsByTagName('img')[0];
+        if ( elExists(linkObj.getElementsByTagName('img')[0]) ) {
+          var linkedImg = linkObj.getElementsByTagName('img')[0];
         }
 
-    if ( link.style.color === '' && (link.textContent !== '' || linkedImg.alt !== '' ) ) {
-      createLinkErrorRow(link, "Missing color in style attribute.");
+    if ( linkObj.style.color === '' && (linkObj.textContent !== '' || linkedImg.alt !== '' ) ) {
+      createLinkErrorRow(linkObj, "Missing color in style attribute.");
     }
 
-    if ( link.style.textAlign !== '' && linkedImg ) {
-      createLinkErrorRow(link, "Don't use text-align in links when linking images, it breaks in safari.");
+    if ( linkObj.style.textAlign !== '' && linkedImg ) {
+      createLinkErrorRow(linkObj, "Don't use text-align in links when linking images, it breaks in safari.");
     }
 
 
@@ -1730,21 +1975,21 @@ function validateLinks(link, i) {
     ////
     // Check for old fashioned marketing URLS in sub, ent, or outsideOrg
     if ( (outsideOrg || emailSubType === "sub" || emailDisc === "ent" ) && (singleLinkInfoArray['isMedBridgeBrandLink'] && /\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
-      createLinkErrorRow(link, "Do not use a Marketing URL.");
+      createLinkErrorRow(linkObj, "Do not use a Marketing URL.");
     }
 
     ////
     // Check for medium=email in Sale and Presale emails
     if ( (emailSubType === "sub" || !emailAnySale) && /[\?&]medium=email/gi.test(linkHref) ) {
 
-      createLinkErrorRow(link, "Remove <code>medium=email</code>.");
+      createLinkErrorRow(linkObj, "Remove <code>medium=email</code>.");
 
     }
 
     else if ( emailSubType === "ns" && !outsideOrg && singleLinkInfoArray['isMedBridgeBrandLink'] && ( singleLinkInfoArray['isArticle'] || /\-article/gi.test(linkHref) ) ) {
 
       if ( emailAnySale && !/medium=email/gi.test(linkHref)) { // Any sale email
-        createLinkErrorRow(link, "Add <code>medium=email</code>.");
+        createLinkErrorRow(linkObj, "Add <code>medium=email</code>.");
       }
 
     }
@@ -1757,11 +2002,11 @@ function validateLinks(link, i) {
 
       // sub=yes is required in blog links.
       if ( singleLinkInfoArray['isBlogLink'] && !/sub=yes/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Add <code>sub=yes</code>.");
+        createLinkErrorRow(linkObj, "Add <code>sub=yes</code>.");
       }
       // sub=yes should not be in any other links.
       if ( ( !singleLinkInfoArray['isBlogLink'] && !/\-(blog|article)/gi.test(linkHref) ) && /sub=yes/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Remove <code>sub=yes</code>.");
+        createLinkErrorRow(linkObj, "Remove <code>sub=yes</code>.");
       }
 
     }
@@ -1769,43 +2014,43 @@ function validateLinks(link, i) {
     ////
     // Check for broken article links in sub
     if ( singleLinkInfoArray['isMedBridgeEdLink'] && emailSubType === "sub" && /p=\d\d\d/gi.test(linkHref) && !/\.com\/blog(\/|\?)/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "Article link is broken.");
+      createLinkErrorRow(linkObj, "Article link is broken.");
     }
 
     ////
     // Check all links in non-subscriber emails for sub=yes, never use it in ns.
     if ( emailSubType === "ns" && /sub=yes/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "Remove <code>sub=yes</code>.");
+      createLinkErrorRow(linkObj, "Remove <code>sub=yes</code>.");
     }
 
     ////
     // Verify links in A/B emails if it looks like the link is using -a or -b.
     if ( singleLinkInfoArray['isMarketingUrl'] && abTesting === "a" && /\-b[\?\/]/i.test(linkHref) ) {
-      createLinkErrorRow(link, "Fix a/b version.");
+      createLinkErrorRow(linkObj, "Fix a/b version.");
     }
     if ( singleLinkInfoArray['isMarketingUrl'] && abTesting === "b" && /\-a[\?\/]/i.test(linkHref) ) {
-      createLinkErrorRow(link, "Fix a/b version.");
+      createLinkErrorRow(linkObj, "Fix a/b version.");
     }
     if ( singleLinkInfoArray['isMarketingUrl'] && (abTesting !== "a" && abTesting !== "b") && /\-(a|b)[\?\/]/i.test(linkHref) ) {
-      createLinkErrorRow(link, "Remove -a/-b.");
+      createLinkErrorRow(linkObj, "Remove -a/-b.");
     }
 
 
     ////
     // Link Text Hints
-    if ( (/Request (Group|a Demo|Info|EMR Integration)/gi.test(link.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))/gi.test(link.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
-      createLinkErrorRow(link, "Link text does not match url (demo related).");
+    if ( (/Request (Group|a Demo|Info|EMR Integration)/gi.test(linkObj.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))/gi.test(linkObj.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
+      createLinkErrorRow(linkObj, "Link text does not match url (demo related).");
     }
-    // if ( /Article/gi.test(link.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/?blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
-    if ( /Article/gi.test(link.textContent) && !singleLinkInfoArray['isBlogLink'] ) {
-      createLinkErrorRow(link, "Link text does not match url (article related).");
+    // if ( /Article/gi.test(linkObj.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/?blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
+    if ( /Article/gi.test(linkObj.textContent) && !singleLinkInfoArray['isBlogLink'] ) {
+      createLinkErrorRow(linkObj, "Link text does not match url (article related).");
     }
 
     ////
     // Enterprise
     // Deprecated - Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
     // if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "sub" && emailDisc === "ent" && /request\-a\-demo/gi.test(linkHref) ) {
-    //   createLinkErrorRow(link, "no demo requests in enterprise sub");
+    //   createLinkErrorRow(linkObj, "no demo requests in enterprise sub");
     // }
 
 
@@ -1813,13 +2058,13 @@ function validateLinks(link, i) {
     // outsideOrg and subs should not link to home-exercise-program.
     // Use sign-in/?after_signin_url=patient_care/programs/create
     if ( (outsideOrg || emailSubType === "sub") && /\.com\/home\-exercise\-program/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+      createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
     }
     if ( (outsideOrg || emailSubType === "sub") && /patient_care\/programs\/create/gi.test(linkHref) && !/after_signin_url/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+      createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
     }
     if ( (!outsideOrg && emailSubType !== "sub") && /patient_care\/programs\/create/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "use <code>home-exercise-program</code>");
+      createLinkErrorRow(linkObj, "use <code>home-exercise-program</code>");
     }
 
     ////
@@ -1828,19 +2073,19 @@ function validateLinks(link, i) {
     if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && singleLinkInfoArray['isMedBridgeBrandLink'] && !/\/courses\/details\//g.test(linkHref) && singleLinkInfoArray['isMarketingUrl'] ) {
 
       if ( emailDisc === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
+        createLinkErrorRow(linkObj, "missing discipline");
       }
       if ( emailDisc === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
+        createLinkErrorRow(linkObj, "missing discipline");
       }
       if ( emailDisc === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
+        createLinkErrorRow(linkObj, "missing discipline");
       }
       if ( emailDisc === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
+        createLinkErrorRow(linkObj, "missing discipline");
       }
       if ( emailDisc === "other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "missing discipline");
+        createLinkErrorRow(linkObj, "missing discipline");
       }
     }
 
@@ -1849,38 +2094,38 @@ function validateLinks(link, i) {
     if ( emailDisc !== "multi" && emailDisc !== "all" && emailDisc !== null && emailDisc !== undefined && !outsideOrg && singleLinkInfoArray['isMedBridgeBrandLink'] ) {
 
       if ( (emailDisc !== "pt" && emailDisc !== "other") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) || /\.com\/physical-therapy\/?(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "Wrong homepage.");
+        createLinkErrorRow(linkObj, "Wrong homepage.");
       }
       if ( (emailDisc !== "other" && emailDisc !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(linkHref) || /\.com\/(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "Wrong homepage.");
+        createLinkErrorRow(linkObj, "Wrong homepage.");
       }
       if ( emailDisc !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(linkHref) || /\.com\/athletic-training\/?(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "Wrong homepage.");
+        createLinkErrorRow(linkObj, "Wrong homepage.");
       }
       if ( emailDisc !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(linkHref) || /\.com\/occupational-therapy\/?(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "Wrong homepage.");
+        createLinkErrorRow(linkObj, "Wrong homepage.");
       }
       if ( emailDisc !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(linkHref) || /\.com\/speech-language-pathology\/?(\?|$)/gi.test(linkHref)) ) {
-        createLinkErrorRow(link, "Wrong homepage.");
+        createLinkErrorRow(linkObj, "Wrong homepage.");
       }
     }
 
     // Blog - Discipline Check
     // Checking NS and SUB.
     if ( /blog\/discipline\/pt/gi.test(linkHref) && (emailDisc !== "pt" && emailDisc !== "other") ) {
-      createLinkErrorRow(link, "Wrong discipline.");
+      createLinkErrorRow(linkObj, "Wrong discipline.");
     }
     else if ( /blog\/discipline\/at/gi.test(linkHref) && emailDisc !== "at" ) {
-      createLinkErrorRow(link, "Wrong discipline.");
+      createLinkErrorRow(linkObj, "Wrong discipline.");
     }
     else if ( /blog\/discipline\/ot/gi.test(linkHref) && emailDisc !== "ot" ) {
-      createLinkErrorRow(link, "Wrong discipline.");
+      createLinkErrorRow(linkObj, "Wrong discipline.");
     }
     else if ( /blog\/discipline\/slp/gi.test(linkHref) && emailDisc !== "slp" ) {
-      createLinkErrorRow(link, "Wrong discipline.");
+      createLinkErrorRow(linkObj, "Wrong discipline.");
     }
     else if ( /blog\/discipline\/(at|ot|slp)/gi.test(linkHref) && emailDisc === "other" ) {
-      createLinkErrorRow(link, "Wrong discipline.");
+      createLinkErrorRow(linkObj, "Wrong discipline.");
     }
 
 
@@ -1888,29 +2133,29 @@ function validateLinks(link, i) {
     if ( emailDisc !== "multi" && emailDisc !== null && /#/g.test(linkHref) && /(\.com\/|=\/?)courses/gi.test(linkHref) ) { //  && singleLinkInfoArray['isMedBridgeBrandLink']
 
       // if ( (emailDisc !== "pt" && emailDisc !== "other") && /#\/?physical-therapy/gi.test(linkHref) ) {
-      //   createLinkErrorRow(link, "Wrong hashtag.");
+      //   createLinkErrorRow(linkObj, "Wrong hashtag.");
       // }
       // if ( emailDisc !== "at" && /#\/?athletic/gi.test(linkHref) ) {
-      //   createLinkErrorRow(link, "Wrong hashtag.");
+      //   createLinkErrorRow(linkObj, "Wrong hashtag.");
       // }
       // if ( emailDisc !== "ot" && /#\/?occupational-therapy/gi.test(linkHref) ) {
-      //   createLinkErrorRow(link, "Wrong hashtag.");
+      //   createLinkErrorRow(linkObj, "Wrong hashtag.");
       // }
       // if ( emailDisc !== "slp" && /#\/?speech-language-pathology/gi.test(linkHref) ) {
-      //   createLinkErrorRow(link, "Wrong hashtag.");
+      //   createLinkErrorRow(linkObj, "Wrong hashtag.");
       // }
 
       if ( (emailDisc === "pt" || emailDisc === "other") && !/#\/?physical-therapy/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Wrong hashtag.");
+        createLinkErrorRow(linkObj, "Wrong hashtag.");
       }
       if ( emailDisc === "at" && !/#\/?athletic-training/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Wrong hashtag.");
+        createLinkErrorRow(linkObj, "Wrong hashtag.");
       }
       if ( emailDisc === "ot" && !/#\/?occupational-therapy/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Wrong hashtag.");
+        createLinkErrorRow(linkObj, "Wrong hashtag.");
       }
       if ( emailDisc === "slp" && !/#\/?speech-language-pathology/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "Wrong hashtag.");
+        createLinkErrorRow(linkObj, "Wrong hashtag.");
       }
     }
 
@@ -1919,34 +2164,34 @@ function validateLinks(link, i) {
     // Pricing
     // SUB
     if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "sub" && /\.com\/pricing/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "dont link to pricing in sub");
+      createLinkErrorRow(linkObj, "dont link to pricing in sub");
     }
     // NS
     if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "ns" && /pricing/gi.test(linkHref) ) {
 
       // PT
       if ( emailDisc === "pt" && !/pricing\/pt/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/pt");
+        createLinkErrorRow(linkObj, "link to pricing/pt");
       }
       // AT
       else if ( emailDisc === "at" && !/pricing\/at/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/at");
+        createLinkErrorRow(linkObj, "link to pricing/at");
       }
       // OT
       else if ( emailDisc === "ot" && !/pricing\/ot/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/ot");
+        createLinkErrorRow(linkObj, "link to pricing/ot");
       }
       // SLP
       else if ( emailDisc === "slp" && !/pricing\/slp/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/slp");
+        createLinkErrorRow(linkObj, "link to pricing/slp");
       }
       // Other
       else if ( emailDisc === "other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to pricing/other");
+        createLinkErrorRow(linkObj, "link to pricing/other");
       }
       // No Discipline
       else if ( !emailDisc && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
-        createLinkErrorRow(link, "link to standard pricing page");
+        createLinkErrorRow(linkObj, "link to standard pricing page");
       }
 
     }
@@ -1954,26 +2199,26 @@ function validateLinks(link, i) {
 
     // Check for unecessary discipline hastags. Should only be used when linking to courses page
     if ( /#\/?(speech-language-pathology|physical-therapy|athletic-training|occupational-therapy)/gi.test(linkHref) && ( !/(_url=courses|\/courses)(#|\/|\?|&|$)/gi.test(linkHref) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(linkHref) ) ) {
-      createLinkErrorRow(link, "unecessary hashtag");
+      createLinkErrorRow(linkObj, "unecessary hashtag");
     }
 
 
     ////
     // Do not link to medbridgeed.com. Use the full medbridgeeducation.com URL.
     if ( /(\:\/\/|\.)medbridgeed\.com/gi.test(linkHref) ) {
-      createLinkErrorRow(link, "use medbridgeeducation.com");
+      createLinkErrorRow(linkObj, "use medbridgeeducation.com");
     }
 
     ////
     // NO //support. in outsideOrg
     if ( /\/support\./gi.test(linkHref) && outsideOrg ) {
-      createLinkErrorRow(link, "://support. not allowed in outsideOrg, use mailto:support@medbridgeed.com");
+      createLinkErrorRow(linkObj, "://support. not allowed in outsideOrg, use mailto:support@medbridgeed.com");
     }
 
     ////
     // Do not advertise Enterprise products to outsideOrg
     if ( /enterprise/gi.test(linkHref) && outsideOrg ) {
-      createLinkErrorRow(link, "do not advertise enterprise to outsideOrg");
+      createLinkErrorRow(linkObj, "do not advertise enterprise to outsideOrg");
     }
 
   ///////
@@ -1997,9 +2242,13 @@ function validateLinks(link, i) {
   // Now that we've created an object for this link and added it to the array
   // Check the links status (async) and add the results to the array.
 
+  // Only check the link if checkStatus is true
   if ( singleLinkInfoArray['checkStatus'] === true ) {
-    onRequest(i, linkHref, link);
-    // checkLinkStatusNew(i, linkHref, link);
+    // Skip links that are duplicates. When the original link is done being XHR'd we'll apply the results to all matching links.
+    if ( singleLinkInfoArray['firstInstance'] === true ) {
+      onRequest(i, linkHref, linkObj);
+    }
+  // checkStatus is False, so we're done. Turn off the loading icon.
   } else {
     linkMarker.classList.remove("loading");
   }

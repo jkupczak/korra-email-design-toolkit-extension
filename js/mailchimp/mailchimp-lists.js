@@ -1,5 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/mailchimp/mailchimp-lists.js");
-console.log("v1.3");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/mailchimp/mailchimp-lists.js");
 //////////////////////////////////////////////////////////////////////////////////
 
 

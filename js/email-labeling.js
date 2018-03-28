@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/email-labeling.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/email-labeling.js");
 ///////////////////////////////////////////////////////////////////////
 
 //
@@ -15,7 +15,7 @@ var pageUrl = document.URL;
 if ( /dropbox(.+)?\.com\/(s|home|content_link)/gi.test(pageUrl) ) {
 	var onDropbox = true;
   // console.log("Page loaded is dropbox.com");
-} else if ( /mailchimp(.+)?\.com/gi.test(pageUrl) ) {
+} else if ( /mailchimp(.+)?\.com/gi.test(pageUrl) && !/campaigns\/preview\-content\-html/gi.test(pageUrl) ) {
 	var onMailchimp = true;
   // console.log("Page loaded is mailchimp.com");
 } else if ( /localhost/gi.test(pageUrl) ) {
@@ -37,9 +37,11 @@ if ( /dropbox(.+)?\.com\/(s|home|content_link)/gi.test(pageUrl) ) {
 //
 // Discipline Identifier
 //
-if ( !onMailchimp ) {
+if ( /(^file|localhost\:)/i.test(pageUrl) ) {
 	var fileName = getFilename(pageUrl);
 	var disciplineSearch = fileName;
+} else if ( !onMailchimp ) {
+
 } else {
 	var availableNode = document.querySelector(".wizard-header") || document.querySelector("h1") || document.querySelector(".c-checklistEditor div.header > h2:first-child");
 	var disciplineSearch = availableNode.innerText;

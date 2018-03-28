@@ -762,8 +762,8 @@ html.error-status.errors:before {
 
 
 .info-bar {
-  max-width: 220px;
-  min-width:170px;
+  max-width: 230px;
+  min-width:180px;
   width:100%;
   height:100%;
   color:#444;
@@ -771,7 +771,7 @@ html.error-status.errors:before {
   z-index:1;
 }
 .info-bar {
-  padding:0px 12px 0 0px;
+  padding:0px 15px 0 3px;
 }
 
 .info-bar.off {
@@ -865,7 +865,7 @@ html.error-status.errors:before {
 
 .qa-bar {
   background:#131318;
-  border-radius:2px;
+  border-radius:4px;
   overflow:hidden;
   margin-bottom:2px;
   transition: all 0.35s;
@@ -983,11 +983,11 @@ html.error-status.errors:before {
 /* Preheader Bar */
 /*****************/
 .qa-bar .preheader-preview-text {
-  color:#9c9ca6;
-  padding: 8px 8px 8px 12px;
+  color:#afafbe;
+  padding: 8px 12px 8px 12px;
   background: #202027;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 14px;
+  line-height: 20px;
   word-break: break-all;
 }
 .qa-bar .preheader-preview-text .preheader-back {
@@ -1083,7 +1083,7 @@ body.split-view-on {
   border:solid 0px #bf1d53;
   /* background: #19191f; */
   background: #fff;
-  border-radius:4px 0 0 4px;
+  /* border-radius:4px 0 0 4px; */ /* Removed because scrolling performance suffers on (at least) retina displays. */
 }
 .desktop-view-resize-wrapper {
   height:100%; width:100%; position:relative;
@@ -1138,7 +1138,7 @@ body.split-view-on {
 .infobar-off.mobile-off .iframe-desktop-view { */
 .desktop-view-resized .desktop-iframe-parent,
 .infobar-off.mobile-off .desktop-iframe-parent {
-  border-radius: 4px;
+  /* border-radius: 4px; */
 }
 .desktop-view-resized .desktop-iframe-parent { box-shadow: 0 5px 80px 2px rgba(0,0,0,.9); transition:box-shadow .5s; }
 .desktop-view-resized.resizing .desktop-iframe-parent,
@@ -1416,7 +1416,7 @@ body.split-view-on {
     height:100%;
     overflow: hidden;
     position: relative;
-    border-radius:4px 0 0 4px;
+    /* border-radius:4px 0 0 4px; */
   }
 
 .mobile-view-wrapper .iframe-mobile-view {
@@ -1432,7 +1432,7 @@ body.split-view-on {
   flex-grow:1;
 
   /*border-radius:0 0 8px 8px;*/
-  border-radius:4px;
+  /* border-radius:4px; */
 }
 
 .extra-mobile-widths-wrapper {
@@ -1871,12 +1871,11 @@ body.split-view-on {
 
 @media screen and (max-device-width: 1440px), screen and (max-width: 1440px) {
 
-
+/*
   .info-bar {
     max-width: 220px;
     min-width: 170px;
-    /*padding:10px 15px 10px 15px;*/
-  }
+  } */
 
 
   /*.desktop-view-wrapper { min-width:640px; }*/

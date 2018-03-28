@@ -1,4 +1,4 @@
-console.warn("[sonic-toolkit-extension] loaded /js/mailchimp/mailchimp-global.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/mailchimp/mailchimp-global.js");
 ///////////////////////////////////////////////////////////////////////////////////
 
 alertify.set('notifier','position', 'bottom-right');
