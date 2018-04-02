@@ -573,6 +573,9 @@ if ( getParameterByName("presentation") === "1" ) {
     linkListArr = Array.from(linkList);
     linkInfoArray = [];
 
+    linkListUniqueURLs = createUniqueArrayOfURLs(linkListArr);
+    linkListUniqueURLs.push("https://www.google.com");
+
     // Get all images
     let imgList = dFrameContents.images; // better?
     createImgInfoArray(imgList);

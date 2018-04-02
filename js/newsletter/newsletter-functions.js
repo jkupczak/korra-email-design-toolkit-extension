@@ -321,6 +321,37 @@ function log(txt) {
 ///////////////////////////////////////
 /////
 /////
+/////    createUniqueArrayOfURLs
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+function createUniqueArrayOfURLs(arr) {
+
+  var uniqueLinksArray = [];
+
+  var i = 0
+  for (let linkObj of arr) {
+
+    uniqueLinksArray.push(linkObj.getAttribute("href"))
+
+    i++
+
+  }
+
+  var finishedArr = uniq(uniqueLinksArray);
+  // console.log(finishedArr);
+  return finishedArr;
+
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
 /////    Pinning and unpinning link markers
 /////
 /////
@@ -1307,12 +1338,12 @@ function createLinkErrorRow(linkObj, msg, type, icon) {
     linkObj.dataset.error = "true";
 
     // Instead of relying on the variables above, read the innerHtml of the linkMarker object. Convert it to a number and increment it. Better for async!
-    if ( linkMarker.innerHTML === "" || linkMarker.innerHTML === "0" ) {
-      linkMarker.innerHTML = "1";
+    if ( linkMarker.children[0].innerHTML === "" || linkMarker.children[0].innerHTML === "0" ) {
+      linkMarker.children[0].innerHTML = "1";
     } else {
-      var currentLinkErrors = Number(linkMarker.innerHTML);
+      var currentLinkErrors = Number(linkMarker.children[0]);
       currentLinkErrors++
-      linkMarker.innerHTML = currentLinkErrors;
+      linkMarker.children[0].innerHTML = currentLinkErrors;
     }
 
   }
@@ -1431,6 +1462,7 @@ totalXHRs = 0;
 
 // The options related to checking XHR status
 var options = getOptions();
+var linkMarkersList = [];
 
 function validateLinks(linkObj, i) {
 
@@ -1465,7 +1497,19 @@ function validateLinks(linkObj, i) {
   linkMarker.dataset.href = linkHref;
   linkMarker.dataset.number = i;
   linkMarker.addEventListener("click", pinLinkMarker, false);
+
+  // child to hold error total
+  var linkMarkerErrorsSection = document.createElement("section");
+  linkMarkerErrorsSection.classList.add("link-marker-error-total");
+  linkMarker.appendChild(linkMarkerErrorsSection);
+
+  // child to hold status icon (svg)
+  var linkMarkerStatusSection = document.createElement("section");
+  linkMarkerStatusSection.classList.add("link-marker-status");
+  linkMarker.appendChild(linkMarkerStatusSection);
+
   dFrameContents.getElementById("link-markers").appendChild(linkMarker);
+  linkMarkersList.push(linkMarker);
 
   // Create a container that will hold all of the errors associated with this link.
   var linkErrorLog = document.createElement("section");
@@ -2038,11 +2082,15 @@ function validateLinks(linkObj, i) {
 
     ////
     // Link Text Hints
-    if ( (/Request (Group|a Demo|Info|EMR Integration)/gi.test(linkObj.textContent) && !/#request\-a\-demo$/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))/gi.test(linkObj.textContent) && /#request\-a\-demo$/i.test(linkHref)) ) {
+    if ( (/Request (Group|a Demo|Info|EMR Integration)|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))|Pricing/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
       createLinkErrorRow(linkObj, "Link text does not match url (demo related).");
     }
     // if ( /Article/gi.test(linkObj.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/?blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
     if ( /Article/gi.test(linkObj.textContent) && !singleLinkInfoArray['isBlogLink'] ) {
+      createLinkErrorRow(linkObj, "Link text does not match url (article related).");
+    }
+
+    if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray['isBlogLink'] ) {
       createLinkErrorRow(linkObj, "Link text does not match url (article related).");
     }
 
@@ -2250,7 +2298,7 @@ function validateLinks(linkObj, i) {
     }
   // checkStatus is False, so we're done. Turn off the loading icon.
   } else {
-    linkMarker.classList.remove("loading");
+    linkMarkerDone(linkMarker);
   }
 
 

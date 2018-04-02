@@ -660,6 +660,13 @@ function updateQueryString(key, value, url) {
 
 
 
+// Create a unique array
+// https://stackoverflow.com/a/9229821/556079
+function uniq(a) {
+   return Array.from(new Set(a));
+}
+
+
 // Helper function to get an element's exact position
 function getPosition(el, frame) {
 
@@ -742,7 +749,7 @@ function createCopyBtn(node, stringToCopy) {
 function copyToClipboard(toCopy, msg, persist) {
 
   console.log(this);
-  console.log(event);
+  // console.log(event);
   event.preventDefault();
 
   if (toCopy.tagName === "INPUT" || toCopy.tagName === "TEXTAREA" || toCopy.contentEditable === "true" ) {
@@ -1136,14 +1143,14 @@ function isArticleProtected(document) {
 // Used in local HTML files and when visiting the blog.
 function logArticleStatusInStorge(document) {
 
-  console.log(document);
+  // console.log(document);
 
   var postId = document.match(/rel\=(\"|\')shortlink(\"|\').+?\>/i)[0].match(/\d\d\d+/)[0];
   var isProtected = isArticleProtected(document);
 
-  console.log(postId, isProtected);
+  console.log("postId", postId, "isProtected", isProtected);
 
-  checkProtectedArticleStatus(postId, isProtected);
+  // checkProtectedArticleStatus(postId, isProtected);
 
 
   // get
@@ -1161,11 +1168,10 @@ function logArticleStatusInStorge(document) {
       // Convert the value we got from chrome.storage into an array.
       // https://stackoverflow.com/a/20881336/556079
       var arr = Object.values(data.protectedarticles);
-      console.log(arr);
 
       if ( !arr.includes(postId) ) {
 
-          console.error("postId NOT already included in 'protectedarticles'");
+          console.error("postId " + postId + " is NOT included in 'protectedarticles'");
 
           if ( isProtected ) {
               arr.push(postId);
@@ -1185,13 +1191,13 @@ function logArticleStatusInStorge(document) {
       // now that we've determined whether or not we're adding/deleting, set our array back into storage
       chrome.storage.promise.local.set({'protectedarticles': arr}).then(function() {
         // resolved
-        console.log('set');
+        // console.log('set');
       }, function(error) {
         // rejected
         console.log(error);
       });
 
-      console.log(arr);
+      // console.log(arr);
 
     } else {
       // "protectedarticles" does not exists

@@ -48,8 +48,6 @@ options = {
 //  TO-DO LIST
 //  ==========
 //
-//  ## Warn if an instructor is selected twice.
-//
 //  ## Use localStorage to persist selections through page loads.
 //
 //  ## Load a modal on course addition if that course isn't approved. Ask for confirmation before adding it.
@@ -245,6 +243,12 @@ var selectWhitelabel = document.getElementById('select-whitelabel');
 function logWhitelabelValue() {
   if ( this.value !== "www" ) {
     document.getElementById('select-audience').getElementsByTagName('option')[1].selected = 'selected';
+    document.getElementById('select-layout').getElementsByTagName('option')[1].selected = 'selected';
+    document.getElementById('set-tracking-url').value = '';
+    document.getElementById('tracking-mod-number').value = '';
+  } else {
+    document.getElementById('select-audience').getElementsByTagName('option')[0].selected = 'selected';
+    document.getElementById('select-layout').getElementsByTagName('option')[0].selected = 'selected';
   }
 }
 selectWhitelabel.addEventListener('change', logWhitelabelValue, false);
@@ -264,16 +268,17 @@ function saveModuletoStorage() {
 
 ///// Layout
 var selectLayout = document.getElementById('select-layout');
-// selectLayout.addEventListener("blur", saveLayoutToStorage, false);
-// function saveLayoutToStorage() {
-//   if ( !this.value ) {
-//     var savedVal = "";
-//   } else {
-//     var savedVal = this.value;
-//   }
-//   // sessionStorage.setItem("setTrackingUrl", savedVal);
-//   localStorage.setItem("setLayout", savedVal);
-// }
+selectLayout.addEventListener("change", saveLayoutToStorage, false);
+function saveLayoutToStorage() {
+  console.log(this, this.value);
+  if ( !this.value ) {
+    var savedVal = "";
+  } else {
+    var savedVal = this.value;
+  }
+  // sessionStorage.setItem("setTrackingUrl", savedVal);
+  localStorage.setItem("setLayout", savedVal);
+}
 
 
 
@@ -510,13 +515,29 @@ function handleVisibilityChange() {
 
 function checkStorage() {
 
+  console.log("checking storage...");
+
   if ( localStorage.getItem("setTrackingUrl") || localStorage.getItem("setTrackingUrl") === "" ) {
     trackingURLInput.value = localStorage.getItem("setTrackingUrl")
+    console.log("setTrackingUrl")
   };
 
   if ( localStorage.getItem("setModuleNumber") || localStorage.getItem("setModuleNumber") === "" ) {
     trackingModNumberInput.value = localStorage.getItem("setModuleNumber")
+    console.log("setModuleNumber")
   };
+
+  if ( localStorage.getItem("setLayout") === "row" ) {
+
+    document.getElementById('select-layout').getElementsByTagName('option')[1].selected = 'selected';
+    console.log("setLayout");
+
+  } else {
+
+    document.getElementById('select-layout').getElementsByTagName('option')[0].selected = 'selected';
+    console.log("setLayout");
+
+  }
 
 }
 

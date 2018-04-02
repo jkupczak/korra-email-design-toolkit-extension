@@ -89,6 +89,18 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
 
       linkStorage.getLink(linkHref).then(function(link) {
 
+        // console.log(1, "begin");
+        // console.log(2, i);
+        // console.log(3, Object.getOwnPropertyNames(link));
+        // console.log(4, Object.getOwnPropertyNames(link).length);
+        // console.log(5, response);
+        // console.log(6, linkObj);
+        // console.log(7, linkHref);
+        // console.log(8, link);
+        // console.log(9, link[linkHref]);
+        // console.log(10, link[linkHref]['status']);
+        // console.log("end");
+
         // Is it already in chrome.storage?
         // If yes...
         if ( Object.getOwnPropertyNames(link).length > 0 ) {
@@ -160,7 +172,7 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
 /////////////////
 function applyXHRResultsToDupeLinks(linkHref, response, options) {
 
-  console.log("running applyXHRResultsToDupeLinks on links that match", linkHref);
+  // console.log("running applyXHRResultsToDupeLinks on links that match", linkHref);
 
   // Start a new loop through all links in the DOM
   var i = 0
@@ -177,6 +189,80 @@ function applyXHRResultsToDupeLinks(linkHref, response, options) {
   }
 
 }
+
+function linkMarkerDone(linkMarker, source) {
+
+  linkMarker.classList.remove("loading");
+  linkMarker.classList.add("done", source);
+
+  // If no errors were found, set the linkmarker to approved, turn it green, and give it a checkmark.
+  if ( linkMarker.children[0].innerHTML === "" && !linkMarker.classList.contains("offline") ) {
+    linkMarkerApproved(linkMarker);
+
+    // Show the checkmark and then fade it away if the response is fresh and NOT from the cache.
+    if ( !linkMarker.classList.contains("cache") && !linkMarker.classList.contains("has-message") ) {
+      linkMarkerCheckedOff(linkMarker);
+      linkMarker.classList.add("animated-approval");
+    }
+
+  } else if ( linkMarker.innerHTML === "" && linkMarker.classList.contains("offline") ) {
+    linkMarker.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><rect x="9.5" y="5.7" fill="#ffffff" width="4.9" height="12.8"/><path fill="#f1a511" d="M23 12l-2.4-2.8 0.3-3.7 -3.6-0.8 -1.9-3.2L12 3 8.6 1.5 6.7 4.7 3.1 5.5l0.3 3.7L1 12l2.4 2.8 -0.3 3.7 3.6 0.8 1.9 3.2L12 21l3.4 1.5 1.9-3.2 3.6-0.8 -0.3-3.7L23 12zM13 17h-2v-2h2V17zM13 13h-2V7h2V13z"/></svg>';
+  }
+}
+
+function linkMarkerApproved(linkMarker) {
+  linkMarker.classList.add("approved");
+  linkMarker.children[1].innerHTML = '<svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="12" height="9" viewBox="0 0 12 9.4"><path fill="#FFFFFF" d="M12 1.9L4.5 9.4 0 4.9 1.9 3l2.6 2.6L10.1 0 12 1.9z"/></svg>';
+}
+
+function resetLinkMarker(linkMarker) {
+  // console.log(linkMarker);
+  linkMarker.classList.add("loading");
+  linkMarker.classList.remove("approved");
+  linkMarker.classList.remove("done");
+  linkMarker.classList.remove("xhr");
+  linkMarker.classList.remove("cache");
+  linkMarker.children[1].innerHTML = "";
+}
+
+////////////////
+////////////////
+////////////////
+function manualXHRLinkCheck() {
+
+  // Kill the cache of all links that are in the DOM
+  chrome.storage.promise.local.remove(linkListUniqueURLs).then(function() {
+    // resolved
+    console.log('removed');
+
+    // Loop through all links and XHR them
+    var i = 0
+    for (let linkObj of linkList) {
+
+      resetLinkMarker(linkMarkersList[i]);
+
+      // Only check the link if checkStatus is true
+      if ( linkInfoArray[i]['checkStatus'] === true ) {
+        // Skip links that are duplicates. When the original link is done being XHR'd we'll apply the results to all matching links.
+        if ( linkInfoArray[i]['firstInstance'] === true ) {
+          onRequest(i, linkInfoArray[i]['url'], linkObj);
+        }
+      // checkStatus is False, so we're done. Turn off the loading icon.
+      } else {
+        linkMarkerDone(linkMarkersList[i]);
+      }
+
+      i++
+
+    }
+  }, function(error) {
+    // rejected
+    console.log(error);
+  });
+
+}
+
+
 
 ////////////////
 ////////////////
@@ -224,28 +310,9 @@ function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
   // Use the response to assign error rows if needed
   assignErrorRows(i, linkHref, linkObj, response);
 
-  // Get the corresponding linkmarker in the DOM.
-  var linkMarker = dFrameContents.querySelector("#link-markers .link-marker[data-number='" + i + "']");
-
   // LinkMarker Styling:
   // XHR/Cache checking is done, remove the loading spinner and add classes 'done' and the source (cache or fresh);
-  linkMarker.classList.remove("loading");
-  linkMarker.classList.add("done", response.source);
-
-  // If no errors were found, set the linkmarker to approved, turn it green, and give it a checkmark.
-  if ( linkMarker.innerHTML === "" && !linkMarker.classList.contains("offline") ) {
-    linkMarker.classList.add("approved");
-    linkMarker.innerHTML = '<svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="12" height="9" viewBox="0 0 12 9.4"><path fill="#FFFFFF" d="M12 1.9L4.5 9.4 0 4.9 1.9 3l2.6 2.6L10.1 0 12 1.9z"/></svg>';
-
-    // Show the checkmark and then fade it away if the response is fresh and NOT from the cache.
-    if ( !linkMarker.classList.contains("cache") && !linkMarker.classList.contains("has-message") ) {
-      linkMarkerCheckedOff(linkMarker);
-      linkMarker.classList.add("animated-approval");
-    }
-
-  } else if ( linkMarker.innerHTML === "" && linkMarker.classList.contains("offline") ) {
-    linkMarker.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><rect x="9.5" y="5.7" fill="#ffffff" width="4.9" height="12.8"/><path fill="#f1a511" d="M23 12l-2.4-2.8 0.3-3.7 -3.6-0.8 -1.9-3.2L12 3 8.6 1.5 6.7 4.7 3.1 5.5l0.3 3.7L1 12l2.4 2.8 -0.3 3.7 3.6 0.8 1.9 3.2L12 21l3.4 1.5 1.9-3.2 3.6-0.8 -0.3-3.7L23 12zM13 17h-2v-2h2V17zM13 13h-2V7h2V13z"/></svg>';
-  }
+  linkMarkerDone(linkMarkersList[i], response.source);
 
 }
 
@@ -331,6 +398,9 @@ function createLinkStatusRow(i, linkObj, response) {
   if ( response.status !== 0 && response.status !== "0" && response.status !== null ) {
     var statusCode = "<sup>(<span id='status-code'>" + response.status + "</span>)</sup>";
   }
+
+  // Destroy the status container if it already exists.
+  destroyIfExists(currentErrorWrapper.querySelectorAll(".link-status-wrapper")[0]);
 
   // Wrapper for the XHR'd Link Status
   var linkErrorXHRStatus = document.createElement("section");

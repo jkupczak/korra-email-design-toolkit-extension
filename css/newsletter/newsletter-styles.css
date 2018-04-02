@@ -504,7 +504,7 @@ html.error-status.errors:before {
 
   width:80px;  min-width:80px;  max-width:80px;
 
-  border-radius:4px 0 0 4px;
+  /* border-radius:4px 0 0 4px; */
 
   /*height:100%;*/
   /*background:#26272d;*/
@@ -854,7 +854,6 @@ html.error-status.errors:before {
 }
 
 
-
 /* ***********
    ***********
 
@@ -865,7 +864,7 @@ html.error-status.errors:before {
 
 .qa-bar {
   background:#131318;
-  border-radius:4px;
+  /* border-radius:4px; */
   overflow:hidden;
   margin-bottom:2px;
   transition: all 0.35s;
@@ -1048,7 +1047,7 @@ body.split-view-on {
 
 
 .iframe-wrapper {
-  border-radius:4px;
+  /* border-radius:4px; */
   width:100%;
   height:100%;
   display:flex;
@@ -1068,7 +1067,7 @@ body.split-view-on {
   flex-grow:1;
   z-index:2;
   position: relative;
-  border-radius: 4px 0 0 4px;
+  /* border-radius: 4px 0 0 4px; */
   /* background: #26262d; */
   background:url("chrome-extension://__MSG_@@extension_id__/img/tempbg12.png") top left repeat #26262d;
   /* box-shadow: inset -2px 0 0 0 rgba(255,255,255,0.1); */
@@ -1659,7 +1658,7 @@ body.split-view-on {
   background:#565968;
   width:100%;
   min-height:80px; max-height:80px; height:80px;
-  box-shadow: 0 4px 0 0px #2b2b33;
+  /* box-shadow: 0 4px 0 0px #2b2b33; */
   overflow: hidden;
   position: relative;
 }

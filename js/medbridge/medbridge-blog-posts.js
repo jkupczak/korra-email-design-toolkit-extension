@@ -3,7 +3,7 @@ console.warn("[medbridge-home-extension] loaded /js/medbridge/medbridge-blog-pos
 
 
 // Update chrome.storage with this articles status (log protected articles, remove non-protected articles)
-determineArticleStatus(document.documentElement.outerHTML);
+logArticleStatusInStorge(document.documentElement.outerHTML);
 
 
 ////////////////////////
