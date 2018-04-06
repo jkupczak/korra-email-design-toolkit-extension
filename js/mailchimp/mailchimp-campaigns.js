@@ -1,218 +1,5 @@
-console.warn("[sonic-toolkit-extension] loaded /js/mailchimp/mailchimp-campaigns.js");
+console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/mailchimp/mailchimp-campaigns.js");
 //////////////////////////////////////////////////////////////////////////////////////
-
-
-///////
-///////
-//
-// Filter Bar
-//
-///////
-///////
-          //
-          // // Filter Bar Wrapper Element
-          // var filterBar = document.createElement("div");
-          // filterBar.id = "filter-bar";
-          // document.querySelector("div.line.action-bar > div.lastUnit.size1of1").appendChild(filterBar);
-          //
-          // // Check All Button
-          // var btnCheckVisible = document.createElement("div");
-          // btnCheckVisible.id = "check-visible";
-          // btnCheckVisible.className = "filter-group";
-          // btnCheckVisible.addEventListener('click', checkVisible, false);
-          // filterBar.appendChild(btnCheckVisible);
-          //
-          // // Discipline Filters
-          // var disciplineFilters = document.createElement("div");
-          // disciplineFilters.id = "discipline-filters";
-          // disciplineFilters.className = "filter-group";
-          // disciplineFilters.innerHTML = "<div class='discipline-filter filter-pt' data-filter='pt' data-status='off'></div><div class='discipline-filter filter-at' data-filter='at' data-status='off'></div><div class='discipline-filter filter-ot' data-filter='ot' data-status='off'></div><div class='discipline-filter filter-slp' data-filter='slp' data-status='off'></div><div class='discipline-filter filter-other' data-filter='other' data-status='off'></div><div class='discipline-filter filter-lmt' data-filter='lmt' data-status='off'></div><div class='discipline-filter filter-ent' data-filter='ent' data-status='off'></div>";
-          // filterBar.appendChild(disciplineFilters);
-          //
-          // document.querySelector("#discipline-filters").addEventListener('click', filterRows, false);
-          //
-          //
-          // function checkVisible() {
-          //
-          //   console.log("checkVisible() running...")
-          //
-          //   let rows = document.querySelectorAll(".campaign-list-row");
-          //   for (let row of rows) {
-          //
-          //     if ( row.classList.contains("filtered-out") ) {
-          //       console.log("filtered out")
-          //     } else {
-          //       row.querySelector("div > div > .selectCheckBox > input.dijitCheckBoxInput").click();
-          //       console.log("checked!");
-          //     }
-          //
-          //   }
-          // }
-          //
-          //
-          //
-          // var activeFiltersArr = [];
-          // function filterRows() {
-          //
-          //   console.log(this);
-          //   console.log(event.target);
-          //   console.log(event.target.dataset.filter);
-          //   console.log(activeFiltersArr);
-          //
-          //   // Figure out which filter was clicked
-          //   var filterName = event.target.dataset.filter;
-          //   var filterObject = event.target;
-          //
-          //   if ( filterName ) {
-          //
-          //     // Is this the first time a filter has been selected?
-          //     if ( this.dataset.active !== "true" ) {
-          //       this.dataset.active = "true";
-          //       this.classList.add("filters-active");
-          //
-          //       let filters = document.querySelectorAll("#discipline-filters .discipline-filter");
-          //       for (let filter of filters) {
-          //
-          //         if ( filter.dataset.discipline !== filterName ) {
-          //           filter.classList.add("unselected");
-          //           filter.dataset.status = "off";
-          //         } else {
-          //           filter.classList.remove("unselected");
-          //           filter.dataset.status = "on";
-          //         }
-          //       }
-          //
-          //     }
-          //
-          //   // Determine the status of the newly clicked filter
-          //   var filterStatus = event.target.dataset.status;
-          //
-          //   if ( filterStatus === "off" ) {
-          //
-          //     // This filter is now active
-          //     filterObject.classList.remove("unselected");
-          //     filterObject.dataset.status = "on";
-          //
-          //     activeFiltersArr.push(filterName);
-          //
-          //   } else {
-          //
-          //     var index = activeFiltersArr.indexOf(filterName);
-          //     activeFiltersArr.splice(index, 1);
-          //
-          //     filterObject.classList.add("unselected");
-          //     filterObject.dataset.status = "off";
-          //   }
-          //   console.log(activeFiltersArr);
-          //
-          //
-          //   // Filter out the rows
-          //   let rows = document.querySelectorAll(".campaign-list-row");
-          //   for (let row of rows) {
-          //
-          //     console.log("Current Row: " + row.dataset.discipline);
-          //     row.classList.remove("filtered-out");
-          //
-          //     var arrayLength = activeFiltersArr.length;
-          //     for (var i = 0; i < arrayLength; i++) {
-          //       if ( row.dataset.discipline === activeFiltersArr[i] ) {
-          //         row.classList.remove("filtered-out");
-          //         console.log('row.classList.remove("filtered-out");');
-          //         break
-          //       } else {
-          //         row.classList.add("filtered-out");
-          //         console.log('row.classList.add("filtered-out");');
-          //       }
-          //     }
-          //
-          //
-          //
-          //   }
-          //
-          //
-          //   }
-          // }
-
-///////
-///////
-//
-// Get the buttons in the header
-//
-///////
-///////
-
-        // var dlSentCampaigns = document.querySelector("div.float-right.hide-phone > a.button");
-        // console.log(dlSentCampaigns);
-        //
-        // var headerBtns = document.querySelector("div.selfclear > div.float-right.hide-phone:last-child");
-        // console.log(headerBtns);
-
-
-
-
-
-
-///////
-///////
-//
-// Create a New Button
-//
-///////
-///////
-
-
-          // var createReferenceSheet = document.createElement("a");
-          //     createReferenceSheet.className = "button !margin-right--lv0 jk-btn jk-export-extra-data";
-          //     createReferenceSheet.innerHTML = "Create Reference Sheet";
-          //     createReferenceSheet.addEventListener("click", processReferenceSheet, false);
-          //
-          // // Add it to the DOM with the rest of the buttons
-          // headerBtns.insertBefore(createReferenceSheet, dlSentCampaigns);
-
-function processReferenceSheet() {
-
-  var referenceSheet = "<ul style='list-style-type:disc;padding-left:20px;'>";
-
-  let rows = document.querySelectorAll(".campaign-list-row:not(.filtered-out)");
-  for (let row of rows) {
-
-    var reportLink = "<a style='display:inline;' href='https://us2.admin.mailchimp.com/reports/summary?id=" + row.dataset.id + "'>View Report</a>";
-
-    if ( row.dataset.type === "Regular" ) {
-      var emailLink = "<a style='display:inline;' href='https://us2.admin.mailchimp.com/reports/show?id=" + row.dataset.id + "'>View Email (Direct Link)</a>";
-    } else {
-      var emailLink = "Email Available in Report"
-    }
-
-
-    if ( row.dataset.status === "delivered" )  {
-      referenceSheet += "<li><b style='font-size:12px;'>" + row.querySelector("h4 a").textContent + "</b> &nbsp;|&nbsp; <span style='font-size:10px;'>" + reportLink + " - " + emailLink + "</span></li>"
-    }
-
-  }
-
-  referenceSheet += "</ul>"
-
-  // instanciate new modal
-  tingleExportData = new tingle.modal({
-      footer: false,
-      stickyFooter: false,
-      cssClass: ['fill', 'html-output'],
-
-      onOpen: function() {
-          console.log('modal open');
-      },
-      onClose: function() {
-          console.log('modal closed');
-      }
-  });
-
-  tingleExportData.setContent(referenceSheet);
-  tingleExportData.open();
-
-
-}
-
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -224,10 +11,10 @@ function processReferenceSheet() {
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
-var sideBarWrapper = document.querySelectorAll(".c-campaignManager_sidebar")[0];
-var searchBar = document.querySelectorAll(".c-campaignManager_actionBar")[0];
-
-sideBarWrapper.prepend(searchBar);
+// var sideBarWrapper = document.querySelectorAll(".c-campaignManager_sidebar")[0];
+// var searchBar = document.querySelectorAll(".c-campaignManager_actionBar")[0];
+//
+// sideBarWrapper.prepend(searchBar);
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -239,9 +26,9 @@ sideBarWrapper.prepend(searchBar);
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
-var createBtn = document.querySelector("button[data-test-id='createCampaignButton']");
-createBtn.style = "display: block !important;"
-sideBarWrapper.prepend(createBtn);
+// var createBtn = document.querySelector("button[data-test-id='createCampaignButton']");
+// createBtn.style = "display: block !important;"
+// sideBarWrapper.prepend(createBtn);
 
 
 //////////////////////////////////////////////////
@@ -352,13 +139,13 @@ function processCampaignList(campaignListParent) {
 
         // Add a "Report Download" Button
         ///////////
-        var reportDlLink = document.createElement("a");
-            reportDlLink.href = "/reports/excel?id=" + campaignId;
-            reportDlLink.classList.add("icomoon", "icomoon-arrow-down", "button", "campaign-report-dl-button");
-            reportDlLink.style = "line-height:24px; height:22px; padding:0 8px; font-size:12px; margin:0;"
-            reportDlLink.addEventListener("click", clickedReportDLButton, false);
-
-        insertAfter(reportDlLink, campaignRow.getElementsByClassName("c-campaignManager_slat_stats")[0]);
+        // var reportDlLink = document.createElement("a");
+        //     reportDlLink.href = "/reports/excel?id=" + campaignId;
+        //     reportDlLink.classList.add("icomoon", "icomoon-arrow-down", "button", "campaign-report-dl-button");
+        //     reportDlLink.style = "line-height:24px; height:22px; padding:0 8px; font-size:12px; margin:0;"
+        //     reportDlLink.addEventListener("click", clickedReportDLButton, false);
+        //
+        // insertAfter(reportDlLink, campaignRow.getElementsByClassName("c-campaignManager_slat_stats")[0]);
 
     }
 
@@ -418,7 +205,7 @@ function processCampaignList(campaignListParent) {
         } else {
           campaignRow.dataset.type = "A/B";
         }
-        destroy(campaignType);
+        // destroy(campaignType);
 
         var campaignTypeIcon = document.createElement("div");
         campaignTypeIcon.style = "display:flex; align-items:center; margin-right:18px;"

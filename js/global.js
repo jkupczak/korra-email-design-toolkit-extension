@@ -1131,8 +1131,16 @@ chrome.storage.promise = {
 
 //
 /////////
+// isPlainObject({sandwich: 'tuna', chips: 'cape cod'}); // Returns true
+// isPlainObject(['tuna', 'chicken', 'pb&j']) // Returns false
+var isPlainObject = function (obj) {
+	return Object.prototype.toString.call(obj) === '[object Object]';
+};
+
+//
+/////////
 function isArticleProtected(document) {
-  if ( /title="Protected\: /.test(document) ) {
+  if ( /title=("|')Protected\: /.test(document) ) {
     return true;
   }
   return false;
@@ -1143,23 +1151,14 @@ function isArticleProtected(document) {
 // Used in local HTML files and when visiting the blog.
 function logArticleStatusInStorge(document) {
 
-  // console.log(document);
-
   var postId = document.match(/rel\=(\"|\')shortlink(\"|\').+?\>/i)[0].match(/\d\d\d+/)[0];
   var isProtected = isArticleProtected(document);
 
   console.log("postId", postId, "isProtected", isProtected);
 
-  // checkProtectedArticleStatus(postId, isProtected);
-
-
   // get
   chrome.storage.promise.local.get('protectedarticles').then(function(data) {
     // resolved
-    // console.log(data); // => {'foo': 'bar'}
-    // console.log(data.length); // => {'foo': 'bar'}
-    // console.log(data.protectedarticles); // => {'foo': 'bar'}
-    // console.log(data.protectedarticles.length); // => {'foo': 'bar'}
 
     if (typeof data.protectedarticles !== 'undefined') {
 
@@ -1170,38 +1169,25 @@ function logArticleStatusInStorge(document) {
       var arr = Object.values(data.protectedarticles);
 
       if ( !arr.includes(postId) ) {
-
           console.error("postId " + postId + " is NOT included in 'protectedarticles'");
-
           if ( isProtected ) {
               arr.push(postId);
           }
-
       } else {
-
           console.error("postId already included");
-
           if ( !isProtected ) {
             console.log("is not protected")
             removeValueFromArray(arr, postId);
           }
-
       }
 
-      // now that we've determined whether or not we're adding/deleting, set our array back into storage
-      chrome.storage.promise.local.set({'protectedarticles': arr}).then(function() {
-        // resolved
-        // console.log('set');
-      }, function(error) {
-        // rejected
-        console.log(error);
-      });
-
-      // console.log(arr);
+      updateProtectArticlesinStorage(arr);
 
     } else {
       // "protectedarticles" does not exists
-      console.error("'protectedarticles' not set yet");
+      console.error("'protectedarticles' not set yet, setting now...");
+      var arr = [postId];
+      updateProtectArticlesinStorage(arr);
     }
 
   }, function(error) {
@@ -1209,22 +1195,21 @@ function logArticleStatusInStorge(document) {
     console.log(error);
   });
 
-  // console.log(postId);
-  //
-  // var key = {}
-  // var data = "protected";
-  //
-  // key[postId] = data;
-  //
-  // chrome.storage.promise.local.set(key).then(function() {
-  //   // resolved
-  //   console.log('set');
-  // }, function(error) {
-  //   // rejected
-  //   console.log(error);
-  // });
 }
+    function updateProtectArticlesinStorage(arr) {
 
+      chrome.storage.promise.local.set({'protectedarticles': arr}).then(function() {
+        // resolved
+      }, function(error) {
+        console.log(error);
+      });
+
+    }
+
+
+///////////////////////////
+///////////////////////////
+///////////////////////////
 
 // View entire storage
 // chrome.storage.sync.get(function(result) { console.log("Entire chrome.storage results: "); console.log(result); });

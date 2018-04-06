@@ -24,8 +24,8 @@
     "startpage/index.html"
   ],
 
-  "description": "Helps automate email design, testing, and marketing tasks. Upgrades the user experience of viewing local HTML files, MedBridgeeducation.com, and MailChimp.",
-  "version": "3.6",
+  "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
+  "version": "3.6.1",
 
   "browser_action": {
     "default_icon": "icons/192-korra.png",
@@ -98,7 +98,7 @@
       "all_frames": true
     },
     {
-      "matches": ["*://*.medbridgeeducation.com/blog/201*"],
+      "matches": ["*://*.medbridgeeducation.com/blog/201*", "*://*.medbridgeeducation.com/blog/?p=*"],
       "js": ["js/medbridge/medbridge-blog-posts.js"]
     },
     {
@@ -171,7 +171,8 @@
         },
         {
           "matches": ["*://*.mailchimp.com/lists/members/?id=*"],
-          "js": ["js/mailchimp/mailchimp-lists.js"]
+          "js": ["js/mailchimp/mailchimp-lists.js"],
+          "css": ["css/mailchimp/automate-list-actions.css"]
         },
         {
           "matches": ["*://*.mailchimp.com/reports/show*"],

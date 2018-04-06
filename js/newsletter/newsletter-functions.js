@@ -1285,7 +1285,7 @@ function containsObject(obj, list) {
 
 
 // Function to handle creating error markers, error tags (that explain the error), and incrementing the error counter.
-function createLinkErrorRow(linkObj, msg, type, icon) {
+function createLinkErrorRow(linkObj, msg, type, icon, marker) {
 
   // Set the 'type' to error if one wasn't passed.
   if ( !type ) {
@@ -1341,7 +1341,7 @@ function createLinkErrorRow(linkObj, msg, type, icon) {
     if ( linkMarker.children[0].innerHTML === "" || linkMarker.children[0].innerHTML === "0" ) {
       linkMarker.children[0].innerHTML = "1";
     } else {
-      var currentLinkErrors = Number(linkMarker.children[0]);
+      var currentLinkErrors = Number(linkMarker.children[0].innerHTML);
       currentLinkErrors++
       linkMarker.children[0].innerHTML = currentLinkErrors;
     }
@@ -1352,6 +1352,11 @@ function createLinkErrorRow(linkObj, msg, type, icon) {
     errorRow.classList.add("fontastic-icon", "error-icon-" + icon);
   } else {
     errorRow.classList.add("error-icon-x");
+  }
+
+  if ( marker === "lock" ) {
+    linkMarker.children[1].innerHTML = svgIconLock;
+    linkMarker.classList.add("lock");
   }
 
   //////
@@ -1976,7 +1981,7 @@ function validateLinks(linkObj, i) {
       if ( elExists(moduleNumber) ) {
 
         var moduleNumber = moduleNumber.getAttribute("data-module-count");
-        var moduleNumberMatch = new RegExp("utm_content=mod" + moduleNumber, "gi");
+        var moduleNumberMatch = new RegExp("utm_content=mod" + moduleNumber + "(&|$|#)", "gi");
 
         // mod followed by 1 or 2 digits, followed by - or # or & or the link ends.
         if ( /utm_content=mod\d(\d)?([\/\-&#]|$)/gi.test(linkHref) ) {
@@ -2086,12 +2091,12 @@ function validateLinks(linkObj, i) {
       createLinkErrorRow(linkObj, "Link text does not match url (demo related).");
     }
     // if ( /Article/gi.test(linkObj.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/?blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
-    if ( /Article/gi.test(linkObj.textContent) && !singleLinkInfoArray['isBlogLink'] ) {
-      createLinkErrorRow(linkObj, "Link text does not match url (article related).");
+    if ( /Article/gi.test(linkObj.textContent) && !singleLinkInfoArray['isArticle'] ) {
+      createLinkErrorRow(linkObj, "Link text does not match url (article related) [1].");
     }
 
-    if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray['isBlogLink'] ) {
-      createLinkErrorRow(linkObj, "Link text does not match url (article related).");
+    if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray['isArticle'] ) {
+      createLinkErrorRow(linkObj, "Link text does not match url (article related) [2].");
     }
 
     ////
@@ -2302,6 +2307,7 @@ function validateLinks(linkObj, i) {
   }
 
 
-
-
 }
+
+
+//

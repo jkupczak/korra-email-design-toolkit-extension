@@ -157,6 +157,10 @@ function sendEmail() {
 
 ///--------
 
+// Check plaintext un-rendered DOM for empty href=""'s. Most of these will probably be in VML where our function can't search. Throw an additional link error with an explanation.
+
+///--------
+
 // Count citations like <sup>1</sup> in the HTML, verify that they appear in the right order. Throw an error if 2 comes before 1, etc.
 
 ///--------
@@ -2311,6 +2315,18 @@ powerOrb.className = "power-orb orb glyph";
 powerOrb.href = document.URL + "?view=1";
 orbsBottom.appendChild(powerOrb);
 
+//////////
+////
+////   Re-Check Links via AJAX
+////
+/////////
+
+var ajaxOrb = document.createElement("div");
+ajaxOrb.className = "ajax-orb orb glyph icomoon icomoon-spinner4";
+ajaxOrb.id = "ajax-orb";
+ajaxOrb.addEventListener("click", manualXHRLinkCheck, false);
+orbsBottom.appendChild(ajaxOrb);
+
 
 //////////
 ////
@@ -3483,7 +3499,10 @@ function checkZoomLevel() {
 
 
 var zoomCheckStatus = false;
-updatePreflightErrorTotal("error", 1); // Zoom level is an error on page load. Only one time! If zoom check is found in sessionsStorage, all of this should be ignored. Or should it? Major changes to HTML should be re-checked at different zoom levels after a page refresh. Figure out what to do here.
+
+// updatePreflightErrorTotal("error", 1);
+// Zoom level is an error on page load. Only one time! If zoom check is found in sessionsStorage, all of this should be ignored. Or should it? Major changes to HTML should be re-checked at different zoom levels after a page refresh. Figure out what to do here.
+
 checkZoomLevel();
 
 
@@ -3815,7 +3834,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   });
   // case-insensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /(patient outcomes?|home exercise program|clinician)/gi,
+    find: /(patient outcomes?|clinician)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 

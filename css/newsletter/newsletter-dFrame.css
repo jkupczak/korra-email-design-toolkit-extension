@@ -113,7 +113,7 @@ html {
 } */
 
 .link-marker.done {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .link-marker:hover {
@@ -124,6 +124,10 @@ html {
 
 .link-marker.has-message {
   display:block;
+}
+
+.link-marker.lock .link-marker-error-total {
+  display: none;
 }
 
 .link-marker.warning {

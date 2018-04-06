@@ -1,8 +1,8 @@
 console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/mailchimp/mailchimp-lists.js");
 //////////////////////////////////////////////////////////////////////////////////
 
-
-
+var originalPageTitle = document.title;
+var mainBtns = document.querySelectorAll("#member-grid-wrap .table-pagination > div:first-child")[0];
 var toggleColumnsBtn = document.querySelector("div > div.reorder:first-child");
 
 
@@ -69,7 +69,7 @@ for (let group of groups) {
   dataListHtml += '<option value="' + groupId + '">' + groupText + '</option>';
 }
 
-var automateSettingsHtml = '<div><div><input id="automate-action-pages" value="1" type="text" placeholder="# of Pages to Automate"></input></div><div><datalist id="group-names-list">' + dataListHtml + '</datalist><input id="group-name" type="text" name="group-names-list" list="group-names-list" placeholder="Group to Remove From"></input></div><div><button class="button" id="start-automation">Start Automation</button></div></div>';
+var automateSettingsHtml = '<div class="automate-modal"><section><h4>Pages to Automate</h4><input id="automate-action-pages" value="1" type="text" placeholder="# of Pages to Automate"></input></section><section><div><datalist id="group-names-list">' + dataListHtml + '</datalist><input id="group-name" type="text" name="group-names-list" list="group-names-list" placeholder="Group to Remove From"></input></div><div><button class="button" id="automate-group-removal">Remove from Group</button></div></section><section><div><button id="automate-unsubscribe">Unsubscribe</button></div></section><section><div><button id="automate-resubscribe">Resubscribe</button></div></section></div>';
 
 // instanciate new modal
 automateSettingsModal = new tingle.modal({
@@ -78,17 +78,17 @@ automateSettingsModal = new tingle.modal({
     cssClass: ['fill', 'html-output', 'automate-modal'],
 
     onOpen: function() {
-        console.log('modal open');
+        // console.log('modal open');
     },
     onClose: function() {
-        console.log('modal closed');
+        // console.log('modal closed');
     }
 });
 
 automateSettingsModal.setContent(automateSettingsHtml);
-document.getElementById("start-automation").addEventListener("click", automateActionFunc, false);
-
-
+document.getElementById("automate-group-removal").addEventListener("click", automateActionFunc, false);
+document.getElementById("automate-unsubscribe").addEventListener("click", automateActionFunc, false);
+document.getElementById("automate-resubscribe").addEventListener("click", automateActionFunc, false);
 
 
 
@@ -99,20 +99,41 @@ document.getElementById("start-automation").addEventListener("click", automateAc
 ////
 
 //// Create HTML
-var automateAction = '<div id="automate-settings" class="button float-left">Automate</div>';
-
-//// Inject it
-toggleColumnsBtn.insertAdjacentHTML('afterend', automateAction);
+var automateAction = document.createElement("div");
+automateAction.style = "display:none; margin-right:6px !important";
+automateAction.innerHTML = "Automate";
+automateAction.classList.add("button", "float-left");
 
 //// Add an eventlistener
-document.getElementById("automate-settings").addEventListener("click", openAutomateSettingsFunc, false);
+// document.getElementById("automate-settings").addEventListener("click", openAutomateSettingsFunc, false);
+automateAction.addEventListener("click", openAutomateSettingsFunc, false);
+
+//// Inject it
+mainBtns.appendChild(automateAction);
+// toggleColumnsBtn.insertAdjacentHTML('afterend', automateAction);
+
+
+// Only add the Automate button when we are looking at a segment.
+document.arrive(".status-container > span > span.fwn", function() {
+
+  automateAction.style.display = "inline-block";
+
+});
+
 
 //// Function to open the settings module.
 function openAutomateSettingsFunc() {
   automateSettingsModal.open();
 }
 
+var closeSegment = document.querySelectorAll(".float-right.bar-button[data-dojo-attach-point='closeAction']")[0];
+console.log(closeSegment)
 
+closeSegment.addEventListener("click", removeAutomateBtn, false);
+
+function removeAutomateBtn() {
+  automateAction.style.display = "none";
+}
 
 
 ////
@@ -121,24 +142,44 @@ function openAutomateSettingsFunc() {
 ////
 ////
 
-function automateActionFunc() {
+function getSegmentName() {
+  return document.querySelectorAll("span[data-dojo-attach-point='statusMessage']")[0].innerHTML.replace(/<.+/gi,"");
+}
+
+function automateActionFunc(e) {
+
+  console.log(this, event, event.target);
+
+    var action;
+    var groupSelected;
+
+    //
+    var segmentName = getSegmentName();
 
     // Get the total pages we want to automate through from the input value we entered on the page
-    pages = document.getElementById("automate-action-pages").value;
-    console.log(pages);
+    var pages = document.getElementById("automate-action-pages").value;
 
-    // Get the total pages we want to automate through from the input value we entered on the page
-    groupSelected = document.getElementById("group-name").value;
-    console.log(groupSelected);
+
+    if ( this.id === "automate-group-removal") {
+
+      action = "groups";
+      // Get the total pages we want to automate through from the input value we entered on the page
+      groupSelected = document.getElementById("group-name").value;
+      console.log(groupSelected);
+
+    } else if  ( this.id === "automate-unsubscribe") {
+      action = "unsubscribe";
+    } else if  ( this.id === "automate-resubscribe") {
+      action = "resubscribe";
+    }
 
     automateSettingsModal.close();
 
     console.log("automateClicks(); beginning: " + pages + " pages will be automated");
     // Run function that does all the clicking.
-    automateClicks(pages, groupSelected);
+    automateClicks(segmentName, pages, action, groupSelected);
 
 }
-
 
 
 ////
@@ -147,7 +188,14 @@ function automateActionFunc() {
 ////
 ////
 
-function automateClicks(pages, groupSelected) {
+function automateClicks(segmentName, pages, action, groupSelected) {
+
+  console.log(segmentName, pages, action, groupSelected);
+
+  // console.log(segmentName, getSegmentName());
+
+  // Make sure we're still automating the right contacts by checking the segment name.
+  if ( segmentName === getSegmentName() ) {
 
       //// Add a class that identifies that automation is in progress.
       document.body.classList.add("automating-in-progress");
@@ -157,13 +205,23 @@ function automateClicks(pages, groupSelected) {
       // console.log(selectVisible);
       selectVisible.click();
 
-      var groupToRemove = document.getElementById(groupSelected);
-      // console.log(groupToRemove);
+      // Remove from Group
+      if ( action === "groups") {
 
-      //// Click the appropriate button to remove them from the group.
-      // if ( groupToRemove.innerText === "Suppress (GetResponse Placeholders)" ) {
+        var groupToRemove = document.getElementById(groupSelected);
         groupToRemove.click();
-      // }
+
+      // Unsusbcribe
+      } else if ( action === "unsubscribe" ) {
+
+        document.querySelectorAll("[data-mojo-bulk-action='unsubscribe']")[0].click();
+
+      // Resubscribe
+      } else if ( action === "resubscribe" ) {
+
+        document.querySelectorAll("[data-mojo-bulk-action='admin-resubscribe']")[0].click();
+
+      }
 
       //// Listen for the confirm modal to appear.
       document.arrive(".automating-in-progress .dijitFocused .bulk-action-button", {onceOnly: true}, function() {
@@ -198,15 +256,20 @@ function automateClicks(pages, groupSelected) {
 
         //// How many pages left?
         console.log("automateClicks(); progress: " + pages + " left");
+        document.title = "(" + pages + " pages left) " + originalPageTitle;
 
         if ( pages > 0 ) {
-          automateClicks(pages, groupSelected);
+          automateClicks(segmentName, pages, action, groupSelected);
         } else {
           // Push a browser notification
           browserNotification("Automation Complete", "mailchimpAutomation", "img/mailchimp-notification.png", true, 180000);
         }
 
       });
+
+  } else {
+    console.error("Error! Segment name did not match! Automation cancelling. Check that data was not improperly altered.")
+  }
 
 
 }

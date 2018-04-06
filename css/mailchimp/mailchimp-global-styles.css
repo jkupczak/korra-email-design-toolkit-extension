@@ -162,9 +162,9 @@
 */
 /***********/
 /***********/
-.main-navigation { height:44px !important; }
+/* .main-navigation { height:44px !important; }
 .main-navigation li { line-height:44px !important; }
-.main-navigation li a { padding:0 9px !important; }
+.main-navigation li a { padding:0 9px !important; } */
 
 /***********/
 /***********/
@@ -201,11 +201,11 @@
 /* */
 /* Header */
 /* */
-body.discipline-ready:not(.discipline-null) .c-wizardNavigation.selfclear,
-body.discipline-ready:not(.discipline-null) .c-wizardNavigation.selfclear li.hover-item > a,
-body.discipline-ready:not(.discipline-null) .nav-link a,
-body.discipline-ready:not(.discipline-null) .line.selfclear,
-body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
+body.discipline-ready:not(.discipline-undefined) .c-wizardNavigation.selfclear,
+body.discipline-ready:not(.discipline-undefined) .c-wizardNavigation.selfclear li.hover-item > a,
+body.discipline-ready:not(.discipline-undefined) .nav-link a,
+body.discipline-ready:not(.discipline-undefined) .line.selfclear,
+body.discipline-ready:not(.discipline-undefined) .line.selfclear li.hover-item > a {
   color:#fff !important;
 }
 
@@ -508,6 +508,9 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
 /***********/
 /***********/
 
+.campaigns-list #content > .header {
+  margin: 10px 0 10px !important;
+}
 
 #campaigns-list .c-campaignManager_slat_details_listName {
   font-size:10px;
@@ -526,42 +529,42 @@ body.discipline-ready:not(.discipline-null) .line.selfclear li.hover-item > a {
 #campaigns-list .c-campaignManager_slat {
   border-bottom:0;
   border-top: 1px solid rgb(230,230,230);
-  padding: 4px 18px 4px 18px;
+  padding: 6px 0 6px 0;
   align-items: center;
 }
-#campaigns-list .status-draft + .c-campaignManager_slat {
+/* #campaigns-list .status-draft + .c-campaignManager_slat {
   border:0;
-}
+} */
 
-#campaigns-list .c-campaignManager_slat.status-draft {
+/* #campaigns-list .c-campaignManager_slat.status-draft {
   padding-top:15px;
   padding-bottom:15px;
   border: 0;
   box-shadow: inset 0 0 0 5px #fff, inset 0 0 0 6px rgb(210,210,210);
   background: rgb(245,245,245);
-}
+} */
 
 /* Hidden */
 .c-campaignManager_slat_details p:last-child { display: none; }
 .status-scheduled .c-campaignManager_slat_details p:last-child { display: block; }
 
 /* Spacing */
-.campaigns-list .c-campaignManager_actionBar { padding-top:15px; padding-bottom:45px; }
-.campaigns-list .mc-content { max-width: 1440px; }
+/* .campaigns-list .c-campaignManager_actionBar { padding-top:15px; padding-bottom:45px; } */
+/* .campaigns-list .mc-content { max-width: 1440px; } */
 
 /* Sidebar */
-.c-campaignManager_sidebar { width:245px !important; }
+/* .c-campaignManager_sidebar { width:245px !important; } */
 
 /* Search Bar Position */
-.c-campaignManager_actionBar { margin-top: 0 !important; top:auto !important; width:initial !important; }
+/* .c-campaignManager_actionBar { margin-top: 0 !important; top:auto !important; width:initial !important; }
 .c-campaignManager_actionBar--fixed { position: relative !important; }
 .c-campaignManager_actionBar--fixed+.c-campaignManager_listWrapper { padding-top: 0 !important; }
-.c-campaignManager_searchBox, .c-campaignManager_searchCount { padding-left:0 !important; }
+.c-campaignManager_searchBox, .c-campaignManager_searchCount { padding-left:0 !important; } */
 
 /* Campaigns List */
-.c-campaignManager_sidebar--fixed + .c-campaignManager_listOuter { margin-left:245px !important; }
+/* .c-campaignManager_sidebar--fixed + .c-campaignManager_listOuter { margin-left:245px !important; } */
 
-.c-campaignManager_listOuter { top:-60px !important; width: calc(100% - 245px) !important; padding-left: 30px !important; }
+/* .c-campaignManager_listOuter { top:-60px !important; width: calc(100% - 245px) !important; padding-left: 30px !important; } */
 
 /*#campaigns-list .status-draft {
   border: 1px solid #ccc;
@@ -610,7 +613,7 @@ li[data-status="draft"] .c-campaignManager_slat_actions>.dijitComboButton { opac
   flex: 0 0 90px !important;
 }
 .c-campaignManager_slat_stats {
-  flex: 0 0 240px !important;
+  flex: 0 0 200px !important;
 }
 .c-campaignManager_slat_stat > div {
   padding-right:18px !important;

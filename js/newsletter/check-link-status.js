@@ -269,20 +269,21 @@ function manualXHRLinkCheck() {
 ////////////////
 function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
 
-  console.log("response:", i, response);
+  console.log("response [" + response.source + "]:", i, response);
 
   // Make sure we didn't deny caching due to MedBridge redirect errors or protected blog articles
   // If the source is a fresh XHR (and not cache), and the response status code is >= 200 and less than 400...
   if ( (response.source == "xhr") && (200 <= response.status && response.status < 400) ) {
 
-    // Check if a MedBridge redirect isn't working correctly. We don't cache links with broken redirects.
-    checkRedirectErrors(i, linkObj, response);
+    // Check if a MedBridge redirect isn't working correctly.
+    // Or if MedBridge links land on the homepage because the page does not exist.
+    checkResponseURL(i, linkObj, response);
 
     if ( response.redirectOK === false ) {
 
       response.statusText = "Redirect Failed";
 
-    } else if ( response.statusText === "" ) {
+    } else if ( response.statusText === "" || response.statusText === "OK" ) {
 
       response.statusText = "OK";
       // This link has an OK status and it was a fresh XHR (not from cache), so let's check if it's a protected article.
@@ -331,23 +332,28 @@ function linkMarkerCheckedOff(linkMarker) {
 // Read the response.document to find out if an article is protected. We don't cache protected articles.
 ////////
 function checkIfArticleProtected(i, linkObj, response) {
+  // console.error(i, "checkIfArticleProtected()");
+
   // Check Article Protected Status
   if ( linkInfoArray[i]['isArticle'] ) {
+    // console.error(i, "isArticle = true");
 
-    // Save the protected status to chrome.storage for use elswhere.
+    // Save the article's status to chrome.storage for use elswhere.
     logArticleStatusInStorge(response.document);
 
     if ( isArticleProtected(response.document) ) {
-    // if ( /title="Protected\: /.test(response.document) ) {
       linkInfoArray[i]['articleProtected'] = true;
       response.articleProtected = true;
       response.addToCache = false;
-      createLinkErrorRow(linkObj, "Article is protected.");
+      createLinkErrorRow(linkObj, "Article is protected.", "error", null, "lock");
     } else {
       linkInfoArray[i]['articleProtected'] = false;
       response.articleProtected = false;
     }
+  } else {
+    // console.error(i, "isArticle = false");
   }
+
 }
 
 ////////
@@ -412,25 +418,60 @@ function createLinkStatusRow(i, linkObj, response) {
 }
 
 ////////
+// Is this the MedBridge Education homepage?
+////////
+function isMedBridgeHomepage(document) {
+  if ( /discipline-page__hero--home/i.test(document) ) {
+    return true;
+  }
+  return false;
+}
+
+////////
 // Check if a MedBridge redirect isn't working correctly. We don't cache links with broken redirects.
 ////////
-function checkRedirectErrors(i, linkObj, response) {
-  // Check succesful redirection of tracking links on MedBridge
-  // Broken tracking links do not redirect, instead they just land on the homepage. So they will resolve as 200.
-  // So we also need to prevent it from being cached.
+function checkResponseURL(i, linkObj, response) {
+
   if ( linkInfoArray[i]['isMedBridgeBrandLink'] && linkInfoArray[i]['hasTrackingLinkback'] ) {
+
+    // Check succesful redirection of tracking links on MedBridge
+    // Broken tracking links do not redirect, instead they just land on the homepage with the tracking URL intact.
+    // They will resolve as 200 but this isn't accurate for our purposes.
+    // So we also need to prevent it from being cached.
     if ( /after_affiliate_url/i.test(response.responseURL) ) {
+
+      // console.error(i, "first if", linkInfoArray[i]['querystring']['after_affiliate_url'], linkObj.pathname, response.responseURL);
+
       createLinkErrorRow(linkObj, "MedBridge tracking link not redirecting.");
       response.addToCache = false;
       response.redirectOK = false;
-    } else if ( linkInfoArray[i]['isArticle'] && linkInfoArray[i]['isBlogLink'] && /(&|\?)p=/i.test(response.responseURL) ) {
-      createLinkErrorRow(linkObj, "Blog redirect not working. Check post ID in URL.");
+
+    // Check if we were redirected to the homepage because the redirect URL doesn't exist.
+    // When a MedBridge URL doesn't exist, you are redirected to the MedBridge homepage.
+    // Sometimes the incorrect URL will still be at the end (.com/bad-url-here)
+    // And sometimes it won't.
+
+    // To check for this look at the response.document to verify that the link redirected to the homepage.
+    // Then look at the original link and determine that we are NOT explicitly linking to the homepage.
+    // Do this by looking at the querystring for tracking links, and at the object.pathname for non tracking links.
+    // If they do not both match a value of / or blank then we are intending to NOT go to the homepage, thus the link is invalid and we throw an error.
+
+    } else if ( isMedBridgeHomepage(response.document) && ( !/^(\/|)$/.test(linkInfoArray[i]['querystring']['after_affiliate_url']) && !/^(\/|)$/.test(linkObj.pathname) ) ) {
+
+      // console.error(i, "second if", linkInfoArray[i]['querystring']['after_affiliate_url'], linkObj.pathname, response.responseURL);
+
+      createLinkErrorRow(linkObj, "MedBridge URL does not exist.");
       response.addToCache = false;
-      response.redirectOK = false;
+      response.redirectOK = true;
+
     } else {
+
+      // console.error(i, "third if", linkInfoArray[i]['querystring']['after_affiliate_url'], linkObj.pathname, response.responseURL);
+
       response.redirectOK = true;
     }
   }
+
 }
 
 
