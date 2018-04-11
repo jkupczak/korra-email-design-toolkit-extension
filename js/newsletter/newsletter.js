@@ -11,7 +11,7 @@ function sendEmail() {
 
   var data = new FormData();
   data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
-  data.append("to", "bleedlikeyou@gmail.com");
+  data.append("to", "james@medbridgeed.com");
   data.append("subject", "Hello from Mailgun");
   data.append("html", cleanedOriginalHtml);
 
@@ -727,7 +727,6 @@ document.querySelector("html").classList.toggle("errors");
 //////////////////////////////////////////////////////
 
 
-
 ///////////
 ///// Determine location of the file you're currently viewing.
 ///////////
@@ -758,14 +757,6 @@ if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(pageUrl) ) {
 } else {
   // console.error("nuh-uh");
 }
-
-
-///////////
-// Dropbox
-
-dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
-
-var localUserPath = "file:///Users/jameskupczak";
 
 
 ///////////
@@ -838,6 +829,8 @@ if ( isLocalCampaign ) {
         var filenameEscaped = escapeRegExp(fileName)
         var filenameReplacePattern = new RegExp(filenameEscaped + "($|.+?)", "gi");
 
+      // TODO fix this
+
         var localParentFolder = pageUrl.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, '')
 
             localParentFolder = localParentFolder.replace(filenameReplacePattern, "");
@@ -872,10 +865,10 @@ document.body.classList.add("disc-" + emailDisc);
 var emailSubType;
 var emailSubTypeName;
 
-if ( /\-ns[\.\-]/gi.test(pageUrl) ) {
+if ( /\-ns( +|(%20)+)?[\.\-\(]/gi.test(pageUrl) ) {
   emailSubType = "ns"
   emailSubTypeName = "Non-Subscribers"
-} else if ( /\-sub[\.\-]/gi.test(pageUrl) ) {
+} else if ( /\-sub( +|(%20)+)?[\.\-\(]/gi.test(pageUrl) ) {
   emailSubType = "sub"
   emailSubTypeName = "Subscribers"
 }
@@ -1695,8 +1688,8 @@ function callDropbox(action, source) {
 
   } else {
     source.classList.remove("loading");
-    console.log("No! This file is not located in the local DropBox folder. [" + document.URL + "]");
-    alert("No! This file is not located in the local DropBox folder. [" + document.URL + "]");
+    console.log("Sorry! This file is not located in the local DropBox folder. [" + document.URL + "]");
+    alert("Sorry! This file is not located in the local DropBox folder. [" + document.URL + "]");
 
     console.groupEnd();
 
@@ -1794,85 +1787,40 @@ orbsBottom.appendChild(orbDivider3);
 /////////
 
 //
-// var swapOrb = document.createElement("div");
-// swapOrb.className = "swap-orb orb glyph";
+var swapOrb = document.createElement("div");
+swapOrb.className = "swap-orb orb glyph icomoon icomoon-dropbox";
 // if ( isLocalHost ) { swapOrb.classList.add("off") };
-// swapOrb.addEventListener("click", swapUrl, false);
-// orbsTop.appendChild(swapOrb);
+swapOrb.addEventListener("click", swapUrl, false);
+orbsTop.appendChild(swapOrb);
 
 function swapUrl() {
 
-  var source = this;
-
   console.log("Beginning URL swap.");
 
-  source.classList.add("loading");
+  // Start loading icon
+  // var source = this;
+  // source.classList.add("loading");
+  // 
+  // if ( window.history.length > 1 ) {
+  //   console.log("if (window.history.length > 1)")
+  //   // Don't call the Dropbox API if there's a history available, instead just go back or forward.
+  //   // If going back fails, then forward works instead. If for some reason this breaks in the future, this answer on SO is a nice alternative: http://stackoverflow.com/a/24056766/556079
+  //   window.history.back();
+  //   window.history.forward();
+  //   console.log("navigated using window.history");
+  //   console.log(document.referrer);
+  //
+  // } else {
 
-  if ( window.history.length > 1 ) {
-    // Don't call the Dropbox API if there's a history available, instead just go back or forward.
-    // If going back fails, then forward works instead. If for some reason this breaks in the future, this answer on SO is a nice alternative: http://stackoverflow.com/a/24056766/556079
-    window.history.back();
-    window.history.forward();
-    console.log("navigated using window.history");
-    console.log(document.referrer)
-  } else {
+    console.log("else");
 
-    if ( onDropbox ) {
-
-      var normalDbLink = pageUrl.replace(/dl\./gi, "www.");
-          normalDbLink = normalDbLink.replace(/\.dropboxusercontent/gi, ".dropbox");
-
-      console.log(normalDbLink);
-
-      var localFilePath = "file:///Users/jameskupczak/Dropbox%20(MedBridge%20.)"
-
-      // https://dropbox.github.io/dropbox-api-v2-explorer/#sharing_get_shared_link_metadata
-      dbx.sharingGetSharedLinkMetadata({url: normalDbLink})
-        .then(function(response) {
-
-          console.log(response);
-
-          var fileNameWithQuery = document.URL.replace(/^.+\//gi, "");
-          var cleanFileName = document.URL.replace(/(^.+\/|\?.+)/gi, "");
-
-          var cleanFileNameRegEx = escapeRegExp(cleanFileName);
-          var cleanFileNameRegEx = new RegExp(cleanFileNameRegEx, "gi");
-
-          var pathFromDb = response.path_lower.replace(cleanFileNameRegEx, "")
-
-          var fullLocalFilePath = localFilePath + pathFromDb + fileNameWithQuery;
-
-          console.log(cleanFileName);
-          console.log(fileNameWithQuery);
-          console.log(pathFromDb);
-          console.log(fullLocalFilePath);
-
-          // We cannot navigate to local paths from a website. So we send a message to the chrome extension event page to do it for us.
-        	chrome.runtime.sendMessage({greeting: fullLocalFilePath}, function(response) {
-        	  // console.log(response.farewell);
-        	});
-
-        })
-        .catch(function(error) {
-          console.log(error);
-          alertify.error("Could not find file on Dropbox for reference.", 0);
-          source.classList.remove("loading");
-          source.classList.add("error");
-          // To-Do: Add css to make the orb look like there's been an error.
-        });
-
+    if ( elExists(document.querySelector("#dropbox-link-text")) ) {
+      window.location.href = document.querySelector("#dropbox-link-text").value;
+    } else {
+      callDropbox("go", this);
     }
-        // Deprecated because we no longer show a Swap/Switch orb when on local. Use Share for that.
-        // else {
-        //
-        //   if ( elExists(document.querySelector("#dropbox-link-text")) ) {
-        //     window.location.href = document.querySelector("#dropbox-link-text").value;
-        //   } else {
-        //     callDropbox("go", this);
-        //   }
-        //
-        // }
-  }
+
+  // }
 }
 
 
@@ -3130,7 +3078,7 @@ if ( !preheader90Pattern.test(textMinusPreheader) ) {
 }
 
 
-var preheaderMatchText = "Preheader is at <span class='preheader-match-rating'>" + matchRating + "%</span> Match";
+var preheaderMatchText = "Preheader is a <span class='preheader-match-rating'>" + matchRating + "%</span> Match";
 
 // Test finished, determine status
 if ( matchRating > 69 ) {
@@ -3949,7 +3897,7 @@ findAndReplaceDOMText(dFrameBody, {
 //
 if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
   findAndReplaceDOMText(dFrameBody, {
-    find: /(win a free subscription|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|in a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
+    find: /(win a free subscription|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|\bin a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 }

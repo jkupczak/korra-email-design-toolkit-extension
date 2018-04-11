@@ -35,11 +35,13 @@ if ( /^Protected:/.test(isProtected) ) {
 ////////////////////////
 
 
+  var blogId = document.querySelector("link[rel='shortlink']").href.replace(/^.+?p=/gi,"");
+
   var helpBar = document.createElement("div");
   helpBar.className = "jk-helpBar"
 
   var copyIdBtn = document.createElement("div");
-  copyIdBtn.innerHTML = "Copy Blog ID";
+  copyIdBtn.innerHTML = "Copy Blog ID: " + blogId;
   createCopyBtn(copyIdBtn, document.querySelector("link[rel='shortlink']").href.replace(/^.+?p=/gi,""));
   copyIdBtn.className = "copy blog-id"
 

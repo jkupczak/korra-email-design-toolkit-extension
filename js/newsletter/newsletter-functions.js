@@ -196,125 +196,6 @@ function KeyPress(e) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-//////////////////////
-//////////////////////
-
-// OPTIONS: Management
-
-//////////////////////
-//////////////////////
-
-var logging = true;
-
-
-////////
-//
-////////
-function getOption(key) {
-    var value;
-    var defaultOptions = {
-        blacklist: "googleleads.g.doubleclick.net\n" +
-                    "doubleclick.net\n" +
-                    "googleadservices.com\n" +
-                    "www.googleadservices.com\n" +
-                    "googlesyndication.com\n" +
-                    "adservices.google.com\n" +
-                    "appliedsemantics.com",
-        checkType: "GET",
-        cache: "true",
-        noFollow: "false",
-        parseDOM: "false",
-        trailingHash: "false",
-        emptyLink: "false",
-        noHrefAttr: "false",
-        autoCheck: "false",
-        optionsURL: chrome.extension.getURL("options.html")
-    };
-
-    // Get Option from LocalStorage
-    value = getItem(key);
-
-    // Default the value if it does not exist in LocalStorage and a default value is defined above
-    if ( (value === null || value == "null") && (key in defaultOptions) ) {
-        setItem(key, defaultOptions[key]);
-        value = defaultOptions[key];
-    }
-    return value;
-}
-
-////////
-//
-////////
-function getOptions() {
-    var options = {};
-    options.blacklist = getOption("blacklist");
-    options.checkType = getOption("checkType");
-    options.cache = getOption("cache");
-    options.noFollow = getOption("noFollow");
-    options.parseDOM = getOption("parseDOM");
-    options.trailingHash = getOption("trailingHash");
-    options.emptyLink = getOption("emptyLink");
-    options.noHrefAttr = getOption("noHrefAttr");
-    options.autoCheck = getOption("autoCheck");
-    options.optionsURL = getOption("optionsURL");
-    return options;
-}
-
-
-////////
-// OPTIONS: Set items in localstore
-////////
-function setItem(key, value) {
-    try {
-      log("Inside setItem:" + key + ":" + value);
-      window.localStorage.removeItem(key);
-      window.localStorage.setItem(key, value);
-    }catch(e) {
-      log("Error inside setItem");
-      log(e);
-    }
-    log("Return from setItem" + key + ":" +  value);
-}
-
-////////
-// OPTIONS: Get items from localstore
-////////
-function getItem(key) {
-    var value;
-    log('Get Item:' + key);
-    try {
-      value = window.localStorage.getItem(key);
-      if(typeof value === 'undefined'){
-        return null;
-      }
-    }catch(e) {
-      log("Error inside getItem() for key:" + key);
-      log(e);
-      value = null;
-    }
-
-    log("Returning value: " + value);
-    return value;
-}
-
-////////
-// OPTIONS: Zap all items in localstore
-////////
-function clearStrg() {
-    log('about to clear local storage');
-    window.localStorage.clear();
-    log('cleared');
-}
-
-
-////////
-//
-////////
-function log(txt) {
-  if (logging) {
-    // console.log(txt);
-  }
-}
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -2090,13 +1971,13 @@ function validateLinks(linkObj, i) {
     if ( (/Request (Group|a Demo|Info|EMR Integration)|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))|Pricing/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
       createLinkErrorRow(linkObj, "Link text does not match url (demo related).");
     }
-    // if ( /Article/gi.test(linkObj.textContent) && !/(h\/(encompasshealth|healthsouth)\-|\/?blog\/|(\?|&)p=\d{4})/gi.test(linkHref) ) {
-    if ( /Article/gi.test(linkObj.textContent) && !singleLinkInfoArray['isArticle'] ) {
-      createLinkErrorRow(linkObj, "Link text does not match url (article related) [1].");
-    }
-
-    if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray['isArticle'] ) {
-      createLinkErrorRow(linkObj, "Link text does not match url (article related) [2].");
+    if ( emailDisc !== "hs" ) {
+      if ( /Article/gi.test(linkObj.textContent) && !singleLinkInfoArray['isArticle'] ) {
+        createLinkErrorRow(linkObj, "Link text does not match url (article related) [1].");
+      }
+      if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray['isArticle'] ) {
+        createLinkErrorRow(linkObj, "Link text does not match url (article related) [2].");
+      }
     }
 
     ////

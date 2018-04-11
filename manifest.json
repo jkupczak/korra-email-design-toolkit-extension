@@ -5,7 +5,7 @@
   "name": "Korra: Email Design Toolkit",
 
   "background": {
-    "scripts": ["js/eventPage.js"],
+    "scripts": ["js/libs/chrome-storage-promise.js", "js/get-options.js", "js/eventPage.js"],
     "persistent": true
   },
 
@@ -25,13 +25,15 @@
   ],
 
   "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
-  "version": "3.6.1",
+  "version": "3.6.3",
 
   "browser_action": {
     "default_icon": "icons/192-korra.png",
     "default_title": "Korra"
   },
   "permissions": [
+    "webRequest",
+    "webRequestBlocking",
     "cookies",
     "activeTab",
     "storage",
@@ -65,7 +67,7 @@
       "matches": ["file:///*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/newsletter/newsletter-styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/libs/tingle.css"],
-      "js": ["js/newsletter/newsletter-async.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
+      "js": ["js/get-options.js", "js/newsletter/newsletter-async.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
       "run_at": "document_start"
     },
     {
@@ -88,7 +90,12 @@
       "run_at": "document_end"
     },
 
-
+    {
+      "matches": ["*://*.dropbox.com/s/*", "*://*.dropbox.com/work/*", "*://*.dropbox.com/home/*"],
+      "js": ["js/global.js", "js/get-options.js", "js/libs/arrive.js", "js/libs/chrome-storage-promise.js", "js/libs/Dropbox-sdk.min.js", "js/libs/alertify.js", "js/dropbox/file-viewer.js"],
+      "css": [ "css/libs/alertify.css", "css/alertify.medbridge.css"],
+      "run_at": "document_start"
+    },
 
     {
       "matches": ["*://*.medbridgeeducation.com/blog/*"],

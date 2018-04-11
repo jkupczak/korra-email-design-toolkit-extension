@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Options</title>
+  <style>
+    body { padding: 20px; }
+  </style>
+</head>
+
+<body>
+
+  <div>
+
+    <div>General</div>
+    <div>Newsletters</div>
+    <div>MailChimp</div>
+    <div>Trello</div>
+    <div>Amazon Web Services</div>
+    <div>MedBridge</div>
+    <div>Dropbox</div>
+    <div>Gmail</div>
+
+  </div>
+
+  <label>
+    <input id="like" type="checkbox" name="activate-dropbox" checked>
+    Dropbox
+  </label>
+  <label>
+    <input type="checkbox" name="activate-trello" checked>
+    Trello
+  </label>
+  <label>
+    <input type="checkbox" name="activate-mailchimp" checked>
+    MailChimp
+  </label>
+  <label>
+    <input type="checkbox" name="activate-aws" checked>
+    Amazon Web Services
+  </label>
+  <label>
+    <input type="checkbox" name="activate-medbridge" checked>
+    MedBridge
+  </label>
+  <label>
+    <input type="checkbox" name="activate-newsletters" checked>
+    Newsletters
+  </label>
+
+<!-- Newsletter -->
+<div id="options-newsletter" class="options-wrapper">
+  <div>
+    <label>
+      Mailgun API Key:
+      <input id="mailgun-key" type="text"></input>
+    </label>
+  </div>
+  <div>
+    <label>
+      Mailgun Domain:
+      <input id="mailgun-domain" type="text"></input>
+    </label>
+  </div>
+  <div>
+    <label>
+      Dropbox Access Token:
+      <input id="dp-token" type="text"></input>
+    </label>
+  </div>
+  <div>
+    <label>
+      Dropbox Local Parent Folder:
+      <input id="dp-parent-folder" type="text"></input>
+    </label>
+  </div>
+</div>
+
+<!-- Amazon -->
+<div id="options-amazon" class="options-wrapper">
+  <div>
+    <label>
+      Amazon S3 Parent Bucket Name:
+      <input id="az-bucket-name" type="text"></input>
+    </label>
+  </div>
+</div>
+
+<!-- MailChimp -->
+<div id="options-mailchimp" class="options-wrapper">
+
+  <div>
+    <label>
+      <input id="mc-alerts" type="checkbox" checked>
+      MailChimp Pending Drafts Alerts
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Alert Frequency (in minutes)
+      <input id="mc-frequency" type="text"></input>
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Alert Frequency after 12PM PST (in minutes)
+      <input id="mc-frequency-after-12" type="text"></input>
+    </label>
+  </div>
+
+</div>
+
+<!-- Save -->
+<div>
+  <div id="status"></div>
+  <button id="save">Save</button>
+</div>
+
+  <script src="js/options.js"></script>
+</body>
+</html>

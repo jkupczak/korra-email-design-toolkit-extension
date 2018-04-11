@@ -1,128 +1,104 @@
-<!DOCTYPE html>
 <html>
 <head>
-  <title>Options</title>
-  <style>
-    body { padding: 20px; }
-  </style>
+	<title>Korra: Options</title>
+	<link rel="stylesheet" type="text/css" href="css/options_style.css" />
 </head>
-
 <body>
+	<div id="content">
+		<h1 id="logo">Korra: Options</h1>
 
-  <div>
+    <div>
 
-    <div>General</div>
-    <div>Newsletters</div>
-    <div>MailChimp</div>
-    <div>Trello</div>
-    <div>Amazon Web Services</div>
-    <div>MedBridge</div>
-    <div>Dropbox</div>
-    <div>Gmail</div>
+      <h2>Dropbox</h2>
 
-  </div>
+      <p style="line-height: 26px">Enable one-click sharing with Dropbox.</p>
 
-  <label>
-    <input id="like" type="checkbox" name="activate-dropbox" checked>
-    Dropbox
-  </label>
-  <label>
-    <input type="checkbox" name="activate-trello" checked>
-    Trello
-  </label>
-  <label>
-    <input type="checkbox" name="activate-mailchimp" checked>
-    MailChimp
-  </label>
-  <label>
-    <input type="checkbox" name="activate-aws" checked>
-    Amazon Web Services
-  </label>
-  <label>
-    <input type="checkbox" name="activate-medbridge" checked>
-    MedBridge
-  </label>
-  <label>
-    <input type="checkbox" name="activate-newsletters" checked>
-    Newsletters
-  </label>
+      <div>
+  		    <label for="dropboxAccessToken">Dropbox API Access Token</label><br/>
+          <p>Visit <a href="https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1">https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1</a> to get an access token.</p>
+  		    <input name="dropboxAccessToken" id="dropboxAccessToken"></input>
+      </div>
 
-<!-- Newsletter -->
-<div id="options-newsletter" class="options-wrapper">
-  <div>
-    <label>
-      Mailgun API Key:
-      <input id="mailgun-key" type="text"></input>
-    </label>
-  </div>
-  <div>
-    <label>
-      Mailgun Domain:
-      <input id="mailgun-domain" type="text"></input>
-    </label>
-  </div>
-  <div>
-    <label>
-      Dropbox Access Token:
-      <input id="dp-token" type="text"></input>
-    </label>
-  </div>
-  <div>
-    <label>
-      Dropbox Local Parent Folder:
-      <input id="dp-parent-folder" type="text"></input>
-    </label>
-  </div>
-  <div>
-    <label>
-      Local User Path:
-      <input id="nw-local-user-path" type="text"></input>
-    </label>
-  </div>
-</div>
+      <div>
+  		    <label for="fullPathToDropboxFolder">Path to Dropbox Parent Folder</label><br/>
+  		    <input name="fullPathToDropboxFolder" id="fullPathToDropboxFolder"></input>
+      </div>
 
-<!-- Amazon -->
-<div id="options-amazon" class="options-wrapper">
-  <div>
-    <label>
-      Amazon S3 Parent Bucket Name:
-      <input id="az-bucket-name" type="text"></input>
-    </label>
-  </div>
-</div>
+    </div>
 
-<!-- MailChimp -->
-<div id="options-mailchimp" class="options-wrapper">
+  	<hr/>
 
-  <div>
-    <label>
-      <input id="mc-alerts" type="checkbox" checked>
-      MailChimp Pending Drafts Alerts
-    </label>
-  </div>
+    <div>
 
-  <div>
-    <label>
-      Alert Frequency (in minutes)
-      <input id="mc-frequency" type="text"></input>
-    </label>
-  </div>
+      <h2>Link Validation</h2>
 
-  <div>
-    <label>
-      Alert Frequency after 12PM PST (in minutes)
-      <input id="mc-frequency-after-12" type="text"></input>
-    </label>
-  </div>
+  		<p>To prevent this extension from checking a link, please enter all or part of the URL in the blacklist below. Each URL must be entered on a new line.</p>
 
-</div>
+  		<p style="line-height: 26px">For example: <span>www.mydomain.com</span> will prevent the following links from being checked: <span>www.mydomain.com/page1.html</span> or <span>www.mydomain.com/page2.html</span></p>
 
-<!-- Save -->
-<div>
-  <div id="status"></div>
-  <button id="save">Save</button>
-</div>
+  		<label for="blacklistEntries">Exclude links from these domains:</label><br/>
+  		<textarea name="blacklistEntries" id="blacklistEntries" rows="2" cols="20"></textarea>
+  		<hr/>
 
-  <script src="js/options.js"></script>
-</body>
-</html>
+  		<label for="requestType">Method of Request: </label>
+
+
+  		<select id="requestType">
+  			<option value="GET">GET</option>
+  			<option value="HEAD">HEAD</option>
+  		</select>
+
+
+  		<p>HEAD is quicker, but sometimes doesn't reflect the true HTTP status of a page, use GET if you're getting weird results.  GET is required to be able to parse the document for an element corresponding to what is after the hashtag by ID.</p>
+
+  		<hr/>
+  		<label for="autoCheck">AutoCheck: </label> <input type="checkbox" name="autoCheck" id="autoCheck" value="1">
+  		<p>When enabled, if the url of the current tab changes and the page is loaded, it will automatically be checked. Valid link caching is recommended when this is enabled.</p>
+  		<h3>Warnings</h3>
+  		<p>Warnings are shown in the console.log (F12->Console tab). Also, they are highlighted yellow.</p>
+  		<input type="checkbox" name="parseDOM" id="parseDOM" value="1"><label for="parseDOM">Parse DOM after hashtag (&lt;a href=&quot;page2.html#elementID&quot;&gt;Link&lt;/a&gt;) </label>
+  		<p>Hashtags can link to elements by id within the DOM. Enabling will add add the check to make sure an element exists by id to correspond to the hashtag.  When enabled, if the page resolves but the corresponding element is not found, the element will be marked as a warning. <strong>Request Type: GET is required</strong></p>
+
+
+  		<input type="checkbox" name="trailingHash" id="trailingHash" value="1"><label for="trailingHash">Trailing '#' (&lt;a href=&quot;#&quot;&gt;Link&lt;/a&gt;") </label>
+  		<p>When enabled, if the link url endswith '#' you will be warned.</p>
+
+  		<input type="checkbox" name="emptyLink" id="emptyLink" value="1"><label for="emptyLink">Empty Link (&lt;a href=&quot;&quot;&gt;Empty href&lt;/a&gt;) </label>
+  		<p>When enabled, if the link url is empty 'href=""' you will be warned.</p>
+
+
+  		<input type="checkbox" name="noHrefAttr" id="noHrefAttr" value="1"><label for="noHrefAttr">Anchor tag without href (&lt;a&gt;No href&lt;/a&gt;) </label>
+  		<p>When enabled, if there is an anchor tag without an 'href' attribute you will be warned.</p>
+
+  		<hr/>
+
+  		<strong>Valid Link Caching</strong>
+  		<p>If you don't want to constantly re-check good (green, HTTP 200) links, enable the option below to force the extension to only check new links or links which were previously broken (red, HTTP 404 etc). Enabling 'Valid Link Caching' vastly reduces the time it will take to repeatedly check a page.</p>
+
+  		<input type="checkbox" name="cache" id="cache" value="1"><label for="cache">Cache Valid Links: </label>
+
+  		<div class="buttons">
+  			<button id="clearCache">Clear Cache</button>
+  		</div>
+
+  		<div id="msgCache" style="visibility: hidden;">Cache cleared!</div>
+
+  		<hr/>
+  		<strong>Nofollow Links</strong>
+  		<p>By default, Check My Links will not check links with a link rel attribute of 'nofollow', you should apply this attribute to links you don't want the extension to trigger (such as Log Out, Sign Out links etc).</p>
+  		    <input type="checkbox" name="noFollow" id="noFollow" value="1"><strong>Check Links with rel="nofollow"<strong> <br />
+
+
+    </div>
+
+			<hr/>
+			<div class="buttons">
+				<button id="save">Save my preferences</button>
+			</div>
+			<div id="msg" style="visibility: hidden;">Preferences Saved!</div>
+
+		</div>
+
+		<script src="js/options.js"></script>
+	</body>
+	</html>

@@ -120,19 +120,51 @@ function processCode(code) {
 
 // Get dropbox access token from chrome.storage.
 
-var dbx;
+// chrome.storage.sync.get("dpToken", function(items) {
+//   if (!chrome.runtime.error && items.dpToken) {
+//     // console.log(items);
+//     dbx = new Dropbox({ accessToken: items.dpToken });
+//     // console.groupCollapsed("Dropbox access token retrieved.");
+//     // console.log(items.dpToken);
+//     // console.groupEnd();
+//   } else {
+//     console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dpToken is " + items.dpToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
+//   }
+// });
+//
+// // Dropbox Local Parent Folder Path
+// chrome.storage.sync.get("dpLocalParentFolder", function(items) {
+//   if (!chrome.runtime.error && items.dpLocalParentFolder) {
+//     dropboxParentFolder = items.dpLocalParentFolder;
+//   } else {
+//     dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
+//     console.error("Could not retrieve Dropbox local parent folder path from chrome.storage.sync. items.dpLocalParentFolder is " + items.dpLocalParentFolder);
+//   }
+// });
 
-chrome.storage.sync.get("dpToken", function(items) {
-  if (!chrome.runtime.error && items.dpToken) {
-    // console.log(items);
-    dbx = new Dropbox({ accessToken: items.dpToken });
-    // console.groupCollapsed("Dropbox access token retrieved.");
-    // console.log(items.dpToken);
-    // console.groupEnd();
-  } else {
-    console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dpToken is " + items.dpToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
-  }
+
+
+// Modify these to pull ALL options instead.
+
+
+// Dropbox Access Token
+
+var dbx;
+chrome.storage.promise.sync.get('dropboxAccessToken').then(function(items) {
+  dbx = new Dropbox({ accessToken: items.dropboxAccessToken });
+}, function(error) {
+  console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + items.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
 });
+
+// Dropbox Parent Folder
+chrome.storage.promise.sync.get('dropboxParentFolder').then(function(items) {
+  dropboxParentFolder = items.dropboxParentFolder;
+}, function(error) {
+  dropboxParentFolder = "Dropbox%20(MedBridge%20.)";
+  console.error("Could not retrieve Dropbox local parent folder path from chrome.storage.sync. items.dropboxParentFolder is " + items.dpLocalParentFolder);
+});
+
+
 
 var mailgunApiKey;
 // mailgun api key

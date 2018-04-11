@@ -1,3 +1,6 @@
+// TODO clean up this message
+
+
 // !!!!!!!!!!!!!
 // EVENT / BACKGROUND PAGE
 // NO DOM ACCESS
@@ -27,7 +30,36 @@
 // ================================================================
 // ================================================================
 
+// https://developer.chrome.com/extensions/webRequest
+chrome.webRequest.onBeforeRequest.addListener(
+    function(details) {
+      console.log(details);
+      // return {cancel: true};
 
+      var newUrl = details.url;
+      if ( /\?dl=1/i.test(newUrl) ) {
+        newUrl = newUrl.replace(/\?dl=1/,"?dl=0");
+      } else {
+        newUrl = "https://www.dropbox.com/s/" + newUrl.replace(/^.+?\/s\//i,"");
+      }
+
+
+      return { redirectUrl: newUrl /*Redirection URL*/ };
+      // return {cancel: details.url.indexOf("://www.evil.com/") != -1};
+    },
+    {
+      urls: ["*://*.dropbox.com/s/*/*?dl=1", "*://*.dropboxusercontent.com/s/*"]
+      // urls: ["*://*.medbridgeeducation.com/*"]
+    },
+    ["blocking"]
+);
+
+// Views on Dropbox
+// https://www.dropbox.com/s/sp7b14k2ejj1r3e/18-04-10-Other-John-Snyder-Avascular-Necrosis-ns-a.html?dl=0
+
+// Downloads
+// https://dl.dropboxusercontent.com/s/sp7b14k2ejj1r3e/18-04-10-Other-John-Snyder-Avascular-Necrosis-ns-a.html
+// https://www.dropbox.com/s/sp7b14k2ejj1r3e/18-04-10-Other-John-Snyder-Avascular-Necrosis-ns-a.html?dl=1
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -405,12 +437,9 @@ function mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromS
 // =================================
 
 
-//
-// If I want to share this extension, I need a way to make it easy to find/keep the Users/<namehere>/ value.
-// Idea: Options page where they enter their mac name. Save that in the extension and use it as a variable.
-//
-
 var bkg = chrome.extension.getBackgroundPage();
+
+
 
 
 chrome.runtime.onMessage.addListener(
@@ -423,16 +452,16 @@ chrome.runtime.onMessage.addListener(
                 "from the extension");
 
 
-    // Check if the message sent is a url beginning with "file:"
-    // Change current tab URL to a local version of this Dropbox file.
-    // Chrome security settings do not allow pages to navigate to local files.
-    // Using eventpages allows you to get around this limitation.
+    // Use postmessage to get a local file URL and navigate a tab to that URL.
+    // Content scripts can't do this on their own. So instead they send a message to the background page.
+    // Thise code receives the message and loads the URL.
     if ( /^file:.+\//gi.test(request.greeting) ) {
   		chrome.tabs.update({
   		     url: request.greeting
   		});
     }
 
+    // TODO what is this
     if ( /^blogStatus/gi.test(request.greeting) ) {
 
       console.log(request.greeting);
