@@ -1,4 +1,4 @@
-console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/allFrames.js");
+// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/allFrames.js");
 ////////////////////////////////////////////////////////////////////////////
 
 // Keypres Capturing

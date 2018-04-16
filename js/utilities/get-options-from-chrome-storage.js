@@ -119,7 +119,6 @@ function getOption(key) {
 
 function getOptions(){
 
-
     var options = {};
     // Dropbox
     options.dropboxAccessToken = getOption("dropboxAccessToken");
@@ -137,8 +136,6 @@ function getOptions(){
     options.noHrefAttr = getOption("noHrefAttr");
     options.autoCheck = getOption("autoCheck");
     options.optionsURL = getOption("optionsURL");
-
-    console.log("!!!", options.dropboxAccessToken)
 
     return options;
 }

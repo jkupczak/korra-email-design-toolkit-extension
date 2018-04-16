@@ -79,14 +79,14 @@ options = {
 function exportSingleModule() {
 
   // GA
-  if ( document.querySelector("#tracking-mod-number").value !== "" && selectWhitelabel.value === "www" ) {
-    var gaTracking = "utm_content=mod" + document.querySelector("#tracking-mod-number").value;
+  if ( trackingModNumberInput.value !== "" && whitelabelingInput.value === "www" ) {
+    var gaTracking = "utm_content=mod" + trackingModNumberInput.value;
   } else {
     var gaTracking = "";
   }
 
   // CTA Text
-  if ( selectAudience.value === "non-subscribers" ) {
+  if ( audienceInput.value === "non-subscribers" ) {
     var ctaText = "Start for Free"
   } else {
     var ctaText = "Start Now"
@@ -103,9 +103,10 @@ function exportSingleModule() {
     courseImg = courseImg.replace(/(^.+?"|"\))/gi, "");
     console.log(courseImg);
 
+    var courseLinkPath = window.location.pathname.replace(/^\//,"");
     // var courseShortLink = document.URL.replace(/^.+?\.com\//gi,"");
-    var courseShortLink = "courses/details/" + courseImgSrc.match(/\/\d+?\//g)[0].replace(/\//g,"");
-    console.log(courseShortLink);
+    // var courseShortLink = "courses/details/" + courseImgSrc.match(/\/\d+?\//g)[0].replace(/\//g,"");
+    console.log(courseLinkPath);
 
     var courseInstructor = "";
     let instructors = document.querySelectorAll(".media-item--instructor h3 a");
@@ -121,20 +122,24 @@ function exportSingleModule() {
     var courseTitle = parentCourse.dataset.title;
     var courseImg = parentCourse.dataset.img;
     var courseInstructor = parentCourse.dataset.instructor;
-    var courseShortLink = parentCourse.dataset.link;
+    var courseLinkPath = parentCourse.dataset.link;
 
   }
 
   // Course Link
-  if ( document.querySelector("#set-tracking-url").value !== "" ) {
-    gaTracking = "&" + gaTracking;
-    var courseLink = "https://" + selectWhitelabel.value + ".medbridgeeducation.com/" + document.querySelector("#set-tracking-url").value + "/?after_affiliate_url=" + courseShortLink + gaTracking;
-  } else {
-    if ( gaTracking !== "" ) {
-      gaTracking = "?" + gaTracking;
-    }
-    var courseLink = "https://" + selectWhitelabel.value + ".medbridgeeducation.com/" + courseShortLink + gaTracking;
+
+  // MedBridge Subscribers && Outside Organization
+  if ( whitelabelingInput.value !== 'www' || audienceInput.value === "subscribers" ) {
+
+    var courseLink = "https://" + whitelabelingInput.value + ".medbridgeeducation.com/sign-in?after_signin_url=" + courseLinkPath + "&" + gaTracking;
+
+  // MedBridge Non-Subscribers
+  } else if ( audienceInput.value === "non-subscribers" ) {
+
+    var courseLink = "https://www.medbridgeeducation.com/" + trackingURLInput.value + "/?after_affiliate_url=" + courseLinkPath + "&" + gaTracking;
+
   }
+
 
   var apos = "'";
   if ( selectLayout.value === "col" ) {
@@ -142,7 +147,7 @@ function exportSingleModule() {
     var singleModule = '<table role="presentation" cellpadding="0" cellspacing="0" align="left" class="fullWidth course-module-wrapper" width="174" style="width: 174px; min-width: 174px"><tr><td class="pt-2"><table role="presentation" cellpadding="0" cellspacing="0" width="100%" align="center"><tr><td><a href="' + courseLink + '" style="text-decoration: none; color: #FFFFFF"><img src="' + courseImg + '" alt="" class="respImg box-shadow" width="174" height="98" style="width: 174px; min-width: 174px; background-color: #CCCCCC"></a></td></tr></table></td></tr><tr><td class="course-title text-center" style="padding-top:10px; font-size: 14px; line-height: 20px; color: #434343"><b>' + courseTitle + '</b></td></tr><tr><td class="course-instructor text-center" style="padding-top: 2px; font-size: 13px; line-height: 20px; color: #434343">' + courseInstructor + '</td></tr><tr><td class="course-cta text-center" style="padding-top: 10px; font-size: 16px; line-height: 20px; color: #2f76bb"><a href="' + courseLink + '" style="text-decoration: none; color: #2f76bb"><b>' + ctaText + '</b></a></td></tr></table>'
   } else {
     // Rows
-    var singleModule = '<table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td align="left" style="border-top: 1px solid #EAEAEA; padding: 15px 0px 10px 0px"><table role="presentation" cellpadding="0" cellspacing="0" class="fullWidth" width="560" style="width: 560px; min-width: 560px"><tr><td align="left"><table role="presentation" cellpadding="0" cellspacing="0" align="left" class="fullWidth" width="125" style="width: 125px; min-width: 125px"><tr><td align="center"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding-bottom: 10px"><a href="' + courseLink + '" style="text-decoration: none; color: #434343"><img src="' + courseImg + '" class="respImg75" alt="" width="125" height="72" style="width: 125px; min-width: 125px"></a></td></tr></table></td></tr></table><!--[if gte mso 9]></td><td align="left" width="320"><![endif]--><table role="presentation" cellpadding="0" cellspacing="0" align="left" class="fullWidth" width="320" style="width: 320px; min-width: 320px"><tr><td align="center"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td class="text-center" align="left" style="padding-left: 10px; padding-right: 10px; font-size: 18px;line-height: 23px;color: #434343"><a href="' + courseLink + '" style="text-decoration: none; color: #434343"><b>' + courseTitle + '</b></a></td></tr><tr><td class="text-center" align="left" style="padding-left: 10px; padding-right: 10px; font-size: 15px; line-height: 32px;color: #777777"><a href="' + courseLink + '" style="text-decoration: none; color: #777777">presented by ' + courseInstructor + '</a></td></tr></table></td></tr></table><!--[if gte mso 9]></td><td align="right" width="115"><![endif]--><table role="presentation" cellpadding="0" cellspacing="0" align="right" class="fullWidth" width="115" style="width: 115px; min-width: 115px"><tr><td align="right" style="padding-top: 10px"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td class="text-center" align="right" style="padding-top: 2px; padding-bottom: 15px; font-size: 16px; line-height: 21px"><a href="' + courseLink + '" style="text-decoration: none; color: #076AD2"><b>' + ctaText + '&nbsp;&rarr;</b></a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>';
+    var singleModule = '<table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td align="left" style="border-top: 1px solid #EAEAEA; padding: 15px 0px 10px 0px"><table role="presentation" cellpadding="0" cellspacing="0" class="fullWidth" width="560" style="width: 560px; min-width: 560px"><tr><td align="left"><table role="presentation" cellpadding="0" cellspacing="0" align="left" class="fullWidth" width="125" style="width: 125px; min-width: 125px"><tr><td align="center"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding-bottom: 10px"><a href="' + courseLink + '" style="text-decoration: none; color: #434343"><img src="' + courseImg + '" class="respImg75" alt="" width="125" height="72" style="width: 125px; min-width: 125px"></a></td></tr></table></td></tr></table><!--[if gte mso 9]></td><td align="left" width="320"><![endif]--><table role="presentation" cellpadding="0" cellspacing="0" align="left" class="fullWidth" width="320" style="width: 320px; min-width: 320px"><tr><td align="center"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td class="text-center" align="left" style="padding-left: 10px; padding-right: 10px; font-size: 18px;line-height: 23px;color: #434343"><a href="' + courseLink + '" style="text-decoration: none; color: #434343"><b>' + courseTitle + '</b></a></td></tr><tr><td class="text-center" align="left" style="padding-left: 10px; padding-right: 10px; font-size: 15px; line-height: 25px;color: #777777"><a href="' + courseLink + '" style="text-decoration: none; color: #777777">presented by ' + courseInstructor + '</a></td></tr></table></td></tr></table><!--[if gte mso 9]></td><td align="right" width="115"><![endif]--><table role="presentation" cellpadding="0" cellspacing="0" align="right" class="fullWidth" width="115" style="width: 115px; min-width: 115px"><tr><td align="right" style="padding-top: 10px"><table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr><td class="text-center" align="right" style="padding-top: 2px; padding-bottom: 15px; font-size: 16px; line-height: 21px"><a href="' + courseLink + '" style="text-decoration: none; color: #076AD2"><b>' + ctaText + '&nbsp;&rarr;</b></a></td></tr></table></td></tr></table></td></tr></table></td></tr></table>';
   }
 
   console.groupCollapsed("tidy");
@@ -216,7 +221,7 @@ var trackingModNumberInput = document.getElementById("tracking-mod-number");
 //////////////////////////////////////
 
 // Save settings to sessionStorage
-document.querySelector("#set-tracking-url").addEventListener("blur", saveURLtoSession, false);
+trackingURLInput.addEventListener("blur", saveURLtoSession, false);
 function saveURLtoSession() {
   if ( !this.value ) {
     var savedVal = "";
@@ -227,35 +232,57 @@ function saveURLtoSession() {
   localStorage.setItem("setTrackingUrl", savedVal);
 }
 
+function toggleMarketingURLInput() {
+  console.log("toggleMarketingURLInput()");
+  if ( whitelabelingInput.value === "www" && audienceInput.value === "non-subscribers" ) {
+    console.log("re-enable");
+    trackingURLInput.disabled = false;
+    trackingURLInput.style.background = "";
+    trackingURLInput.style.opacity = "";
+    trackingURLInput.style.pointerEvents = "";
+    trackingURLInput.style.userSelect = "";
+  } else {
+    console.log("disable");
+    trackingURLInput.disabled = true;
+    trackingURLInput.style.background = "#CCCCCC";
+    trackingURLInput.style.opacity = "0.5";
+    trackingURLInput.style.pointerEvents = "none";
+    trackingURLInput.style.userSelect = "none";
+  }
+
+}
+
 ///// Audience
-var selectAudience = document.getElementById('select-audience');
 function logAudienceValue() {
   switch (this.value) {
     case 'non-subscribers':
-      document.getElementById('select-whitelabel').getElementsByTagName('option')[0].selected = 'selected';
+      whitelabelingInput.getElementsByTagName('option')[0].selected = 'selected';
+      toggleMarketingURLInput();
+      break;
+    case 'subscribers':
+      toggleMarketingURLInput();
       break;
   }
 }
-selectAudience.addEventListener('change', logAudienceValue, false);
+audienceInput.addEventListener('change', logAudienceValue, false);
 
 ///// Whitelabel
-var selectWhitelabel = document.getElementById('select-whitelabel');
 function logWhitelabelValue() {
   if ( this.value !== "www" ) {
-    document.getElementById('select-audience').getElementsByTagName('option')[1].selected = 'selected';
+    audienceInput.getElementsByTagName('option')[1].selected = 'selected';
     document.getElementById('select-layout').getElementsByTagName('option')[1].selected = 'selected';
-    document.getElementById('set-tracking-url').value = '';
-    document.getElementById('tracking-mod-number').value = '';
+    toggleMarketingURLInput();
+    trackingModNumberInput.value = '';
   } else {
-    document.getElementById('select-audience').getElementsByTagName('option')[0].selected = 'selected';
+    audienceInput.getElementsByTagName('option')[0].selected = 'selected';
+    toggleMarketingURLInput();
     document.getElementById('select-layout').getElementsByTagName('option')[0].selected = 'selected';
   }
 }
-selectWhitelabel.addEventListener('change', logWhitelabelValue, false);
+whitelabelingInput.addEventListener('change', logWhitelabelValue, false);
 
 ///// Module #
-var inputModule = document.getElementById('tracking-mod-number');
-inputModule.addEventListener("blur", saveModuletoStorage, false);
+trackingModNumberInput.addEventListener("blur", saveModuletoStorage, false);
 function saveModuletoStorage() {
   if ( !this.value ) {
     var savedVal = "";
@@ -394,7 +421,7 @@ if ( !courseDetail ) {
               var quickCourseLink = document.createElement("div");
               quickCourseLink.innerHTML = "URL";
               quickCourseLink.className = "quick-copy course-link";
-              createCopyBtn(quickCourseLink, "courses/details/" + thisCourseId);
+              createCopyBtn(quickCourseLink, window.location.pathname);
               quickInfo.appendChild(quickCourseLink);
 
             }
@@ -459,7 +486,7 @@ if ( !courseDetail ) {
           courseParent.dataset.title = courseParent.querySelector(".course-listing__title").textContent;
           courseParent.dataset.img = thisCourseImg;
           courseParent.dataset.id = thisCourseId;
-          courseParent.dataset.link = "courses/details/" + thisCourseId;
+          courseParent.dataset.link = window.location.pathname.replace(/^\//,"");
 
           // Author may be more than one and exist in two separate spans. Grab all of them and then loop through them.
           let authorList = courseParent.querySelectorAll(".course-listing__instructors span");

@@ -1,4 +1,4 @@
-console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/global.js");
+// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/global.js");
 ///////////////////////////////////////////////////////////////
 
 ////////////////////
@@ -748,7 +748,7 @@ function createCopyBtn(node, stringToCopy) {
 ////
 function copyToClipboard(toCopy, msg, persist) {
 
-  console.log(this);
+  // console.log(this);
   // console.log(event);
   event.preventDefault();
 

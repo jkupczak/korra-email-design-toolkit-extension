@@ -1,4 +1,4 @@
-console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/libs/alertify.js");
+// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/libs/alertify.js");
 //////////////////////////////////////////////////////////////////////////////
 
 /**

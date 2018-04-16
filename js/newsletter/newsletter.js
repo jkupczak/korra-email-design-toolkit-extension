@@ -1,36 +1,5 @@
-console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/newsletter.js");
+// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/newsletter.js");
 //////////////////////////////////////////////////////////////////////////////
-
-// MailGun Send
-// Recipient must be an Authorized Recipient in order to send using the sandbox (300 messages a day max)
-  // https://app.mailgun.com/app/account/authorized
-
-
-function sendEmail() {
-  console.log(mailgunApiKey);
-
-  var data = new FormData();
-  data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
-  data.append("to", "james@medbridgeed.com");
-  data.append("subject", "Hello from Mailgun");
-  data.append("html", cleanedOriginalHtml);
-
-  var xhr = new XMLHttpRequest();
-  xhr.withCredentials = true;
-
-  xhr.addEventListener("readystatechange", function () {
-    if (this.readyState === 4) {
-      console.log(this.responseText);
-    }
-  });
-
-  xhr.open("POST", "https://api:" + mailgunApiKey + "@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
-  xhr.setRequestHeader("cache-control", "no-cache");
-  xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
-
-  xhr.send(data);
-}
-
 
 
 //
@@ -424,11 +393,7 @@ function sendEmail() {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-
-var view = getParameterByName("view");
-
-// if ( view !== "1" && /\.html?/gi.test(document.URL) && !/\/var\/folders\//gi.test(document.URL) ) {
-if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
+// function buildPage() {
 
 
 
@@ -1595,13 +1560,13 @@ function getDbShareLink() {
 
       if ( onDropbox ) {
 
-        processDbLink(document.URL, "copy", source);
         console.log("This page is currently being viewed on Dropbox.com. Running processDbLink().")
+        processDbLink(document.URL, "copy", source);
 
       } else {
 
-        callDropbox("copy", this);
         console.log("This page is a local file and the shareable link has not been retrieved yet. Running callDropbox().")
+        callDropbox("copy", this);
 
       }
 
@@ -1612,12 +1577,12 @@ function getDbShareLink() {
 
 function callDropbox(action, source) {
 
-  // console.error("callDropbox");
-  // console.error(source);
-  // console.error(this);
-  // console.error(event.target);
+  console.group("callDropbox()");
+    console.log("action:", action, "source:", source);
+    console.log("dropboxFolderName:", dropboxFolderName);
+  console.groupEnd();
 
-  var dropboxEscapedParentFolder = escapeRegExp(dropboxParentFolder)
+  var dropboxEscapedParentFolder = escapeRegExp(dropboxFolderName)
   var dropboxTestPattern = new RegExp("^.+?" + dropboxEscapedParentFolder, "gi");
 
   if ( dropboxTestPattern.test(document.URL) ) {
@@ -1786,6 +1751,7 @@ orbsBottom.appendChild(orbDivider3);
 ////
 /////////
 
+// TODO use sessionstorage to store the dropbox url
 //
 var swapOrb = document.createElement("div");
 swapOrb.className = "swap-orb orb glyph icomoon icomoon-dropbox";
@@ -1797,30 +1763,12 @@ function swapUrl() {
 
   console.log("Beginning URL swap.");
 
-  // Start loading icon
-  // var source = this;
-  // source.classList.add("loading");
-  // 
-  // if ( window.history.length > 1 ) {
-  //   console.log("if (window.history.length > 1)")
-  //   // Don't call the Dropbox API if there's a history available, instead just go back or forward.
-  //   // If going back fails, then forward works instead. If for some reason this breaks in the future, this answer on SO is a nice alternative: http://stackoverflow.com/a/24056766/556079
-  //   window.history.back();
-  //   window.history.forward();
-  //   console.log("navigated using window.history");
-  //   console.log(document.referrer);
-  //
-  // } else {
+  if ( elExists(document.querySelector("#dropbox-link-text")) ) {
+    window.location.href = document.querySelector("#dropbox-link-text").value;
+  } else {
+    callDropbox("go", this);
+  }
 
-    console.log("else");
-
-    if ( elExists(document.querySelector("#dropbox-link-text")) ) {
-      window.location.href = document.querySelector("#dropbox-link-text").value;
-    } else {
-      callDropbox("go", this);
-    }
-
-  // }
 }
 
 
@@ -3598,13 +3546,13 @@ AOTA (only in OT)
 */
 
 // Only check words if this is a recent email.
-if ( isRecentEmail ) {
+// if ( isRecentEmail ) {
 
   countCitations();
 
-} else {
-  console.error("Text was not checked for errors.")
-}
+// } else {
+  // console.error("Text was not checked for errors.")
+// }
 
 function countCitations() {
   // console.log( "Citations", dFrameContents.getElementsByTagName('sup').length );
@@ -4707,6 +4655,5 @@ lm.observe(dFrameContents.body);
 ///////
 document.querySelector("html").classList.toggle("errors");
 
-} else {
-  document.documentElement.classList.add("plain-view");
-} // END TEST
+
+// }

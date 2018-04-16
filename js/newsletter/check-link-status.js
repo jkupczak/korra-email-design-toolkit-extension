@@ -269,7 +269,8 @@ function manualXHRLinkCheck() {
 ////////////////
 function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
 
-  console.log("response [" + response.source + "]:", i, response);
+  // Results
+  // console.log("response [" + response.source + "]:", i, response);
 
   // Make sure we didn't deny caching due to MedBridge redirect errors or protected blog articles
   // If the source is a fresh XHR (and not cache), and the response status code is >= 200 and less than 400...

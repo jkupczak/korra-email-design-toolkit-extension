@@ -1,4 +1,4 @@
-console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/newsletter-functions.js");
+// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/newsletter-functions.js");
 ////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////
@@ -281,7 +281,7 @@ function unpinLinkMarker(e) {
 ///////////////////////////////////////
 
 // Future Upgrade:
-// https://stackoverflow.com/a/39312522/556079
+// TODO https://stackoverflow.com/a/39312522/556079
 
 function changeMobileSize(width) {
 
@@ -1347,7 +1347,7 @@ xhrLoopArray = [];
 totalXHRs = 0;
 
 // The options related to checking XHR status
-var options = getOptions();
+var options = getOptions(); // Deprecated. This function was taken from another extension. Doesn't really work for me.
 var linkMarkersList = [];
 
 function validateLinks(linkObj, i) {
@@ -1730,6 +1730,13 @@ function validateLinks(linkObj, i) {
 
     ////-----------------------------////
     ////
+    // MedBridge links must be https. If only because it makes sorting links easier when we do our metrics
+    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && singleLinkInfoArray['type'] !== "https" ) {
+      createLinkErrorRow(linkObj, "Use https for MedBridge links.");
+    }
+
+    ////-----------------------------////
+    ////
     // Check tracking links to see if the URL is consistent with the rest of the links.
     // eg. If most links say trk-sep-17-davenport, but this one says trk-sep-17-walter, throw an error.
     // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common.
@@ -1991,12 +1998,18 @@ function validateLinks(linkObj, i) {
     ////
     // outsideOrg and subs should not link to home-exercise-program.
     // Use sign-in/?after_signin_url=patient_care/programs/create
-    if ( (outsideOrg || emailSubType === "sub") && /\.com\/home\-exercise\-program/gi.test(linkHref) ) {
-      createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+    if ( outsideOrg || emailSubType === "sub") {
+      if ( /\.com\/courses\/details\//gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=courses/details/...</code>");
+      }
+      if ( /\.com\/home\-exercise\-program/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+      }
+      if ( /patient_care\/programs\/create/gi.test(linkHref) && !/after_signin_url/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+      }
     }
-    if ( (outsideOrg || emailSubType === "sub") && /patient_care\/programs\/create/gi.test(linkHref) && !/after_signin_url/gi.test(linkHref) ) {
-      createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
-    }
+
     if ( (!outsideOrg && emailSubType !== "sub") && /patient_care\/programs\/create/gi.test(linkHref) ) {
       createLinkErrorRow(linkObj, "use <code>home-exercise-program</code>");
     }
@@ -2192,3 +2205,47 @@ function validateLinks(linkObj, i) {
 
 
 //
+
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Mailgun
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+// MailGun Send
+// Recipient must be an Authorized Recipient in order to send using the sandbox (300 messages a day max)
+  // https://app.mailgun.com/app/account/authorized
+
+
+function sendEmail() {
+  console.log(mailgunApiKey);
+
+  var data = new FormData();
+  data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
+  data.append("to", "james@medbridgeed.com");
+  data.append("subject", "Hello from Mailgun");
+  data.append("html", cleanedOriginalHtml);
+
+  var xhr = new XMLHttpRequest();
+  xhr.withCredentials = true;
+
+  xhr.addEventListener("readystatechange", function () {
+    if (this.readyState === 4) {
+      console.log(this.responseText);
+    }
+  });
+
+  xhr.open("POST", "https://api:" + mailgunApiKey + "@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
+  xhr.setRequestHeader("cache-control", "no-cache");
+  xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
+
+  xhr.send(data);
+}

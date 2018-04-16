@@ -262,19 +262,24 @@ function showStartPage() {
 //   });
 
 
-function handleMessage(request, sender, sendResponse) {
-  console.log("Message from the content script: " +
-    request.greeting);
-  sendResponse({response: "Response from background script"});
-  return true;
-}
-
-chrome.runtime.onMessage.addListener(handleMessage);
+//
+// function handleMessage(request, sender, sendResponse) {
+//   console.log("Message from the content script: " +
+//     request.greeting);
+//   sendResponse({response: "Response from background script"});
+//   return true;
+// }
+//
+// chrome.runtime.onMessage.addListener(handleMessage);
 
 
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
+
+    if (request.cmd === "shutdown") {
+      sendResponse({farewell: "goodbye"});
+    }
 
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
