@@ -1,6 +1,8 @@
-// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/newsletter.js");
-//////////////////////////////////////////////////////////////////////////////
+console.warn("📫 [korra-email-design-tooklit] loaded /js/newsletter/newsletter.js");
+////////////////////////////////////////////////////////////////////////////////////
 
+var view = getParameterByName("view");
+if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 
 //
 // // W3C Validator
@@ -96,13 +98,13 @@
 
 // Edit view
 // When editing text, duplicate the desktop frame so that you can see a before and after.
-// hide the infobar and mobile view to make room.
+// hide the leftNav and mobile view to make room.
 
 ///--------
 
 // A/B Testing View
 // Show versions A and B side-by-side with a click of a button.
-// Sync scrolling and dedicate 50% of the window to each version. (hide infobar and mobile)
+// Sync scrolling and dedicate 50% of the window to each version. (hide leftNav and mobile)
 // Drag to resize both iframes for mobile view.
 
 ///--------
@@ -428,6 +430,19 @@
   insertAfter(newBody, document.head);
 
 
+
+//////////////////////
+//////////////////////
+//////////////////////
+//////////////////////
+
+
+// ERROR CHECKING FOR ENTIRE PAGE
+document.querySelector("html").classList.add("error-status");
+document.querySelector("html").classList.toggle("errors");
+//
+
+
 ///////////
 ///////////
 ///////////
@@ -479,20 +494,104 @@ if ( getParameterByName("presentation") === "1" ) {
   qaWrapper.className = "qa-wrapper";
   mainContainer.appendChild(qaWrapper);
 
-
   //////////
   ////
   ////  Create Newsletter QA Info Bar Wrapper
   ////
   /////////
 
-  var infoBar = document.createElement("div");
-  infoBar.className = "info-bar";
-  qaWrapper.appendChild(infoBar);
+  var leftNav = document.createElement("div");
+  leftNav.className = "left-nav";
+  qaWrapper.appendChild(leftNav);
 
-  // Create Split View
-  // console.log("activate split mode");
-  document.body.classList.toggle("split-view-on");
+          // Create Split View
+          // console.log("activate split mode");
+          document.body.classList.toggle("split-view-on");
+
+
+  //////////
+  ////
+  ////  HTML vs Text
+  ////
+  /////////
+
+
+  var stagePreviewBtns = document.createElement("div");
+  stagePreviewBtns.classList.add("stage-preview-btns");
+  stagePreviewBtns.addEventListener("click", changeStage, false);
+
+  var viewHtmlBtn = document.createElement("div");
+  viewHtmlBtn.classList.add("stage-preview-btn", "stage-preview-btn--html", "active");
+  viewHtmlBtn.dataset.stage = "html";
+  viewHtmlBtn.innerHTML = "HTML";
+  stagePreviewBtns.appendChild(viewHtmlBtn);
+  stagePreviewBtns.appendChild(viewHtmlBtn);
+
+  var viewTextBtn = document.createElement("div");
+  viewTextBtn.classList.add("stage-preview-btn", "stage-preview-btn--text");
+  viewTextBtn.dataset.stage = "text";
+  viewTextBtn.innerHTML = "Text";
+  stagePreviewBtns.appendChild(viewTextBtn);
+
+  leftNav.appendChild(stagePreviewBtns);
+
+  function changeStage() {
+    console.log(event)
+    console.log(event.target)
+    console.log(event.target.data)
+    console.log(event.target.dataset)
+    console.log(event.target.dataset.stage)
+    console.log(this)
+
+    var btn = event.target;
+    var stage = event.target.dataset.stage;
+
+    btn.classList.toggle("active");
+
+    if ( stage === "text" ) {
+      plainTextStage.style.display = "flex";
+      htmlStage.style.display = "none";
+
+      viewTextBtn.classList.add("active");
+      viewHtmlBtn.classList.remove("active");
+    } else {
+      plainTextStage.style.display = "none";
+      htmlStage.style.display = "flex";
+
+      viewTextBtn.classList.remove("active");
+      viewHtmlBtn.classList.add("active");
+    }
+
+
+  }
+  //////////
+  ////
+  ////  This holds all of our various views.
+  ////   - Desktop View
+  ////   - Mobile View
+  ////   - Plain Text View
+  ////   - All menu views like Links, Images, etc.
+  ////
+  /////////
+
+  // Create the Stage
+  var stageWrapper = document.createElement("div");
+  stageWrapper.className = "stage";
+  qaWrapper.appendChild(stageWrapper);
+
+
+
+  //////////
+  ////
+  ////  HTML View
+  ////
+  /////////
+
+  // Create the Stage
+  var htmlStage = document.createElement("div");
+  htmlStage.className = "html-stage";
+  stageWrapper.appendChild(htmlStage);
+
 
   //////////////////////
   //
@@ -507,7 +606,7 @@ if ( getParameterByName("presentation") === "1" ) {
 
     var iframeWrapper = document.createElement("div");
     iframeWrapper.className = "iframe-wrapper";
-    qaWrapper.appendChild(iframeWrapper);
+    htmlStage.appendChild(iframeWrapper);
 
     var desktopIframeWrapper = document.createElement("div");
     desktopIframeWrapper.className = "desktop-view-wrapper resize-container";
@@ -550,9 +649,26 @@ if ( getParameterByName("presentation") === "1" ) {
     createImgInfoArray(imgList);
 
     // ##PAUSED
-    // addLoadEvent(desktopIframe, function() {
-    //   getImgSizes(imgInfoArray);
-    // });
+    addLoadEvent(desktopIframe, function() {
+      getImgSizes(imgInfoArray);
+
+
+      var imgUrls = [];
+      for (let img of imgInfoArray) {
+        imgUrls.push(img.url);
+      }
+      // console.log("imgUrls", imgUrls);
+
+      handleNetErr = function(e) { return e };
+      Promise.all(imgUrls.map(function(e) {
+        return fetch(e).catch(handleNetErr)
+      })).then(function(e) {
+        console.log('then',e) // Outputs: 'then', [Response, TypeError]
+      }).catch(function(e) {
+        console.log('err',e)
+      });
+
+    });
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -668,18 +784,6 @@ if ( getParameterByName("presentation") === "1" ) {
       }
 
     mobileDeviceWrapper.appendChild(mobileIframeSetting);
-
-
-//////////////////////
-//////////////////////
-//////////////////////
-//////////////////////
-
-
-// ERROR CHECKING FOR ENTIRE PAGE
-document.querySelector("html").classList.add("error-status");
-document.querySelector("html").classList.toggle("errors");
-//
 
 
 
@@ -828,6 +932,7 @@ document.body.classList.add("disc-" + emailDisc);
 ///////////
 
 var emailSubType;
+var emailOrgName;
 var emailSubTypeName;
 
 if ( /\-ns( +|(%20)+)?[\.\-\(]/gi.test(pageUrl) ) {
@@ -838,15 +943,18 @@ if ( /\-ns( +|(%20)+)?[\.\-\(]/gi.test(pageUrl) ) {
   emailSubTypeName = "Subscribers"
 }
 if ( /\-Fox\-/gi.test(pageUrl) ) {
-  emailSubType = "fox"
+  emailSubType = "sub"
+  emailOrgName = "fox"
   emailSubTypeName = "Subscribers"
 }
 if ( /\-(EH|HS)\-/gi.test(pageUrl) ) {
-  emailSubType = "eh"
+  emailSubType = "sub"
+  emailOrgName = "hs"
   emailSubTypeName = "Subscribers"
 }
 if ( /\-DR\-/gi.test(pageUrl) ) {
-  emailSubType = "dr"
+  emailSubType = "sub"
+  emailOrgName = "dr"
   emailSubTypeName = "Subscribers"
 }
 
@@ -1040,7 +1148,7 @@ if ( getParameterByName("layout") ) {
 
 
   if ( layout[0] === "0" ) {
-    infoBar.classList.add("off");
+    leftNav.classList.add("off");
   }
 
   if ( layout[1] === "0" ) {
@@ -1210,15 +1318,15 @@ if ( isLocalCampaign ) {
       // var orgLogo = document.createElement("img");
       //     orgLogo.className = "organization-logo";
 
-      if ( emailSubType === "fox" ) {
+      if ( emailOrgName === "fox" ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/fox.png') + "' class='organization-logo'>"
         console.error(orgLogo);
       }
-      if ( emailSubType === "dr" ) {
+      if ( emailOrgName === "dr" ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/drayer.png') + "' class='organization-logo'>"
         console.error(orgLogo);
       }
-      if ( emailSubType === "hs" || emailSubType === "eh" ) {
+      if ( emailOrgName === "hs" ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/hs.png') + "' class='organization-logo'>"
         console.error(orgLogo);
       }
@@ -1269,7 +1377,7 @@ if ( isLocalCampaign ) {
 
 
     if ( headerAudienceText || headerIcon ) {
-      infoBar.prepend(documentDesc);
+      leftNav.prepend(documentDesc);
     }
 
 
@@ -1328,9 +1436,9 @@ document.body.appendChild(dropboxUrlInput);
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
-var controlBar = document.createElement("div");
-controlBar.className = "control-bar";
-qaWrapper.appendChild(controlBar);
+var htmlToolBar = document.createElement("div");
+htmlToolBar.className = "html-toolbar";
+htmlStage.appendChild(htmlToolBar);
 
   //////////
   ////
@@ -1343,7 +1451,7 @@ qaWrapper.appendChild(controlBar);
   preflightStatus.className = "preflight-wrapper initial-load";
   preflightStatus.innerHTML = '<div id="preflight-total" class="preflight-status preflight-total">0</div><div class="preflight-rocket preflight-status icomoon icomoon-rocket"></div>'
   preflightStatus.addEventListener("click", showPreflight, false);
-  controlBar.appendChild(preflightStatus);
+  htmlToolBar.appendChild(preflightStatus);
 
   var preflightTotal = preflightStatus.querySelector(".preflight-total");
 
@@ -1377,12 +1485,24 @@ qaWrapper.appendChild(controlBar);
   // Orbs Top
   var orbsTop = document.createElement("div");
   orbsTop.className = "orbs-top";
-  controlBar.appendChild(orbsTop);
+  htmlToolBar.appendChild(orbsTop);
+
+  // Toolbar Section > Content
+  var toolbarSectionContent = document.createElement("div");
+  toolbarSectionContent.classList.add("toolbar-section", "toolbar-section-content");
+  toolbarSectionContent.innerHTML = "<label>Content</label>";
+  orbsTop.appendChild(toolbarSectionContent);
+
+  // Toolbar Section > Overlays
+  var toolbarSectionOverlays = document.createElement("div");
+  toolbarSectionOverlays.classList.add("toolbar-section", "toolbar-section-overlays");
+  toolbarSectionOverlays.innerHTML = "<label>Overlays</label>";
+  orbsTop.appendChild(toolbarSectionOverlays);
 
   // Orbs Bottom
   var orbsBottom = document.createElement("div");
   orbsBottom.className = "orbs-bottom";
-  controlBar.appendChild(orbsBottom);
+  htmlToolBar.appendChild(orbsBottom);
 
 
 //////////
@@ -1396,70 +1516,76 @@ paneToggleOrb.className = "pane-orb orb glyph";
 paneToggleOrb.addEventListener("click", paneToggle, false);
 orbsBottom.appendChild(paneToggleOrb);
 
-var infobarPaneStatus = 1;
-var mobilePaneStatus = 1;
+var currentleftNavPaneStatus = 1;
+var currentmobilePaneStatus = 1;
 
-function paneToggle(infobar, mobile) {
+function paneToggle() {
 
-    if (infoBar.classList.contains('off')) {
-      infobarPaneStatus = 0;
+  console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
+
+    if (leftNav.classList.contains('off')) {
+      console.log("leftNav contains 'off'");
+      currentleftNavPaneStatus = 0;
+      console.log("currentleftNavPaneStatus", currentleftNavPaneStatus);
     } else {
-      infobarPaneStatus = 1;
+      console.log("leftNav does NOT contain 'off'");
+      currentleftNavPaneStatus = 1;
+      console.log("currentleftNavPaneStatus", currentleftNavPaneStatus);
     }
     if (mobileIframeWrapper.classList.contains('off')) {
-      mobilePaneStatus = 0;
+      currentmobilePaneStatus = 0;
     } else {
-      mobilePaneStatus = 1;
+      currentmobilePaneStatus = 1;
     }
 
   // If we got some data, process it.
-  if ( infobar >= 0 || mobile >= 0 ) {
+  if ( currentleftNavPaneStatus >= 0 || currentmobilePaneStatus >= 0 ) {
 
-    if ( infobar === null ) {
-      infobarPaneStatus = 1;
+    if ( currentleftNavPaneStatus === null ) {
+      currentleftNavPaneStatus = 1;
     } else {
-      infobarPaneStatus = parseInt(infobar);
+      currentleftNavPaneStatus = parseInt(currentleftNavPaneStatus);
     }
 
-    if ( mobile === null ) {
-      mobilePaneStatus = 1;
+    if ( currentmobilePaneStatus === null ) {
+      currentmobilePaneStatus = 1;
     } else {
-      mobilePaneStatus = parseInt(mobile);
+      currentmobilePaneStatus = parseInt(currentmobilePaneStatus);
     }
 
   // No data found, update the values based on what we know.
   } else {
 
-    if ( infobarPaneStatus === 1 && mobilePaneStatus === 1 ) {
-      infobarPaneStatus = 0;
+    if ( currentleftNavPaneStatus === 1 && currentmobilePaneStatus === 1 ) {
+      currentleftNavPaneStatus = 0;
     }
-    else if ( infobarPaneStatus === 0 && mobilePaneStatus === 1 ) {
-      mobilePaneStatus = 0;
+    else if ( currentleftNavPaneStatus === 0 && currentmobilePaneStatus === 1 ) {
+      currentmobilePaneStatus = 0;
     }
-    else if ( infobarPaneStatus === 0 && mobilePaneStatus === 0 ) {
-      infobarPaneStatus = 1;
-      mobilePaneStatus = 1;
+    else if ( currentleftNavPaneStatus === 0 && currentmobilePaneStatus === 0 ) {
+      currentleftNavPaneStatus = 1;
+      currentmobilePaneStatus = 1;
     }
 
   }
 
-  // console.log("2: infobar: " + infobar);
-  // console.log("2: infobarPaneStatus: " + infobarPaneStatus);
+  // console.log("2: leftNav: " + leftNav);
+  // console.log("2: currentleftNavPaneStatus: " + currentleftNavPaneStatus);
   // console.log("2: mobile: " + mobile);
-  // console.log("2: mobilePaneStatus: " + mobilePaneStatus);
+  // console.log("2: currentmobilePaneStatus: " + currentmobilePaneStatus);
 
   // Update the css based on our values calculated above.
-    if ( infobarPaneStatus === 0 ) {
-      document.querySelectorAll("html")[0].classList.add("infobar-off");
-      infoBar.classList.add("off");
-      history.replaceState(null,null, updateQueryString("infobar", "0") ); // http://stackoverflow.com/a/32171354/556079
+    if ( currentleftNavPaneStatus === 1 ) {
+      document.querySelectorAll("html")[0].classList.add("leftNav-off");
+      leftNav.classList.add("off");
+      history.replaceState(null,null, updateQueryString("leftNav", "0") ); // http://stackoverflow.com/a/32171354/556079
     } else {
-      document.querySelectorAll("html")[0].classList.remove("infobar-off");
-      infoBar.classList.remove("off");
-      history.replaceState(null,null, updateQueryString("infobar") );
+      document.querySelectorAll("html")[0].classList.remove("leftNav-off");
+      leftNav.classList.remove("off");
+      history.replaceState(null,null, updateQueryString("leftNav") );
     }
 
-    if ( mobilePaneStatus === 0 ) {
+    if ( currentmobilePaneStatus === 1 ) {
       document.querySelectorAll("html")[0].classList.add("mobile-off");
       mobileIframeWrapper.classList.add("off");
       history.replaceState(null,null, updateQueryString("mobile", "0") );
@@ -1469,11 +1595,13 @@ function paneToggle(infobar, mobile) {
       history.replaceState(null,null, updateQueryString("mobile") );
     }
 
-    if ( mobilePaneStatus === 1 && infobarPaneStatus === 1 ) {
+    if ( currentmobilePaneStatus === 1 && currentleftNavPaneStatus === 1 ) {
       resetDesktopResize();
     }
 
     showdFrameWidthStatus();
+
+    console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
 
 }
 
@@ -1483,7 +1611,7 @@ function paneToggle(infobar, mobile) {
 //
 //   console.log(document.documentElement.clientWidth);
 //
-//   if ( document.documentElement.clientWidth > 960 && ( globalpaneStatusMobile === 0 || globalpaneStatusMobile === null || globalpaneStatusInfobar === 0 || globalpaneStatusInfobar === null ) ) {
+//   if ( document.documentElement.clientWidth > 960 && ( globalpaneStatusMobile === 0 || globalpaneStatusMobile === null || globalpaneStatusleftNav === 0 || globalpaneStatusleftNav === null ) ) {
 //     // console.log("fire function (> 960)");
 //     paneToggle(1, 1);
 //   }
@@ -1493,8 +1621,8 @@ function paneToggle(infobar, mobile) {
 //     paneToggle(2, 0);
 //   }
 //
-//   if ( document.documentElement.clientWidth <= 580 && ( globalpaneStatusInfobar === 1 || globalpaneStatusInfobar === null) ) {
-//     // console.log(globalpaneStatusInfobar + ": fire function (<= 580)");
+//   if ( document.documentElement.clientWidth <= 580 && ( globalpaneStatusleftNav === 1 || globalpaneStatusleftNav === null) ) {
+//     // console.log(globalpaneStatusleftNav + ": fire function (<= 580)");
 //     paneToggle(0, 2);
 //   }
 // });
@@ -1653,8 +1781,8 @@ function callDropbox(action, source) {
 
   } else {
     source.classList.remove("loading");
-    console.log("Sorry! This file is not located in the local DropBox folder. [" + document.URL + "]");
-    alert("Sorry! This file is not located in the local DropBox folder. [" + document.URL + "]");
+    console.log("Sorry! This file is not located in the local DropBox folder. We searched the current URL (" + document.URL + ") for this pattern (" + dropboxTestPattern + ").");
+    alert("Sorry! This file is not located in the local DropBox folder. We searched the current URL (" + document.URL + ") for this pattern (" + dropboxTestPattern + ").");
 
     console.groupEnd();
 
@@ -1782,17 +1910,17 @@ function swapUrl() {
 // Show/hide link checking orb.
 // Used to activate link checking on older emails (> 1 month).
 // By default we don't link check old emails.
-if ( !isRecentEmail ) {
+// if ( !isRecentEmail ) {
   var checkLinksOrb = document.createElement("div");
   checkLinksOrb.id = "check-links-orb";
   checkLinksOrb.className = "check-links-orb orb glyph";
-  checkLinksOrb.addEventListener("click", runLinkValidation, false);
+  checkLinksOrb.addEventListener("click", manualXHRLinkCheck, false);
   orbsBottom.appendChild(checkLinksOrb);
 
   function runLinkValidation() {
     linkValidationLoop("false");
   }
-}
+// }
 
 
 //////////
@@ -1846,7 +1974,7 @@ var showDimsOrb = document.createElement("div");
 showDimsOrb.id = "show-dims-orb";
 showDimsOrb.className = "show-dims-orb orb glyph";
 showDimsOrb.addEventListener("click", showDims, false);
-orbsBottom.appendChild(showDimsOrb);
+toolbarSectionOverlays.appendChild(showDimsOrb);
 var showDimsToggle = false;
 
 function showDims() {
@@ -1998,7 +2126,7 @@ var guidesOrb = document.createElement("div");
 guidesOrb.id = "guides-orb";
 guidesOrb.className = "guides-orb orb glyph";
 guidesOrb.addEventListener("click", toggleGuides, false);
-orbsBottom.appendChild(guidesOrb);
+toolbarSectionOverlays.appendChild(guidesOrb);
 var guidesToggle = false;
 
 function toggleGuides() {
@@ -2067,7 +2195,7 @@ baselineOrb.id = "baseline-orb";
 baselineOrb.className = "baseline-orb orb svg";
 baselineOrb.innerHTML = svgIconBaseline;
 baselineOrb.addEventListener("click", createBaselineOverlay, false);
-orbsBottom.appendChild(baselineOrb);
+toolbarSectionOverlays.appendChild(baselineOrb);
 var baselineToggle = false;
 
 // Chrome's performance takes a hit when I get fancy within a container that has border-radius.
@@ -2313,7 +2441,7 @@ var styleOrb = document.createElement("div");
 styleOrb.className = "style-orb orb glyph";
 styleOrb.id = "style-orb";
 styleOrb.addEventListener("click", toggleStyles, false);
-orbsBottom.appendChild(styleOrb);
+toolbarSectionContent.appendChild(styleOrb);
 var styleToggle = false
 
 function toggleStyles() {
@@ -2359,6 +2487,32 @@ function toggleStyles() {
 
 //////////
 ////
+////   Toggle Link Errors
+////
+/////////
+
+var linkErrorsOrb = document.createElement("div");
+linkErrorsOrb.className = "link-errors-orb orb glyph";
+linkErrorsOrb.id = "link-errors-orb";
+// linkErrorsOrb.addEventListener("click", toggleLinkErrors, false);
+toolbarSectionOverlays.appendChild(linkErrorsOrb);
+
+
+//////////
+////
+////   Toggle Text Errors
+////
+/////////
+
+var textErrorsOrb = document.createElement("div");
+textErrorsOrb.className = "text-errors-orb orb glyph";
+textErrorsOrb.id = "text-errors-orb";
+// textErrorsOrb.addEventListener("click", toggleTextErrors, false);
+toolbarSectionOverlays.appendChild(textErrorsOrb);
+
+
+//////////
+////
 ////  Create Edit Email Orb
 ////
 /////////
@@ -2367,7 +2521,7 @@ var editOrb = document.createElement("div");
 editOrb.className = "edit-orb orb glyph";
 editOrb.id = "edit-orb";
 editOrb.addEventListener("click", editEmail, false);
-orbsBottom.appendChild(editOrb);
+toolbarSectionContent.appendChild(editOrb);
 var editToggle = false
 
 function editEmail() {
@@ -2389,7 +2543,7 @@ var imagesToggleOrb = document.createElement("div");
 imagesToggleOrb.className = "images-orb orb glyph";
 imagesToggleOrb.id = "images-orb";
 imagesToggleOrb.addEventListener("click", toggleImages, false);
-orbsBottom.appendChild(imagesToggleOrb);
+toolbarSectionContent.appendChild(imagesToggleOrb);
 var imagesToggle = false
 
 function toggleImages() {
@@ -2641,6 +2795,79 @@ function toggleImgDims() {
 // plainTextOrb.addEventListener("click", plainText, false);
 // orbsBottom.appendChild(plainTextOrb);
 
+var plainTextStage = document.createElement("div");
+    plainTextStage.classList.add("plain-text-stage");
+    stageWrapper.appendChild(plainTextStage);
+
+var plainTextWrapper = document.createElement("div");
+    plainTextWrapper.classList.add("plain-text-wrapper");
+    plainTextWrapper.contentEditable = true;
+    plainTextStage.appendChild(plainTextWrapper);
+
+
+  // Steps
+  ///////////
+  // iterate through all dom nodes
+  // Ignore text that is invisible, set to display: none, or has 0 opacity. (preheader should fall under this)
+  // setup defaults for linebreaks on common block level elements
+  // iterate to look for <a> and get the URLS
+  //
+
+  // - https://github.com/werk85/node-html-to-text
+  // - https://github.com/EDMdesigner/textversionjs
+
+function generateTextFromDOM(domObject) {
+  // pending...
+}
+
+
+function textNodesUnder(el){
+  var n, a=[], walk=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null,false);
+  while(n=walk.nextNode()) a.push(n);
+  return a;
+}
+
+var pt;
+var nodeCount = 0;
+
+dummyFrameContents.querySelectorAll('*').forEach(function(node) {
+
+  // console.log(node.tagName);
+
+  if ( node.tagName !== "STYLE" ) {
+    pt += node.innerText;
+  } else {
+    nodeCount++;
+  }
+
+});
+
+var allTextNodes = textNodesUnder(dummyFrameContents);
+
+allTextNodes.forEach(function(node) {
+
+  // console.log(node);
+
+  // if ( node.tagName !== "STYLE" ) {
+  //   pt += node.innerText;
+  // } else {
+  //   nodeCount++;
+  // }
+
+});
+
+plainTextWrapper.innerHTML = pt;
+
+// String for export/test sends
+plainTextVersion = pt;
+
+
+
+
+
+/////////
+/////////
+/////////
 
 function plainText() {
 
@@ -2941,7 +3168,7 @@ function applyQaResults(qaBar, status, msg) {
 
 var qaResults = document.createElement("div");
 qaResults.id = "qa-results";
-infoBar.appendChild(qaResults);
+leftNav.appendChild(qaResults);
 
 
 //////////
@@ -3004,17 +3231,27 @@ if ( !preheader90Pattern.test(textMinusPreheader) ) {
 
   for (var i = 0; i < preheaderTotalWords; i++) {
 
-    // var matcher = escapeRegExp(preheader90[i]);
-    var wordToMatch = preheader90[i].replace(/(^[^a-zA-Z\d\s]|[^a-zA-Z\d\s]$)/gi, "");
-    var  matcher = new RegExp("\\b" + escapeRegExp(wordToMatch) + "\\b", "gi"); // double escape special characters
-    // var  matcher = new RegExp("\\b" + escapeRegExp(wordToMatch) + "(\\b|\\r\\n?|\\n|$|<br\s*.*?\/?>)", "gi"); // double escape special characters
+    console.error(i);
 
-    if ( matcher.test(textMinusPreheader) ) {
-      totalPreheaderWordsMatched++;
-      console.log("Matched (" + totalPreheaderWordsMatched + "): " + wordToMatch + " (regex: " + matcher + ")");
+    if ( preheader90[i].length > 300 ) {
+      // Strings that were too long were breaking, returning as invalid regexes below. So lets just skip them until we can find a solution.
     } else {
-      console.error("Unmatched (X): " + wordToMatch + " (regex: " + matcher + ")");
+
+      // var matcher = escapeRegExp(preheader90[i]);
+      var wordToMatch = preheader90[i].replace(/(^[^a-zA-Z\d\s]|[^a-zA-Z\d\s]$)/gi, "");
+      var matcher = new RegExp("\\b" + escapeRegExp(wordToMatch) + "\\b", "gi"); // double escape special characters
+      // var  matcher = new RegExp("\\b" + escapeRegExp(wordToMatch) + "(\\b|\\r\\n?|\\n|$|<br\s*.*?\/?>)", "gi"); // double escape special characters
+
+      if ( matcher.test(textMinusPreheader) ) {
+        totalPreheaderWordsMatched++;
+        console.log("Matched (" + totalPreheaderWordsMatched + "): " + wordToMatch + " (regex: " + matcher + ")");
+      } else {
+        console.error("Unmatched (X): " + wordToMatch + " (regex: " + matcher + ")");
+      }
+
     }
+
+
 
   }
 
@@ -3025,8 +3262,7 @@ if ( !preheader90Pattern.test(textMinusPreheader) ) {
   var matchRating = 100;
 }
 
-
-var preheaderMatchText = "Preheader is a <span class='preheader-match-rating'>" + matchRating + "%</span> Match";
+var preheaderMatchText = "Preheader is a " + matchRating + "%</span> Match";
 
 // Test finished, determine status
 if ( matchRating > 69 ) {
@@ -3115,9 +3351,9 @@ mobileLayoutQaBar.className = "qa-mobile-layout";
 appendQaBar(mobileLayoutQaBar);
 
 if ( mFrameContents.body.scrollWidth > mobileIframe.offsetWidth ) {
-  applyQaResults(mobileLayoutQaBar, "error", "Mobile Layout Too Wide");
+  applyQaResults(mobileLayoutQaBar, "error", "Mobile Width Too Wide");
 } else {
-  applyQaResults(mobileLayoutQaBar, "success", "Mobile Layout Width is Good");
+  applyQaResults(mobileLayoutQaBar, "success", "Mobile Width is Good");
 }
 
 
@@ -3136,54 +3372,120 @@ zoomLevelsQaBar.className = "qa-zoom-levels";
 
 
 //////////
+////////////////
+///////////////////////
 ////
-////  QA Bar: Filsize
+////  QA Bar: Code Weight
 ////
-/////////
+///////////////////////
+////////////////
+//////////
+
 
 // The Gmail limit for emails is 102kb. After that the email will be truncated.
 
 // Inspired by: https://www.sendwithus.com/resources/gmail_size_test
+//              https://github.com/hteumeuleu/email-bugs/issues/41
 // Uses: - https://stackoverflow.com/a/7343013/556079
+//       - http://bytesizematters.com/
 //       - https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder
 
-var filesizeQaBar = document.createElement("div");
-filesizeQaBar.id = "qa-filesize";
-filesizeQaBar.className = "qa-filesize";
-appendQaBar(filesizeQaBar);
+var codeWeightQaBar = document.createElement("div");
+codeWeightQaBar.id = "qa-codeweight";
+codeWeightQaBar.className = "qa-codeweight";
+appendQaBar(codeWeightQaBar);
 
 // We need to calculate the email size.
 // Let's take our original HTML (kinda) and make some modifications to try and make its contents more accurate.
 
+  var htmlForSizeCalc = cleanedOriginalHtml;
+
   // MailChimp's tracking links are a fairly consistent length. Let's replace all of ours with them.
-    htmlForSizeCalc = cleanedOriginalHtml.replace(/(href=".+?"|href='.+?')/gi, 'href="https://medbridgeeducation.us2.list-manage.com/track/click?u=9929f5c1548f4f842c9470a5f&id=620d233a43&e=46a1f0c393"');
+  // The unsubscribe link is the same length as well. No worries.
+    htmlForSizeCalc = htmlForSizeCalc.replace(/(href=".+?"|href='.+?')/gi, 'href="https://medbridgeeducation.us2.list-manage.com/track/click?u=9929f5c1548f4f842c9470a5f&id=620d233a43&e=46a1f0c393"');
+
+  // Let's replace the address merge field if its in there.
+    htmlForSizeCalc = htmlForSizeCalc.replace(/\*\|LIST\:ADDRESSLINE\|\*/gi, "MedBridge · 1633​ ​Westlake​ ​Ave​ ​N​ · Suite 200 · Seattle, WA ​98109 · USA");
+
+  // Let's also add MailChimp's tracking pixel to the end.
+    htmlForSizeCalc += '<img src="https://medbridgeeducation.us2.list-manage.com/track/open.php?u=3D9929f5c1548f4f842c9470a5f&id=3D2c96703b25&e=3D67c2f77a95" height="1" width="1">';
+
   // Let's also remove MailChimp conditionals.
   // If some exist, I should add an alert that explains that.
     var conditionalsExist = htmlForSizeCalc.match(/\*\|.+?\|\*/gi);
       htmlForSizeCalc = htmlForSizeCalc.replace(/\*\|(END|IF).+?\|\*/gi, "");
 
-// Calculate the size with our extra clean string.
-// var emailSize = Math.round( ( new TextEncoder('utf-8').encode(htmlForSizeCalc).length / 1024 ) * 10 ) / 10;
-var emailSize       = new TextEncoder('utf-8').encode(htmlForSizeCalc).length;
-var prettyEmailSize = prettyFileSize(emailSize, 1);
+    // Deprecated in favor of code written by Lea Verou.
+      // Calculate the size with our extra clean string.
+      // var codeWeight       = new TextEncoder('utf-8').encode(htmlForSizeCalc).length;
+      // var prettycodeWeight = prettyFileSize(codeWeight, 1);
 
-// console.log("emailSize", emailSize, "prettyEmailSize", prettyEmailSize, "conditionalsExist", conditionalsExist);
+    var codeWeight = ByteSize.count(htmlForSizeCalc),
+        codeWeightFormattedInt = ByteSize.formatIntGmail(ByteSize.count(htmlForSizeCalc)),
+        codeWeightFormattedString = ByteSize.formatStringGmail(ByteSize.count(htmlForSizeCalc));
 
-if ( emailSize > 100000 ) {
-  if ( conditionalsExist ) {
-    applyQaResults(filesizeQaBar, "error", "Email too big* (~" + prettyEmailSize + ")");
+    console.log("codeWeight", codeWeight, "codeWeightFormattedInt", codeWeightFormattedInt, "codeWeightFormattedString:", codeWeightFormattedString, "conditionalsExist", conditionalsExist);
+
+// Stricter code limit when the email has conditionals.
+if ( conditionalsExist ) {
+  if ( codeWeightFormattedInt >= 100 ) {
+    applyQaResults(codeWeightQaBar, "error", "Code too big* (~" + codeWeightFormattedString + ")");
   } else {
-    applyQaResults(filesizeQaBar, "error", "Email too big (~" + prettyEmailSize + ")");
+    applyQaResults(codeWeightQaBar, "success", "Code is ~" + codeWeightFormattedString);
   }
+// No conditionals, respect the 102kb limit.
+// Consider making a warning for 90kb+.
 } else {
-  applyQaResults(filesizeQaBar, "success", "Email is ~" + prettyEmailSize);
+  if ( codeWeightFormattedInt >= 102 ) {
+    applyQaResults(codeWeightQaBar, "error", "Code too big (~" + codeWeightFormattedString + ")");
+  } else {
+    applyQaResults(codeWeightQaBar, "success", "Code is ~" + codeWeightFormattedString);
+  }
 }
 
+
+
 //////////
+////////////////
+///////////////////////
+////
+////  QA Bar: Image Weight
+////
+///////////////////////
+////////////////
+//////////
+
+var imageWeightQaBar = document.createElement("div");
+imageWeightQaBar.id = "qa-imageweight";
+imageWeightQaBar.className = "qa-imageweight";
+// appendQaBar(imageWeightQaBar);
+
+//////////
+////////////////
+///////////////////////
+////
+////  QA Bar: Campaign Weight
+////
+///////////////////////
+////////////////
+//////////
+
+var campaignWeightQaBar = document.createElement("div");
+campaignWeightQaBar.id = "qa-campaignWeight";
+campaignWeightQaBar.className = "qa-campaignWeight";
+// appendQaBar(campaignWeightQaBar);
+
+
+
+//////////
+////////////////
+///////////////////////
 ////
 ////  QA Bar: Citations
 ////
-/////////
+///////////////////////
+////////////////
+//////////
 
 
 // OFF
@@ -3195,10 +3497,14 @@ citationsQaBar.className = "qa-citations";
 
 
 //////////
+////////////////
+///////////////////////
 ////
 ////  QA Bar: Loaded Images
 ////
-/////////
+///////////////////////
+////////////////
+//////////
 
 var imagesQaBar = document.createElement("div");
 imagesQaBar.id = "qa-images";
@@ -3211,10 +3517,14 @@ if ( !navigator.onLine ) {
 
 
 //////////
+////////////////
+///////////////////////
 ////
 ////  QA Bar: Stretched Images
 ////
-/////////
+///////////////////////
+////////////////
+//////////
 
 var imgRatioQaBar = document.createElement("div");
 imgRatioQaBar.id = "qa-images-ratio";
@@ -3227,10 +3537,14 @@ if ( !navigator.onLine ) {
 
 
 //////////
+////////////////
+///////////////////////
 ////
 ////  QA Bar: Text Warnings
 ////
-/////////
+///////////////////////
+////////////////
+//////////
 
 // OFF
 
@@ -3241,10 +3555,14 @@ textWarningsQaBar.className = "qa-text-warnings";
 
 
 //////////
+////////////////
+///////////////////////
 ////
 ////  QA Bar: Spelling Errors
 ////
-/////////
+///////////////////////
+////////////////
+//////////
 
 // OFF
 
@@ -3267,8 +3585,8 @@ spellcheckQaBar.className = "qa-spellcheck";
 // Modify our page view/style/css based on the querystring before we start modifying dFrame and mFrameContents.
 //
 
-if ( getParameterByName("infobar") || getParameterByName("mobile") ) {
-  paneToggle(getParameterByName("infobar"), getParameterByName("mobile"));
+if ( getParameterByName("leftNav") || getParameterByName("mobile") ) {
+  paneToggle(getParameterByName("leftNav"), getParameterByName("mobile"));
   console.log("panes modified on page load via querystring");
 }
 
@@ -3591,7 +3909,7 @@ function highlightTextErrors() {
 //
 // Click|Click below|Click here|Click to remove|
 findAndReplaceDOMText(dFrameBody, {
-  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Please read|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
+  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
   wrap: 'span', wrapClass: "text-error"
 });
 
@@ -3665,6 +3983,41 @@ if ( emailPlatform === "sg" ) {
     });
   }
 
+
+//////////
+////
+//// Pricing
+////
+//////////
+if ( emailDisc === "pt" || emailDisc === "other" || emailDisc === "ot" || emailDisc === "at" ) {
+
+  findAndReplaceDOMText(dFrameBody, {
+    find: /((only )?\$95|(only )?\$145)/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+
+}
+
+if ( emailDisc === "slp" ) {
+
+  findAndReplaceDOMText(dFrameBody, {
+    find: /((only )?\$200|(only )?\$250)/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+
+}
+
+if ( emailDisc === "lmt" || emailDisc === "ent" ) {
+
+  findAndReplaceDOMText(dFrameBody, {
+    find: /\$95|\$145|\$200|\$250/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+
+}
+
+
+
 //////////
 ////
 //// Physical Therapy - PT
@@ -3672,8 +4025,15 @@ if ( emailPlatform === "sg" ) {
 //////////
 if ( emailDisc === "pt" || emailDisc === "other" ) {
 
+  // case sensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /(ASHA|\bAOTA|BOC\-Approved|Athletic Training|Occupational Therapy|(only )?\$95|(only )?\$145)/g,
+    find: /\b(ASHA|AOTA)\b/g,
+    wrap: 'span', wrapClass: "text-error"
+  });
+
+  // case (IN)sensitive
+  findAndReplaceDOMText(dFrameBody, {
+    find: /(BOC\-Approved|Athletic Train(er|ing)|Occupational Therap(y|ist))/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3684,19 +4044,15 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //////////
 } else if ( emailDisc === "at" ) {
 
+  // case sensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /(ASHA|\bAOTA|Physical Therapy|Occupational Therapy|(only )?\$95|(only )?\$145)/g,
+    find: /\b(ASHA|AOTA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
-  // case-insensitive
-  // 11-13-17 - We use this patients and outcomes a lot in AT afterall. Can't justify tagging them.
-  // findAndReplaceDOMText(dFrameBody, {
-  //   find: /(patients? [^education]|outcomes?)/gi,
-  //   wrap: 'span', wrapClass: "text-error"
-  // });
-  // case-insensitive
+
+  // case (IN)sensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /patients?/gi,
+    find: /((only )?\$95|(only )?\$145|patients?|Physical Therap(y|ist)|Occupational Therap(y|ist))/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3707,13 +4063,19 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //////////
 } else if ( emailDisc === "ot" ) {
 
+  // case sensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /(ASHA|BOC\-Approved|Physical Therapy|Athletic Training|(only )?\$95|(only )?\$145)/g,
+    find: /\b(ASHA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
-  // case-insensitive
+
+  // case (IN)sensitive
   findAndReplaceDOMText(dFrameBody, {
     find: /home exercise program/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+  findAndReplaceDOMText(dFrameBody, {
+    find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing))/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3725,12 +4087,12 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "slp" ) {
 
   findAndReplaceDOMText(dFrameBody, {
-    find: /(\bAOTA|BOC\-Approved|Physical Therapy|Athletic Training|Occupational Therapy|(only )?\$200|(only )?\$250)/g,
+    find: /\b(AOTA|APTA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /(patient outcomes?|clinician)/gi,
+    find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing)|Occupational Therap(y|ist)|patient outcomes?|clinician)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3742,12 +4104,12 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "lmt" ) {
 
   findAndReplaceDOMText(dFrameBody, {
-    find: /(ASHA|\bAOTA|BOC\-Approved|Physical Therapy|CCC\-SLP|\$95|\$145|\$200|\$250)/g,
+    find: /\b(ASHA|AOTA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /patient engagement tool/gi,
+    find: /(BOC\-Approved|Physical Therap(y|ist)|CCC\-SLP|patient engagement tool)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3775,32 +4137,43 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // 17-06-14 - Decided to stop saying "Unlimited CEUs" and instead say "Unlimited Access to CEUs" or "Unlimited CEU Access". We don't literally have unlimited CEUs, but we can provide unlimited ACCESS. Thanks ASHA! -_-
     // - 10/30/17 Update: Per ASHA, "Unlimited Access to CEUs" is still not right. We have to say "Unlimited Access to CE Courses". This only applies to SLP.
   // 17-09-05 - Justin does not like "From the Blog" or even referring to our blog site as a blog at all.
+  // 18-04-24 - Never 'Continued' Education. Only 'Continuing' Education.
 
   ////////////////////////////////
   ////////////////////////////////
 
-  // All (case INsensitive)
-  findAndReplaceDOMText(dFrameBody, {
-    find: /(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
-    // Update to add "word &nbsp;&rarr;" as an error
-    wrap: 'span', wrapClass: "text-error"
-  });
-  findAndReplaceDOMText(dFrameBody, {
-    find: /(?:(?!\u00a0).{1}|^.{0,0})(\u2192)(?!\u00a0)/g,
-    // find: /?:(?!\\u00a0).{6}|^.{0,5})(\\u2192)(?!\\u00a0)/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
-  // findAndReplaceDOMText(dFrameBody, {
-  //   find: //gi,
-  //   // find: /?:(?!\\u00a0).{6}|^.{0,5})(\\u2192)(?!\\u00a0)/gi,
-  //   wrap: 'span', wrapClass: "text-error"
-  // });
+  // All Disciplines and Audiences
+  // Case (IN)sensitive
 
-  // All (case sensitive)
-  findAndReplaceDOMText(dFrameBody, {
-    find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
-    wrap: 'span', wrapClass: "text-error"
-  });
+    findAndReplaceDOMText(dFrameBody, {
+      find: /(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
+      wrap: 'span', wrapClass: "text-error"
+    });
+    // Continuing Education, not Continued Education
+    // Speech-Language needa a hyphen
+    findAndReplaceDOMText(dFrameBody, {
+      find: /(continued education|speech language)/gi,
+      wrap: 'span', wrapClass: "text-error"
+    });
+    // Link Arrows → Arrows need to be immediately preceded by a non-breaking space to ensure it doesn't get dropped to the next line
+    findAndReplaceDOMText(dFrameBody, {
+      find: /(?:(?!\u00a0).{1}|^.{0,0})(\u2192)(?!\u00a0)/gi,
+      wrap: 'span', wrapClass: "text-error"
+    });
+    // CE Courses, not CEU Courses
+    findAndReplaceDOMText(dFrameBody, {
+      find: /\bCEU Course/gi,
+      wrap: 'span', wrapClass: "text-error"
+    });
+
+  // All Disciplines and Audiences
+  // Case Sensitive
+  ////
+
+    findAndReplaceDOMText(dFrameBody, {
+      find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
+      wrap: 'span', wrapClass: "text-error"
+    });
 
 
 //
@@ -3812,12 +4185,8 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
     	return !/(98109|1633|199[0-9]|20[0-4][0-9])/g.test(theMatch);
     }),
     wrap: 'span', wrapClass: "text-error"
-  })
-//
-// findAndReplaceDOMText(dFrameBody, {
-//   find: /\b[1-9]\d\d\d\b/g,
-//   wrap: 'span', wrapClass: "text-error"
-// });
+  });
+
 
 //
 // PRODUCT CAPITALIZATION
@@ -3831,7 +4200,7 @@ findAndReplaceDOMText(dFrameBody, {
 // Prep-Program
 //
 findAndReplaceDOMText(dFrameBody, {
-  find: /\b(MedBridge|.CS) prep [Pp]rogram\b/g,
+  find: /\b(MedBridge|[A-Z]CS) prep [Pp]rogram\b/g,
   wrap: 'span', wrapClass: "text-error"
 });
 
@@ -4457,7 +4826,7 @@ TO-DO ==========
     Also, if the parent container becomes smaller than the resize container, the resize container should change its size to match (width:100%/height:100%)
     Might need to submit an issue for this on the interact.js repo
 
-  - Should I reset the resize container (100%/100%) if the infobar or mobile view are hidden?
+  - Should I reset the resize container (100%/100%) if the leftNav or mobile view are hidden?
 
   - Double click a handler to restore the full width and height of the resize container.
 
@@ -4652,8 +5021,30 @@ lm.observe(dFrameContents.body);
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+// Manifest Version
+var manifestVersion = document.createElement("div");
+manifestVersion.classList.add("manifest-version");
+manifestVersion.innerHTML = chrome.runtime.getManifest().version;
+document.body.appendChild(manifestVersion);
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 ///////
 document.querySelector("html").classList.toggle("errors");
 
 
+
+
 // }
+} else {
+  document.documentElement.classList.add("plain-view");
+}

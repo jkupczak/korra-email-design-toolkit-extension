@@ -189,6 +189,7 @@ html {
   box-shadow:0 0 30px rgba(0,0,0,0.3), 0 0 10px rgba(0,0,0,0.1);
   transition: margin 3s;
   z-index:9000;
+  border: 1px solid #414148;
 }
 
 .link-marker:not(.pinned):hover + .link-errors {
@@ -238,7 +239,7 @@ html {
 .link-errors .link-errors-wrapper > section {
   display:inline-block;
   font-weight:400 !important;
-  border-radius:30px;
+  border-radius:17px;
   text-align:left;
   padding:10px 18px 10px 36px;
   background:#fff;

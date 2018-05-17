@@ -1,6 +1,8 @@
 // console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/global.js");
 ///////////////////////////////////////////////////////////////
 
+console.warn("Korra " + chrome.runtime.getManifest().version);
+
 ////////////////////
 ////////////////////
 /////
@@ -387,8 +389,8 @@ function getDisciplineId(string) {
   else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "lmt";    }
 
   else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";     }
-  else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { var disciplineId = "fox";    }
-  else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "hs";     }
+  // else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { var disciplineId = "fox";    }
+  else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )             { var disciplineId = undefined;     }
   else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "multi";  }
   else if ( /-(ENT|Enterprise|MFB)(\s|-|\.|$)/gi.test(trimmedString) ) { var disciplineId = "ent";}
 
@@ -427,7 +429,7 @@ function getDisciplineName(id) {
     return "Occupational Therapy"
   }
   else if (id === "slp") {
-    return "Speech-Language Pathology"
+    return "Speech Pathology"
   }
   else if (id === "other") {
     return "Other"

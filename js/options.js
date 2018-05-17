@@ -1,6 +1,18 @@
 // console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/options.js");
 //////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////
+/////////////////////////////////
+/////////////////////////////////
+//
+// Update here, and in get-options.js
+// Update this to not have to do that. Check the async func I used in newsletter-async
+//
+//
+/////////////////////////////////
+/////////////////////////////////
+/////////////////////////////////
+
 function loadOptions() {
 
   var bkg = chrome.runtime.getBackgroundPage(function(bkg){
@@ -12,6 +24,8 @@ function loadOptions() {
     /// Dropbox
     /////
 
+    console.error("hi!");
+
     console.log("options.dropboxAccessToken", options.dropboxAccessToken);
     // Dropbox Access Token
     if(options.dropboxAccessToken !== '' && options.dropboxAccessToken !== undefined){
@@ -22,6 +36,27 @@ function loadOptions() {
     // Dropbox Parent Folder
     if(options.fullPathToDropboxFolder !== '' && options.fullPathToDropboxFolder !== undefined){
       document.getElementById("fullPathToDropboxFolder").value = options.fullPathToDropboxFolder;
+    }
+
+    //////
+    /// Mailgun
+    /////
+
+    console.log(options)
+    console.log(options.mailgunApiKey)
+
+    console.log("options.mailgunApiKey", options.mailgunApiKey);
+    // Mailgun API Key
+    if(options.mailgunApiKey !== '' && options.mailgunApiKey !== undefined){
+      document.getElementById("mailgunApiKey").value = options.mailgunApiKey;
+      console.log(options)
+      console.log(options.mailgunApiKey)
+    }
+
+    console.log("options.mailgunDomainName", options.mailgunDomainName);
+    // Mailgun Domain Name
+    if(options.mailgunDomainName !== '' && options.mailgunDomainName !== undefined){
+      document.getElementById("mailgunDomainName").value = options.mailgunDomainName;
     }
 
     //////
@@ -93,6 +128,15 @@ function saveOptions() {
 
       // Local user path
       bkg.setItem("localUserProfilePath", fullPathToDropboxFolder.replace("/" + dropboxFolderName));
+
+    // Mailgun
+    //////////
+
+      // Mailgun API Key
+      bkg.setItem("mailgunApiKey", mailgunApiKey.value);
+
+      // Mailgun Domain Name
+      bkg.setItem("mailgunDomainName", mailgunDomainName.value);
 
     // Link Validation
     //////////////////

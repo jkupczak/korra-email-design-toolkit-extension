@@ -80,7 +80,11 @@ function exportSingleModule() {
 
   // GA
   if ( trackingModNumberInput.value !== "" && whitelabelingInput.value === "www" ) {
-    var gaTracking = "utm_content=mod" + trackingModNumberInput.value;
+    if ( audienceInput.value === "non-subscribers" ) {
+      var gaTracking = "&utm_content=mod" + trackingModNumberInput.value;
+    } else {
+      var gaTracking = "?utm_content=mod" + trackingModNumberInput.value;
+    }
   } else {
     var gaTracking = "";
   }
@@ -95,11 +99,11 @@ function exportSingleModule() {
 
   if ( courseDetail ) {
 
-  var courseTitle = document.querySelector(".course-details__section h1").textContent;
+    var courseTitle = document.querySelector(".course-details__section h1").textContent;
     console.log(courseTitle);
 
     var courseImgSrc = document.querySelectorAll("#video_location .jw-preview")[0].style.backgroundImage;
-    courseImg = courseImgSrc.replace(/_hero\./gi, "_catalog.");
+    courseImg = courseImgSrc;
     courseImg = courseImg.replace(/(^.+?"|"\))/gi, "");
     console.log(courseImg);
 
@@ -131,12 +135,13 @@ function exportSingleModule() {
   // MedBridge Subscribers && Outside Organization
   if ( whitelabelingInput.value !== 'www' || audienceInput.value === "subscribers" ) {
 
-    var courseLink = "https://" + whitelabelingInput.value + ".medbridgeeducation.com/sign-in?after_signin_url=" + courseLinkPath + "&" + gaTracking;
+    // var courseLink = "https://" + whitelabelingInput.value + ".medbridgeeducation.com/sign-in?after_signin_url=" + courseLinkPath + gaTracking;
+    var courseLink = "https://" + whitelabelingInput.value + ".medbridgeeducation.com/" + courseLinkPath + gaTracking;
 
   // MedBridge Non-Subscribers
   } else if ( audienceInput.value === "non-subscribers" ) {
 
-    var courseLink = "https://www.medbridgeeducation.com/" + trackingURLInput.value + "/?after_affiliate_url=" + courseLinkPath + "&" + gaTracking;
+    var courseLink = "https://www.medbridgeeducation.com/" + trackingURLInput.value + "/?after_affiliate_url=" + courseLinkPath + gaTracking;
 
   }
 
@@ -236,16 +241,16 @@ function toggleMarketingURLInput() {
   console.log("toggleMarketingURLInput()");
   if ( whitelabelingInput.value === "www" && audienceInput.value === "non-subscribers" ) {
     console.log("re-enable");
+    document.querySelectorAll('.settings-tracking')[0].style.opacity = "";
     trackingURLInput.disabled = false;
     trackingURLInput.style.background = "";
-    trackingURLInput.style.opacity = "";
     trackingURLInput.style.pointerEvents = "";
     trackingURLInput.style.userSelect = "";
   } else {
     console.log("disable");
+    document.querySelectorAll('.settings-tracking')[0].style.opacity = "0.5";
     trackingURLInput.disabled = true;
     trackingURLInput.style.background = "#CCCCCC";
-    trackingURLInput.style.opacity = "0.5";
     trackingURLInput.style.pointerEvents = "none";
     trackingURLInput.style.userSelect = "none";
   }
@@ -407,8 +412,11 @@ if ( !courseDetail ) {
             var ngHref = courseWrapper.querySelector(".course-listing__text > a").getAttribute("ng-href");
             if ( ngHref ) {
 
-              var thisCourseImg = courseWrapper.querySelector(".course-listing__img").src;
-              var thisCourseId = thisCourseImg.match(/\/\d+?\//g)[0].replace(/\//g,"");
+              var smallCourseImg = courseWrapper.querySelector(".course-listing__img").src;
+              var thisCourseId = smallCourseImg.match(/\/\d+?\//g)[0].replace(/\//g,"");
+
+              // var thisCourseImg = courseWrapper.querySelector(".course-listing__img").src;
+              var thisCourseImg = "https://medbridgeuploads.s3.amazonaws.com/Course/" + thisCourseId + "/title_hero.jpg"
 
               // copy ID
               var copyId = document.createElement("a");
@@ -481,6 +489,10 @@ if ( !courseDetail ) {
 
           var thisCourseImg = courseParent.querySelector(".course-listing__media a img").src;
           var thisCourseId = thisCourseImg.match(/\/\d+?\//g)[0].replace(/\//g,"");
+
+          // Update course image to be the large version
+          // Only required for the Courses page, not courses/details page.
+          thisCourseImg = thisCourseImg.replace(/\.com\/Course\/\d+?\//gi, ".com/Course/" + thisCourseId + "/").replace(/_catalog\./gi, "_hero.");
 
           courseParent.classList.add("course-parent");
           courseParent.dataset.title = courseParent.querySelector(".course-listing__title").textContent;

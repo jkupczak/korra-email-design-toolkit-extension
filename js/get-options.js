@@ -107,7 +107,7 @@ function getOption(key) {
 
     // Get Option from LocalStorage
     value = getItem(key);
-    console.log(key, value);
+    // console.log(key, value);
 
     // Default the value if it does not exist in LocalStorage and a default value is defined above
     if ( (value === null || value == "null") && (key in defaultOptions) ) {
@@ -126,6 +126,9 @@ function getOptions(){
     options.fullPathToDropboxFolder = getOption("fullPathToDropboxFolder");
     options.dropboxFolderName = getOption("dropboxFolderName");
     options.localUserProfilePath = getOption("localUserProfilePath");
+    // Mailgun
+    options.mailgunApiKey = getOption("mailgunApiKey");
+    options.mailgunDomainName = getOption("mailgunDomainName");
     // Validate Links
     options.blacklist = getOption("blacklist");
     options.checkType = getOption("checkType");

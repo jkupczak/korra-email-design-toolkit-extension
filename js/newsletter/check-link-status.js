@@ -433,6 +433,11 @@ function isMedBridgeHomepage(document) {
 ////////
 function checkResponseURL(i, linkObj, response) {
 
+    // TODO!!!!
+    // https://www.medbridgeeducation.com/sign-in/?after_signin_url=patient-engagement-for-speech-language-pathology?utm_content=header
+    // This resolved as OK even though its not. The failed redirect check should have caught this. Might have something to do with using after_signin_url.
+    // Check this.
+
   if ( linkInfoArray[i]['isMedBridgeBrandLink'] && linkInfoArray[i]['hasTrackingLinkback'] ) {
 
     // Check succesful redirection of tracking links on MedBridge

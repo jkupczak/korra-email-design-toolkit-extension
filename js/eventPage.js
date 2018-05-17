@@ -1,5 +1,14 @@
 // TODO clean up this message
 
+console.warn("Korra " + chrome.runtime.getManifest().version);
+
+// Refreshes the current tab.
+// Implemented specifically to complient the .reload function below.
+// When I click the Korra icon the extension reloads. After its done reloading this code runs and refreshes my active tab.
+// This was added to make development of the extension quicker. Instead of opening the Extensions tab I can reload without ever leaving the page im looking at.
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.reload(tabs[0].id);
+    });
 
 // !!!!!!!!!!!!!
 // EVENT / BACKGROUND PAGE
@@ -138,7 +147,10 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   } else {
     // Show popup HTML with information.
     // Until that's ready, show options.html instead
-    chrome.tabs.create({ url: chrome.extension.getURL('options.html') });
+    // chrome.tabs.create({ url: chrome.extension.getURL('options.html') });
+
+    chrome.runtime.reload();
+
   }
 
 });

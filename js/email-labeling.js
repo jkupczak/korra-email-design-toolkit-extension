@@ -1,4 +1,4 @@
-console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/email-labeling.js");
+// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/email-labeling.js");
 ///////////////////////////////////////////////////////////////////////
 
 //

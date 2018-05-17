@@ -1,10 +1,9 @@
 // console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter-async.js");
 /////////////////////////////////////////////////////////////////////////
 
-
 var view = getParameterByName("view");
-
 if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
+  console.log(document.URL);
 
 
 // This requests the original files HTML using the extensions access to the filesystem.
@@ -113,52 +112,10 @@ function processCode(code) {
   var mFrameCssString = '<link href="' + chrome.extension.getURL('css/newsletter/newsletter-mFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
   cleanedMobileHtml += mFrameCssString;
 
-
+  // Now that we've got the HTML from our async call AND we've processed it...
   // buildPage();
 
 }
-
-
-//
-//
-//
-//  Experimental design
-//  If I need a value from chrome.storage, why not look for it as soon as the page starts loading instead of waiting for it to finish loading?
-//  This script runs in the manifest at document_start
-//  It loads approximately 300ms faster.
-//
-//
-
-
-// Get dropbox access token from chrome.storage.
-
-// chrome.storage.sync.get("dpToken", function(items) {
-//   if (!chrome.runtime.error && items.dpToken) {
-//     // console.log(items);
-//     dbx = new Dropbox({ accessToken: items.dpToken });
-//     // console.groupCollapsed("Dropbox access token retrieved.");
-//     // console.log(items.dpToken);
-//     // console.groupEnd();
-//   } else {
-//     console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dpToken is " + items.dpToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
-//   }
-// });
-//
-// // Dropbox Local Parent Folder Path
-// chrome.storage.sync.get("dpLocalParentFolder", function(items) {
-//   if (!chrome.runtime.error && items.dpLocalParentFolder) {
-//     dropboxFolderName = items.dpLocalParentFolder;
-//   } else {
-//     dropboxFolderName = "Dropbox%20(MedBridge%20.)";
-//     console.error("Could not retrieve Dropbox local parent folder path from chrome.storage.sync. items.dpLocalParentFolder is " + items.dpLocalParentFolder);
-//   }
-// });
-
-
-
-// chrome.runtime.sendMessage({cmd: "shutdown"}, function(response) {
-//   console.log(response.farewell);
-// });
 
 
 
@@ -197,6 +154,7 @@ var isinss = false;
 if ( isinss ) {
 // First check sessionStorage. We'll store options here after the first load to make subsequent loads faster.
 
+  // TODO
   var getAllOptions = "options!";
   resolveOptions("options!");
 
@@ -239,8 +197,14 @@ function resolveOptions(items) {
     console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + items.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
   }
 
-  // [OPTION]:
-  // [OPTION]:
+  // [OPTION]: Mailgun API Key
+  mailgunApiKey = items.mailgunApiKey;
+  console.log("mailgunApiKey:", mailgunApiKey);
+
+  // [OPTION]: Mailgun Domain Name
+  mailgunDomainName = items.mailgunDomainName.trim();
+  console.log("mailgunDomainName:", mailgunDomainName);
+
   // [OPTION]:
   // [OPTION]:
   // [OPTION]:
@@ -257,6 +221,10 @@ function resolveOptions(items) {
 }
 
 
+
+///////
+///////
+///////
 var getHtml = new Promise(function(resolve, reject) {
 
   var xhr = new XMLHttpRequest();
@@ -266,10 +234,7 @@ var getHtml = new Promise(function(resolve, reject) {
   xhr.onload = function (e) {
     // if (this.status === 0) {
 
-      // console.log(this);
-      // console.log(xhr);
-      // console.log(this.response);
-      // console.log(xhr.response);
+      processCode(this.response);
       resolve(this.response);
 
     // } else {
@@ -289,79 +254,20 @@ var getHtml = new Promise(function(resolve, reject) {
 
 });
 
-///////////
-///////////
-///////////
-
-//
-// var promise1 = Promise.resolve(3);
-// var promise2 = 42;
-// var promise3 = new Promise(function(resolve, reject) {
-//   setTimeout(resolve, 1000, 'foo');
-// });
 
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
 Promise.all([getAllOptions, getHtml]).then(function(values) {
-  // console.log(values[0]);
-  // console.log(values[1]);
-  processCode(values[1]);
+  // HTML and options are ready...
+  // do something
 });
 
 
 
 
-//////////////////////
-//////////////////////
-//////////////////////
-//////////////////////
-
-//
-//
-// var getResponse = new Promise(function(resolve, reject) {
-//
-//   var xhr = new XMLHttpRequest();
-//   xhr.open("GET", document.URL, true);
-//
-//   xhr.onload = function () {
-//
-//     console.log(this.response); // shows the HTML of the page I'm requesting
-//     resolve(this.response);
-//
-//   };
-//   xhr.onerror = function () {
-//     reject({
-//       status: this.status,
-//       statusText: xhr.statusText
-//     });
-//   };
-//   xhr.send();
-//
-// });
-//
-// var testPromise = new Promise(function(resolve, reject) {
-//   setTimeout(resolve, 1000, 'foo');
-// });
-//
-// Promise.all([getResponse, testPromise]).then(function(values) {
-//   console.log(values);
-//   console.log(values[0]); // this.response
-//   console.log(values[1]); // foo
-// });
-//
-
-
-// var mailgunApiKey;
-// // mailgun api key
-// chrome.storage.sync.get("mailgunKey", function(items) {
-//   if (!chrome.runtime.error && items.mailgunKey) {
-//     mailgunApiKey = items.mailgunKey;
-//   } else {
-//     console.error("Could not retrieve Mailgun API Key from chrome.storage.sync.");
-//   }
-// });
-
-
+////
+//// http://jsfiddle.net/02ohnth4/45/
+////
 function doTheWork(input, i) {
     //normal async work will probably have its own promise, but we need to create our own:
     return new Promise(function (resolve, reject) {
@@ -384,6 +290,16 @@ function seqLoopReduce(someInput, times) {
         });
     }, doTheWork(someInput, 0));
 }
+
+
+var ticks6 = (new Date()).valueOf();
+var p6 = seqLoopReduce("10 iterations: <br />", 15).then(function (result) {
+    var endTicks = (new Date()).valueOf();
+    console.log("<h2>Sequential reduced, done in " + (endTicks - ticks6) + " ms: </h2>");
+    console.log(result);
+    console.log("<br />");
+});
+
 
 
 

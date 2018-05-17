@@ -1,5 +1,5 @@
-// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/newsletter-functions.js");
-////////////////////////////////////////////////////////////////////////////////////////
+console.warn("📫 [korra-email-design-tooklit] loaded /js/newsletter/newsletter-functions.js");
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -611,7 +611,8 @@ function verifyLinkVisibility(linkList) {
   }
 
   // We're done here. Kill the dummy iframe.
-  destroy(dummyIframe);
+  // 4/28/18 - Actually, keep it. We'll use it to generate the plaintext.
+  // destroy(dummyIframe);
 
 }
 
@@ -629,36 +630,6 @@ function verifyLinkVisibility(linkList) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-
-// MailGun Send
-// Recipient must be an Authorized Recipient in order to send using the sandbox (300 messages a day max)
-  // https://app.mailgun.com/app/account/authorized
-
-
-function sendEmail() {
-  console.log(mailgunApiKey);
-
-  var data = new FormData();
-  data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
-  data.append("to", "james@medbridgeed.com");
-  data.append("subject", "Hello from Mailgun");
-  data.append("html", cleanedOriginalHtml);
-
-  var xhr = new XMLHttpRequest();
-  xhr.withCredentials = true;
-
-  xhr.addEventListener("readystatechange", function () {
-    if (this.readyState === 4) {
-      console.log(this.responseText);
-    }
-  });
-
-  xhr.open("POST", "https://api:" + mailgunApiKey + "@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
-  xhr.setRequestHeader("cache-control", "no-cache");
-  xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
-
-  xhr.send(data);
-}
 
 
 ///////////////////////////////////////
@@ -747,6 +718,7 @@ function createImgInfoArray(imgList) {
   // I can only use .onload once per document. So instead we use an eventlistner.
   // After we're done, we need to remove the eventlistner.
   // Resource: https://stackoverflow.com/a/27032611/556079
+
 
   if ( navigator.onLine ) {
 
@@ -923,7 +895,9 @@ function getImgSizes(imgInfoArray) {
     i++
 
     //async
-    fetch(img.url).then(resp => resp.blob())
+    fetch(img.url).then(
+      console.log("wow"),
+      resp => resp.blob())
     .then(blob => {
       imgInfoArray[k]['size'] = { "size": blob.size, "prettysize": prettyFileSize(blob.size, 1) }
       imgInfoArray[k]['type'] = blob.type;
@@ -1767,7 +1741,7 @@ function validateLinks(linkObj, i) {
       if ( /https?:\/\/(www\.)?med/.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Missing whitelabeling.");
       }
-      else if ( ( (emailSubType === "hs" || emailSubType === "eh") && !/\/(encompasshealth|healthsouth)\./i.test(linkHref)) || (emailSubType === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailSubType === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
+      else if ( ( emailOrgName === "hs" && !/\/(encompasshealth|healthsouth)\./i.test(linkHref)) || (emailOrgName === "dr" && !/\/drayerpt\./i.test(linkHref)) || (emailOrgName === "fox" && !/\/foxrehab\./i.test(linkHref)) ) {
         createLinkErrorRow(linkObj, "Incorrect whitelabeling.");
       }
 
@@ -1777,12 +1751,17 @@ function validateLinks(linkObj, i) {
     }
 
     ////
+    ////
     // Validate querystring pattern if it looks like there is one
+    //////////////
+    //////////////
+    //////////////
 
     // http://stackoverflow.com/a/23959662/556079
     // http://rubular.com/r/kyiKS9OlsM
 
     // Check the query string without any ending hash
+    // Ignore links with after_signin_url, we'll check that later.
     var linkHrefNoHash = linkHref.replace(/\#.+/, "");
 
     if ( /[^#]+\&.+\=/.test(linkHrefNoHash) || /[^#]+\?.+\=/.test(linkHrefNoHash) && ( !/after_signin_url/.test(linkHrefNoHash) ) ) {
@@ -1792,7 +1771,7 @@ function validateLinks(linkObj, i) {
       }
 
       if ( /\?[^#]+\?.+\=/.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Replace ? with & in query string.");
+        createLinkErrorRow(linkObj, "Replace the ? with an & in the querystring.");
       }
 
       if ( !/\?([\.\w-]+(=[\!\|\*\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\*\|\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
@@ -1800,10 +1779,25 @@ function validateLinks(linkObj, i) {
       }
 
     }
+          // after_signin_url is different.
+          // If you're using more than one qs parameter then the ? needs to be followed immediately
+          // by another ? for the redirect to carry the parameters over to the next page.
+          if ( /after_signin_url=/.test(linkHrefNoHash) ) {
+
+            // Can't (shouldn't) do &after_signin_url.
+            if ( !/\?after_signin_url=/.test(linkHref) ) {
+              createLinkErrorRow(linkObj, "<code>after_signin_url</code> must be the first parameter.");
+            }
+
+            if ( /\?after_signin_url=[^\?#]*?&/.test(linkHref) ) {
+              createLinkErrorRow(linkObj, "Replace the & with a ? in the querystring.");
+            }
+
+          }
 
     // Leftover & or ? from a removed querystring
     if ( /(\?|&)$/g.test(linkHref) ) {
-      createLinkErrorRow(linkObj, "Link ending with ? or &.");
+      createLinkErrorRow(linkObj, "Remove the trailing ? or &.");
     }
 
 
@@ -1811,8 +1805,6 @@ function validateLinks(linkObj, i) {
     ////-----------------------------////
     ////
     if ( linkNeedsPromoCode ) {
-
-      // console.error("hi");
 
       // Links to MedBridge in -ns emails need to use a marketing URL
       if ( !/\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /\.com\/(signin|courses\/|blog\/)/gi.test(linkHref) ) {
@@ -1869,10 +1861,10 @@ function validateLinks(linkObj, i) {
       if ( elExists(moduleNumber) ) {
 
         var moduleNumber = moduleNumber.getAttribute("data-module-count");
-        var moduleNumberMatch = new RegExp("utm_content=mod" + moduleNumber + "(&|$|#)", "gi");
+        var moduleNumberMatch = new RegExp("utm_content=.*?mod" + moduleNumber + "(\/|\-|&|$|#)", "gi");
 
         // mod followed by 1 or 2 digits, followed by - or # or & or the link ends.
-        if ( /utm_content=mod\d(\d)?([\/\-&#]|$)/gi.test(linkHref) ) {
+        if ( /utm_content=.*?mod\d(\d)?(\/|\-|&|$|#)/gi.test(linkHref) ) {
 
           if ( !moduleNumberMatch.test(linkHref) ) {
             // console.log( "no match: " + !moduleNumberMatch.test(linkHref) );
@@ -1931,12 +1923,40 @@ function validateLinks(linkObj, i) {
 
     }
 
-    ////
-    // Check for sub=yes
-    ////
-    // Check sub emails
-    if ( emailSubType === "sub" || outsideOrg ) {
 
+    //
+    // Check ns emails
+    //
+    if ( singleLinkInfoArray['isMedBridgeEdLink'] && emailSubType === "ns" ) {
+
+      // Webinars
+      if ( /\.com\/webinars(\?|\/|#|$)[^d]/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Link to /live-webinars instead in Non-Subscriber emails.");
+      }
+
+    }
+
+    //
+    // Check sub emails
+    //
+    if ( singleLinkInfoArray['isMedBridgeEdLink'] && (emailSubType === "sub" || outsideOrg) ) {
+
+      //
+      if ( /\.com\/continuing-education(\?|\/|#|$)/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Link to /courses instead in Subscriber emails.");
+      }
+      //
+      if ( /\.com\/(speech-language-pathology|occupational-therapy|athletic-training|physical-therapy)(\?|\/|#|$)/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Link to a page without conversion messaging in Subscriber emails.");
+      }
+      // Webinars
+      if ( /\.com\/live-webinars(\?|\/|#|$)/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Link to /webinars instead in Subscriber emails.");
+      }
+
+      ////
+      // Check for sub=yes
+      ////
       // sub=yes is required in blog links.
       if ( singleLinkInfoArray['isBlogLink'] && !/sub=yes/gi.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Add <code>sub=yes</code>.");
@@ -1975,16 +1995,23 @@ function validateLinks(linkObj, i) {
 
     ////
     // Link Text Hints
-    if ( (/Request (Group|a Demo|Info|EMR Integration)|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info|EMR Integration))|Pricing/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
-      createLinkErrorRow(linkObj, "Link text does not match url (demo related).");
+    // Request a Demo
+    if ( (/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
+      createLinkErrorRow(linkObj, "Text and URL are not consistent (Demo Request related).");
     }
-    if ( emailDisc !== "hs" ) {
+    // Request EMR Integration
+    if ( (/Request (EMR|Integration)/gi.test(linkObj.textContent) && !/#integrate/i.test(linkHref)) || (!/Request (EMR|Integration)/gi.test(linkObj.textContent) && /#integrate/i.test(linkHref)) ) {
+      createLinkErrorRow(linkObj, "Text and URL are not consistent (EMR Integration related).");
+    }
+    if ( emailOrgName !== "hs" ) {
       if ( /Article/gi.test(linkObj.textContent) && !singleLinkInfoArray['isArticle'] ) {
-        createLinkErrorRow(linkObj, "Link text does not match url (article related) [1].");
+        createLinkErrorRow(linkObj, "Text references an article but the URL does not go to the blog.");
       }
-      if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray['isArticle'] ) {
-        createLinkErrorRow(linkObj, "Link text does not match url (article related) [2].");
-      }
+      // This was a failed experiment. I later realized that we would want to link article titles that don't
+      // have the word "Read" or "Article" in them.
+      // if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray['isArticle'] ) {
+      //   createLinkErrorRow(linkObj, "Link text does not match url (article related) [2].");
+      // }
     }
 
     ////
@@ -1994,19 +2021,39 @@ function validateLinks(linkObj, i) {
     //   createLinkErrorRow(linkObj, "no demo requests in enterprise sub");
     // }
 
-
-    ////
+    //// Using after_signin_url on Subscriber links
+    ///////////////////////////////////////////////
     // outsideOrg and subs should not link to home-exercise-program.
     // Use sign-in/?after_signin_url=patient_care/programs/create
+
+    // Check that this is a sub or outsideorg email
     if ( outsideOrg || emailSubType === "sub") {
-      if ( /\.com\/courses\/details\//gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=courses/details/...</code>");
+
+      // // // Courses
+      // if ( /\.com\/courses\/details\//gi.test(linkHref) ) {
+      //   createLinkErrorRow(linkObj, "Use <code>sign-in/?after_signin_url=courses/details/...</code>");
+      // }
+      // Webinars
+      if ( /\.com\/webinars\/details\//gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Use <code>sign-in/?after_signin_url=webinars/details/...</code>");
       }
-      if ( /\.com\/home\-exercise\-program/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+      // HEP
+      if ( /\.com\/home\-exercise\-program/gi.test(linkHref) || /patient_care\/programs\/create/gi.test(linkHref) ) {
+
+        if ( !/after_signin_url/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+        }
       }
-      if ( /patient_care\/programs\/create/gi.test(linkHref) && !/after_signin_url/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+
+      // TODO: TEMPORARY UNTIL DEV FIXES A BUG
+      if ( /after_signin_url=/gi.test(linkHref) && !/(patient_care\/programs\/create|webinars\/details\/)/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Don't use <code>after_signin_url</code> (temporary).");
+      }
+
+    } else {
+      // This is an NS email? No after_signin_url for you!
+      if ( /(\.com\/sign-in|after_signin_url=)/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Don't use sign-in related URLs in Non-Subscriber emails.");
       }
     }
 
@@ -2014,25 +2061,27 @@ function validateLinks(linkObj, i) {
       createLinkErrorRow(linkObj, "use <code>home-exercise-program</code>");
     }
 
+
+
     ////
     // Tracking URL - Discipline Check
 
     if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && singleLinkInfoArray['isMedBridgeBrandLink'] && !/\/courses\/details\//g.test(linkHref) && singleLinkInfoArray['isMarketingUrl'] ) {
 
       if ( emailDisc === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "missing discipline");
+        createLinkErrorRow(linkObj, "Missing discipline.");
       }
       if ( emailDisc === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "missing discipline");
+        createLinkErrorRow(linkObj, "Missing discipline.");
       }
       if ( emailDisc === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "missing discipline");
+        createLinkErrorRow(linkObj, "Missing discipline.");
       }
       if ( emailDisc === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "missing discipline");
+        createLinkErrorRow(linkObj, "Missing discipline.");
       }
       if ( emailDisc === "other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "missing discipline");
+        createLinkErrorRow(linkObj, "Missing discipline.");
       }
     }
 
@@ -2057,7 +2106,7 @@ function validateLinks(linkObj, i) {
       }
     }
 
-    // Blog - Discipline Check
+    // Discipline Check - Blog
     // Checking NS and SUB.
     if ( /blog\/discipline\/pt/gi.test(linkHref) && (emailDisc !== "pt" && emailDisc !== "other") ) {
       createLinkErrorRow(linkObj, "Wrong discipline.");
@@ -2076,84 +2125,121 @@ function validateLinks(linkObj, i) {
     }
 
 
-    // Courses Page - Discipline Check
-    if ( emailDisc !== "multi" && emailDisc !== null && /#/g.test(linkHref) && /(\.com\/|=\/?)courses/gi.test(linkHref) ) { //  && singleLinkInfoArray['isMedBridgeBrandLink']
-
-      // if ( (emailDisc !== "pt" && emailDisc !== "other") && /#\/?physical-therapy/gi.test(linkHref) ) {
-      //   createLinkErrorRow(linkObj, "Wrong hashtag.");
-      // }
-      // if ( emailDisc !== "at" && /#\/?athletic/gi.test(linkHref) ) {
-      //   createLinkErrorRow(linkObj, "Wrong hashtag.");
-      // }
-      // if ( emailDisc !== "ot" && /#\/?occupational-therapy/gi.test(linkHref) ) {
-      //   createLinkErrorRow(linkObj, "Wrong hashtag.");
-      // }
-      // if ( emailDisc !== "slp" && /#\/?speech-language-pathology/gi.test(linkHref) ) {
-      //   createLinkErrorRow(linkObj, "Wrong hashtag.");
-      // }
-
-      if ( (emailDisc === "pt" || emailDisc === "other") && !/#\/?physical-therapy/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Wrong hashtag.");
-      }
-      if ( emailDisc === "at" && !/#\/?athletic-training/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Wrong hashtag.");
-      }
-      if ( emailDisc === "ot" && !/#\/?occupational-therapy/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Wrong hashtag.");
-      }
-      if ( emailDisc === "slp" && !/#\/?speech-language-pathology/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Wrong hashtag.");
-      }
+    // False Courses Page URL
+    // courses/speech-language-pathology isn't a page
+    // The only valid pages for courses is courses/# and courses/details
+    // First match that this is intended to be a courses link. Then see if it DOESN'T match the only valid kinds of courses links.
+    if ( /(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses/gi.test(linkHref) && !/(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses(\/details|\/?(#|&|\?|$))/gi.test(linkHref) ) {
+      createLinkErrorRow(linkObj, "Invalid courses page. Only <code>courses/#</code> and <code>courses/details</code> is valid.");
     }
 
+
+    // Courses Page
+    // Is this the courses page (not the courses detail page)?
+    if ( /(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses(\/?#|\/?&|\/?\?|\/?$|\/[^d])/gi.test(linkHref) ) {
+
+      // If the email has a discipline, the link to the courses page needs one too.
+      // Check the discipline of the email against the hashtag that's being used for links meant to go to the courses page
+      if ( emailDisc === "multi" || emailDisc === "all" || emailDisc === null || emailDisc === undefined ) {
+        if ( /#/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Remove the hashtag. This email has no assigned discipline to link to.");
+        }
+
+      } else {
+        if ( !/#/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Missing discipline in the hashtag.");
+        } else {
+          if ( (emailDisc === "pt" || emailDisc === "other") && !/#\/physical-therapy/gi.test(linkHref) ) {
+            createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
+          }
+          if ( emailDisc === "at" && !/#\/athletic-training/gi.test(linkHref) ) {
+            createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
+          }
+          if ( emailDisc === "ot" && !/#\/occupational-therapy/gi.test(linkHref) ) {
+            createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
+          }
+          if ( emailDisc === "slp" && !/#\/speech-language-pathology/gi.test(linkHref) ) {
+            createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
+          }
+        }
+      }
+
+    }
+
+    // Patient Engagement Landing Page
+    // Discipline Check
+    // [NS]
+    if ( emailSubType === "ns" ) {
+      if ( /h\/patient-engagement-for-physical-therapists/gi.test(linkHref) && (emailDisc !== "pt" && emailDisc !== "other") ) {
+        createLinkErrorRow(linkObj, "Wrong landing page for this discipline.");
+      }
+      else if ( /h\/patient-engagement-for-athletic-trainers/gi.test(linkHref) && emailDisc !== "at" ) {
+        createLinkErrorRow(linkObj, "Wrong landing page for this discipline.");
+      }
+      else if ( /h\/patient-engagement-for-occupational-therapists/gi.test(linkHref) && emailDisc !== "ot" ) {
+        createLinkErrorRow(linkObj, "Wrong landing page for this discipline.");
+      }
+      else if ( /h\/patient-engagement-for-speech-language-pathology/gi.test(linkHref) && emailDisc !== "slp" ) {
+        createLinkErrorRow(linkObj, "Wrong landing page for this discipline.");
+      }
+    }
+    // [SUB]
+    if ( /h\/patient-engagement-for-(physical-therapists|athletic-trainers|occupational-therapists|speech-language-pathology)/gi.test(linkHref) && emailSubType === "sub" ) {
+      // createLinkErrorRow(linkObj, "Wrong landing page for subscribers. Use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+      createLinkErrorRow(linkObj, "Wrong landing page for subscribers. Use <code>patient_care/programs/create</code>");
+    }
 
 
     // Pricing
     // SUB
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "sub" && /\.com\/pricing/gi.test(linkHref) ) {
-      createLinkErrorRow(linkObj, "dont link to pricing in sub");
+    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "sub" && /\.com\/(cart|pricing)/gi.test(linkHref) ) {
+      createLinkErrorRow(linkObj, "Don't link to the pricing or cart pages in subscriber emails.");
     }
     // NS
     if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "ns" && /pricing/gi.test(linkHref) ) {
 
       // PT
       if ( emailDisc === "pt" && !/pricing\/pt/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "link to pricing/pt");
+        createLinkErrorRow(linkObj, "Link to pricing/pt.");
       }
       // AT
       else if ( emailDisc === "at" && !/pricing\/at/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "link to pricing/at");
+        createLinkErrorRow(linkObj, "Link to pricing/at.");
       }
       // OT
       else if ( emailDisc === "ot" && !/pricing\/ot/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "link to pricing/ot");
+        createLinkErrorRow(linkObj, "Link to pricing/ot.");
       }
       // SLP
       else if ( emailDisc === "slp" && !/pricing\/slp/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "link to pricing/slp");
+        createLinkErrorRow(linkObj, "Link to pricing/slp.");
       }
       // Other
       else if ( emailDisc === "other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "link to pricing/other");
+        createLinkErrorRow(linkObj, "Link to pricing/other.");
       }
       // No Discipline
       else if ( !emailDisc && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "link to standard pricing page");
+        createLinkErrorRow(linkObj, "Link to standard pricing page.");
       }
 
+      // Students
+      if ( /student/.test(linkObj.pathname) ) {
+        createLinkErrorRow(linkObj, "If this is a student promo, link to the cart page.");
+      }
     }
 
 
     // Check for unecessary discipline hastags. Should only be used when linking to courses page
     if ( /#\/?(speech-language-pathology|physical-therapy|athletic-training|occupational-therapy)/gi.test(linkHref) && ( !/(_url=courses|\/courses)(#|\/|\?|&|$)/gi.test(linkHref) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(linkHref) ) ) {
-      createLinkErrorRow(linkObj, "unecessary hashtag");
+      createLinkErrorRow(linkObj, "Unecessary hashtag.");
     }
 
 
     ////
     // Do not link to medbridgeed.com. Use the full medbridgeeducation.com URL.
     if ( /(\:\/\/|\.)medbridgeed\.com/gi.test(linkHref) ) {
-      createLinkErrorRow(linkObj, "use medbridgeeducation.com");
+      createLinkErrorRow(linkObj, "Use medbridgeeducation.com");
     }
 
     ////
@@ -2213,6 +2299,120 @@ function validateLinks(linkObj, i) {
 ///////////////////////////////////////
 /////
 /////
+/////    Code Weight
+/////
+/////
+///// - http://bytesizematters.com/
+///// - https://github.com/hteumeuleu/email-bugs/issues/41
+///// - https://www.sendwithus.com/resources/gmail_size_test
+///// - https://codepen.io/cosmin-popovici/pen/yMgwVa?editors=1010
+///// - https://gist.github.com/hellocosmin/ca6e3ea7cd7898ce86c606e303bc0aa3
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+(function(){
+
+var crlf = /(\r?\n|\r)/g,
+	whitespace = /(\r?\n|\r|\s+)/g;
+
+window.ByteSize = {
+	count: function(text, options) {
+		// Set option defaults
+		options = options || {};
+		options.lineBreaks = options.lineBreaks || 1;
+		options.ignoreWhitespace = options.ignoreWhitespace || false;
+
+		var length = text.length,
+			nonAscii = length - text.replace(/[\u0100-\uFFFF]/g, '').length,
+		    lineBreaks = length - text.replace(crlf, '').length;
+
+		if (options.ignoreWhitespace) {
+			// Strip whitespace
+			text = text.replace(whitespace, '');
+
+			return text.length + nonAscii;
+		}
+		else {
+			return length + nonAscii + Math.max(0, options.lineBreaks * (lineBreaks - 1));
+		}
+	},
+
+	formatInt: function(count, plainText) {
+		var level = 0;
+
+		while (count > 1024) {
+			count /= 1024;
+			level++;
+		}
+
+		return (plainText? count : count);
+	},
+
+	formatString: function(count, plainText) {
+		var level = 0;
+
+		while (count > 1024) {
+			count /= 1024;
+			level++;
+		}
+
+		// Round to 2 decimals
+		count = Math.round(count*100)/100;
+
+		level = ['', 'K', 'M', 'G', 'T'][level];
+
+		return (plainText? count : count) + ' ' + level + 'B';
+	},
+
+  // 102kb is known popularly to be the size limit before Gmail clips an email.
+  // However, after much testing it seems like its actually 101kb.
+  // To make Korra feel more accurate to what the community believes, we'll modify the Filesize
+  // that we calculated to add 1 extra kb. So 101kb will instead be 102kb.
+	formatIntGmail: function(count, plainText) {
+		var level = 0;
+
+		while (count > 1024) {
+			count /= 1024;
+			level++;
+		}
+
+    count = count + 1;
+
+		return (plainText? count : count);
+	},
+
+	formatStringGmail: function(count, plainText) {
+		var level = 0;
+
+		while (count > 1024) {
+			count /= 1024;
+			level++;
+		}
+
+		// Round to 2 decimals
+		count = Math.round(count*100)/100;
+
+    count = count + 1;
+
+		level = ['', 'K', 'M', 'G', 'T'][level];
+
+		return (plainText? count : count) + ' ' + level + 'B';
+	}
+
+};
+
+})();
+
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
 /////    Mailgun
 /////
 /////
@@ -2228,24 +2428,61 @@ function validateLinks(linkObj, i) {
 function sendEmail() {
   console.log(mailgunApiKey);
 
+  var emailTo      = "Korra via Mailgun <postmaster@" + mailgunDomainName + ">";
+  var emailFrom    = "james@medbridgeed.com";
+  var emailSubject = "Hello from Korra & Mailgun"
+
   var data = new FormData();
-  data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
-  data.append("to", "james@medbridgeed.com");
-  data.append("subject", "Hello from Mailgun");
-  data.append("html", cleanedOriginalHtml);
+  data.append("from", emailTo);
+  data.append("to", emailFrom);
+  data.append("subject", emailSubject);
+
+  var sendHtml = true;
+  if ( sendHtml ) {
+    data.append("html", cleanedOriginalHtml);
+  } else {
+    data.append("text", plainTextVersion);
+  }
 
   var xhr = new XMLHttpRequest();
   xhr.withCredentials = true;
 
   xhr.addEventListener("readystatechange", function () {
     if (this.readyState === 4) {
+      console.log("to:", emailTo, "from:", emailFrom, "subject:", emailSubject);
       console.log(this.responseText);
     }
   });
 
-  xhr.open("POST", "https://api:" + mailgunApiKey + "@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
+  xhr.open("POST", "https://api:" + mailgunApiKey + "@api.mailgun.net/v3/" + mailgunDomainName + "/messages");
   xhr.setRequestHeader("cache-control", "no-cache");
   xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
 
   xhr.send(data);
 }
+
+
+// function sendEmail() {
+//   console.log(mailgunApiKey);
+//
+//   var data = new FormData();
+//   data.append("from", "Mailgun Sandbox <postmaster@sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org>");
+//   data.append("to", "james@medbridgeed.com");
+//   data.append("subject", "Hello from Mailgun");
+//   data.append("html", cleanedOriginalHtml);
+//
+//   var xhr = new XMLHttpRequest();
+//   xhr.withCredentials = true;
+//
+//   xhr.addEventListener("readystatechange", function () {
+//     if (this.readyState === 4) {
+//       console.log(this.responseText);
+//     }
+//   });
+//
+//   xhr.open("POST", "https://api:" + mailgunApiKey + "@api.mailgun.net/v3/sandbox6c870ede0e054f9d8f792643c62e30a7.mailgun.org/messages");
+//   xhr.setRequestHeader("cache-control", "no-cache");
+//   xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
+//
+//   xhr.send(data);
+// }

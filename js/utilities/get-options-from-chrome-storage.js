@@ -125,6 +125,9 @@ function getOptions(){
     options.fullPathToDropboxFolder = getOption("fullPathToDropboxFolder");
     options.dropboxFolderName = getOption("dropboxFolderName");
     options.localUserProfilePath = getOption("localUserProfilePath");
+    // Mailgun
+    options.mailgunApiKey = getOption("mailgunApiKey");
+    options.mailgunDomainName = getOption("mailgunDomainName");
     // Validate Links
     options.blacklist = getOption("blacklist");
     options.checkType = getOption("checkType");

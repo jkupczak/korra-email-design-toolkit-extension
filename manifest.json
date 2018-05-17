@@ -16,6 +16,7 @@
 
   "web_accessible_resources": [
     "fonts/*",
+    "html/*",
     "favicons/*",
     "img/*",
     "js/*",
@@ -25,7 +26,7 @@
   ],
 
   "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
-  "version": "3.7.0",
+  "version": "3.7.341",
 
   "browser_action": {
     "default_icon": "icons/192-korra.png",
@@ -92,7 +93,7 @@
 
     {
       "matches": ["*://*.dropbox.com/s/*", "*://*.dropbox.com/work/*", "*://*.dropbox.com/home/*"],
-      "js": ["js/global.js", "js/get-options.js", "js/libs/arrive.js", "js/libs/chrome-storage-promise.js", "js/libs/Dropbox-sdk.min.js", "js/libs/alertify.js", "js/dropbox/file-viewer.js"],
+      "js": ["js/global.js", "js/get-options.js", "js/libs/arrive.js", "js/libs/chrome-storage-promise.js", "js/libs/Dropbox-sdk.min.js", "js/libs/alertify.js", "js/dropbox/dropbox-file-viewer.js"],
       "css": [ "css/libs/alertify.css", "css/alertify.medbridge.css"],
       "run_at": "document_start"
     },
@@ -137,7 +138,7 @@
     },
         {
           "matches": ["*://*.mailchimp.com/campaigns/edit?id=*", "*://*.mailchimp.com/campaigns/wizard/variateconfirm*", "*://*.mailchimp.com/campaigns/wizard/confirm*"],
-          "js": ["js/utilities/total-protected-articles.js"]
+          "js": ["js/utilities/total-protected-articles.js", "js/mailchimp/mailchimp-confirm-sending.js"]
         },
         {
           "matches": ["*://*.mailchimp.com/campaigns/wizard/variateconfirm*", "*://*.mailchimp.com/campaigns/wizard/confirm*"],
@@ -178,7 +179,7 @@
         },
         {
           "matches": ["*://*.mailchimp.com/lists/members/?id=*"],
-          "js": ["js/mailchimp/mailchimp-lists.js"],
+          "js": ["js/mailchimp/mailchimp-lists.js", "js/mailchimp/mailchimp-copy-and-duplicate-segment-criteria.js"],
           "css": ["css/mailchimp/automate-list-actions.css"]
         },
         {
