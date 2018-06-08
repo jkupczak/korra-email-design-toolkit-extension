@@ -1732,11 +1732,11 @@ function swapUrl() {
 ////
 /////////
 
-  var combUnusedCss = document.createElement("div");
-  combUnusedCss.id = "unusedcss-orb";
-  combUnusedCss.className = "unusedcss-orb orb glyph icomoon icomoon-pacman";
-  combUnusedCss.addEventListener("click", processHtmlforUnusedCss, false);
-  orbsBottom.appendChild(combUnusedCss);
+  var combUnusedCssOrb = document.createElement("div");
+  combUnusedCssOrb.id = "unusedcss-orb";
+  combUnusedCssOrb.className = "unusedcss-orb orb glyph icomoon icomoon-pacman";
+  combUnusedCssOrb.addEventListener("click", processHtmlforUnusedCss, false);
+  orbsBottom.appendChild(combUnusedCssOrb);
 
   function processHtmlforUnusedCss() {
 
@@ -1748,6 +1748,37 @@ function swapUrl() {
     copyToClipboard(result.result, "success", true);
 
   }
+
+//////////
+////
+////  Open in Atom
+////
+/////////
+
+
+  var openOrb = document.createElement("a");
+  openOrb.id = "open-orb";
+  openOrb.className = "open-orb orb glyph icomoon icomoon-power";
+  openOrb.href = "atom://open?url=" + document.URL;
+  // file://<file_path>[&line=<line>[&column=<column>]][&devMode][&safeMode][&newWindow]";
+  // See: https://atom.io/packages/open
+  orbsBottom.appendChild(openOrb);
+
+//////////
+////
+////  Open in Sublime
+////
+/////////
+
+
+  var openOrb = document.createElement("a");
+  openOrb.id = "open-orb";
+  openOrb.className = "open-orb orb glyph icomoon icomoon-fire";
+  openOrb.href = "subl://open?url=" + document.URL;
+  // subl://open?url=file://{{file}}&line={{line}}&column={{column}}
+  // See: https://github.com/inopinatus/sublime_url
+  orbsBottom.appendChild(openOrb);
+
 
 
 //////////
