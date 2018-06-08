@@ -1,4 +1,4 @@
-console.warn("📫 [korra-email-design-tooklit] loaded /js/newsletter/newsletter-functions.js");
+console.warn("💌 [korra " + chrome.runtime.getManifest().version + "] loaded /js/newsletter/newsletter-functions.js");
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////
@@ -1010,6 +1010,7 @@ function loadIframe(iframe, html, base, name) {
   // Apparently I should use importnode instead of clonenode for iframes
     // https://developer.mozilla.org/en-US/docs/Web/API/Document/importNode
     // https://www.w3schools.com/jsref/met_document_importnode.asp
+    // https://stackoverflow.com/questions/10418644/creating-an-iframe-with-given-html-dynamically
 
   iframe.contentWindow.document.open();
   iframe.contentWindow.document.write(html);
@@ -1519,14 +1520,14 @@ function validateLinks(linkObj, i) {
     // Global link testing variables
 
     // MedBridgeEd
-    if ( /^https?\:\/\/(.+?\.)?medbridgeed(ucation)?\.com(\/?|$)/gi.test(linkHref) ) {
+    if ( /\.medbridgeeducation\.com/gi.test(linkObj.hostname) ) {
       singleLinkInfoArray['isMedBridgeEdLink'] = true;
     } else {
       singleLinkInfoArray['isMedBridgeEdLink'] = false;
     }
 
     // Massage
-    if ( /^https?\:\/\/(.+?\.)?medbridgemassage\.com(\/?|$)/gi.test(linkHref) ) {
+    if ( /\.medbridgemassage\.com/gi.test(linkObj.hostname) ) {
       singleLinkInfoArray['isMedBridgeMassageLink'] = true;
     } else {
       singleLinkInfoArray['isMedBridgeMassageLink'] = false;
@@ -1547,7 +1548,7 @@ function validateLinks(linkObj, i) {
     }
 
     // Is Article Link
-    if ( /https?\:\/\/(.+?\.)?medbridgeed(ucation)?\.com\//i.test(linkHref) && /blog/i.test(linkHref) && /(\/20\d\d\/\d\d\/|p=.+)/i.test(linkHref) && !/p=2503/gi.test(linkHref) ) {
+    if ( singleLinkInfoArray['isMedBridgeEdLink'] && /blog/i.test(linkHref) && /(\/20\d\d\/\d\d\/|p=.+)/i.test(linkHref) && !/p=2503/gi.test(linkHref) ) {
       singleLinkInfoArray['isArticle'] = true;
     } else {
       singleLinkInfoArray['isArticle'] = false;
@@ -1774,7 +1775,8 @@ function validateLinks(linkObj, i) {
         createLinkErrorRow(linkObj, "Replace the ? with an & in the querystring.");
       }
 
-      if ( !/\?([\.\w-]+(=[\!\|\*\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\*\|\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
+      // Add characters you want to ignore twice. Like *, |, and '.
+      if ( !/\?([\.\w-]+(=[\!\'\*\|\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\'\*\|\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
         createLinkErrorRow(linkObj, "Invalid querystring.");
       }
 
@@ -1996,16 +1998,19 @@ function validateLinks(linkObj, i) {
     ////
     // Link Text Hints
     // Request a Demo
-    if ( (/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
+    if ( (/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing|Request/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
       createLinkErrorRow(linkObj, "Text and URL are not consistent (Demo Request related).");
     }
     // Request EMR Integration
-    if ( (/Request (EMR|Integration)/gi.test(linkObj.textContent) && !/#integrate/i.test(linkHref)) || (!/Request (EMR|Integration)/gi.test(linkObj.textContent) && /#integrate/i.test(linkHref)) ) {
+    if ( (/Request (EMR|Integration)/gi.test(linkObj.textContent) && !/#request-integration/i.test(linkHref)) || (!/Request|EMR|Integration/gi.test(linkObj.textContent) && /#request-integration/i.test(linkHref)) ) {
       createLinkErrorRow(linkObj, "Text and URL are not consistent (EMR Integration related).");
     }
     if ( emailOrgName !== "hs" ) {
-      if ( /Article/gi.test(linkObj.textContent) && !singleLinkInfoArray['isArticle'] ) {
-        createLinkErrorRow(linkObj, "Text references an article but the URL does not go to the blog.");
+      if ( /\barticle\b/gi.test(linkObj.textContent) && !singleLinkInfoArray['isArticle'] ) {
+        createLinkErrorRow(linkObj, "Text references an article but the URL does not go to one.");
+      }
+      if ( /\barticles\b/gi.test(linkObj.textContent) && !singleLinkInfoArray['isBlogLink'] ) {
+        createLinkErrorRow(linkObj, "Text references articles but the URL does not go to the blog.");
       }
       // This was a failed experiment. I later realized that we would want to link article titles that don't
       // have the word "Read" or "Article" in them.
@@ -2033,6 +2038,12 @@ function validateLinks(linkObj, i) {
       // if ( /\.com\/courses\/details\//gi.test(linkHref) ) {
       //   createLinkErrorRow(linkObj, "Use <code>sign-in/?after_signin_url=courses/details/...</code>");
       // }
+
+      // Patient Education
+      if ( /\.com\/patient\-education\-library\/condition\//gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Use <code>sign-in/?after_signin_url=patient-education-library/condition/...</code>");
+      }
+
       // Webinars
       if ( /\.com\/webinars\/details\//gi.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Use <code>sign-in/?after_signin_url=webinars/details/...</code>");
@@ -2043,10 +2054,11 @@ function validateLinks(linkObj, i) {
         if ( !/after_signin_url/gi.test(linkHref) ) {
           createLinkErrorRow(linkObj, "Use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
         }
+
       }
 
       // TODO: TEMPORARY UNTIL DEV FIXES A BUG
-      if ( /after_signin_url=/gi.test(linkHref) && !/(patient_care\/programs\/create|webinars\/details\/)/gi.test(linkHref) ) {
+      if ( /after_signin_url=/gi.test(linkHref) && !outsideOrg && !/(patient_care\/programs\/create|webinars\/details\/|patient\-education\-library\/condition)/gi.test(linkHref) && !/refer/gi.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Don't use <code>after_signin_url</code> (temporary).");
       }
 
@@ -2289,122 +2301,6 @@ function validateLinks(linkObj, i) {
 
 }
 
-
-//
-
-
-
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
-/////    Code Weight
-/////
-/////
-///// - http://bytesizematters.com/
-///// - https://github.com/hteumeuleu/email-bugs/issues/41
-///// - https://www.sendwithus.com/resources/gmail_size_test
-///// - https://codepen.io/cosmin-popovici/pen/yMgwVa?editors=1010
-///// - https://gist.github.com/hellocosmin/ca6e3ea7cd7898ce86c606e303bc0aa3
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-
-(function(){
-
-var crlf = /(\r?\n|\r)/g,
-	whitespace = /(\r?\n|\r|\s+)/g;
-
-window.ByteSize = {
-	count: function(text, options) {
-		// Set option defaults
-		options = options || {};
-		options.lineBreaks = options.lineBreaks || 1;
-		options.ignoreWhitespace = options.ignoreWhitespace || false;
-
-		var length = text.length,
-			nonAscii = length - text.replace(/[\u0100-\uFFFF]/g, '').length,
-		    lineBreaks = length - text.replace(crlf, '').length;
-
-		if (options.ignoreWhitespace) {
-			// Strip whitespace
-			text = text.replace(whitespace, '');
-
-			return text.length + nonAscii;
-		}
-		else {
-			return length + nonAscii + Math.max(0, options.lineBreaks * (lineBreaks - 1));
-		}
-	},
-
-	formatInt: function(count, plainText) {
-		var level = 0;
-
-		while (count > 1024) {
-			count /= 1024;
-			level++;
-		}
-
-		return (plainText? count : count);
-	},
-
-	formatString: function(count, plainText) {
-		var level = 0;
-
-		while (count > 1024) {
-			count /= 1024;
-			level++;
-		}
-
-		// Round to 2 decimals
-		count = Math.round(count*100)/100;
-
-		level = ['', 'K', 'M', 'G', 'T'][level];
-
-		return (plainText? count : count) + ' ' + level + 'B';
-	},
-
-  // 102kb is known popularly to be the size limit before Gmail clips an email.
-  // However, after much testing it seems like its actually 101kb.
-  // To make Korra feel more accurate to what the community believes, we'll modify the Filesize
-  // that we calculated to add 1 extra kb. So 101kb will instead be 102kb.
-	formatIntGmail: function(count, plainText) {
-		var level = 0;
-
-		while (count > 1024) {
-			count /= 1024;
-			level++;
-		}
-
-    count = count + 1;
-
-		return (plainText? count : count);
-	},
-
-	formatStringGmail: function(count, plainText) {
-		var level = 0;
-
-		while (count > 1024) {
-			count /= 1024;
-			level++;
-		}
-
-		// Round to 2 decimals
-		count = Math.round(count*100)/100;
-
-    count = count + 1;
-
-		level = ['', 'K', 'M', 'G', 'T'][level];
-
-		return (plainText? count : count) + ' ' + level + 'B';
-	}
-
-};
-
-})();
 
 
 

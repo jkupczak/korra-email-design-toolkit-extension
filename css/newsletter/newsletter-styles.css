@@ -681,6 +681,8 @@ html.powered-up, html.powered-up body {
 .check-links-orb { order:1; background:#7821cf; }
 .check-links-orb:before { content:"\41"; }
 
+.unusedcss-orb { order:1; }
+
 .blog-orb { order:1; background:#3f21cf; }
 .blog-orb:before { font-family:'IcoMoon-Free'; content:"\eab4"; }
 

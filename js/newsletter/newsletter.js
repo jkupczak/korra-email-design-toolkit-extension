@@ -1,8 +1,9 @@
-console.warn("📫 [korra-email-design-tooklit] loaded /js/newsletter/newsletter.js");
+console.warn("💌 [korra " + chrome.runtime.getManifest().version + "] loaded /js/newsletter/newsletter.js");
 ////////////////////////////////////////////////////////////////////////////////////
 
 var view = getParameterByName("view");
 if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
+
 
 //
 // // W3C Validator
@@ -53,23 +54,6 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 //
 //
 
-/////
-/////
-// KNOWN-ERROR!!
-// tables that are 100% width should not be aligned left, always align center.
-// theres a bug in outlook that causes the next <table> element to be hidden if the previous one was 100% width and left aligned. This happens even if the two tables are not direct siblings. For example, if they are separated by a </td><td> this bug will still happen.
-// CLIENTS: Outlook 2003, 2002, 2000.
-/////
-/////
-
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-
-// ALERT
-//  - THIS EMAIL IS X DAYS OLD!
-//  - LINKS WERE NOT CHECKED AT ALL
-//  - TEXT WAS NOT CHECKED AT ALL
 
 ///--------
 
@@ -87,18 +71,7 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 // When I try to schedule or send the email, check chrome.storage and stop me until the article has been unprotected.
 // And for that matter, make sure we're using chrome.storage instead of sessionstorage in newsletter.js.
 // Deal with cleaning up storage by keeping the data in there until an associated mailchimp campaign ID is loaded, and then scheduled or sent.
-//
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
-// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
-// MAILCHIMP MAILCHIMP MAILCHIMP MAILCHIMP
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-///--------
-
-// Edit view
-// When editing text, duplicate the desktop frame so that you can see a before and after.
-// hide the leftNav and mobile view to make room.
 
 ///--------
 
@@ -116,27 +89,6 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 //       - Ignore utms
 //   - Order of this link (is it the 1st link? the 5th?)
 //   Denote if it's a tracking URL or not, if its a blog link, if its a MedBridge or 3rd party link
-
-///--------
-
-// When desktop frame gets to mobile size (<480), hide vertical scrollbar.
-// Listen for scrolling with mousewheel, arrow keys, and ctrl/cmd+arrow keys when an iframe isn't in focus and apply the scrolling to the iframes!
-
-///--------
-
-// Apply checkmarks next to each link that passes validation. Toggle-able so that it doesn't appear by default?
-
-///--------
-
-// Check plaintext un-rendered DOM for empty href=""'s. Most of these will probably be in VML where our function can't search. Throw an additional link error with an explanation.
-
-///--------
-
-// Count citations like <sup>1</sup> in the HTML, verify that they appear in the right order. Throw an error if 2 comes before 1, etc.
-
-///--------
-
-//// - Show a warning if we're using an image at exactly the natural dims, because its best practice to delivery hi-res images
 
 ///--------
 
@@ -170,33 +122,13 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 //  - Preheader
 //  - Zoom Level
 //  - Mobile View
-//  - Spell Check
 //  - Pending Edits - "You have pending edits!"
 //
-// Notes
-//  - Some links are using additional utm_'s that are not utm_content. If this is intential make sure you turn off GA in MC.
-//  - Detected the use of "NPS". Remember to add a footnote disclaimer.
-//
-//
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//
 //
 //  TO-DO LIST ✓ ■
 //  ==============
-//
-//  ## Spell Check ---
-//    ■ - Google has forsaken me! Try replacing Chrome spell check with http://www.javascriptspellcheck.com/JavaScript_SpellCheck_Hello_World
-//
-//  ## Mobile View ---
-//    ■ - Add multiple width options for the mFrameContents. 320, 360, 480, iPhone (375, 414) and popular Android specific (all versions, from dropdown menu)
-//    ✓ - Remove "Portrait" and "Landscape", replace with just the width names (and/or device names)
-//      - http://viewportsizes.com/?filter=iphone
-//    ■ - 320px | 360px | 480px | More
-//
-//  ## Scratch Pad ---
-//    ■ - Notepad that pops up and can be used to keep notes. Saves to chrome.storage.local when you idle.
-//    ■ - Pops back up automatically on refresh if you have something saved.
 //
 //  ## Link Markers ---
 //    ■ - Create a 'warning' class in addition to the 'error' class for link-markers. If an email is very old, mark link errors as warnings.
@@ -205,81 +137,17 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 //    ✓ - [COMPLETE] Pinning - Clicking on markers will pin the info div to the bottom of the screen. Clicking the same or any other marker will unpin it.
 //    ✓ - [COMPLETE] Check URL for correct querystring pattern (? vs &)
 //
-//  ## FOUT ---
-//    ■ - Consider changing out font icons for SVGs.
-//
 //  ## [ORB] TD Markers ---
 //    ■ - Give them "levels" to show how deep they are.
 //    ■ - Create a toggle that cycles through the different levels so that you can see more clearly.
 //        - Show a toolbar at the bottom of the page to achieve this.
 //    ■ - Hide all inactive markers, or simply make them very low opacity.
 //
-//  ## Upgrades to WordPress Blog Checker ---
-//    ✓ - [COMPLETE] Only auto-check on page load if the emailDate is in the present, future, or within the last day.
-//    ✓ - [COMPLETE] Do not auto-check on page load if there's data in storage already. Force myself to manually click to initiate a recheck to cut down on excessive page loads.
-//    ■ - Throw an error if the blog url doesn't actually take us to the blog, or if a page never loads at all.
-//
-//    ## Investigate Using the WordPress API ---
-//       ■ - The current method of checking for protected status is hacky. Considering changing it in the future.
-//       ■ - https://css-tricks.com/using-the-wp-api-to-fetch-posts/
-//       ■ - https://www.cloudways.com/blog/setup-basic-authentication-in-wordpress-rest-api/
-//       ■ - https://code.tutsplus.com/tutorials/wp-rest-api-setting-up-and-using-oauth-10a-authentication--cms-24797
-//       ■ - http://wp-api.org/node-wpapi/
-//
 //  ## Modules Menu ---
 //    ■ - Give each module its own mini-menu to hide, duplicate, re-order and edit.
 //
-//  ## HTML Tag Checker ---
-//    ■ - Search for unsupported tags like <strong> and recommend replacements like <b>.
-//
-//  ## Code Checker --
-//    ■ - table cells where the width is defined in the width="" attribute must have it defined as an inline style too. (excludes % widths)
-//      - https://litmus.com/community/discussions/151-mystery-solved-dpi-scaling-in-outlook-2007-2013
-//
-//  ## Link Checker --
-//    ■ - Add support for link status like how mail-tester.com does it.
-//        -They show a status report for each link like [302 - Redirection : Found] and [200 - Success : OK].
-//    ■ - Throw an error if a URL shortener is being used.
-//
-//  ## Calculate email weight ---
-//    ✓ - [COMPLETE] Determine the size of the HTML (in kb)
-//    ■ - Determine the percentage of text (eg. 29% text).
-//    ■ - Determine the total size of all graphics combined.
-//
-//  ## Remove Comments and Unused CSS for Production ---
-//    ■ - This should be added to MailChimp. When HTML is pasted it, run a script that removes <!-- --> comments.
-//    ■ - Integrate Emailcomb into the extension for use in MailChimp
-//
-//  ## Image Checker ---
-//    ■ - Check that all images have alt="" attributes.
-//    ■ - Check that all images are hosted on a CDN.
-//
 //  ## Alerts ---
 //    ■ - Consider using Toastr instead of Alertifyjs.com - https://github.com/CodeSeven/toastr
-//
-//  ## Fix positioned elements moving on resize (like link-markers) ---
-//    ■ - https://www.kirupa.com/html5/get_element_position_using_javascript.htm
-//
-//  ## Learn async ---
-//    ■ - http://stackoverflow.com/questions/23667086/why-is-my-variable-unaltered-after-i-modify-it-inside-of-a-function-asynchron
-//
-//  ## Create an options menu (for entire extension) ---
-//    ■ - Ref: https://developer.chrome.com/extensions/optionsV2
-//    ✓ - Add input for Dropbox access token
-//
-//  ## Create an options menu (for newsletter) ---
-//    ■ - Slides out from the right, provides a larger menu of "orbs" to modify the page
-//    ■ - Additional orb ideas
-//        - Middleman Sitemap
-//        - Blog Checker Controls (autorun on this page, autorun on all pages, run again right now)
-//
-//  ## Tips
-//    ■ - A runnng log of "tips/did you know"s based on various factors.
-//    ■ - For example, if the word "certification" is detected in the copy, provide a tip that reminds you that MedBridge does not offer certification.
-//    ■ - Refer A Friend rules
-//    ■ - "Steer clear of "get your ceus" since this represents somewhat of a commoditized value representation of our courses."
-//    ■ - .... (pending)
-//
 //
 //  ## Get local user path automatically ---
 //    ■ - After the user loads their first local file, grab the URL and save it to chrome.storage.sync.
@@ -287,18 +155,11 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 //    ■ - Figure out the difference between mac/windows/linux and make sure it works for all 3
 //    ■ - Maybe don't save the "file:///" part?
 //
-//  ## Add minimum animation time to "loading" orbs
-//    - If an orb is instant, the loading animation never plays. Fix that so that it feels like something happened.
-//
-//
 //////////////
 //////////////
 //  ERROR IDEAS
 //////////////
 //////////////
-//
-//  ## Links
-//    ■ - Search for duplicate (redundant) key value pairs in the querystring. (eg. p=2345 twice)
 //
 //  ## Errors log
 //    ■ - Hidden panel that expands to show a listing of all errors (sorted by category).
@@ -307,37 +168,6 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 //    ■ - The orb should be flashing red with a number if there's at least 1 error
 //        - Yellow and still if only warnings are available
 //        - Green with a checkmark if everything is awesome.
-//
-//  ## General Errors to Implement
-//    ■ - Missing doctype
-//    ■ - Unsupported use of <strong>, replace with <b>
-//    ■ - Count asteriks to check for missing footnotes.
-//    ■ - If NPS verbiage is detected, remind me to add the fine print. - https://drive.google.com/open?id=0B_swaeZ9mgUMVERsZmlkNHJRak9XWVdSU3NDM2ZMdFh2V0Fv
-//    ■ - If a scrollbar exists in the mobile version at 320px wide.
-//
-//
-//
-//////////////
-//////////////
-//  OPTIONS PAGE IDEAS
-//////////////
-//////////////
-//
-//    ■ - Turn On/Off utm_ checking. (for _content, _source, etc individually)
-//    ■ - Link markers
-//        ■ - Show just errors, errors and warnings, only warnings, all
-//
-//
-//////////////
-//////////////
-//  FEATURE IDEAS
-//////////////
-//////////////
-//
-//    ■ - [dFrame Width Status] Click the dFrame size tracker to pin it, preventing it from disappearing after the timeout.
-//        - Consider adding options to allow exact size entry. Enter a width and height in px.
-//        - Maybe pin it across the bottom full width across the bottom? Might cause issues with the height attribute since
-//          right now its just floating and isn't a consideration.
 //
 //
 //////////////
@@ -369,24 +199,6 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 //  ## [ORB] Swap Font Stack ---
 //    ■ - Simulate what the email will look like in email clients that do not support @font-face or have Helvetica.
 //    ■ - Remove all instances of "Roboto" from font-family: declarations, and then Helvetica.
-//
-//////////////
-//////////////
-//  QUESTIONS
-//////////////
-//////////////
-
-//
-//
-//
-//////////////
-//////////////
-//  BUGS !!!
-//////////////
-//////////////
-//
-//
-//
 //
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -760,7 +572,6 @@ if ( getParameterByName("presentation") === "1" ) {
     // http://stackoverflow.com/a/33079951/556079
     //
     // - Remove scrollbar from mobile view while still allowing scrolling
-    // - Prevent flash of contenteditable cursor when spell check is activated.
     //
     var mStyleElement = mFrameContents.createElement("style");
         mStyleElement.className = "debug";
@@ -1039,14 +850,6 @@ console.groupCollapsed("Global variables based on filename");
   console.groupEnd();
 
 console.groupEnd();
-
-
-
-  // 2/22/18 - I was adding disc-xx class to the body of dFrame and mFrame. Why? I don't seem to be using it.
-    // dFrameContents.body.classList.add("disc-" + emailDisc);
-    // mFrameContents.body.classList.add("disc-" + emailDisc);
-
-
 
 
 /////////////////////////////
@@ -1921,6 +1724,30 @@ function swapUrl() {
     linkValidationLoop("false");
   }
 // }
+
+
+//////////
+////
+////  Emailcomb - Remove Unused CSS
+////
+/////////
+
+  var combUnusedCss = document.createElement("div");
+  combUnusedCss.id = "unusedcss-orb";
+  combUnusedCss.className = "unusedcss-orb orb glyph icomoon icomoon-pacman";
+  combUnusedCss.addEventListener("click", processHtmlforUnusedCss, false);
+  orbsBottom.appendChild(combUnusedCss);
+
+  function processHtmlforUnusedCss() {
+
+    var html = cleanedOriginalHtml;
+    var result = emailRemoveUnusedCss(html)
+
+    console.log(result)
+
+    copyToClipboard(result.result, "success", true);
+
+  }
 
 
 //////////
@@ -3382,7 +3209,7 @@ zoomLevelsQaBar.className = "qa-zoom-levels";
 //////////
 
 
-// The Gmail limit for emails is 102kb. After that the email will be truncated.
+// The Gmail limit for emails is 102kB (well... 101kB). The email will be truncated if you hit that number.
 
 // Inspired by: https://www.sendwithus.com/resources/gmail_size_test
 //              https://github.com/hteumeuleu/email-bugs/issues/41
@@ -3399,47 +3226,54 @@ appendQaBar(codeWeightQaBar);
 // Let's take our original HTML (kinda) and make some modifications to try and make its contents more accurate.
 
   var htmlForSizeCalc = cleanedOriginalHtml;
+  var conditionalsExist = htmlForSizeCalc.match(/\*\|IF.+?\|\*/gi);
+  console.error(conditionalsExist);
 
-  // MailChimp's tracking links are a fairly consistent length. Let's replace all of ours with them.
-  // The unsubscribe link is the same length as well. No worries.
-    htmlForSizeCalc = htmlForSizeCalc.replace(/(href=".+?"|href='.+?')/gi, 'href="https://medbridgeeducation.us2.list-manage.com/track/click?u=9929f5c1548f4f842c9470a5f&id=620d233a43&e=46a1f0c393"');
+  // Is this a MailChimp email? Detect by looking for merge tags.
+    if ( /\*\|.+?\|\*/.test(htmlForSizeCalc) ) {
 
-  // Let's replace the address merge field if its in there.
-    htmlForSizeCalc = htmlForSizeCalc.replace(/\*\|LIST\:ADDRESSLINE\|\*/gi, "MedBridge · 1633​ ​Westlake​ ​Ave​ ​N​ · Suite 200 · Seattle, WA ​98109 · USA");
+      // Let's replace the address merge field if its in there.
+      htmlForSizeCalc = htmlForSizeCalc.replace(/\*\|LIST\:ADDRESSLINE\|\*/gi, "MedBridge · 1633​ ​Westlake​ ​Ave​ ​N​ · Suite 200 · Seattle, WA ​98109 · USA");
 
-  // Let's also add MailChimp's tracking pixel to the end.
-    htmlForSizeCalc += '<img src="https://medbridgeeducation.us2.list-manage.com/track/open.php?u=3D9929f5c1548f4f842c9470a5f&id=3D2c96703b25&e=3D67c2f77a95" height="1" width="1">';
+      // MailChimp's tracking links are a fairly consistent length. Let's replace all of ours with them.
+      // The unsubscribe link is the same length as well. No worries.
+      htmlForSizeCalc = htmlForSizeCalc.replace(/(href=".+?"|href='.+?')/gi, 'href="https://medbridgeeducation.us2.list-manage.com/track/click?u=9929f5c1548f4f842c9470a5f&id=620d233a43&e=46a1f0c393"');
 
-  // Let's also remove MailChimp conditionals.
-  // If some exist, I should add an alert that explains that.
-    var conditionalsExist = htmlForSizeCalc.match(/\*\|.+?\|\*/gi);
-      htmlForSizeCalc = htmlForSizeCalc.replace(/\*\|(END|IF).+?\|\*/gi, "");
+      // Let's also add MailChimp's tracking pixel to the end.
+      htmlForSizeCalc += '<img src="https://medbridgeeducation.us2.list-manage.com/track/open.php?u=3D9929f5c1548f4f842c9470a5f&id=3D2c96703b25&e=3D67c2f77a95" height="1" width="1">';
 
-    // Deprecated in favor of code written by Lea Verou.
-      // Calculate the size with our extra clean string.
-      // var codeWeight       = new TextEncoder('utf-8').encode(htmlForSizeCalc).length;
-      // var prettycodeWeight = prettyFileSize(codeWeight, 1);
+      // Let's also remove MailChimp conditionals.
+      // If some exist, I should add an alert that explains that.
+      htmlForSizeCalc = htmlForSizeCalc.replace(/\*\|(END|IF|ELSE).*?\|\*/gi, "");
+    }
+
+    // Below is deprecated in favor of code written by Lea Verou. See the 'ByteSize' function.
+      ////// Calculate the size with our extra clean string.
+      ////// var codeWeight       = new TextEncoder('utf-8').encode(htmlForSizeCalc).length;
+      ////// var prettycodeWeight = prettyFileSize(codeWeight, 1);
 
     var codeWeight = ByteSize.count(htmlForSizeCalc),
-        codeWeightFormattedInt = ByteSize.formatIntGmail(ByteSize.count(htmlForSizeCalc)),
-        codeWeightFormattedString = ByteSize.formatStringGmail(ByteSize.count(htmlForSizeCalc));
+        codeWeightFormatInt         = ByteSize.formatInt(codeWeight),
+        codeWeightFormatString      = ByteSize.formatString(codeWeight),
+        codeWeightFormatIntGmail    = ByteSize.formatIntGmail(codeWeight),
+        codeWeightFormatStringGmail = ByteSize.formatStringGmail(codeWeight);
 
-    console.log("codeWeight", codeWeight, "codeWeightFormattedInt", codeWeightFormattedInt, "codeWeightFormattedString:", codeWeightFormattedString, "conditionalsExist", conditionalsExist);
+    console.log("codeWeight:", codeWeight, "codeWeightFormatInt:", codeWeightFormatInt, "codeWeightFormatString:", codeWeightFormatString, "codeWeightFormatIntGmail:", codeWeightFormatIntGmail, "codeWeightFormatStringGmail:", codeWeightFormatStringGmail, "conditionalsExist", conditionalsExist);
 
 // Stricter code limit when the email has conditionals.
 if ( conditionalsExist ) {
-  if ( codeWeightFormattedInt >= 100 ) {
-    applyQaResults(codeWeightQaBar, "error", "Code too big* (~" + codeWeightFormattedString + ")");
+  if ( codeWeightFormatIntGmail >= 90 ) {
+    applyQaResults(codeWeightQaBar, "error", "Code too big (~" + codeWeightFormatStringGmail + ")*");
   } else {
-    applyQaResults(codeWeightQaBar, "success", "Code is ~" + codeWeightFormattedString);
+    applyQaResults(codeWeightQaBar, "success", "Code is ~" + codeWeightFormatStringGmail + "*");
   }
 // No conditionals, respect the 102kb limit.
 // Consider making a warning for 90kb+.
 } else {
-  if ( codeWeightFormattedInt >= 102 ) {
-    applyQaResults(codeWeightQaBar, "error", "Code too big (~" + codeWeightFormattedString + ")");
+  if ( codeWeightFormatIntGmail >= 102 ) {
+    applyQaResults(codeWeightQaBar, "error", "Code too big (~" + codeWeightFormatStringGmail + ")");
   } else {
-    applyQaResults(codeWeightQaBar, "success", "Code is ~" + codeWeightFormattedString);
+    applyQaResults(codeWeightQaBar, "success", "Code is ~" + codeWeightFormatStringGmail);
   }
 }
 
@@ -3552,25 +3386,6 @@ var textWarningsQaBar = document.createElement("div");
 textWarningsQaBar.id = "qa-text-warnings";
 textWarningsQaBar.className = "qa-text-warnings";
 // appendQaBar(textWarningsQaBar);
-
-
-//////////
-////////////////
-///////////////////////
-////
-////  QA Bar: Spelling Errors
-////
-///////////////////////
-////////////////
-//////////
-
-// OFF
-
-var spellcheckQaBar = document.createElement("div");
-spellcheckQaBar.id = "qa-spellcheck";
-spellcheckQaBar.className = "qa-spellcheck";
-// appendQaBar(spellcheckQaBar);
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3909,7 +3724,7 @@ function highlightTextErrors() {
 //
 // Click|Click below|Click here|Click to remove|
 findAndReplaceDOMText(dFrameBody, {
-  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Passwords|Pennies a day|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
+  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Pennies a day|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
   wrap: 'span', wrapClass: "text-error"
 });
 
@@ -4071,10 +3886,6 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
   // case (IN)sensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /home exercise program/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
-  findAndReplaceDOMText(dFrameBody, {
     find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing))/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -4172,6 +3983,10 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
     findAndReplaceDOMText(dFrameBody, {
       find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
+      wrap: 'span', wrapClass: "text-error"
+    });
+    findAndReplaceDOMText(dFrameBody, {
+      find: /\bCross-Track\b/g,
       wrap: 'span', wrapClass: "text-error"
     });
 
@@ -4475,59 +4290,6 @@ if ( getParameterByName("guides") === "1" ) {
   toggleGuides();
   console.log("guides shown");
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-////////////////////////// == SPELL CHECK == //////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-
-// 05-25-17 - DEPRECATED
-// A recent update to Google Chrome cause the built-in spellchecking feature to no longer function as expected.
-// The feature was a bug in chrome. But since it's fixed now, it doesn't work for us.
-// Research possible replacements.
-
-//
-// function checkSpelling() {
-//
-//   //Activate Chrome's built-in spellcheck by focusing the cursor and then un-focusing. This works by making the HTML contenteditable and then applying focus. For some reason Chrome keeps the squiggly lines when you unfocus and turn off contenteditable which is great for us because it keeps everything else nice and clean.
-//   dFrameContents.getElementsByTagName('html')[0].contentEditable = 'true';
-//   dFrameContents.getElementsByTagName('html')[0].classList.add("spellcheck");
-//   dFrameBody.focus();
-//
-//   // For some reason, if contenteditable is turned off too quickly, the red squiggles are sometimes misaligned with the text they are indicating as incorrectly spelled. For this reason we're using a setTimeout here.
-//   setTimeout(function() {
-//     dFrameContents.getElementsByTagName('html')[0].contentEditable = 'false';
-//     dFrameContents.getElementsByTagName('html')[0].classList.remove("spellcheck");
-//
-//     mFrameContents.getElementsByTagName('html')[0].contentEditable = 'true';
-//     mFrameContents.getElementsByTagName('html')[0].classList.add("spellcheck");
-//     mFrameContents.getElementsByTagName('body')[0].focus();
-//   }, 200);
-//
-//   setTimeout(function() {
-//     mFrameContents.getElementsByTagName('html')[0].contentEditable = 'false';
-//     mFrameContents.getElementsByTagName('html')[0].classList.remove("spellcheck");
-//
-//     document.querySelector('.mod-preheader .mod-body').contentEditable = 'true';
-//     document.querySelector('.mod-preheader .mod-body').focus();
-//   }, 400);
-//
-//   setTimeout(function() {
-//     document.querySelector('.mod-preheader .mod-body').contentEditable = 'false';
-//   }, 600);
-//
-//   dFrameBody.spellcheck = true;
-//
-//   console.log("Spell check function complete.");
-// }
-//
-// checkSpelling();
-
 
 
 

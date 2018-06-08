@@ -16,7 +16,7 @@ logArticleStatusInStorge(document.documentElement.outerHTML);
 ////////////////////////
 ////////////////////////
 
-var isProtected = document.querySelector(".post-title a").getAttribute("title");
+var isProtected = document.querySelector(".post__title").getAttribute("title");
 
 if ( /^Protected:/.test(isProtected) ) {
   isProtected = true;

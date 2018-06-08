@@ -5,6 +5,64 @@ console.warn("[sonic-toolkit-extension] loaded /js/aws.js");
 // var dupedMoreBtn = moreBtn.cloneNode(true);
 
 
+
+
+var gridPref = localStorage.getItem('grid');
+
+if ( gridPref === null ) {
+  document.body.classList.add("korra");
+  document.body.classList.add("grid-sm");
+}
+else if ( gridPref !== 'off' ) {
+  document.body.classList.add("korra");
+  document.body.classList.add(gridPref);
+} else {
+  // do nothing
+}
+
+
+var gridView = document.createElement("div");
+gridView.classList.add("material-btn");
+gridView.style.float = "right";
+gridView.innerHTML = '<i class="material-icons md-light">view_module</i>';
+gridView.addEventListener("click", showGridView, false);
+
+// Wait for dropdown to show up then append our grid button after it.
+document.arrive("action-dropdown.moredropdown.ng-isolate-scope", function() {
+  insertAfter(gridView, document.querySelectorAll("action-dropdown.moredropdown.ng-isolate-scope")[0]);
+});
+
+
+function showGridView() {
+
+  if ( document.body.classList.contains("grid-xlg") ) {
+    document.body.classList.remove("grid-xlg");
+    document.body.classList.add("grid-lg");
+    localStorage.setItem('grid', 'grid-lg');
+  }
+  else if ( document.body.classList.contains("grid-lg") ) {
+    document.body.classList.remove("grid-lg");
+    document.body.classList.add("grid-md");
+    localStorage.setItem('grid', 'grid-md');
+  }
+  else if ( document.body.classList.contains("grid-md") ) {
+    document.body.classList.remove("grid-md");
+    document.body.classList.add("grid-sm");
+    window.localStorage.setItem('grid', 'grid-sm');
+  }
+  else if ( document.body.classList.contains("grid-sm") ) {
+    document.body.classList.remove("grid-sm");
+    document.body.classList.remove("korra");
+    localStorage.setItem('grid', 'off');
+  }
+  else {
+    document.body.classList.add("korra", "grid-xlg");
+    localStorage.setItem('grid', 'grid-xlg');
+  }
+
+}
+
+
 ///// HIDE BY FILETYPE!
 ///// destroyAll( document.querySelectorAll("td[data-img-type='jpg']") );
 
@@ -20,7 +78,7 @@ document.arrive("tbody[ng-hide] > tr:first-child", function() {
   let rows = document.querySelectorAll("table.table > thead + tbody[ng-hide] > tr");
   for (let row of rows) {
 
-    row.querySelectorAll("td.truncate")[0].style = "display:flex; align-items:center; height:auto;";
+    row.querySelectorAll("td.truncate")[0].classList.add("wrapping-cell");
 
     var imgLink = row.querySelectorAll("td.truncate a.list-view-item-name")[0];
 
@@ -46,7 +104,7 @@ document.arrive("tbody[ng-hide] > tr:first-child", function() {
         /////////////////////////////////
 
         var type = document.createElement("div");
-        type.style = "font-weight: bold; height: 22px; left: 18px; top: 0; position: absolute; line-height: 22px; padding: 0 6px 0 6px; background: #ccc;";
+            type.classList.add("image-ext");
 
         if ( imgUrl.match(/\.png/gi) ) {
           type.innerText = "PNG";
@@ -71,12 +129,12 @@ document.arrive("tbody[ng-hide] > tr:first-child", function() {
         ////////////////////////////////////
 
         var inlineImgWrapper = document.createElement("div");
-        inlineImgWrapper.style = "display:inline-flex; justify-content:center; align-items:center; align-content:center; margin-left:10px; margin-right:5px; min-width:120px; width:120px; max-width:120px; min-height:80px; height:80px; max-height:80px; background:#f5f7f7; overflow:hidden;";
+        inlineImgWrapper.classList.add("inline-image-wrapper");
 
         var inlineImg = document.createElement("img");
         inlineImg.src = imgUrl;
         createCopyBtn(inlineImg, imgUrl);
-        inlineImg.style = "width:auto; height:80px; max-height:80px;";
+        inlineImg.classList.add("inline-image");
 
         inlineImgWrapper.appendChild(inlineImg);
         insertBefore(inlineImgWrapper, imgLink);
@@ -95,6 +153,10 @@ document.arrive("tbody[ng-hide] > tr:first-child", function() {
 
 
 //////
+
+/////
+///// Open image in a new tab on middle click.
+/////
 
 // open new tab = https://stackoverflow.com/a/7924248/556079
 // event.target = https://stackoverflow.com/a/1250567/556079

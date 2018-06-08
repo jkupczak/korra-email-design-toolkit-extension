@@ -339,7 +339,7 @@ function checkIfArticleProtected(i, linkObj, response) {
   if ( linkInfoArray[i]['isArticle'] ) {
     // console.error(i, "isArticle = true");
 
-    // Save the article's status to chrome.storage for use elswhere.
+    // Save the article's status to chrome.storage for use elsewhere.
     logArticleStatusInStorge(response.document);
 
     if ( isArticleProtected(response.document) ) {

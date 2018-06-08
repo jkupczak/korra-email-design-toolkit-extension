@@ -3,6 +3,9 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
+  "version": "3.7.400",
+
+  "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
 
   "background": {
     "scripts": ["js/libs/chrome-storage-promise.js", "js/get-options.js", "js/eventPage.js"],
@@ -24,9 +27,6 @@
     "icons/*",
     "startpage/index.html"
   ],
-
-  "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
-  "version": "3.7.341",
 
   "browser_action": {
     "default_icon": "icons/192-korra.png",
@@ -65,31 +65,33 @@
       "run_at": "document_start"
     },
     {
-      "matches": ["file:///*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
+      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/newsletter/newsletter-styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/libs/tingle.css"],
       "js": ["js/get-options.js", "js/newsletter/newsletter-async.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
       "run_at": "document_start"
     },
     {
-      "matches": ["file:///*", "http://localhost:4567/*"],
+      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*"],
       "exclude_matches": ["file:///*view=1*", "http://localhost:4567/__middleman/*"],
       "css": ["css/newsletter/newsletter-beforeload.css"],
       "run_at": "document_start"
     },
     {
-      "matches": ["file:///*", "http://localhost:4567/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
+      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/global_styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css"],
       "js": ["js/libs/alertify.js"],
       "run_at": "document_end"
     },
     {
-      "matches": ["file:///*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
+      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/newsletter.js"],
+      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/email-remove-unused-css.umd.js", "js/newsletter/newsletter.js"],
       "run_at": "document_end"
     },
+
+
 
     {
       "matches": ["*://*.dropbox.com/s/*", "*://*.dropbox.com/work/*", "*://*.dropbox.com/home/*"],
@@ -119,21 +121,17 @@
       "js": ["js/email-labeling.js"],
       "run_at": "document_end"
     },
+
+
     {
       "matches": ["http://localhost:4567/*"],
       "css": ["css/middleman_styles.css"],
       "js": ["js/middleman.js"]
     },
     {
-      "matches": ["*://*/*.png", "file:///*/*.png", "*://*/*.png?*", "*://*/*.jpg", "file:///*/*.jpg", "*://*/*.jpg?*", "*://*/*.jpeg", "*://*/*.jpeg?*", "*://*/*.gif", "*://*/*.gif?*", "*://*/*.apng", "*://*/*.apng?*", "*://*/*.webp", "*://*/*.webp?*", "*://*/*.bmp", "*://*/*.bmp?*", "*://*/*.svg", "*://*/*.svg?*"],
-      "exclude_matches": ["*://*.dropbox.com/*"],
-      "css": ["css/image_styles.css"],
-      "js": ["js/images.js"]
-    },
-    {
       "matches": ["*://*.mailchimp.com/*"],
       "exclude_matches": ["*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
-      "css": ["css/libs/tingle.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/mailchimp/mailchimp-global-styles.css"],
+      "css": ["css/fonts-material-icons.css", "css/libs/tingle.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/mailchimp/mailchimp-global-styles.css"],
       "js": ["js/libs/arrive.js", "js/libs/tingle.js", "js/libs/alertify.js", "js/mailchimp/mailchimp-global.js"]
     },
         {
@@ -198,7 +196,7 @@
     },
     {
       "matches": ["*://console.aws.amazon.com/s3/*"],
-      "css": ["css/global_styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/aws-styles.css"],
+      "css": ["css/global_styles.css", "css/fonts-material-icons.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/aws-styles.css"],
       "js": ["js/global.js", "js/libs/arrive.js", "js/libs/alertify.js", "js/aws.js"],
       "run_at": "document_end"
     },

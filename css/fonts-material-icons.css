@@ -1,0 +1,163 @@
+/*
+ http://google.github.io/material-design-icons/#icon-font-for-the-web
+*/
+
+ @font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(chrome-extension://__MSG_@@extension_id__/fonts/MaterialIcons-Regular.woff2) format('woff2');
+}
+
+.material-icons {
+
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block !important;
+  line-height: 1 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  word-wrap: normal !important;
+  white-space: nowrap !important;
+  direction: ltr !important;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+}
+
+
+/* Rules for sizing the icon. */
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+/* Rules for using icons as white on a dark background. */
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+
+
+/* */
+.material-btn {
+  display:inline-flex;
+  align-content: center;
+  justify-content:center;
+  font-style:normal;
+  border-radius:3px;
+  height: 36px;
+  width:36px;
+  text-align:center;
+  line-height:36px;
+  background:#329ad6;
+}
+.material-btn i {
+  line-height: 36px !important;
+}
+
+.material-btn:hover, .material-btn i:hover {
+  cursor:pointer !important;
+  opacity:.99;
+}
+
+
+/**********/
+/**********/
+/**********
+
+  Custom Styles
+
+ **********/
+/**********/
+/**********/
+
+  /* Button */
+  .mdk-icon-btn {
+    display:inline-flex !important;
+    align-content: center !important;
+    justify-content:center !important;
+    font-style:normal !important;
+    text-align:center !important;
+
+    /* Default Colors */
+    background:#1e78d7 !important;
+    color:#fff !important;
+  }
+  .mdk-icon-btn:hover {
+    cursor:pointer !important;
+
+    /* Default Colors */
+    background:#2986e9 !important;
+  }
+
+  /* Shapes */
+  .mdk-icon-circle { border-radius:100%; }
+  .mdk-icon-square {  }
+
+  /* Sizes */
+  .mdk-icon-xs {
+      min-width:18px !important;
+          width:18px !important;
+      max-width:18px !important;
+         height:18px !important;
+    line-height:18px !important;
+      font-size:12px !important
+  }
+  .mdk-icon-xs.mdk-icon-rounded-square { border-radius:3px; }
+
+  .mdk-icon-sm {
+      min-width:24px !important;
+          width:24px !important;
+      max-width:24px !important;
+         height:24px !important;
+    line-height:24px !important;
+      font-size:16px !important
+  }
+  .mdk-icon-sm.mdk-icon-rounded-square { border-radius:4px; }
+
+  .mdk-icon-md {
+      min-width:30px !important;
+          width:30px !important;
+      max-width:30px !important;
+         height:30px !important;
+    line-height:30px !important;
+      font-size:22px !important
+  }
+  .mdk-icon-md.mdk-icon-rounded-square { border-radius:6px; }
+
+  .mdk-icon-lg {
+      min-width:36px !important;
+          width:36px !important;
+      max-width:36px !important;
+         height:36px !important;
+    line-height:36px !important;
+      font-size:28px !important
+  }
+  .mdk-icon-lg.mdk-icon-rounded-square { border-radius:8px; }
+
+  .mdk-icon-xl {
+      min-width:42px !important;
+          width:42px !important;
+      max-width:42px !important;
+         height:42px !important;
+    line-height:42px !important;
+      font-size:34px !important
+  }
+  .mdk-icon-xl.mdk-icon-rounded-square { border-radius:10px; }
+
+  /* Colors */
+  .mdk-icon-blue {
+    background:#1e78d7 !important;
+    color:#fff !important;
+  }
+  .mdk-icon-blue:hover { background:#2986e9 !important; }

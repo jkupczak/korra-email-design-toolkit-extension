@@ -163,7 +163,7 @@ function formatDate(date) {
 // Get Filename
 //
 function getFilename(url) {
-  var filename = url.match(/.+?\.html?/gi);
+  var filename = url.match(/.+?\..+/gi);
       filename = filename[0].replace(/.+\//gi, "");
 
   return filename
@@ -750,8 +750,9 @@ function createCopyBtn(node, stringToCopy) {
 ////
 function copyToClipboard(toCopy, msg, persist) {
 
-  // console.log(this);
-  // console.log(event);
+  console.log(this);
+  console.log(event);
+  console.log(typeof toCopy);
   event.preventDefault();
 
   if (toCopy.tagName === "INPUT" || toCopy.tagName === "TEXTAREA" || toCopy.contentEditable === "true" ) {
@@ -1142,7 +1143,7 @@ var isPlainObject = function (obj) {
 //
 /////////
 function isArticleProtected(document) {
-  if ( /title=("|')Protected\: /.test(document) ) {
+  if ( /class="post__title">Protected\: /.test(document) ) {
     return true;
   }
   return false;
@@ -1215,3 +1216,118 @@ function logArticleStatusInStorge(document) {
 
 // View entire storage
 // chrome.storage.sync.get(function(result) { console.log("Entire chrome.storage results: "); console.log(result); });
+
+
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Code Weight
+/////
+/////
+///// - http://bytesizematters.com/
+///// - https://github.com/hteumeuleu/email-bugs/issues/41
+///// - https://www.sendwithus.com/resources/gmail_size_test
+///// - https://codepen.io/cosmin-popovici/pen/yMgwVa?editors=1010
+///// - https://gist.github.com/hellocosmin/ca6e3ea7cd7898ce86c606e303bc0aa3
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+(function(){
+
+var crlf = /(\r?\n|\r)/g,
+	whitespace = /(\r?\n|\r|\s+)/g;
+
+window.ByteSize = {
+	count: function(text, options) {
+		// Set option defaults
+		options = options || {};
+		options.lineBreaks = options.lineBreaks || 1;
+		options.ignoreWhitespace = options.ignoreWhitespace || false;
+
+		var length = text.length,
+			nonAscii = length - text.replace(/[\u0100-\uFFFF]/g, '').length,
+		    lineBreaks = length - text.replace(crlf, '').length;
+
+		if (options.ignoreWhitespace) {
+			// Strip whitespace
+			text = text.replace(whitespace, '');
+
+			return text.length + nonAscii;
+		}
+		else {
+			return length + nonAscii + Math.max(0, options.lineBreaks * (lineBreaks - 1));
+		}
+	},
+
+	formatInt: function(count, plainText) {
+		var level = 0;
+
+		while (count > 1024) {
+			count /= 1024;
+			level++;
+		}
+
+		return (plainText? count : count);
+	},
+
+	formatString: function(count, plainText) {
+		var level = 0;
+
+		while (count > 1024) {
+			count /= 1024;
+			level++;
+		}
+
+		// Round to 2 decimals
+		count = Math.round(count*100)/100;
+
+		level = ['', 'K', 'M', 'G', 'T'][level];
+
+		return (plainText? count : count) + ' ' + level + 'B';
+	},
+
+  // 102kb is known popularly to be the size limit before Gmail clips an email.
+  // However, after much testing it seems like its actually 101kb.
+  // To make Korra feel more accurate to what the community believes, we'll modify the Filesize
+  // that we calculated to add 1 extra kb. So 101kb will instead be 102kb.
+	formatIntGmail: function(count, plainText) {
+		var level = 0;
+
+		while (count > 1024) {
+			count /= 1024;
+			level++;
+		}
+
+    count = count + 1;
+
+		return (plainText? count : count);
+	},
+
+	formatStringGmail: function(count, plainText) {
+		var level = 0;
+
+		while (count > 1024) {
+			count /= 1024;
+			level++;
+		}
+
+		// Round to 2 decimals
+		count = Math.round(count*100)/100;
+
+    count = count + 1;
+
+		level = ['', 'K', 'M', 'G', 'T'][level];
+
+		return (plainText? count : count) + ' ' + level + 'B';
+	}
+
+};
+
+})();

@@ -12,6 +12,40 @@ var toggleColumnsBtn = document.querySelector("div > div.reorder:first-child");
 /*
 
 
+  Links to Profiles in MedBridge Admin Panel
+  ------------------------------------------
+
+  Give each row a link that searches for the email address in the admin panel.
+
+
+*/
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+
+  document.arrive(".profile-view", {fireOnAttributesModification: true, existing: true}, function() {
+
+    this.style = "padding-left:12px;"
+
+    var email = this.querySelectorAll("a")[0].innerText;
+
+    var adminLink = document.createElement("a");
+    adminLink.classList.add("material-icons", "mdk-icon-btn", "mdk-icon-circle", "mdk-icon-xs", "mdk-icon-blue");
+    adminLink.innerHTML = "person_pin";
+    adminLink.target = "_blank";
+    adminLink.href = "https://www.medbridgeeducation.com/admin/students/index?txt_search=" + email;
+    adminLink.style = "margin:auto; position:absolute; top:0; bottom:0; left:5px;"
+
+    this.appendChild(adminLink);
+
+  });
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+/*
+
+
 Automate Group Removal
 ---------------------
 
@@ -20,6 +54,7 @@ Details here...
 */
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
+
 
 
 ////
