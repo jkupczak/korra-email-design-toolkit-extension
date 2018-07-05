@@ -518,12 +518,12 @@ html.powered-up, html.powered-up body {
 .orbs-bottom {
   flex-direction: column-reverse;
   justify-content: flex-end;
-  padding-bottom:20px;
+  padding-bottom:5px;
   margin-top:auto;
 }
 .orbs-top {
   flex-direction: column;
-  padding-top:20px;
+  padding-top:5px;
 }
 
 
@@ -556,8 +556,8 @@ html.powered-up, html.powered-up body {
 }
 
 
-.orbs-bottom .orb { margin-top:12px; }
-.orbs-top .orb { margin-bottom:12px; }
+.orbs-bottom .orb { margin-top:8px; }
+.orbs-top .orb { margin-bottom:8px; }
 
 .orb:hover { color:#fff; transform:scale(1.1, 1.1); transition:none; -webkit-transform-style: preserve-3d; }
 .orb:active { color:#fff; transform: scale(1, 1); -webkit-transform-style: preserve-3d; }
@@ -1317,6 +1317,16 @@ body.split-view-on {
     height:100%;
     overflow: hidden;
   }
+  .desktop-view-wrapper.editing,
+  .mobile-iframe-parent.editing {
+    box-shadow: 0 0 0 3px #bf1d53;
+    animation: editingShadowPulse .5s infinite;
+  }
+  @keyframes editingShadowPulse {
+    10%   { box-shadow: 0 0 0 3px #bf1d53 }
+    50%   { box-shadow: 0 0 0 3px #ff6a9b }
+    90%   { box-shadow: 0 0 0 3px #bf1d53 }
+  }
 
   .desktop-view-wrapper {
     width:100%;
@@ -1340,22 +1350,28 @@ body.split-view-on {
     height:100%; width:100%; position:relative;
   }
 
+  /* Removed because it caused the iframe to jitter while link error markers were present and/or hovered.
+     Not sure why. Started happening after I upgraded the way I calculate their position. */
+
+  /*
   .iframe-desktop-view.editing {
     background:#bf1d53;
 
-    border:10px solid #bf1d53;
+    border:6px solid #bf1d53;
     transition:border .25s ease-in;
 
     box-sizing:border-box;
 
-    animation: editingBorderPulse .5s infinite;
   }
 
+  .iframe-desktop-view.editing {
+    animation: editingBorderPulse .5s infinite;
+  }
   @keyframes editingBorderPulse {
     10%   { border-color: #bf1d53;}
     50%  { border-color: #ff3a7b;}
     90% { border-color: #bf1d53;}
-  }
+  } */
 
 
 /**********************/
@@ -1520,7 +1536,8 @@ body.split-view-on {
   display:flex;
   min-width:320px;
 
-  background:rgba(255,255,255,0.05);
+  /* background:rgba(255,255,255,0.05); */
+  background: #36363d;
 
   height:60px;
   min-height:60px;
@@ -1560,7 +1577,8 @@ body.split-view-on {
 
 .mobile-iframe-settings > .active {
   /* background:rgba(255,255,255,0.1); */
-  background:rgba(73,73,115,0.5);
+  /* background:rgba(73,73,115,0.5); */
+  background: #404058;
   color:#fff;
 }
 .mobile-iframe-settings > .active:hover {

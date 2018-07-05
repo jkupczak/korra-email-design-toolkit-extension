@@ -141,7 +141,7 @@ function getOptions(){
     options.autoCheck = getOption("autoCheck");
     options.optionsURL = getOption("optionsURL");
 
-    console.log("!!!", options.dropboxAccessToken)
+    // console.log("!!!", options.dropboxAccessToken)
 
     return options;
 }

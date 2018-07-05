@@ -53,9 +53,6 @@ html {
   overflow:hidden;
   pointer-events: none;
 }
-  a.marked {
-  position:relative;
-}
 
 
 .link-marker {

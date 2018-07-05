@@ -750,9 +750,9 @@ function createCopyBtn(node, stringToCopy) {
 ////
 function copyToClipboard(toCopy, msg, persist) {
 
-  console.log(this);
-  console.log(event);
-  console.log(typeof toCopy);
+  // console.log(this);
+  // console.log(event);
+  // console.log(typeof toCopy);
   event.preventDefault();
 
   if (toCopy.tagName === "INPUT" || toCopy.tagName === "TEXTAREA" || toCopy.contentEditable === "true" ) {
@@ -1140,14 +1140,6 @@ var isPlainObject = function (obj) {
 	return Object.prototype.toString.call(obj) === '[object Object]';
 };
 
-//
-/////////
-function isArticleProtected(document) {
-  if ( /class="post__title">Protected\: /.test(document) ) {
-    return true;
-  }
-  return false;
-}
 
 //
 ////////
@@ -1331,3 +1323,21 @@ window.ByteSize = {
 };
 
 })();
+
+
+
+///////////////
+///////////////
+//
+// https://stackoverflow.com/a/18673641/556079
+//
+///////////////
+///////////////
+
+function findPos(object, currentDocument) {
+
+  var objectPosFromTop = object.getBoundingClientRect().top + currentDocument.documentElement.scrollTop;
+  var objectPosFromLeft = object.getBoundingClientRect().left + currentDocument.documentElement.scrollLeft;
+
+  return [objectPosFromTop, objectPosFromLeft];
+}

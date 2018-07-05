@@ -3,7 +3,7 @@
 
 var view = getParameterByName("view");
 if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
-  console.log(document.URL);
+  // console.log(document.URL);
 
 
 // This requests the original files HTML using the extensions access to the filesystem.

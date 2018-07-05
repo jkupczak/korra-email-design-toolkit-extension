@@ -1,4 +1,4 @@
-console.warn("💌 [korra " + chrome.runtime.getManifest().version + "] loaded /js/newsletter/newsletter-functions.js");
+// console.warn("💌 [korra " + chrome.runtime.getManifest().version + "] loaded /js/newsletter/newsletter-functions.js");
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////
@@ -56,20 +56,16 @@ var lm = new ResizeObserver( entries => {
 
   for (let linkObj of linkList) {
 
+    // Find each links position relative to the document so that we can reposition the link markers if the viewport changes size or if elements move around.
+    var linkFoundPos = findPos(linkObj, dFrameContents);
+
     var linkm = dFrameContents.querySelectorAll(".link-marker[data-number='" + linkObj.getAttribute('data-number') + "']")[0];
 
-    linkm.style.top  =  (linkObj.offsetTop - 10) + "px";
-    linkm.style.left =  (linkObj.offsetLeft - 10) + "px";
+    // Using the links position, set the linkmarker to the 10px offset from the top and left.
+    linkm.style.top  =  (linkFoundPos[0] - 10) + "px";
+    linkm.style.left =  (linkFoundPos[1] - 10) + "px";
 
   }
-  // for (let linkObj of linksWithErrorsArr) {
-  //
-  //   var linkm = dFrameContents.querySelectorAll(".link-marker[data-number='" + linkObj.getAttribute('data-number') + "']")[0];
-  //
-  //   linkm.style.top  =  (linkObj.offsetTop - 10) + "px";
-  //   linkm.style.left =  (linkObj.offsetLeft -10) + "px";
-  //
-  // }
 
 });
 
@@ -126,28 +122,7 @@ function breakdownQuerystring(url, linkObj) {
     });
   }
 
-
   return qsObject
-
-
-    // DEPRECATED
-    // BUILT THIS THINKING IT WAS NEEDED. IT'S NOT! MEDBRIDGE READS ONLY A PROPERLY FORMATTED QUERYSTRING WHEN REDIRECTING.
-
-        // // Check for after_affiliate_url=
-        // // We need to see if its value has a '?' in it and isolate it.
-        // // The after_affiliate_url parameter initiates a redirect on MedBridge.
-        // // The redirect refactors the rest of the query string.
-        // // So ?after_affiliate_url=courses?id=1234 is a valid querystring for MedBridge.
-        // if ( /(\?|&)?after_affiliate_url=[^#&]+\?/i.test(querystring) ) {
-        //
-        //   // Matched. Now isolate after_affiliate_url and apply it and its value to our object
-        //   var key = "after_affiliate_url";
-        //   var val = querystring.match(/after_affiliate_url=[^#&]+\?/,i)[0].replace(/(^after_affiliate_url=|\/?\?$)/gi,"");
-        //   qsObject[key] = val;
-        //
-        //   // Since we found a match, we need to now remove after_affiliate_url from our querystring so we can process it as normal later
-        //   querystring = querystring.replace(/after_affiliate_url=[^#&]+\?/,"");
-        // }
 
 };
 
@@ -546,6 +521,8 @@ function linkValidationLoop(linkList, dummyLinkList, ageCheck) {
 
     // Start watching the iframe's height and width.
 
+
+
   }, false);
 
 // We've successfully run through every link. Log our results.
@@ -896,7 +873,7 @@ function getImgSizes(imgInfoArray) {
 
     //async
     fetch(img.url).then(
-      console.log("wow"),
+      // console.log("wow"),
       resp => resp.blob())
     .then(blob => {
       imgInfoArray[k]['size'] = { "size": blob.size, "prettysize": prettyFileSize(blob.size, 1) }
@@ -1408,12 +1385,27 @@ function validateLinks(linkObj, i) {
 
   singleLinkInfoArray['object'] = linkObj; //link object
   singleLinkInfoArray['url'] = linkHref; //link url
-  singleLinkInfoArray['text'] = linkObj.textContent; //link text
-  singleLinkInfoArray['img'] = linkObj.querySelectorAll('img'); // images linked
+  singleLinkInfoArray['text'] = linkObj.textContent.trim(); //link text
+  singleLinkInfoArray['imgsLinked'] = linkObj.querySelectorAll('img'); // images linked
   singleLinkInfoArray['querystring'] = breakdownQuerystring(linkHref, linkObj); //querystring
   singleLinkInfoArray['espMergeTag'] = false;
   singleLinkInfoArray['type'] = null;
   singleLinkInfoArray['checkStatus'] = null;
+
+  // What kind of content is linked? text, img, none, or mixed (text and img)
+  /////
+  if ( singleLinkInfoArray['imgsLinked'].length > 0 && singleLinkInfoArray['text'] !== "" ) {
+    singleLinkInfoArray['contentLinked'] = 'mixed';
+
+  } else if ( singleLinkInfoArray['imgsLinked'].length > 0 ) {
+    singleLinkInfoArray['contentLinked'] = 'img';
+
+  } else if ( singleLinkInfoArray['text'] ) {
+    singleLinkInfoArray['contentLinked'] = 'text';
+
+  } else {
+    singleLinkInfoArray['contentLinked'] = 'none';
+  }
 
   // Assign a type to the URL based on how its written
   // mailto
@@ -1700,25 +1692,26 @@ function validateLinks(linkObj, i) {
     ////
     // DON'T USE UTM - outsideOrg and off domain urls should not have utms
     if ( /utm_content/gi.test(linkHref) && !singleLinkInfoArray['isMedBridgeEdLink'] ) {
-      createLinkErrorRow(linkObj, "Remove <code>utm_content</code> parameter.");
+      createLinkErrorRow(linkObj, "Remove <code>utm_content</code> parameter in non-MedBridge links.");
     }
 
     ////-----------------------------////
     ////
     // MedBridge links must be https. If only because it makes sorting links easier when we do our metrics
     if ( singleLinkInfoArray['isMedBridgeBrandLink'] && singleLinkInfoArray['type'] !== "https" ) {
-      createLinkErrorRow(linkObj, "Use https for MedBridge links.");
+      createLinkErrorRow(linkObj, "Use <code>https</code> for MedBridge links.");
     }
 
     ////-----------------------------////
     ////
     // Check tracking links to see if the URL is consistent with the rest of the links.
     // eg. If most links say trk-sep-17-davenport, but this one says trk-sep-17-walter, throw an error.
-    // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common.
+    // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common occurence.
 
     if ( emailSubType === "ns" && singleLinkInfoArray['isMarketingUrl'] && linkNeedsPromoCode ) {
-      if ( !commonTrkUrlRegex.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Tracking URL is missing or inconsistent, " + commonTrkUrl + " is most common.");
+      // Ignore if the links pathname ends in -student
+      if ( !commonTrkUrlRegex.test(linkHref) && !/\-student\/?$/gi.test(linkObj.pathname) ) {
+        createLinkErrorRow(linkObj, "Tracking URL is missing or inconsistent, " + commonTrkUrl + " is most common. - " + linkHref);
       }
     }
 
@@ -1997,14 +1990,20 @@ function validateLinks(linkObj, i) {
 
     ////
     // Link Text Hints
-    // Request a Demo
-    if ( (/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref)) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing|Request/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
-      createLinkErrorRow(linkObj, "Text and URL are not consistent (Demo Request related).");
+    // Only test for link -vs- text inconsistencies if we've determined that the linked content actually includes text.
+    if ( singleLinkInfoArray['contentLinked'] === 'mixed' || singleLinkInfoArray['contentLinked'] === 'text' ) {
+
+      // Request a Demo
+      if ( ( /(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref) ) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing|Request/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
+        createLinkErrorRow(linkObj, "Text and URL are inconsistent (Demo Request related).");
+      }
+      // Request EMR Integration
+      if ( (singleLinkInfoArray['contentLinked'] === 'mixed' || singleLinkInfoArray['contentLinked'] === 'text') && (/Request (EMR|Integration)/gi.test(linkObj.textContent) && !/#request-integration/i.test(linkHref)) || (!/Request|EMR|Integration/gi.test(linkObj.textContent) && /#request-integration/i.test(linkHref)) ) {
+        createLinkErrorRow(linkObj, "Text and URL are inconsistent (EMR Integration related).");
+      }
+
     }
-    // Request EMR Integration
-    if ( (/Request (EMR|Integration)/gi.test(linkObj.textContent) && !/#request-integration/i.test(linkHref)) || (!/Request|EMR|Integration/gi.test(linkObj.textContent) && /#request-integration/i.test(linkHref)) ) {
-      createLinkErrorRow(linkObj, "Text and URL are not consistent (EMR Integration related).");
-    }
+
     if ( emailOrgName !== "hs" ) {
       if ( /\barticle\b/gi.test(linkObj.textContent) && !singleLinkInfoArray['isArticle'] ) {
         createLinkErrorRow(linkObj, "Text references an article but the URL does not go to one.");

@@ -66,6 +66,10 @@ function buildKorraBar() {
     ////////
     document.arrive(".react-file-viewer", {existing: true}, function() {
 
+      if ( getParameterByName("noredirect") !== "1" ) {
+        viewLocalFile();
+      }
+
       destroyIfExists(document.getElementById("korrabar"));
 
       console.log("it's arrived!");

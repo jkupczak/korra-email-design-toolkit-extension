@@ -70,7 +70,7 @@ var loadedPageTitle = document.title;
 ///////
 
 
-var downloadAll = document.querySelector("a[href='/reports/export-all']");
+var downloadAll = document.querySelectorAll("a[href='/reports/export']")[0];
 
 var harvestDataBtn = document.createElement("a");
     harvestDataBtn.className = "button !margin-right--lv0 jk-btn jk-export-extra-data";
@@ -81,8 +81,8 @@ var harvestDataBtn = document.createElement("a");
     // https://stackoverflow.com/a/48548263/556079
     harvestDataBtn.addEventListener("click", function (e){harvestData();}, false);
 
-    // Add it to the DOM with the rest of the buttons
-    insertBefore(harvestDataBtn, downloadAll);
+// Add it to the DOM with the rest of the buttons
+insertBefore(harvestDataBtn, downloadAll);
 
 function harvestData(idsToHarvest) {
 

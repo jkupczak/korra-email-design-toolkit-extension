@@ -1,5 +1,5 @@
-console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/mailchimp/mailchimp-lists.js");
-//////////////////////////////////////////////////////////////////////////////////
+console.warn("Korra loaded /js/mailchimp/mailchimp-lists.js");
+//////////////////////////////////////////////////////////////
 
 var originalPageTitle = document.title;
 var mainBtns = document.querySelectorAll("#member-grid-wrap .table-pagination > div:first-child")[0];
@@ -149,7 +149,7 @@ mainBtns.appendChild(automateAction);
 
 
 // Only add the Automate button when we are looking at a segment.
-document.arrive(".status-container > span > span.fwn", function() {
+document.arrive(".status-container > span > span.fwn", {fireOnAttributesModification: true, existing: true}, function() {
 
   automateAction.style.display = "inline-block";
 

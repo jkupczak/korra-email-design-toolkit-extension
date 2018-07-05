@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.7.401",
+  "version": "3.7.430",
 
   "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
 
@@ -68,7 +68,7 @@
       "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
       "css": ["css/newsletter/newsletter-styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/libs/tingle.css"],
-      "js": ["js/get-options.js", "js/newsletter/newsletter-async.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
+      "js": ["js/get-options.js", "js/newsletter/newsletter-async.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/utilities/is-article-protected.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
       "run_at": "document_start"
     },
     {
@@ -87,7 +87,7 @@
     {
       "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
       "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/email-remove-unused-css.umd.js", "js/newsletter/newsletter.js"],
+      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/dropbox-share.js", "js/libs/email-remove-unused-css.umd.js", "js/libs/email-all-chars-within-ascii.umd.js", "js/libs/color-shorthand-hex-to-six-digit.umd.js", "js/libs/string-collapse-white-space.umd.js", "js/newsletter/newsletter.js"],
       "run_at": "document_end"
     },
 
@@ -104,7 +104,7 @@
       "matches": ["*://*.medbridgeeducation.com/blog/*"],
       "exclude_matches": ["*://*.medbridgeeducation.com/blog/wp-admin*"],
       "css": ["css/medbridge/medbridge-blog.css"],
-      "js": ["js/medbridge/medbridge-blog.js"],
+      "js": ["js/utilities/is-article-protected.js", "js/medbridge/medbridge-blog.js"],
       "all_frames": true
     },
     {
@@ -176,7 +176,7 @@
           "js": ["js/mailchimp/mailchimp-import-history.js"]
         },
         {
-          "matches": ["*://*.mailchimp.com/lists/members/?id=*"],
+          "matches": ["*://*.mailchimp.com/lists/members/?id=*", "*://*.mailchimp.com/lists/members?id=*"],
           "js": ["js/mailchimp/mailchimp-lists.js", "js/mailchimp/mailchimp-copy-and-duplicate-segment-criteria.js"],
           "css": ["css/mailchimp/automate-list-actions.css"]
         },

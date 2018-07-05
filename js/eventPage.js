@@ -471,7 +471,7 @@ chrome.runtime.onMessage.addListener(
 
     // Use postmessage to get a local file URL and navigate a tab to that URL.
     // Content scripts can't do this on their own. So instead they send a message to the background page.
-    // Thise code receives the message and loads the URL.
+    // This code receives the message and loads the URL.
     if ( /^file:.+\//gi.test(request.greeting) ) {
   		chrome.tabs.update({
   		     url: request.greeting

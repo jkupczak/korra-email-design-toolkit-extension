@@ -1,45 +1,12 @@
-console.warn("💌 [korra " + chrome.runtime.getManifest().version + "] loaded /js/newsletter/newsletter.js");
-////////////////////////////////////////////////////////////////////////////////////
-
 var view = getParameterByName("view");
 if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 
 
-//
-// // W3C Validator
-  // // https://github.com/validator/validator/wiki/Service-%C2%BB-HTTP-interface
-
-// var formData = new FormData();
-// formData.append('out', 'json');
-// formData.append('content', cleanedOriginalHtml);
-//
-// var xhr = new XMLHttpRequest();
-// xhr.withCredentials = true;
-//
-// xhr.addEventListener("readystatechange", function () {
-//   if (this.readyState === 4) {
-//     console.log(this.responseText);
-//   }
-// });
-//
-// xhr.open("POST", "http://html5.validator.nu/");
-//
-// xhr.setRequestHeader("dataType", "json");
-// xhr.setRequestHeader("processData", false);
-// xhr.setRequestHeader("contentType", false);
-//
-// xhr.send(formData);
-
-
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-//
-//
 //
 //   Search ##PAUSED to see code that is only TEMPORARILY turned off.
-//
-//
 //
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -610,7 +577,9 @@ if ( getParameterByName("presentation") === "1" ) {
 ///////////
 ///// Determine location of the file you're currently viewing.
 ///////////
-var pageUrl = document.URL;
+// var pageUrl = document.URL;
+// Piece the URL together to prevent using a URL that has querystring parameters.
+var pageUrl = document.location.origin + document.location.pathname;
 
 if ( /dropboxusercontent/gi.test(pageUrl) ) {
   var onDropbox = true;
@@ -630,6 +599,19 @@ if ( isLocalFile || isLocalHost ) {
   var isLocalCampaign = true;
 
 }
+
+// Check if the current file is in the local Dropbox folder by checking what was entered in the options page against the document URL.
+
+// Removed until I can get it to work with async. :(
+
+// var re = escapeRegExp(dropboxFolderName);
+//     re = new RegExp(re,"i");
+//
+// if ( re.test(pageUrl) ) {
+//   var inLocalDbFolder = true;
+// } else {
+//   var inLocalDbFolder = false;
+// }
 
 if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(pageUrl) ) {
   var inLocalDbFolder = true;
@@ -897,7 +879,13 @@ function showdFrameWidthStatus(currentWidth, override, source) {
   if ( override === true ) {
     // console.log("override === true")
   }
-  if ( (currentWidth !== desktopIframe.offsetWidth || desktopIframe.offsetWidth !== resizeEndWidth ) || override === true ) {
+
+  // Conditions
+  //// Do not show if desktopIframe width is >= than 0px (minus the scrollbar width of approx 15px)
+  //// Show if override was set to true
+  //// ...
+  ////
+  if ( ( (currentWidth !== desktopIframe.offsetWidth || desktopIframe.offsetWidth !== resizeEndWidth ) || override === true ) && (desktopIframe.clientWidth-15) >= 0 ) {
 
     // console.log("showing frame width");
 
@@ -965,14 +953,6 @@ if ( getParameterByName("layout") ) {
 }
 
 
-
-// if ( getParameterByName("layout") === "0" ) {
-//   toggleImages();
-//   console.log("images off");
-// }
-
-
-
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 //
@@ -997,13 +977,6 @@ if ( getParameterByName("layout") ) {
 ///////////////////////////////////////////////////////////
 
 
-// var headerBar = document.createElement("div");
-// headerBar.className = "header-bar";
-// mainContainer.appendChild(headerBar);
-
-/////
-
-
 if ( isLocalCampaign ) {
 
     // Create HTML for email date
@@ -1019,11 +992,11 @@ if ( isLocalCampaign ) {
     var abTitleIcon = "";
     if ( abTesting === "a" || abTesting === "b" ) {
       if ( abTesting === "a" ) {
-        var abUrl = document.URL.replace(/\-a\./gi, "-b.");
+        var abUrl = pageUrl.replace(/\-a\./gi, "-b.");
         var abTestingUpper = "A";
         var abTestingOpposite = "B";
       } else {
-        var abUrl = document.URL.replace(/\-b\./gi, "-a.");
+        var abUrl = pageUrl.replace(/\-b\./gi, "-a.");
         var abTestingUpper = "B";
         var abTestingOpposite = "A";
       }
@@ -1155,19 +1128,6 @@ if ( isLocalCampaign ) {
 
       headerAudienceText += '</div>';
     }
-    // pageTitle.innerHTML += headerAudienceText;
-    //
-    // //
-    // pageTitle.innerHTML += abTitleIcon;
-    //
-    // //
-    // pageTitle.innerHTML += '<div class="email-title"><div class="title-large"><span>' + toTitleCaseRestricted(emailTitle) + '</span></div>' + showEmailDate + '</div>'
-
-    // Inject content into the title bar
-    // pageTitle.innerHTML = headerIcon + headerAudienceText + abTitleIcon + '<div class="email-title"><div class="title-large"><span>' + toTitleCaseRestricted(emailTitle) + '</span></div>' + showEmailDate + '</div>';
-
-    //
-    // headerBar.appendChild(pageTitle);
 
     /////
     // Append document description to the the info-bar
@@ -1187,36 +1147,6 @@ if ( isLocalCampaign ) {
 
 }
 
-/////
-
-// var mainMenu = document.createElement("div");
-// mainMenu.className = "main-menu";
-//
-// if ( onDropbox ) {
-//   var navLocalView = '<div id="nav-local-view" class="nav-local-view"><span>Local View</span></div>';
-// } else {
-//   var navLocalView = '';
-// }
-//
-// mainMenu.innerHTML = '<div id="nav-plain-text" class="nav-item nav-plain-text"><span class="icon"></span><span>Create Plain Text</span></div><div id="nav-share" class="nav-item nav-share"><span class="icon"></span><span>Share</span></div>' + navLocalView + '<div class="nav-item nav-dropbox"><span class="icon"></span><a href="https://www.dropbox.com/work/' + localParentFolder + '">Open in Dropbox</a></div>'
-// headerBar.appendChild(mainMenu);
-//
-// // Attach event listenrs
-// document.querySelector("#nav-plain-text").addEventListener('click', plainText, false);
-// document.querySelector("#nav-share").addEventListener('click', getDbShareLink, false);
-//
-// if ( onDropbox ) {
-//   document.querySelector("#nav-local-view").addEventListener('click', swapUrl, false);
-// }
-
-
-// document.querySelector("#nav-dropbox").addEventListener('click', getDbShareLink, false);
-
-
-// function mainMenuOnClick() {
-//   console.log( event.target );
-//   console.log( event.currentTarget );
-// }
 
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
@@ -1324,16 +1254,16 @@ var currentmobilePaneStatus = 1;
 
 function paneToggle() {
 
-  console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
+  // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
 
     if (leftNav.classList.contains('off')) {
-      console.log("leftNav contains 'off'");
+      // console.log("leftNav contains 'off'");
       currentleftNavPaneStatus = 0;
-      console.log("currentleftNavPaneStatus", currentleftNavPaneStatus);
+      // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus);
     } else {
-      console.log("leftNav does NOT contain 'off'");
+      // console.log("leftNav does NOT contain 'off'");
       currentleftNavPaneStatus = 1;
-      console.log("currentleftNavPaneStatus", currentleftNavPaneStatus);
+      // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus);
     }
     if (mobileIframeWrapper.classList.contains('off')) {
       currentmobilePaneStatus = 0;
@@ -1404,51 +1334,9 @@ function paneToggle() {
 
     showdFrameWidthStatus();
 
-    console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
+    // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
 
 }
-
-
-
-// window.addEventListener('resize', function(event){
-//
-//   console.log(document.documentElement.clientWidth);
-//
-//   if ( document.documentElement.clientWidth > 960 && ( globalpaneStatusMobile === 0 || globalpaneStatusMobile === null || globalpaneStatusleftNav === 0 || globalpaneStatusleftNav === null ) ) {
-//     // console.log("fire function (> 960)");
-//     paneToggle(1, 1);
-//   }
-//
-//   if ( document.documentElement.clientWidth <= 960 && ( globalpaneStatusMobile === 1 || globalpaneStatusMobile === null) ) {
-//     // console.log(globalpaneStatusMobile + ":fire function (<= 960)");
-//     paneToggle(2, 0);
-//   }
-//
-//   if ( document.documentElement.clientWidth <= 580 && ( globalpaneStatusleftNav === 1 || globalpaneStatusleftNav === null) ) {
-//     // console.log(globalpaneStatusleftNav + ": fire function (<= 580)");
-//     paneToggle(0, 2);
-//   }
-// });
-
-//////////
-////
-////  Create Trello Orb
-////
-/////////
-
-// var trelloOrb = document.createElement("a");
-// trelloOrb.className = "trello-orb orb off";
-// trelloOrb.target = "_trello";
-// orbsTop.appendChild(trelloOrb);
-//   chrome.storage.promise.sync.get(key).then(function(result) {
-//     if(typeof result[key] !== "undefined") {
-//       if(result[key].hasOwnProperty(["t"])){
-//         trelloOrb.href = "https://www.trello.com/c/" + result[key]["t"];
-//         trelloOrb.classList.remove("off");
-//       }
-//     }
-//   });
-
 
 
 //////////
@@ -1464,216 +1352,6 @@ if ( isLocalHost ) { shareOrb.classList.add("off") };
 shareOrb.addEventListener("click", getDbShareLink, false);
 orbsTop.appendChild(shareOrb);
 
-
-function getDbShareLink() {
-
-  t0 = performance.now();
-
-  console.groupCollapsed("Dropbox Share Function Initiated");
-
-  var source = this;
-
-  // console.error("getDbShareLink");
-  // console.error(this);
-  // console.error(event.target);
-
-  if ( !this.classList.contains("loading") ) {
-
-    source.classList.add("loading");
-
-    if ( dropboxUrlInput.value !== "" ) {
-
-      source.classList.remove("loading");
-      copyToClipboard(dropboxUrlInput, "success", true);
-      console.log("Shareable link found in the DOM. Copying to clipboard.")
-
-    } else {
-
-      if ( onDropbox ) {
-
-        console.log("This page is currently being viewed on Dropbox.com. Running processDbLink().")
-        processDbLink(document.URL, "copy", source);
-
-      } else {
-
-        console.log("This page is a local file and the shareable link has not been retrieved yet. Running callDropbox().")
-        callDropbox("copy", this);
-
-      }
-
-    }
-  }
-}
-
-
-function callDropbox(action, source) {
-
-  console.group("callDropbox()");
-    console.log("action:", action, "source:", source);
-    console.log("dropboxFolderName:", dropboxFolderName);
-  console.groupEnd();
-
-  var dropboxEscapedParentFolder = escapeRegExp(dropboxFolderName)
-  var dropboxTestPattern = new RegExp("^.+?" + dropboxEscapedParentFolder, "gi");
-
-  if ( dropboxTestPattern.test(document.URL) ) {
-
-    console.log("Yes! This file exists in the local DropBox folder. [" + document.URL + "]");
-
-    var dropboxFilePath = document.URL.replace(dropboxTestPattern, "")
-    var dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "")
-    var dropboxFilePath = decodeURIComponent(dropboxFilePath); // the API does not accept encoded paths (eg %20 instead of a space)
-
-    //
-    // Dropbox API SDK - http://dropbox.github.io/dropbox-sdk-js/#toc0__anchor
-    // Documentation - https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
-    // Get Token - https://dropbox.github.io/dropbox-api-v2-explorer/#sharing_create_shared_link_with_settings
-    //
-
-    var shareableLink = "";
-
-    // console.log("dropboxFilePath - " + dropboxFilePath);
-
-    ////
-    // Check Dropbox for a shareable link that might already exist.
-    ////
-    dbx.sharingListSharedLinks({path: dropboxFilePath})
-      .then(function(response) {
-
-        // console.log(response);
-        // console.log(response.links[0]);
-        // console.log(response.links[0][".tag"]);
-        // console.log(response.links[0].url);
-
-        if (response.links.length > 0 && response.links[0][".tag"] !== "folder") {
-
-          // console.log("true: response.links.length > 0 = " + response.links.length);
-          processDbLink(response.links[0].url, action, source);
-
-        } else {
-          ////
-          // Could not find a pre-existing link for sharing. Create a new one instead.
-          ////
-          console.log("Could not find a pre-existing link for sharing. Create a new one instead.");
-          console.log("false: response.links.length > 0 = " + response.links.length);
-
-          dbx.sharingCreateSharedLinkWithSettings({path: dropboxFilePath})
-            .then(function(response) {
-
-              // console.log(response);
-              processDbLink(response.url, action, source);
-
-            })
-            .catch(function(error) {
-              console.log(error);
-              source.classList.remove("loading");
-            });
-        }
-
-      })
-      .catch(function(error) {
-        console.log(error);
-        alertify.error("Could not find file on Dropbox.", 0);
-        source.classList.remove("loading");
-        source.classList.add("error");
-        // To-Do: Add css to make the orb look like there's been an error.
-
-        console.groupEnd();
-
-      });
-
-  } else {
-    source.classList.remove("loading");
-    console.log("Sorry! This file is not located in the local DropBox folder. We searched the current URL (" + document.URL + ") for this pattern (" + dropboxTestPattern + ").");
-    alert("Sorry! This file is not located in the local DropBox folder. We searched the current URL (" + document.URL + ") for this pattern (" + dropboxTestPattern + ").");
-
-    console.groupEnd();
-
-  }
-}
-
-
-function processDbLink(shareableLink, action, source) {
-
-  // console.error(shareableLink + ", " + action);
-  console.log("Link retrieved from Dropbox API. Running processDbLink().")
-
-  if ( shareableLink.length > 0 ) {
-
-    if( !/dl\.dropboxusercontent/gi.test(shareableLink) ) {
-      shareableLink = shareableLink.replace(/www\./i, "dl.");
-      shareableLink = shareableLink.replace(/dropbox\.com/i, "dropboxusercontent.com");
-      shareableLink = shareableLink.replace(/\?dl=0/i, "");
-    } else {
-      shareableLink = getPathFromUrl(shareableLink);
-    }
-
-    if ( action === "copy" ) {
-
-      // var shareableLinkHolder = document.createElement("input");
-      // shareableLinkHolder.id = "dropbox-link-text"
-      // shareableLinkHolder.className = "hidden"
-      // shareableLinkHolder.value = shareableLink;
-      // document.body.appendChild(shareableLinkHolder);
-
-      dropboxUrlInput.value = shareableLink;
-
-      var t1 = performance.now();
-
-      copyToClipboard(dropboxUrlInput, "success", true);
-
-      // var x = (t1 - t0) / 1000;
-      // var seconds = x % 60;
-
-      var seconds = Math.round(((t1 - t0)/1000)%60);
-
-      console.log("Call to DropBox took " + (t1 - t0) + " milliseconds (" + seconds + " seconds).");
-
-      source.classList.remove("loading");
-
-      console.log("Copying processed link to clipboard. [" + shareableLink + "]");
-
-    } else {
-
-      // var dbLinkForClicking = document.createElement("a");
-      // dbLinkForClicking.id = "dropbox-link-for-clicking";
-      // dbLinkForClicking.href = shareableLink
-      // document.body.appendChild(dbLinkForClicking);
-      // dbLinkForClicking.click();
-
-      // history.pushState(null,null, shareableLink );
-
-      console.log("Navigating to processed link. [" + shareableLink + "]");
-      window.location.href = shareableLink;
-
-    }
-
-
-  } else {
-    alert("error!");
-  }
-
-  console.groupEnd();
-
-}
-
-//////////
-////
-////  Create Orb Dividers
-////
-/////////
-
-// var orbDivider1 = document.createElement("div");
-// orbDivider1.className = "orb-divider orb-divider-1";
-// orbsBottom.appendChild(orbDivider1);
-
-// var orbDivider2 = document.createElement("div");
-// orbDivider2.className = "orb-divider orb-divider-2";
-// orbsBottom.appendChild(orbDivider2);
-
-var orbDivider3 = document.createElement("div");
-orbDivider3.className = "orb-divider orb-divider-3";
-orbsBottom.appendChild(orbDivider3);
 
 
 //////////
@@ -1695,35 +1373,12 @@ function swapUrl() {
   console.log("Beginning URL swap.");
 
   if ( elExists(document.querySelector("#dropbox-link-text")) ) {
-    window.location.href = document.querySelector("#dropbox-link-text").value;
+    window.location.href = document.querySelector("#dropbox-link-text").value + "?noredirect=1";
   } else {
     callDropbox("go", this);
   }
 
 }
-
-
-
-//////////
-////
-////  Check Links - Manual Button Click
-////
-/////////
-
-// Show/hide link checking orb.
-// Used to activate link checking on older emails (> 1 month).
-// By default we don't link check old emails.
-// if ( !isRecentEmail ) {
-  var checkLinksOrb = document.createElement("div");
-  checkLinksOrb.id = "check-links-orb";
-  checkLinksOrb.className = "check-links-orb orb glyph";
-  checkLinksOrb.addEventListener("click", manualXHRLinkCheck, false);
-  orbsBottom.appendChild(checkLinksOrb);
-
-  function runLinkValidation() {
-    linkValidationLoop("false");
-  }
-// }
 
 
 //////////
@@ -1743,9 +1398,24 @@ function swapUrl() {
     var html = cleanedOriginalHtml;
     var result = emailRemoveUnusedCss(html)
 
-    console.log(result)
+    console.groupCollapsed();
 
-    copyToClipboard(result.result, "success", true);
+    console.log("html", html);
+    console.log("result", result.result);
+
+    console.groupEnd();
+
+    console.log("result", result);
+    console.log("allInBody", result.allInBody);
+    console.log("allInHead", result.allInHead);
+    console.log("deletedFromBody", result.deletedFromBody);
+    console.log("deletedFromHead", result.deletedFromHead);
+
+    console.log(result.result);
+
+    console.log(stringCollapseWhiteSpace(result.result, {removeEmptyLines: true, trimLines: true}));
+
+    // copyToClipboard(result.result, "success", true);
 
   }
 
@@ -1759,7 +1429,7 @@ function swapUrl() {
   var openOrb = document.createElement("a");
   openOrb.id = "open-orb";
   openOrb.className = "open-orb orb glyph icomoon icomoon-power";
-  openOrb.href = "atom://open?url=" + document.URL;
+  openOrb.href = "atom://open?url=" + document.location.origin + document.location.pathname;
   // file://<file_path>[&line=<line>[&column=<column>]][&devMode][&safeMode][&newWindow]";
   // See: https://atom.io/packages/open
   orbsBottom.appendChild(openOrb);
@@ -1774,52 +1444,10 @@ function swapUrl() {
   var openOrb = document.createElement("a");
   openOrb.id = "open-orb";
   openOrb.className = "open-orb orb glyph icomoon icomoon-fire";
-  openOrb.href = "subl://open?url=" + document.URL;
+  openOrb.href = "subl://open?url=" + document.location.origin + document.location.pathname;
   // subl://open?url=file://{{file}}&line={{line}}&column={{column}}
   // See: https://github.com/inopinatus/sublime_url
   orbsBottom.appendChild(openOrb);
-
-
-
-//////////
-////
-////  Check the Blog
-////
-/////////
-
-  // !!!!!!!!!!!!!!!!!!!!
-  //
-  // FUNCTION COMMENTED OUT. THE SWITCH TO HTTPS MEANS THIS NO LONGER WORKS. NEED TO FIX!
-  //
-
-// var blogOrb = document.createElement("div");
-// blogOrb.id = "blog-orb";
-// blogOrb.className = "blog-orb orb glyph";
-// blogOrb.addEventListener("click", runCheckTheBlog, false);
-// orbsBottom.appendChild(blogOrb);
-//
-// function runCheckTheBlog() {
-//   // Code that runs the blog check is located in a separate file.
-//   checkTheBlog();
-// }
-
-//////////
-////
-////  Zoom Check Orb
-////
-/////////
-
-// var zoomCheckOrb = document.createElement("div");
-// zoomCheckOrb.id = "zoom-check-orb";
-// zoomCheckOrb.className = "zoom-check-orb orb glyph icomoon icomoon-search";
-// zoomCheckOrb.addEventListener("click", zoomCheck, false);
-// orbsBottom.appendChild(zoomCheckOrb);
-// var showDimsToggle = false;
-//
-// function zoomCheck() {
-//
-// }
-
 
 
 //////////
@@ -2144,46 +1772,6 @@ function toggleGuides() {
   }
 }
 
-//////////
-////
-////  Create Nav Up/Down Orb
-////
-/////////
-
-//
-// var navOrb = document.createElement("div");
-// navOrb.className = "nav-orb orb dual-orb glyph";
-// orbsBottom.appendChild(navOrb);
-//
-//   var navOrbUp = document.createElement("div");
-//   navOrbUp.className = "nav-orb-up orb glyph";
-//   navOrbUp.addEventListener("click", navUp, false);
-//   navOrb.appendChild(navOrbUp);
-//
-//   var navOrbDown = document.createElement("div");
-//   navOrbDown.className = "nav-orb-down orb glyph";
-//   navOrbDown.addEventListener("click", navDown, false);
-//   navOrb.appendChild(navOrbDown);
-//
-//   function navUp() {
-//
-//     var dFrameScroll = document.getElementById('desktop-view');
-//     dFrameScroll.contentWindow.scrollTo(0,0);
-//
-//     var mFrameScroll = document.getElementById('mobile-view');
-//     mFrameScroll.contentWindow.scrollTo(0,0);
-//
-//   }
-//
-//   function navDown() {
-//
-//     var dFrameScroll = document.getElementById('desktop-view');
-//     dFrameScroll.contentWindow.scrollTo(0,dFrameContents.body.scrollHeight);
-//
-//     var mFrameScroll = document.getElementById('mobile-view');
-//     mFrameScroll.contentWindow.scrollTo(0,mFrameContents.body.scrollHeight);
-//
-//   }
 
 
 //////////
@@ -2220,72 +1808,8 @@ var customOrb = document.createElement("div");
 customOrb.className = "custom-orb orb glyph";
 customOrb.id = "custom-orb";
 customOrb.addEventListener("click", sendEmail, false);
-orbsBottom.appendChild(customOrb);
+// orbsBottom.appendChild(customOrb); // OFF for now
 var presentationToggle = false
-        //
-        // function togglePresentation() {
-        //
-        //   presentationToggle = !presentationToggle;
-        //
-        //   if ( presentationToggle ) {
-        //     history.replaceState(null,null, updateQueryString("presentation", "1") );
-        //   } else {
-        //     history.replaceState(null,null, updateQueryString("presentation") );
-        //   }
-        //
-        //   // document.body.classList.toggle("beta");
-        //
-        //   // history.replaceState(null,null, updateQueryString("presentation", "1") );
-        //
-        //   if ( document.body.classList.contains("presentation-mode") ) {
-        //     paneToggle(1,1);
-        //   } else {
-        //     paneToggle(0,1);
-        //   }
-        //
-        //   document.body.classList.toggle("presentation-mode");
-
-  //
-  // console.error(Notification.permission);
-  //
-  // if ( Notification.permission !== "granted" ) {
-  //   Notification.requestPermission();
-  //   console.error(Notification.permission);
-  // } else {
-  //   console.error(Notification.permission);
-  //   var notification = new Notification('Pending Drafts', {
-  //     body: "Hey there! You have pending drafts in MailChimp, get on it!",
-  //     requireInteraction: true
-  //   });
-  // }
-  //
-  // console.error(Notification.permission);
-  //
-  // console.log(dFrameContents.body);
-  // console.log(dFrameContents.getElementsByTagName("body")[0]);
-  //
-  // console.log(dFrameContents.body.scrollTop);
-  // console.log(dFrameContents.getElementsByTagName("body")[0].scrollTop);
-  //
-  // var articleNumber = "1";
-  // sessionStorage.setItem('article' + articleNumber + "status", "protected");
-  // sessionStorage.setItem('article' + articleNumber + "type", "pearl");
-  //
-  // console.log(+ new Date());
-  //
-  // var currentdate = new Date();
-  // var datetime = "Last Sync: " + currentdate.getDate() + "/"
-  //                 + (currentdate.getMonth()+1)  + "/"
-  //                 + currentdate.getFullYear() + " @ "
-  //                 + currentdate.getHours() + ":"
-  //                 + currentdate.getMinutes() + ":"
-  //                 + currentdate.getSeconds();
-  //
-  // console.log(currentdate);
-  // console.log(datetime);
-  // console.log(currentdate.getHours());
-  // console.log(new Date().getHours());
-  // }
 
 
 
@@ -2353,7 +1877,7 @@ var linkErrorsOrb = document.createElement("div");
 linkErrorsOrb.className = "link-errors-orb orb glyph";
 linkErrorsOrb.id = "link-errors-orb";
 // linkErrorsOrb.addEventListener("click", toggleLinkErrors, false);
-toolbarSectionOverlays.appendChild(linkErrorsOrb);
+// toolbarSectionOverlays.appendChild(linkErrorsOrb);
 
 
 //////////
@@ -2366,7 +1890,7 @@ var textErrorsOrb = document.createElement("div");
 textErrorsOrb.className = "text-errors-orb orb glyph";
 textErrorsOrb.id = "text-errors-orb";
 // textErrorsOrb.addEventListener("click", toggleTextErrors, false);
-toolbarSectionOverlays.appendChild(textErrorsOrb);
+// toolbarSectionOverlays.appendChild(textErrorsOrb);
 
 
 //////////
@@ -2385,7 +1909,9 @@ var editToggle = false
 function editEmail() {
   editToggle = !editToggle;
   var editDesktop = dFrameContents.getElementsByTagName('html')[0].contentEditable = editToggle;
-  document.getElementById("desktop-view").classList.toggle("editing");
+  var editMobile  = mFrameContents.getElementsByTagName('html')[0].contentEditable = editToggle;
+  desktopIframeWrapper.classList.toggle("editing");
+  mobileIframeParent.classList.toggle("editing");
   document.getElementById("edit-orb").classList.toggle("on");
   dFrameBody.focus();
 }
@@ -2481,28 +2007,11 @@ function toggleImages() {
 ////
 /////////
 
-// var imgDimsOrb = document.createElement("div");
-// imgDimsOrb.id = "img-dims-orb";
-// imgDimsOrb.className = "img-dims-orb orb glyph";
-// imgDimsOrb.addEventListener("click", toggleImgDims, false);
-// orbsBottom.appendChild(imgDimsOrb);
-
 var imgDimsToggle = false;
 
 function toggleImgDims() {
 
   imgDimsToggle = !imgDimsToggle;
-
-// Commented out because I've folded this function into the borders function.
-  // if ( imgDimsToggle ) {
-  //   history.replaceState(null,null, updateQueryString("imgdims", "1") );
-  // } else {
-  //   history.replaceState(null,null, updateQueryString("imgdims") );
-  // }
-
-  // document.getElementById("img-dims-orb").classList.toggle("on");
-
-// Continue...
 
   dFrameContents.documentElement.classList.toggle("debug-imgdims-highlight");
   mFrameContents.documentElement.classList.toggle("debug-imgdims-highlight");
@@ -2721,262 +2230,6 @@ plainTextVersion = pt;
 
 
 
-
-
-/////////
-/////////
-/////////
-
-function plainText() {
-
-  console.error("totalProtectedArticles: " + totalProtectedArticles);
-
-  if ( typeof(plainTextTingle) == 'undefined' || plainTextTingle == null ) {
-
-    // data-module="preheader"
-    // data-module="featured-article"
-    // data-module="testimonial"
-    // data-module="wildcard"
-    // data-module="featured-courses"
-    // data-module="bbanner"
-    // data-module="sale-banner"
-    // data-module="from-the-blog"
-
-    var moduleType = ""
-    var plainText = ""
-
-    ////
-    //////
-    // Iterate through DOM nodes - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of
-    let moduleList = domCopy.querySelectorAll("[data-module]");
-
-    console.log(domCopy);
-
-    for (let module of moduleList) {
-
-      var insertText = "";
-
-
-      console.log(module);
-      var moduleType = module.getAttribute("data-module");
-      console.log(moduleType);
-
-
-      if (moduleType === "preheader") {
-        var insertText =  module.textContent;
-      }
-
-      if (moduleType === "testimonial") {
-
-        var insertText = "\""
-
-        insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText.replace(/(\t+|\n+)/gi, " ")) + "\"\n\n";
-        insertText += module.querySelector("[data-sub-mod='author']").innerText.trim();
-        insertText += grabText(module.querySelector("[data-sub-mod='profession']"));
-
-      }
-
-      if (moduleType === "featured-article") {
-
-        console.log( module.querySelector("[data-sub-mod='title']") );
-
-        insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n"
-
-        if ( elExists(module.querySelector("[data-sub-mod='author']")) ) {
-          insertText +=   module.querySelector("[data-sub-mod='author']").innerText.trim() + "\n\n";
-        }
-
-        insertText +=  cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
-
-        if ( elExists(module.querySelector("[data-sub-mod='cta']")) ) {
-          insertText +=  module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
-          insertText +=  module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
-        }
-
-      }
-
-      if (moduleType === "did-you-know") {
-        var headline = module.innerText.trim();
-
-        var insertText = headline;
-      }
-
-      if (moduleType === "from-the-blog") {
-        var insertText = ""
-
-        /// 1
-
-        insertText += module.querySelector("[data-sub-mod='category-title']").innerText.trim() + "\n\n"
-        insertText += module.querySelectorAll("[data-sub-mod='title']")[0].innerText.trim() + "\n";
-
-        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[0]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='author']")[0].innerText.trim() + "\n\n";
-        }
-
-        insertText += module.querySelectorAll("[data-sub-mod='title'] a")[0].getAttribute("href").trim() + "\n\n * * * \n\n";
-
-        /// 2
-
-        insertText += module.querySelectorAll("[data-sub-mod='title']")[1].innerText.trim() + "\n";
-
-        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[1]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='author']")[1].innerText.trim() + "\n\n";
-        }
-
-        insertText += module.querySelectorAll("[data-sub-mod='title'] a")[1].getAttribute("href").trim() + "\n\n * * * \n\n";
-
-        /// 3
-
-        insertText += module.querySelectorAll("[data-sub-mod='title']")[2].innerText.trim() + "\n";
-
-        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[2]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='author']")[2].innerText.trim() + "\n\n";
-        }
-
-        insertText += module.querySelectorAll("[data-sub-mod='title'] a")[2].getAttribute("href").trim();
-      }
-
-      if (moduleType === "two-column-articles") {
-        var insertText = ""
-        insertText += module.querySelectorAll("[data-sub-mod='title']")[0].innerText.trim() + "\n";
-        insertText += cleanPlainTxt(module.querySelectorAll("[data-sub-mod='summary']")[0].innerText) + "\n\n";
-        insertText += module.querySelectorAll("[data-sub-mod='cta']")[0].innerText.trim() + "\n";
-        insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[0].getAttribute("href").trim() + "\n\n* * *\n\n";
-
-        insertText += module.querySelectorAll("[data-sub-mod='title']")[1].innerText.trim() + "\n";
-        insertText += cleanPlainTxt(module.querySelectorAll("[data-sub-mod='summary']")[1].innerText) + "\n\n";
-        insertText += module.querySelectorAll("[data-sub-mod='cta']")[1].innerText.trim() + "\n";
-        insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[1].getAttribute("href").trim();
-      }
-
-      if (moduleType === "featured-courses") {
-
-        var insertText = ""
-
-        if ( elExists(module.querySelectorAll("[data-sub-mod='all-courses-title']")[0]) ) {
-          insertText +=   module.querySelectorAll("[data-sub-mod='all-courses-title']")[0].innerText.trim() + "\n"
-          insertText += module.querySelectorAll("[data-sub-mod='all-courses-cta']")[0].innerText.trim() + " (";
-          insertText += module.querySelectorAll("[data-sub-mod='all-courses-cta'] a")[0].getAttribute("href").trim() + ")" + "\n\n* * *\n\n";
-        }
-        ////
-        if ( elExists(module.querySelectorAll("[data-sub-mod='course-title']")[0]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='course-title']")[0].innerText.trim() + "\n\n";
-        }
-        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[0]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='author']")[0].innerText.trim() + "\n\n";
-        }
-        insertText += module.querySelectorAll("[data-sub-mod='cta']")[0].innerText.trim() + " ";
-        insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[0].getAttribute("href").trim();
-        insertText += "\n\n* * *\n\n";
-        ////
-        if ( elExists(module.querySelectorAll("[data-sub-mod='course-title']")[1]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='course-title']")[1].innerText.trim() + "\n\n";
-        }
-        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[1]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='author']")[1].innerText.trim() + "\n\n";
-        }
-        insertText += module.querySelectorAll("[data-sub-mod='cta']")[1].innerText.trim() + " ";
-        insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[1].getAttribute("href").trim();
-        insertText += "\n\n* * *\n\n";
-        ////
-        if ( elExists(module.querySelectorAll("[data-sub-mod='course-title']")[2]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='course-title']")[2].innerText.trim() + "\n\n";
-        }
-        if ( elExists(module.querySelectorAll("[data-sub-mod='author']")[2]) ) {
-          insertText += module.querySelectorAll("[data-sub-mod='author']")[2].innerText.trim() + "\n\n";
-        }
-        insertText += module.querySelectorAll("[data-sub-mod='cta']")[2].innerText.trim() + " ";
-        insertText += module.querySelectorAll("[data-sub-mod='cta'] a")[2].getAttribute("href").trim();
-
-      }
-
-      if (moduleType === "wildcard") {
-
-        var insertText = ""
-
-        if ( elExists(module.querySelector("[data-sub-mod='category-title']")) ) {
-          insertText += toTitleCase(module.querySelector("[data-sub-mod='category-title']").innerText.trim()) + "\n\n"
-        }
-
-        insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n";
-
-        if ( elExists(module.querySelector("[data-sub-mod='sub-title']")) ) {
-          insertText += module.querySelector("[data-sub-mod='sub-title']").innerText.trim() + "\n";
-        }
-
-        if ( elExists(module.querySelector("[data-sub-mod='summary']")) ) {
-          insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='summary']").innerText) + "\n\n";
-        }
-
-        insertText += module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
-        insertText += module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
-
-      }
-
-      if (moduleType === "bbanner" || moduleType === "tbanner" || moduleType === "banner") {
-
-        var insertText = ""
-
-        if ( elExists(module.querySelector("[data-sub-mod='title']")) ) {
-          insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n";
-        }
-        if ( elExists(module.querySelector("[data-sub-mod='summary']")) ) {
-          insertText += module.querySelector("[data-sub-mod='summary']").innerText.trim() + "\n";
-        }
-        if ( elExists(module.querySelector("[data-sub-mod='cta']")) ) {
-          insertText += "\n" + module.querySelector("[data-sub-mod='cta']").innerText.trim() + "\n";
-          insertText += module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
-        }
-
-      }
-
-      if (moduleType === "sale-banner") {
-
-        var insertText = ""
-
-        insertText += module.querySelector("[data-sub-mod='title']").innerText.trim() + "\n";
-        insertText += module.querySelector("[data-sub-mod='summary']").innerText.trim() + "\n\n";
-        insertText += cleanPlainTxt(module.querySelector("[data-sub-mod='cta']").innerText) + "\n";
-        insertText += module.querySelector("[data-sub-mod='cta'] a").getAttribute("href").trim();
-
-      }
-
-
-      var plainText = plainText + insertText + "\n\n" + "===============================================" + "\n\n";
-
-    }
-
-      console.log(plainText);
-
-      // Create Plain-Text Modal
-
-      // document.body.appendChild(plainTextModal);
-
-      // instanciate new modal
-      plainTextTingle = new tingle.modal({
-          footer: false,
-          stickyFooter: false,
-          cssClass: ['fill'],
-
-          onOpen: function() {
-              console.log('modal open');
-          },
-          onClose: function() {
-              console.log('modal closed');
-              // plainTextTingle.destroy();
-          }
-      });
-
-      var plainTextContainer = createPlainTextContainer(plainText);
-      plainTextTingle.setContent(plainTextContainer);
-
-  }
-
-  var plainTextContainer = document.querySelector(".tingle-modal-box textarea")
-  plainTextTingle.open();
-  selectElementContents(plainTextContainer);
-
-}
 
 function processModuleText(moduleType) {
 
@@ -3258,7 +2511,7 @@ appendQaBar(codeWeightQaBar);
 
   var htmlForSizeCalc = cleanedOriginalHtml;
   var conditionalsExist = htmlForSizeCalc.match(/\*\|IF.+?\|\*/gi);
-  console.error(conditionalsExist);
+  console.log("ESP Conditionals: ", conditionalsExist);
 
   // Is this a MailChimp email? Detect by looking for merge tags.
     if ( /\*\|.+?\|\*/.test(htmlForSizeCalc) ) {
@@ -3309,7 +2562,6 @@ if ( conditionalsExist ) {
 }
 
 
-
 //////////
 ////////////////
 ///////////////////////
@@ -3341,7 +2593,6 @@ campaignWeightQaBar.className = "qa-campaignWeight";
 // appendQaBar(campaignWeightQaBar);
 
 
-
 //////////
 ////////////////
 ///////////////////////
@@ -3354,7 +2605,6 @@ campaignWeightQaBar.className = "qa-campaignWeight";
 
 
 // OFF
-
 var citationsQaBar = document.createElement("div");
 citationsQaBar.id = "qa-citations";
 citationsQaBar.className = "qa-citations";
@@ -3433,7 +2683,7 @@ textWarningsQaBar.className = "qa-text-warnings";
 
 if ( getParameterByName("leftNav") || getParameterByName("mobile") ) {
   paneToggle(getParameterByName("leftNav"), getParameterByName("mobile"));
-  console.log("panes modified on page load via querystring");
+  // console.log("panes modified on page load via querystring");
 }
 
 if ( getParameterByName("presentation") === "1" ) {
@@ -3503,47 +2753,6 @@ function checkZoomLevel() {
 // https://stackoverflow.com/a/6365777/556079
 // https://stackoverflow.com/a/6365777/556079
 
-  // var screenCssPixelRatio = (window.outerWidth - 8) / window.innerWidth;
-  // var zoomLevel;
-  // if (screenCssPixelRatio <= .34) {
-  //   zoomLevel = "-6+";
-  // } else if (screenCssPixelRatio <= .44) {
-  //   zoomLevel = "-5";
-  // } else if (screenCssPixelRatio <= .54) {
-  //   zoomLevel = "-4";
-  // } else if (screenCssPixelRatio <= .64) {
-  //   zoomLevel = "-3";
-  // } else if (screenCssPixelRatio <= .76) {
-  //   zoomLevel = "-2";
-  // } else if (screenCssPixelRatio <= .92) {
-  //   zoomLevel = "-1";
-  // } else if (screenCssPixelRatio <= 1.05 && screenCssPixelRatio >= .98) {
-  //   zoomLevel = "0";
-  // } else if (screenCssPixelRatio <= 1.10) {
-  //   zoomLevel = "1";
-  // } else if (screenCssPixelRatio <= 1.32) {
-  //   zoomLevel = "2";
-  // } else if (screenCssPixelRatio <= 1.58) {
-  //   zoomLevel = "3";
-  // } else if (screenCssPixelRatio <= 1.90) {
-  //   zoomLevel = "4";
-  // } else if (screenCssPixelRatio <= 2.28) {
-  //   zoomLevel = "5";
-  // } else if (screenCssPixelRatio >= 2.29) {
-  //   zoomLevel = "6+";
-  // } else {
-  //   zoomLevel = "unknown";
-  // }
-  //
-  //
-  // console.log("Zoom Level: " + zoomLevel + " (" + screenCssPixelRatio + ")");
-
-
-  // console.error(Number(dFrameContents.documentElement.style.zoom));
-  // console.error(currentZoomLevel);
-
-  // setTimeout(function(){
-
     var currentZoomLevel = dFrameContents.documentElement.style.zoom || 1;
 
     if ( currentZoomLevel && currentZoomLevel <= 0.85 ) {
@@ -3552,11 +2761,8 @@ function checkZoomLevel() {
     }
     // console.log("Current Zoom Level:", currentZoomLevel);
 
-  // }, 1000);
-
 
 }
-
 
 var zoomCheckStatus = false;
 
@@ -3565,13 +2771,6 @@ var zoomCheckStatus = false;
 
 checkZoomLevel();
 
-
-
-//
-// Deprecated. Different modules can now be within what were previously considered top level modules. I now have to manually label modules with [data-mod]. This makes declaring the parent wrapper pointless.
-// if ( !elExists(dFrameContents.querySelector("[data-module-wrapper]")) ) {
-//   alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
-// }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3675,6 +2874,9 @@ dFrameContents.documentElement.appendChild(linkMarkerWrapper);
 
 // dframe links, dummy frame links, age check
 linkValidationLoop(linkList, dummyLinkList, "false");
+
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4106,12 +3308,6 @@ if ( (emailSubType === "ns" || emailSubType === "sub") && !emailAnySale ) {
 // Sale Verbiage
 //
 
-// MedBridge Pricing
-// What was this for?!
-// findAndReplaceDOMText(dFrameBody, {
-//   find: /([^r] 40% off)/gi,
-//   wrap: 'span', wrapClass: "text-error"
-// });
 if ( emailAnySale && emailDisc !== "lmt" ) {
   findAndReplaceDOMText(dFrameBody, {
     find: /50%/gi,
@@ -4140,29 +3336,6 @@ findAndReplaceDOMText(dFrameBody, {
   wrap: 'span', wrapClass: "text-error"
 });
 
-
-//
-// Personalization
-//
-// findAndReplaceDOMText(dFrameBody, {
-//   find: /Valued Customer/gi,
-//   wrap: 'span', wrapClass: "text-error"
-// });
-
-
-
-
-//
-// Enterprise
-//
-///// Deprecated -  Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
-/////
-// if ( emailDisc === "ent" && emailSubType === "sub" ) {
-//   findAndReplaceDOMText(dFrameBody, {
-//     find: /request a demo/gi,
-//     wrap: 'span', wrapClass: "text-error"
-//   });
-// }
 
 
 if ( outsideOrg ) {
@@ -4209,18 +3382,6 @@ findAndReplaceDOMText(dFrameBody, {
 if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrameContents.body.textContent) ) {
   alertify.error("Refer a Friend<div>Remember update the MailChimp database and use conditional statements to only show Refer a Friend content to eligible contacts.</div>", 0);
 }
-
-
-// if ( !elExists(dFrameContents.querySelector("[data-module-wrapper]")) ) {
-//   alertify.error("[data-module-wrapper] is missing. <div>Add this data- attribute to the <code>&lt;td&gt;</code> that wraps your main content.</div>", 0);
-// }
-// if ( emailSubType === "ns" && ) {
-//   findAndReplaceDOMText(dFrameBody, {
-//     find: /(Start Now|in (an|your) annual|Register Now|Refer(\-| )a(\-| )Friend)/gi,
-//     wrap: 'span',
-//     wrapClass: "text-error"
-//   });
-// }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -4327,147 +3488,10 @@ if ( getParameterByName("guides") === "1" ) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-    //////////
-            //
-            // chrome.runtime.onMessage.addListener(
-            //   function(request, sender, sendResponse) {
-            //
-            //       // console.log("request.greeting: " + request.greeting);
-            //       var blogStatusReply = request.greeting.split("|");
-            //       console.log("blogStatusReply: ");
-            //       console.log(blogStatusReply);
-            //
-            //       if ( blogStatusReply[1] === "error" ) {
-            //
-            //       } else {
-            //
-            //         // console.log("blogStatusReply: " + blogStatusReply);
-            //         // console.log("blogStatusReply[4]: " + blogStatusReply[4]);
-            //
-            //         var blogUrlChecked = document.querySelector("#iframe-" + blogStatusReply[4]).getAttribute("src").replace(/[?&]blog\-check.+/gi, "");
-            //
-            //
-            //         console.log("blogStatusReply[4]: ");
-            //         console.log(blogStatusReply[4]);
-            //         console.log("blogUrlChecked: " + blogUrlChecked);
-            //
-            //
-            //         blogUrlChecked = processBlogLinkBeingChecked(blogUrlChecked);
-            //
-            //         blogStatusSuccessArray.push(blogUrlChecked);
-            //
-            //
-            //         // if ( /after_affiliate_url/gi.test(blogUrlChecked) ) {
-            //         //   blogUrlChecked = blogUrlChecked.replace(/\&.+/gi, "");
-            //         //   console.log("blogUrlChecked: " + blogUrlChecked);
-            //         // }
-            //         // // New way to link articles in -ns and -sub. Using the p=#### id of the article lets us keep the same link if the URL changes in the future
-            //         // else if ( /p=\d\d\d/gi.test(linkHref) ) {
-            //         //   console.log("This blog link uses p=#### id for linking.")
-            //         //   var blogLinkToCheckArray = linkHref.match(/p=[0-9]*/gi);
-            //         //   var blogLinkToCheck = blogLinkToCheckArray[0].replace(/p=/gi,"");
-            //         // }
-            //         // else {
-            //         //   blogUrlChecked = blogUrlChecked.replace(/\?.+/gi, "");
-            //         //   console.log("blogUrlChecked: " + blogUrlChecked);
-            //         // }
-            //
-            //         blogUrlChecked = blogUrlChecked.replace(/^https?\:\/\/.+?\//i, "");
-            //         blogUrlChecked = blogUrlChecked.replace(/\/$/i, "");
-            //
-            //         // console.log(blogUrlChecked);
-            //         // console.log(blogStatusReply[1] + "|" + blogUrlChecked);
-            //
-            //         console.log("Saving to sessionStorage: " + blogUrlChecked + " - " + blogStatusReply);
-            //         sessionStorage.setItem(blogUrlChecked, blogStatusReply);
-            //
-            //         destroy(document.querySelector("#iframe-" + blogStatusReply[4]));
-            //         // console.log("#iframe-" + blogStatusReply[4] + " destroyed.")
-            //
-            //       }
-            //
-            //
-            //   }
-            // );
-            //
-            //
-            // function processBlogLinkBeingChecked(link) {
-            //
-            //   console.log("function is processing the blog link being checked: " + link);
-            //
-            //   // First 'if' handles the blog link when we eventually are allowed to use after_affiliate_url for blog links, this is just future proofing (4/14/17)
-            //   // if ( /after_affiliate_url/gi.test(link) ) {
-            //   //   console.log("This blog link uses after_affiliate_url for linking.");
-            //   //   var blogLinkToCheck = link.replace(/\&.+/gi, "");
-            //   //       blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?after_affiliate_url\=\/?/gi, "");
-            //   //       console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
-            //   // }
-            //   // // New way to link articles in -ns and -sub. Using the p=#### id of the article lets us keep the same link if the URL changes in the future
-            //   // else
-            //
-            //   if ( /p=\d\d\d/gi.test(link) ) {
-            //     console.log("This blog link uses p=#### id for linking.")
-            //     var blogLinkToCheckArray = link.match(/p=[0-9]*/gi);
-            //     var blogLinkToCheck = blogLinkToCheckArray[0].replace(/p=/gi,"");
-            //         console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
-            //   }
-            //   else {
-            //     console.log("This blog link uses ??? for linking.");
-            //     var blogLinkToCheck = link.replace(/\/?\?.+/gi, "");
-            //         blogLinkToCheck = blogLinkToCheck.replace(/https?\:\/\/.+?\//gi, "");
-            //         console.log("in function we set blogLinkToCheck: " + blogLinkToCheck);
-            //   }
-            //
-            //   return blogLinkToCheck;
-            //
-            // }
-            //
-            // // Need to use this during link checking and again once the postMessages come back. Figure that out.
-            // function checkArticleLink(linkObject, blogStatusFromStorage) {
-            //
-            //   // console.log(link.href);
-            //   // console.log(blogStatusFromStorage);
-            //
-            //   var blogStatusFromStorage = blogStatusFromStorage;
-            //   // Check Protects/Unprotected
-            //   if ( blogStatusFromStorage[2] === "protected" ) {
-            //     createLinkErrorRow(linkObject, "article is protected", "error", "lock");
-            //     totalProtectedArticles++;
-            //   }
-            //   // Check Pearl vs Blog
-            //   if ( linkNeedsGoogleTracking ) {
-            //     if ( blogStatusFromStorage[3] === "blog" && !/utm_content=.+?\-blog/gi.test(linkObject.href) ) {
-            //       createLinkErrorRow(linkObject, "add 'blog' to utm");
-            //     } else if ( blogStatusFromStorage[3] === "pearl" && !/utm_content=.+?\-pearl/gi.test(linkObject.href) ) {
-            //       createLinkErrorRow(linkObject, "add 'pearl' to utm");
-            //     }
-            //   }
-            //
-            //   // console.error(totalProtectedArticles);
-            // }
-            //
-            // // console.error(totalProtectedArticles);
-            //
-            // if ( totalProtectedArticles > 0 ) {
-            //   console.error(totalProtectedArticles);
-            //   alertify.error("1 or more articles are protected<div>Remember to unprotect all articles and re-check their status before sending out the newsletter.</div>", 0);
-            // }
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 /////////////////////////// == SCROLL SYNCING == //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-
 
 dFrameContents.addEventListener('scroll', function(e) {
   syncScroll(dFrameContents, document.querySelector("#desktop-view"));

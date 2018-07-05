@@ -79,7 +79,7 @@ options = {
 function exportSingleModule() {
 
   // GA
-  if ( trackingModNumberInput.value !== "" && whitelabelingInput.value === "www" ) {
+  if ( trackingModNumberInput.value !== "" ) {
     if ( audienceInput.value === "non-subscribers" ) {
       var gaTracking = "&utm_content=mod" + trackingModNumberInput.value;
     } else {
