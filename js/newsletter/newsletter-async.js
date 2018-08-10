@@ -1,6 +1,66 @@
 // console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter-async.js");
 /////////////////////////////////////////////////////////////////////////
 
+
+///////
+///////
+///////
+var getHtml = new Promise(function(resolve, reject) {
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", document.URL, true);
+
+  // When xhring a local file, the response.status is 0
+  xhr.onload = function (e) {
+    // if (this.status === 0) {
+
+      console.log(this);
+
+      processCode(this.response);
+      resolve(this.response);
+
+    // } else {
+    //   reject({
+    //     status: this.status,
+    //     statusText: xhr.statusText
+    //   });
+    // }
+  };
+  xhr.onerror = function () {
+    reject({
+      status: this.status,
+      statusText: xhr.statusText
+    });
+  };
+  xhr.send();
+
+});
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+Promise.all([getAllOptions, getHtml]).then(function(values) {
+  // HTML and options are ready...
+  // do something
+
+        setTimeout(function(){
+          // Check the options for a value.
+          if ( exOptions.openInApp === "atom" ) {
+            var appLink = 'atom://open?url=';
+          } else if ( exOptions.openInApp === "sublime" ) {
+            var appLink = 'subl://open?url=';
+          }
+
+
+          // Create the link
+          if (typeof openInApp != "undefined") {
+            openInApp.href = appLink + document.location.origin + document.location.pathname;
+          }
+
+
+        }, 1000);
+
+});
+
+
 var view = getParameterByName("view");
 if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
   // console.log(document.URL);
@@ -57,6 +117,19 @@ function processCode(code) {
   cleanedDesktopHtml = cleanedOriginalHtml;
   cleanedMobileHtml = cleanedOriginalHtml;
 
+  // Check for conditional statements.
+  ////////////////////////////////////
+  if ( cleanedDesktopHtml.match(/\*\|IF:.+?\|\*/gi) && cleanedDesktopHtml.match(/\*\|END:IF\|\*/gi)  ) {
+
+    conditionalsExist = true;
+
+    // Parse the conditionals from MailChimp if they exists.
+    cleanedDesktopHtml = processMcConditionals(cleanedDesktopHtml);
+
+  } else {
+    conditionalsExist = false;
+  }
+
   ////!!!!!!!!!!!!!!!!!!!
   ////!!!!!!!!!!!!!!!!!!! Figure out how to make the iframe loading wait for us to get the HTML back
   ////!!!!!!!!!!!!!!!!!!!
@@ -75,12 +148,12 @@ function processCode(code) {
   cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
 
   // Add allFrames.css to both views
-  var allFramesCssString = '<link href="' + chrome.extension.getURL('css/newsletter/newsletter-allFrames.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
+  var allFramesCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-allFrames.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
   cleanedDesktopHtml += allFramesCssString;
   cleanedMobileHtml += allFramesCssString;
 
   // Add allFrames.js to both views
-  var allFramesScript = '<script src="' + chrome.extension.getURL('js/newsletter/allFrames.js') + '"></script>';
+  var allFramesScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/allFrames.js') + '"></script>';
   cleanedDesktopHtml += allFramesScript;
   cleanedMobileHtml += allFramesScript;
 
@@ -91,11 +164,11 @@ function processCode(code) {
   //////////////
 
   // Add dFrame.js
-  var dFrameFrameScript = '<script src="' + chrome.extension.getURL('js/newsletter/dFrame.js') + '"></script>';
+  var dFrameFrameScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/dFrame.js') + '"></script>';
   cleanedDesktopHtml += dFrameFrameScript;
 
   // Add dFrame.css to the desktop view
-  var dFrameCssString = '<link href="' + chrome.extension.getURL('css/newsletter/newsletter-dFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
+  var dFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-dFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
   cleanedDesktopHtml += dFrameCssString;
 
   //////////////
@@ -105,11 +178,11 @@ function processCode(code) {
   //////////////
 
   // Add mFrame.js
-  var mFrameScript = '<script src="' + chrome.extension.getURL('js/newsletter/mFrame.js') + '"></script>';
+  var mFrameScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/mFrame.js') + '"></script>';
   cleanedDesktopHtml += mFrameScript;
 
   // Add mFrame.css to the mobile view
-  var mFrameCssString = '<link href="' + chrome.extension.getURL('css/newsletter/newsletter-mFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
+  var mFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-mFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
   cleanedMobileHtml += mFrameCssString;
 
   // Now that we've got the HTML from our async call AND we've processed it...
@@ -165,10 +238,33 @@ if ( isinss ) {
       chrome.storage.sync.get(null, (items) => {
           let err = chrome.runtime.lastError;
           if (err) {
+
+            //@TODO What do I do if the call errors out?!
             reject(err);
+
           } else {
-            // console.log(items);
+
+            // Apply our result to a global variable so that we can use it throughout our other scripts.
+            // Maybe not the best way to handle this?
+            exOptions = items;
+
+            console.groupCollapsed("Options from Storage (exOptions)");
+            console.log(exOptions);
+            console.groupEnd();
+
+
+            // Created this function to take the items we got from the async call
+            // and apply them to variables for easy use in other scripts.
+            // I don't actually think this is necessary. Shouldn't I just call the items object?
+            // Like...
+            // exOptions = items;
+            // And then later...
+            // exOptions.optionName // returns the option I want.
+            // They are afterall all already named within the object!
+            // @TODO
             resolveOptions(items);
+
+
             resolve(items);
           }
       });
@@ -180,30 +276,25 @@ if ( isinss ) {
 
 function resolveOptions(items) {
 
-  console.groupCollapsed("Options from Storage");
-
-  console.log("All Options", items);
-  console.group("Variables for Use");
-
   // [OPTION]: Dropbox Folder Name
   dropboxFolderName = items.dropboxFolderName;
-  console.log("dropboxFolderName:", dropboxFolderName);
+  // console.log("dropboxFolderName:", dropboxFolderName);
 
   // [OPTION]: Dropbox Access Token
   dbx = new Dropbox({ accessToken: items.dropboxAccessToken });
   if ( items.dropboxAccessToken ) {
-    console.log("dropboxAccessToken: ", items.dropboxAccessToken);
+    // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
   } else {
     console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + items.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
   }
 
   // [OPTION]: Mailgun API Key
   mailgunApiKey = items.mailgunApiKey;
-  console.log("mailgunApiKey:", mailgunApiKey);
+  // console.log("mailgunApiKey:", mailgunApiKey);
 
   // [OPTION]: Mailgun Domain Name
   mailgunDomainName = items.mailgunDomainName.trim();
-  console.log("mailgunDomainName:", mailgunDomainName);
+  // console.log("mailgunDomainName:", mailgunDomainName);
 
   // [OPTION]:
   // [OPTION]:
@@ -216,52 +307,8 @@ function resolveOptions(items) {
   // [OPTION]:
   // [OPTION]:
 
-  console.groupEnd();
-  console.groupEnd();
+
 }
-
-
-
-///////
-///////
-///////
-var getHtml = new Promise(function(resolve, reject) {
-
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", document.URL, true);
-
-  // When xhring a local file, the response.status is 0
-  xhr.onload = function (e) {
-    // if (this.status === 0) {
-
-      processCode(this.response);
-      resolve(this.response);
-
-    // } else {
-    //   reject({
-    //     status: this.status,
-    //     statusText: xhr.statusText
-    //   });
-    // }
-  };
-  xhr.onerror = function () {
-    reject({
-      status: this.status,
-      statusText: xhr.statusText
-    });
-  };
-  xhr.send();
-
-});
-
-
-
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
-Promise.all([getAllOptions, getHtml]).then(function(values) {
-  // HTML and options are ready...
-  // do something
-});
-
 
 
 

@@ -1,14 +1,4 @@
-// TODO clean up this message
-
 console.warn("Korra " + chrome.runtime.getManifest().version);
-
-// Refreshes the current tab.
-// Implemented specifically to complient the .reload function below.
-// When I click the Korra icon the extension reloads. After its done reloading this code runs and refreshes my active tab.
-// This was added to make development of the extension quicker. Instead of opening the Extensions tab I can reload without ever leaving the page im looking at.
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.reload(tabs[0].id);
-    });
 
 // !!!!!!!!!!!!!
 // EVENT / BACKGROUND PAGE
@@ -39,6 +29,24 @@ console.warn("Korra " + chrome.runtime.getManifest().version);
 // ================================================================
 // ================================================================
 
+
+//                                                                                                    //
+// -------------------------------------------------------------------------------------------------- //
+//                                                                                                    //
+
+
+// Refreshes the current tab.
+// Implemented specifically to complient the .reload function below.
+// When I click the Korra icon the extension reloads. After its done reloading this code runs and refreshes my active tab.
+// This was added to make development of the extension quicker. Instead of opening the Extensions settings tab I can reload the extension without ever leaving the page I'm looking at.
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  chrome.tabs.reload(tabs[0].id);
+});
+
+
+//
+// Redirect Links using webRequest blocking.
+//
 // https://developer.chrome.com/extensions/webRequest
 chrome.webRequest.onBeforeRequest.addListener(
     function(details) {
@@ -51,7 +59,6 @@ chrome.webRequest.onBeforeRequest.addListener(
       } else {
         newUrl = "https://www.dropbox.com/s/" + newUrl.replace(/^.+?\/s\//i,"");
       }
-
 
       return { redirectUrl: newUrl /*Redirection URL*/ };
       // return {cancel: details.url.indexOf("://www.evil.com/") != -1};
@@ -249,68 +256,99 @@ function showStartPage() {
 /////////////////////////////////////////////////
 
 
-/*****************************************************************
- * onMessage from the extension or tab (a content script)
- *****************************************************************/
-// chrome.runtime.onMessage.addListener(
-//   function(request, sender, sendResponse) {
-//
-//     console.log(sender.tab ?
-//                 "from a content script:" + sender.tab.url :
-//                 "from the extension");
-//     if (request.greeting == "hello")
-//       sendResponse({farewell: "goodbye"});
-//
-//     // if (request.cmd == "any command") {
-//     //   sendResponse({ result: "any response from background" });
-//     // } else {
-//     //   // sendResponse({ result: "error", message: `Invalid 'cmd'` });
-//     //   sendResponse({ result: "error", message: request });
-//     // }
-//
-//     // Note: Returning true is required here!
-//     //  ref: http://stackoverflow.com/questions/20077487/chrome-extension-message-passing-response-not-sent
-//     return true;
-//   });
+// code here
 
 
-//
-// function handleMessage(request, sender, sendResponse) {
-//   console.log("Message from the content script: " +
-//     request.greeting);
-//   sendResponse({response: "Response from background script"});
-//   return true;
-// }
-//
-// chrome.runtime.onMessage.addListener(handleMessage);
+////////////////////////////// ### //////////////////////////////
+////////////////////////////// ### //////////////////////////////
+////_________________________________________________________////
 
+
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//
+// Message Listening
+// Get messages from content scripts and process the data.
+//
+//
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
+    ////
+    // Output to the console the message we received.
+    ////
+  	console.log(request);
+  	console.log(sender);
+  	console.log(sender.tab.id);
+    console.log(sender.tab ?
+                "Message received from a content script: " + sender.tab.url :
+                "from the extension");
+
+
+
+    ////
     if (request.cmd === "shutdown") {
       sendResponse({farewell: "goodbye"});
     }
 
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
-
+    ////
     if (request.greeting == "hello")
       sendResponse({farewell: "goodbye"});
 
+    ////
     if ( request.checkLinkDB ) {
-      // sendResponse({farewell: "thanks for the url!" + request.url});
-      //
-
       sendResponse({farewell: indexedDBHelper.getLink( request.checkLinkDB )});
+    }
+
+    // Use postmessage to get a local file URL and navigate a tab to that URL.
+    // Content scripts can't do this on their own. So instead they send a message to the background page.
+    // This code receives the message and loads the URL.
+    // sender.tab.id is used to open the URL in the same tab that sent the message.
+    // without that, the following code would open the URL in the currently active tab instead.
+    if ( /^file:.+\//gi.test(request.greeting) && /dropbox\.com/gi.test(sender.url) ) {
+  		chrome.tabs.update(sender.tab.id, {
+  		     url: request.greeting
+  		});
+    }
+
+    // @TODO what is this
+    ////
+    if ( /^blogStatus/gi.test(request.greeting) ) {
+
+      console.log(request.greeting);
+
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {greeting: request.greeting}, function(response) {
+          console.log(response.farewell);
+        });
+      });
 
     }
 
+    // Get right-click background image message
+    // Use a function to save it outside of this listener.
+    // http://stackoverflow.com/a/26373282/556079
+    saveMessage(request.bkgUrl);
 
+    ////
+    // There might be a reason we need this. Look it up and document why.
     return true;
+
   });
+
+
+
+////////////////////////////// ### //////////////////////////////
+////////////////////////////// ### //////////////////////////////
+////_________________________________________________________////
 
 
 
@@ -368,6 +406,12 @@ getCurrentHour();
 
 
 
+////////////////////////////// ### //////////////////////////////
+////////////////////////////// ### //////////////////////////////
+////_________________________________________________________////
+
+
+
 chrome.alarms.onAlarm.addListener(function(alarm) {
   if (alarm.name == 'mailchimp-draft-reminder') {
     mailchimpCheckAndAlert();
@@ -375,13 +419,12 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 });
 
 
-  chrome.storage.sync.get( function(result) {
-    // console.error("!");
-    // console.log(result);
-    // console.log(result.pendingDrafts);
-    // console.log(result.urgentDrafts);
-    // console.error("#");
-  });
+
+
+////////////////////////////// ### //////////////////////////////
+////////////////////////////// ### //////////////////////////////
+////_________________________________________________________////
+
 
 var totalNotificationsSent;
 
@@ -408,6 +451,14 @@ function mailchimpCheckAndAlert() {
   // console.warn("10 minutes remaining until the next notification.");
 
 }
+
+
+
+////////////////////////////// ### //////////////////////////////
+////////////////////////////// ### //////////////////////////////
+////_________________________________________________________////
+
+
 
 // Attempt to fire a notification when the browser or extension are first loaded.
 // mailchimpCheckAndAlert();
@@ -456,48 +507,6 @@ function mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromS
 
 var bkg = chrome.extension.getBackgroundPage();
 
-
-
-
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-
-  	console.log(request.greeting);
-
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
-
-
-    // Use postmessage to get a local file URL and navigate a tab to that URL.
-    // Content scripts can't do this on their own. So instead they send a message to the background page.
-    // This code receives the message and loads the URL.
-    if ( /^file:.+\//gi.test(request.greeting) ) {
-  		chrome.tabs.update({
-  		     url: request.greeting
-  		});
-    }
-
-    // TODO what is this
-    if ( /^blogStatus/gi.test(request.greeting) ) {
-
-      console.log(request.greeting);
-
-      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {greeting: request.greeting}, function(response) {
-          console.log(response.farewell);
-        });
-      });
-
-    }
-
-
-    // Get right-click background image message
-    // Use a function to save it outside of this listener.
-    // http://stackoverflow.com/a/26373282/556079
-    saveMessage(request.bkgUrl);
-
-});
 
 
 
@@ -563,6 +572,10 @@ function awsFilepath(link) {
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 
+
+////////////////////////////// ### //////////////////////////////
+////////////////////////////// ### //////////////////////////////
+////_________________________________________________________////
 
 
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
@@ -649,7 +662,7 @@ chrome.runtime.onInstalled.addListener(function() {
   chrome.contextMenus.create({"title": "Radio 3", "type": "radio",
                               "id": "radio3"});
 
-chrome.contextMenus.create({"id": "sep2", "type":'separator'});
+  chrome.contextMenus.create({"id": "sep2", "type":'separator'});
 
 
   chrome.contextMenus.create({"id": "sep1", "type":'separator'});

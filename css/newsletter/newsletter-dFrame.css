@@ -138,7 +138,11 @@ html {
 .link-marker.approved {
   background:#3eb76c;
 }
-  .link-marker.animated-approval {
+
+  /* This will display checkmarks and then fade them out after a few seconds */
+  /* Without this, Approved links do not show up on page load. */
+  /* Approved links that are merge tags or mailtos have a class of .do-not-highlight so that they don't get highlighted on every load. */
+  .link-marker.animated-approval:not(.do-not-highlight) {
     animation-name: quickHide;
     animation-duration: 1s;
     animation-timing-function: ease-out;
@@ -331,6 +335,8 @@ html {
 .link-errors .link-errors-url .link-url {
   display:flex;
   font-family: 'Courier New';
+  color:#fff;
+  font-size:12px;
   align-items:center;
   word-break: break-all;
   padding: 10px 10px 6px 15px;

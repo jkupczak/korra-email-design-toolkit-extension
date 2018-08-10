@@ -412,7 +412,7 @@ function createLinkStatusRow(i, linkObj, response) {
   // Wrapper for the XHR'd Link Status
   var linkErrorXHRStatus = document.createElement("section");
   linkErrorXHRStatus.className = "link-status-wrapper link-info-wrapper";
-  linkErrorXHRStatus.innerHTML = "<div class='status-bubble'><div class='status-code'><span id='status-text'><b>" + response.statusText + "</b></span> " + statusCode + "</div><div class='status-age'><b id='cache-status'>" + source + "</b> " + sourceTime + "</div></div>";
+  linkErrorXHRStatus.innerHTML = "<section class='status-bubble'><section class='status-code'><span id='status-text'><b>" + response.statusText + "</b></span> " + statusCode + "</section><section class='status-age'><b id='cache-status'>" + source + "</b> " + sourceTime + "</div></section>";
 
   currentErrorWrapper.appendChild(linkErrorXHRStatus);
 
@@ -429,7 +429,9 @@ function isMedBridgeHomepage(document) {
 }
 
 ////////
-// Check if a MedBridge redirect isn't working correctly. We don't cache links with broken redirects.
+// Check the response for additional errors.
+// Specifically, if the landing page is the MedBridge homepage and we did not intend for our link to go there.
+// This means a tracking link does not work, or that the page does not exist.
 ////////
 function checkResponseURL(i, linkObj, response) {
 
@@ -438,10 +440,31 @@ function checkResponseURL(i, linkObj, response) {
     // This resolved as OK even though its not. The failed redirect check should have caught this. Might have something to do with using after_signin_url.
     // Check this.
 
+  // Is this the homepage?
+  ////////////////////////
+  if ( /Online CEUs for PT, OT, SLP, AT \| Continuing Education \| MedBridge/i.test(response.document) && /Choose your discipline to view courses\:/i.test(response.document) ) {
+    response.isHomepage = true;
+  } else {
+    response.isHomepage = false;
+  }
+
+  // NON-TRACKING LINKS
+  /////////////////////
+  // If the pathname of the original non-tracking link is "/", then we intended to hit the homepage.
+  // If its not, and we actually DID land on the homepage (by checking the code in the response), throw an error.
+  // This means the page is broken/non-existant on MedBridge.
+  if ( linkInfoArray[i]['isMedBridgeBrandLink'] && !linkInfoArray[i]['hasTrackingLinkback'] && linkObj.pathname !== "/" && response.isHomepage ) {
+
+    createLinkErrorRow(linkObj, "MedBridge URL does not exist.");
+
+  }
+
+  // TRACKING LINKS
+  /////////////////
   if ( linkInfoArray[i]['isMedBridgeBrandLink'] && linkInfoArray[i]['hasTrackingLinkback'] ) {
 
     // Check succesful redirection of tracking links on MedBridge
-    // Broken tracking links do not redirect, instead they just land on the homepage with the tracking URL intact.
+    // Non-existant MedBridge pages just land on the homepage with the tracking URL intact.
     // They will resolve as 200 but this isn't accurate for our purposes.
     // So we also need to prevent it from being cached.
     if ( /after_affiliate_url/i.test(response.responseURL) ) {
@@ -462,9 +485,9 @@ function checkResponseURL(i, linkObj, response) {
     // Do this by looking at the querystring for tracking links, and at the object.pathname for non tracking links.
     // If they do not both match a value of / or blank then we are intending to NOT go to the homepage, thus the link is invalid and we throw an error.
 
-    } else if ( isMedBridgeHomepage(response.document) && ( !/^(\/|)$/.test(linkInfoArray[i]['querystring']['after_affiliate_url']) && !/^(\/|)$/.test(linkObj.pathname) ) ) {
+    }
 
-      // console.error(i, "second if", linkInfoArray[i]['querystring']['after_affiliate_url'], linkObj.pathname, response.responseURL);
+    else if ( isMedBridgeHomepage(response.document) && ( !/^(\/|)$/.test(linkInfoArray[i]['querystring']['after_affiliate_url']) && !/^(\/|)$/.test(linkObj.pathname) ) ) {
 
       createLinkErrorRow(linkObj, "MedBridge URL does not exist.");
       response.addToCache = false;
@@ -472,9 +495,8 @@ function checkResponseURL(i, linkObj, response) {
 
     } else {
 
-      // console.error(i, "third if", linkInfoArray[i]['querystring']['after_affiliate_url'], linkObj.pathname, response.responseURL);
-
       response.redirectOK = true;
+
     }
   }
 
@@ -519,7 +541,7 @@ function checkURL(i, linkHref, linkObj) {
           response.statusText = xhr.statusText;
           response.responseURL = xhr.responseURL;
 
-          // Redirects eventually 200, comparing response URL with requested to detect redirects
+          // Redirects eventually return 200, here we compare the response URL with the requested to detect redirects
           if ( xhr.responseURL == linkHref.split('#')[0] ) {
             response.isRedirect = false;
           }
@@ -602,7 +624,7 @@ function assignErrorRows(i, linkHref, linkObj, response) {
   }
 
   // Apply to link object data
-  linkInfoArray[i]['status'] = { "key": keyValue, "statusCode": response.status, "statusText": response.statusText, "redirected": response.isRedirect, "source": response.source, "responseURL": response.responseURL }
+  linkInfoArray[i]['status'] = { "key": keyValue, "statusCode": response.status, "statusText": response.statusText, "redirected": response.isRedirect, "source": response.source, "responseURL": response.responseURL, "isHomepage": response.isHomepage, "foo": "bar" }
 }
 
 

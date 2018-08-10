@@ -1,5 +1,3 @@
-console.warn("[sonic-toolkit-extension] loaded /js/libs/keymaster.js");
-
 //     keymaster.js
 //     (c) 2011-2013 Thomas Fuchs
 //     keymaster.js may be freely distributed under the MIT license.

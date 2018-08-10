@@ -129,6 +129,8 @@ function getOptions(){
     // Mailgun
     options.mailgunApiKey = getOption("mailgunApiKey");
     options.mailgunDomainName = getOption("mailgunDomainName");
+    // Open in App
+    options.openInApp = getOption("openInApp");
     // Validate Links
     options.blacklist = getOption("blacklist");
     options.checkType = getOption("checkType");

@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.7.430",
+  "version": "3.7.470",
 
   "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
 
@@ -59,39 +59,48 @@
   "content_scripts": [
 
     {
-      "matches": ["file:///*", "http://localhost:4567/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
-      "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "js": ["js/global.js"],
+      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],
+      "exclude_matches": ["file:///*?view=1*", "file:///var/folders/*", "http://localhost:4567/__middleman/*"],
+
+      "css": ["css/newsletter/newsletter-beforeload.css", "css/newsletter/newsletter-styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/libs/tingle.css"],
+
+      "js": ["js/global.js", "js/get-options.js", "js/newsletter/newsletter-async.js", "js/newsletter/mailchimp-parser.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/utilities/is-article-protected.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
+
       "run_at": "document_start"
     },
     {
-      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
-      "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "css": ["css/newsletter/newsletter-styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/libs/tingle.css"],
-      "js": ["js/get-options.js", "js/newsletter/newsletter-async.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/utilities/is-article-protected.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
-      "run_at": "document_start"
+      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],
+      "exclude_matches": ["file:///*?view=1*", "file:///var/folders/*", "http://localhost:4567/__middleman/*"],
+
+      "css": ["css/global_styles.css", "css/libs/alertify.css"],
+
+      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/dropbox-share.js", "js/libs/email-remove-unused-css.umd.js", "js/libs/string-collapse-white-space.umd.js", "js/libs/alertify.js", "js/email-labeling.js", "js/newsletter/newsletter.js"],
+
+      "run_at": "document_end"
     },
+
     {
-      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*"],
-      "exclude_matches": ["file:///*view=1*", "http://localhost:4567/__middleman/*"],
-      "css": ["css/newsletter/newsletter-beforeload.css"],
-      "run_at": "document_start"
+      "matches": ["http://localhost:4567/*"],
+      "css": ["css/middleman_styles.css"],
+      "js": ["js/middleman.js"]
     },
+
+
+
+
+
     {
-      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*", "*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
-      "exclude_matches": ["http://localhost:4567/__middleman/*"],
+      "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*"],
       "css": ["css/global_styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css"],
       "js": ["js/libs/alertify.js"],
       "run_at": "document_end"
     },
+
     {
-      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
-      "exclude_matches": ["http://localhost:4567/__middleman/*"],
-      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/dropbox-share.js", "js/libs/email-remove-unused-css.umd.js", "js/libs/email-all-chars-within-ascii.umd.js", "js/libs/color-shorthand-hex-to-six-digit.umd.js", "js/libs/string-collapse-white-space.umd.js", "js/newsletter/newsletter.js"],
-      "run_at": "document_end"
+      "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*"],
+      "js": ["js/global.js"],
+      "run_at": "document_start"
     },
-
-
 
     {
       "matches": ["*://*.dropbox.com/s/*", "*://*.dropbox.com/work/*", "*://*.dropbox.com/home/*"],
@@ -115,25 +124,19 @@
       "matches": ["*://*.medbridgeeducation.com/blog/wp-admin/edit.php*"],
       "js": ["js/global.js", "js/medbridge/medbridge-blog-admin-posts.js"]
     },
-    {
-      "matches": ["file:///*", "http://localhost:4567/*", "*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*", "*://us2.campaign-archive1.com/*", "*://us2.campaign-archive2.com/*"],
-      "exclude_matches": ["http://localhost:4567/__middleman/*", "*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
-      "js": ["js/email-labeling.js"],
-      "run_at": "document_end"
-    },
 
-
-    {
-      "matches": ["http://localhost:4567/*"],
-      "css": ["css/middleman_styles.css"],
-      "js": ["js/middleman.js"]
-    },
     {
       "matches": ["*://*.mailchimp.com/*"],
       "exclude_matches": ["*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
       "css": ["css/fonts-material-icons.css", "css/libs/tingle.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/mailchimp/mailchimp-global-styles.css"],
       "js": ["js/libs/arrive.js", "js/libs/tingle.js", "js/libs/alertify.js", "js/mailchimp/mailchimp-global.js"]
     },
+        {
+          "matches": ["*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*"],
+          "exclude_matches": ["*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
+          "js": ["js/email-labeling.js"],
+          "run_at": "document_end"
+        },
         {
           "matches": ["*://*.mailchimp.com/campaigns/edit?id=*", "*://*.mailchimp.com/campaigns/wizard/variateconfirm*", "*://*.mailchimp.com/campaigns/wizard/confirm*"],
           "js": ["js/utilities/total-protected-articles.js", "js/mailchimp/mailchimp-confirm-sending.js"]
@@ -184,6 +187,9 @@
           "matches": ["*://*.mailchimp.com/reports/show*"],
           "js": ["js/mailchimp/mailchimp-capture.js"]
         },
+
+
+
     {
       "matches": ["*://*.medbridgeeducation.com/*"],
       "exclude_matches": ["*://*.medbridgeeducation.com/blog/wp*", "*://*.medbridgeeducation.com/admin/*"],
@@ -194,6 +200,9 @@
       "css": ["css/libs/tingle.css", "css/medbridge/medbridge-courses.css"],
       "js": ["js/libs/tidy.js", "js/libs/tingle.js", "js/medbridge/medbridge-courses.js"]
     },
+
+
+
     {
       "matches": ["*://console.aws.amazon.com/s3/*"],
       "css": ["css/global_styles.css", "css/fonts-material-icons.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/aws-styles.css"],

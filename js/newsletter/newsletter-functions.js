@@ -61,6 +61,15 @@ var lm = new ResizeObserver( entries => {
 
     var linkm = dFrameContents.querySelectorAll(".link-marker[data-number='" + linkObj.getAttribute('data-number') + "']")[0];
 
+    // Links that have a top or left of 0 are hidden. So the marker should be hidden too.
+    // Possibly too aggresive. What if I actually want a link at top:0 or left:0?
+    // @TODO: Switch this to find the CURRENT display of the matching link instead.
+    if ( linkFoundPos[0] === 0 || linkFoundPos[1] === 0 ) {
+      linkm.style.display = "none";
+    } else {
+      linkm.style.display = "";
+    }
+
     // Using the links position, set the linkmarker to the 10px offset from the top and left.
     linkm.style.top  =  (linkFoundPos[0] - 10) + "px";
     linkm.style.left =  (linkFoundPos[1] - 10) + "px";
@@ -1108,6 +1117,31 @@ function containsObject(obj, list) {
 ///////////////////////////////////////
 /////
 /////
+/////    Log Coding Bugs
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+totalCodingBugs = 0;
+
+function logCodeBug(object, client, errorText) {
+  console.error("Coding Bug:", client, errorText);
+
+  updateQaBar(codingBugsQaBar, totalCodingBugs++, " Bugs Found");
+}
+
+function updateQaBar(bar, errors, string) {
+  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
+  bar.dataset.errors = errors;
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
 /////    Create Link Error Marker and Row
 /////
 /////
@@ -1140,6 +1174,7 @@ function createLinkErrorRow(linkObj, msg, type, icon, marker) {
 
   // Create an error pill
   var errorRow = document.createElement("section");
+      errorRow.dataset.korra = "";
   var errorRowText = document.createElement("section");
       errorRowText.innerHTML = msg
   errorRow.appendChild(errorRowText);
@@ -1314,9 +1349,9 @@ function validateLinks(linkObj, i) {
   } else { iLog = i; }
 
   // Check link url length
-  if ( linkHref.length > 60 ) { var ell = "..." }
+  if ( linkHref.length > 70 ) { var ell = "..." } else { var ell = "" }
 
-  console.groupCollapsed("[" + iLog + "] " + linkHref.substring(0,60) + ell);
+  console.groupCollapsed("[" + iLog + "] " + linkHref.substring(0,70) + ell);
   console.log(linkObj);
 
   //
@@ -1359,7 +1394,7 @@ function validateLinks(linkObj, i) {
   // Create a container for the link href to show with the errors
   var linkErrorLogURL = document.createElement("section");
   linkErrorLogURL.className = "link-errors-url";
-  linkErrorLogURL.innerHTML = "<div class='link-number'>#" + (i + 1) + "</div><div class='link-url'>" + linkHref + "</div>";
+  linkErrorLogURL.innerHTML = "<section class='link-number'>#" + (i + 1) + "</section><section class='link-url'>" + linkHref + "</section>";
 
   //
   // var linkErrorLogURLTextNode = document.createTextNode(linkHref);
@@ -1418,18 +1453,26 @@ function validateLinks(linkObj, i) {
     singleLinkInfoArray['type'] = "empty"; //empty
     singleLinkInfoArray['checkStatus'] = false;
 
-  // merge tag
-  } else if ( /^(\[|\[\[|\*\|).+?(\]|\]\]|\|\*)/.test(linkHref) ) {
+  // merge tags
+  } else if ( /^\*\|.+?\|\*/.test(linkHref) ) {
+    singleLinkInfoArray['espMergeTag'] = "mailchimp";
     singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
     singleLinkInfoArray['checkStatus'] = false;
 
-    if ( /^\*\|.+?\|\*/.test(linkHref) ) {
-      singleLinkInfoArray['espMergeTag'] = "mailchimp";
-    } else if ( /^\[\[.+?\]\]/.test(linkHref) ) {
-      singleLinkInfoArray['espMergeTag'] = "getresponse";
-    } else if ( /^\[.+?\]/.test(linkHref) ) {
-      singleLinkInfoArray['espMergeTag'] = "sendgrid";
-    }
+  } else if ( /^\[\[.+?\]\]/.test(linkHref) ) {
+    singleLinkInfoArray['espMergeTag'] = "getresponse";
+    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray['checkStatus'] = false;
+
+  } else if ( /^\[.+?\]/.test(linkHref) ) {
+    singleLinkInfoArray['espMergeTag'] = "sendgrid";
+    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray['checkStatus'] = false;
+
+  } else if ( /^\%\%.+?\%\%/.test(linkHref) ) {
+    singleLinkInfoArray['espMergeTag'] = "pardot";
+    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray['checkStatus'] = false;
 
   // http
   } else if ( linkObj.protocol === "http:" ) {
@@ -1475,13 +1518,11 @@ function validateLinks(linkObj, i) {
   ////////////////
 
 
-  // Check if we're online. If not, we need to apply a warning badge.
-  if ( !navigator.onLine ) {
-    createLinkErrorRow(linkObj, "Be aware that you are currently offline.", "warning");
-  }
-
+  // VALIDATE MERGE TAGS
+  //////////////////////
   // If this is a merge tag link - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
   if ( singleLinkInfoArray['type'] === "merge tag" ) {
+
     // Links in an email for the GetResponse Platform
     if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
       createLinkErrorRow(linkObj, "Wrong merge tag for this platform (" + emailPlatformName + ").");
@@ -1503,9 +1544,27 @@ function validateLinks(linkObj, i) {
     }
   }
 
+  // VALIDATE MAILTOS
+  ///////////////////
+  else if ( singleLinkInfoArray['type'] === "mailto" ) {
+    // @ TODO
+  }
 
-  // All other links
-  else if ( singleLinkInfoArray['type'] !== "mailto" ) {
+  // Empty link? Skip it.
+  ///////////////////////
+  else if ( linkHref === "" ) {
+    createLinkErrorRow(linkObj, "Empty Link.");
+  }
+
+  // VALIDATE ALL OTHER LINKS
+  ///////////////////////////
+  else {
+
+    // Check if we're online. If not, we need to apply a warning badge.
+    // This excludes merge tags since there's nothing to check except for formatting.
+    if ( !navigator.onLine && singleLinkInfoArray['checkStatus'] === true ) {
+      createLinkErrorRow(linkObj, "Be aware that you are currently offline.", "warning");
+    }
 
     console.log("url - " + linkHref);
 
@@ -1603,11 +1662,8 @@ function validateLinks(linkObj, i) {
   ///////
   ///////
 
-    if ( linkHref === "" ) {
-      createLinkErrorRow(linkObj, "Empty Link.");
-    }
 
-    else if ( !/\*%7C.+?%7C\*/.test(linkHref) && !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(linkHref) ) {
+    if ( !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Invalid URL scheme [1].");
     }
 
@@ -1616,19 +1672,17 @@ function validateLinks(linkObj, i) {
     // Edited by me to allow _ in subdomain.
     // Does not support _ in domain, but it should.
     // Does not support URL's ending with a - but it should.
-
     else if ( !/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9](?:_|-)*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(linkHref) )
     {
       createLinkErrorRow(linkObj, "Invalid URL scheme [2].");
     }
+
 
     // Marketing URL's
     // trk = mc, grtrk = getresponse
     if ( emailPlatform === "gr" && linkNeedsPromoCode && !/\.com\/grtrk\-/i.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
       createLinkErrorRow(linkObj, "Wrong tracking url for this email platform, use grtrk-.");
     }
-
-
 
 
     //////
@@ -1715,7 +1769,7 @@ function validateLinks(linkObj, i) {
       }
     }
 
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] ) {
+    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailPlatform !== "gr" ) {
       if ( commonUtmSource ) {
         if ( !commonUtmSourceRegex.test(linkHref) ) {
           createLinkErrorRow(linkObj, "<code>utm_source</code> is missing or inconsistent, " + commonUtmSource + " is most common.");
@@ -1769,8 +1823,9 @@ function validateLinks(linkObj, i) {
       }
 
       // Add characters you want to ignore twice. Like *, |, and '.
-      if ( !/\?([\.\w-]+(=[\!\'\*\|\:\%\+\.\/\w-]*)?(&[\.\w-]+(=[\'\*\|\+\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
+      if ( !/\?([\@\%\.\w-]+(=[\!\'\*\|\:\+\@\%\.\/\w-]*)?(&[\@\%\.\w-]+(=[\'\*\|\+\@\%\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
         createLinkErrorRow(linkObj, "Invalid querystring.");
+        console.log(linkHrefNoHash)
       }
 
     }
@@ -1831,7 +1886,7 @@ function validateLinks(linkObj, i) {
       if ( emailDate.getMonth() ) {
         var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
         if ( !monthPattern.test(linkHref) ) {
-          createLinkErrorRow(linkObj, "Link should include '-" + emailMonthAbbr + "-' to match current month.");
+          createLinkErrorRow(linkObj, "Link should include '-" + emailMonthAbbr + "-' to match month in filename.");
         }
       }
 
@@ -1849,7 +1904,7 @@ function validateLinks(linkObj, i) {
     // console.log("outsideOrg: " + outsideOrg);
     // console.log("singleLinkInfoArray['isMedBridgeBrandLink']: " + singleLinkInfoArray['isMedBridgeBrandLink']);
 
-    if ( linkNeedsGoogleTracking ) {
+    if ( linkNeedsGoogleTracking && emailPlatform !== "gr" ) {
 
       var moduleNumber = linkObj.closest("[data-module-count]");
 
@@ -1890,9 +1945,10 @@ function validateLinks(linkObj, i) {
       createLinkErrorRow(linkObj, "Missing color in style attribute.");
     }
 
-    if ( linkObj.style.textAlign !== '' && linkedImg ) {
-      createLinkErrorRow(linkObj, "Don't use text-align in links when linking images, it breaks in safari.");
-    }
+    // @TODO: Not seeing this bug. Disabled until I see it again.
+    // if ( linkObj.style.textAlign !== '' && linkedImg ) {
+    //   createLinkErrorRow(linkObj, "Don't use <code>text-align</code> in links when linking images, it breaks in Safari.");
+    // }
 
 
 
@@ -2077,22 +2133,22 @@ function validateLinks(linkObj, i) {
     ////
     // Tracking URL - Discipline Check
 
-    if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && singleLinkInfoArray['isMedBridgeBrandLink'] && !/\/courses\/details\//g.test(linkHref) && singleLinkInfoArray['isMarketingUrl'] ) {
+    if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && emailSubType === "ns" && singleLinkInfoArray['isMedBridgeBrandLink'] && !/\/courses\/details\//g.test(linkHref) && singleLinkInfoArray['isMarketingUrl'] ) {
 
       if ( emailDisc === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Missing discipline.");
+        createLinkErrorRow(linkObj, "Missing/wrong discipline.");
       }
       if ( emailDisc === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Missing discipline.");
+        createLinkErrorRow(linkObj, "Missing/wrong discipline.");
       }
       if ( emailDisc === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Missing discipline.");
+        createLinkErrorRow(linkObj, "Missing/wrong discipline.");
       }
       if ( emailDisc === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Missing discipline.");
+        createLinkErrorRow(linkObj, "Missing/wrong discipline.");
       }
       if ( emailDisc === "other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Missing discipline.");
+        createLinkErrorRow(linkObj, "Missing/wrong discipline.");
       }
     }
 
@@ -2160,16 +2216,16 @@ function validateLinks(linkObj, i) {
         if ( !/#/gi.test(linkHref) ) {
           createLinkErrorRow(linkObj, "Missing discipline in the hashtag.");
         } else {
-          if ( (emailDisc === "pt" || emailDisc === "other") && !/#\/physical-therapy/gi.test(linkHref) ) {
+          if ( (emailDisc === "pt" || emailDisc === "other") && !/#\/?physical-therapy/gi.test(linkHref) ) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
-          if ( emailDisc === "at" && !/#\/athletic-training/gi.test(linkHref) ) {
+          if ( emailDisc === "at" && !/#\/?athletic-training/gi.test(linkHref) ) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
-          if ( emailDisc === "ot" && !/#\/occupational-therapy/gi.test(linkHref) ) {
+          if ( emailDisc === "ot" && !/#\/?occupational-therapy/gi.test(linkHref) ) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
-          if ( emailDisc === "slp" && !/#\/speech-language-pathology/gi.test(linkHref) ) {
+          if ( emailDisc === "slp" && !/#\/?speech-language-pathology/gi.test(linkHref) ) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
         }
@@ -2206,37 +2262,45 @@ function validateLinks(linkObj, i) {
     if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "sub" && /\.com\/(cart|pricing)/gi.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Don't link to the pricing or cart pages in subscriber emails.");
     }
-    // NS
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "ns" && /pricing/gi.test(linkHref) ) {
+    // NS -
+    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "ns" ) {
 
-      // PT
-      if ( emailDisc === "pt" && !/pricing\/pt/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Link to pricing/pt.");
-      }
-      // AT
-      else if ( emailDisc === "at" && !/pricing\/at/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Link to pricing/at.");
-      }
-      // OT
-      else if ( emailDisc === "ot" && !/pricing\/ot/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Link to pricing/ot.");
-      }
-      // SLP
-      else if ( emailDisc === "slp" && !/pricing\/slp/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Link to pricing/slp.");
-      }
-      // Other
-      else if ( emailDisc === "other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Link to pricing/other.");
-      }
-      // No Discipline
-      else if ( !emailDisc && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
-        createLinkErrorRow(linkObj, "Link to standard pricing page.");
+      // Pricing Page - Discipline Check
+      if ( /pricing/gi.test(linkHref) ) {
+        // PT
+        if ( emailDisc === "pt" && !/pricing\/pt/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Link to pricing/pt.");
+        }
+        // AT
+        else if ( emailDisc === "at" && !/pricing\/at/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Link to pricing/at.");
+        }
+        // OT
+        else if ( emailDisc === "ot" && !/pricing\/ot/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Link to pricing/ot.");
+        }
+        // SLP
+        else if ( emailDisc === "slp" && !/pricing\/slp/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Link to pricing/slp.");
+        }
+        // Other
+        else if ( emailDisc === "other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Link to pricing/other.");
+        }
+        // No Discipline
+        else if ( !emailDisc && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(linkHref) ) {
+          createLinkErrorRow(linkObj, "Link to standard pricing page.");
+        }
+
+        // Students
+        if ( /student/.test(linkObj.pathname) ) {
+          createLinkErrorRow(linkObj, "If this is a student promo code, link to <code>cart/get_subscription/9</code> instead.");
+        }
       }
 
-      // Students
-      if ( /student/.test(linkObj.pathname) ) {
-        createLinkErrorRow(linkObj, "If this is a student promo, link to the cart page.");
+      // NS - Cart Page - Discipline Check
+      if ( /cart/gi.test(linkHref) && !/get_subscription\/[0-9]/gi.test(linkHref) ) {
+        createLinkErrorRow(linkObj, "Links to the cart page need to link to <code>cart/get_subscription/##</code>.");
       }
     }
 
@@ -2282,6 +2346,15 @@ function validateLinks(linkObj, i) {
   singleLinkInfoArray['errors'] = allErrorMsgsForCurrentLink;
   linkInfoArray.push(singleLinkInfoArray);
 
+
+  // Do NOT show approval check marks on page load for mergetags or mailtos.
+  // Since these are not checked with AJAX, they are not cached in storage.
+  // As a result, they are always "approved" for the first time.
+  // This is annoying, lets just not show them on page load.
+  // The approval marks are still there, and can be viewed if a toggle is clicked.
+  if ( singleLinkInfoArray['type'] === "merge tag" || singleLinkInfoArray['type'] === "mailto" ) {
+    linkMarker.classList.add("do-not-highlight");
+  }
 
   // Now that we've created an object for this link and added it to the array
   // Check the links status (async) and add the results to the array.

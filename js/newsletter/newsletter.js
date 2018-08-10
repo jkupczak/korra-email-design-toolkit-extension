@@ -1,5 +1,5 @@
 var view = getParameterByName("view");
-if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
+if ( view !== "1" ) {
 
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -21,6 +21,7 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 //
 //
 
+// @TODO: https://codepen.io/jimmykup/pen/ajbRpm?editors=1100
 
 ///--------
 
@@ -193,7 +194,6 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
   for (let styleBlock of styleBlocks) {
     destroy(styleBlock);
   }
-
   let linkedStylesheets = document.querySelectorAll("[rel='stylesheet']");
   for (let linkedStylesheet of linkedStylesheets) {
     destroy(linkedStylesheet);
@@ -204,6 +204,7 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
   for (let body of bodyEle) {
     destroy(body);
   }
+
   // Create a new <body> tag.
   var newBody = document.createElement("body");
   insertAfter(newBody, document.head);
@@ -230,14 +231,6 @@ document.querySelector("html").classList.toggle("errors");
 ///////////
 ///////////
 ///////////
-
-// MailChimp Conditions Parser
-// Conditional parsing is off by default
-if ( getParameterByName("conditions") === "1" ) {
-  var conditionsParser = true;
-} else {
-  var conditionsParser = false;
-}
 
 var suppressAlerts = false;
 if ( getParameterByName("presentation") === "1" ) {
@@ -269,9 +262,9 @@ if ( getParameterByName("presentation") === "1" ) {
 //////////
 
   // Create QA Wrapper
-  var qaWrapper = document.createElement("div");
-  qaWrapper.className = "qa-wrapper";
-  mainContainer.appendChild(qaWrapper);
+  // var qaWrapper = document.createElement("div");
+  // qaWrapper.className = "qa-wrapper";
+  // mainContainer.appendChild(qaWrapper);
 
   //////////
   ////
@@ -279,14 +272,19 @@ if ( getParameterByName("presentation") === "1" ) {
   ////
   /////////
 
-  var leftNav = document.createElement("div");
-  leftNav.className = "left-nav";
-  qaWrapper.appendChild(leftNav);
+  // Create the "panes" div that will hold all left-hand side UIs.
+  var panes = document.createElement("div");
+  panes.className = "panes";
+  mainContainer.appendChild(panes);
 
           // Create Split View
           // console.log("activate split mode");
           document.body.classList.toggle("split-view-on");
 
+
+  var mainPane = document.createElement("div");
+  mainPane.classList.add("pane", "main-pane");
+  panes.appendChild(mainPane);
 
   //////////
   ////
@@ -312,7 +310,8 @@ if ( getParameterByName("presentation") === "1" ) {
   viewTextBtn.innerHTML = "Text";
   stagePreviewBtns.appendChild(viewTextBtn);
 
-  leftNav.appendChild(stagePreviewBtns);
+  mainPane.appendChild(stagePreviewBtns);
+
 
   function changeStage() {
     console.log(event)
@@ -354,9 +353,9 @@ if ( getParameterByName("presentation") === "1" ) {
   /////////
 
   // Create the Stage
-  var stageWrapper = document.createElement("div");
-  stageWrapper.className = "stage";
-  qaWrapper.appendChild(stageWrapper);
+  var stagesWrapper = document.createElement("div");
+  stagesWrapper.className = "stages";
+  mainContainer.appendChild(stagesWrapper);
 
 
 
@@ -368,8 +367,8 @@ if ( getParameterByName("presentation") === "1" ) {
 
   // Create the Stage
   var htmlStage = document.createElement("div");
-  htmlStage.className = "html-stage";
-  stageWrapper.appendChild(htmlStage);
+  htmlStage.classList.add("stage", "html-stage");
+  stagesWrapper.appendChild(htmlStage);
 
 
   //////////////////////
@@ -431,7 +430,6 @@ if ( getParameterByName("presentation") === "1" ) {
     addLoadEvent(desktopIframe, function() {
       getImgSizes(imgInfoArray);
 
-
       var imgUrls = [];
       for (let img of imgInfoArray) {
         imgUrls.push(img.url);
@@ -446,6 +444,15 @@ if ( getParameterByName("presentation") === "1" ) {
       }).catch(function(e) {
         console.log('err',e)
       });
+
+      ////////
+      // Create a UI for showing/hiding conditionals if they exist.
+      ///////
+      // if ( conditionalsExist ) {
+      console.log("a");
+        createConditionalsUI();
+      console.log("b");
+      // }
 
     });
 
@@ -939,7 +946,7 @@ if ( getParameterByName("layout") ) {
 
 
   if ( layout[0] === "0" ) {
-    leftNav.classList.add("off");
+    panes.classList.add("off");
   }
 
   if ( layout[1] === "0" ) {
@@ -1085,14 +1092,9 @@ if ( isLocalCampaign ) {
     }
 
 
-    // pageTitle.innerHTML += headerIcon;
-
-
     // Organization Logos
     if ( outsideOrg ) {
       var orgLogo;
-      // var orgLogo = document.createElement("img");
-      //     orgLogo.className = "organization-logo";
 
       if ( emailOrgName === "fox" ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/fox.png') + "' class='organization-logo'>"
@@ -1140,7 +1142,7 @@ if ( isLocalCampaign ) {
 
 
     if ( headerAudienceText || headerIcon ) {
-      leftNav.prepend(documentDesc);
+      mainPane.prepend(documentDesc);
     }
 
 
@@ -1256,7 +1258,7 @@ function paneToggle() {
 
   // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
 
-    if (leftNav.classList.contains('off')) {
+    if (panes.classList.contains('off')) {
       // console.log("leftNav contains 'off'");
       currentleftNavPaneStatus = 0;
       // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus);
@@ -1310,11 +1312,11 @@ function paneToggle() {
   // Update the css based on our values calculated above.
     if ( currentleftNavPaneStatus === 1 ) {
       document.querySelectorAll("html")[0].classList.add("leftNav-off");
-      leftNav.classList.add("off");
+      panes.classList.add("off");
       history.replaceState(null,null, updateQueryString("leftNav", "0") ); // http://stackoverflow.com/a/32171354/556079
     } else {
       document.querySelectorAll("html")[0].classList.remove("leftNav-off");
-      leftNav.classList.remove("off");
+      panes.classList.remove("off");
       history.replaceState(null,null, updateQueryString("leftNav") );
     }
 
@@ -1384,6 +1386,7 @@ function swapUrl() {
 //////////
 ////
 ////  Emailcomb - Remove Unused CSS
+////  https://bitbucket.org/codsen/email-remove-unused-css/src/master/
 ////
 /////////
 
@@ -1396,7 +1399,9 @@ function swapUrl() {
   function processHtmlforUnusedCss() {
 
     var html = cleanedOriginalHtml;
-    var result = emailRemoveUnusedCss(html)
+    var result = emailRemoveUnusedCss(html, {
+      whitelist: ["#outlook"]
+    });
 
     console.groupCollapsed();
 
@@ -1419,35 +1424,7 @@ function swapUrl() {
 
   }
 
-//////////
-////
-////  Open in Atom
-////
-/////////
 
-
-  var openOrb = document.createElement("a");
-  openOrb.id = "open-orb";
-  openOrb.className = "open-orb orb glyph icomoon icomoon-power";
-  openOrb.href = "atom://open?url=" + document.location.origin + document.location.pathname;
-  // file://<file_path>[&line=<line>[&column=<column>]][&devMode][&safeMode][&newWindow]";
-  // See: https://atom.io/packages/open
-  orbsBottom.appendChild(openOrb);
-
-//////////
-////
-////  Open in Sublime
-////
-/////////
-
-
-  var openOrb = document.createElement("a");
-  openOrb.id = "open-orb";
-  openOrb.className = "open-orb orb glyph icomoon icomoon-fire";
-  openOrb.href = "subl://open?url=" + document.location.origin + document.location.pathname;
-  // subl://open?url=file://{{file}}&line={{line}}&column={{column}}
-  // See: https://github.com/inopinatus/sublime_url
-  orbsBottom.appendChild(openOrb);
 
 
 //////////
@@ -1919,6 +1896,126 @@ function editEmail() {
 
 //////////
 ////
+////  Toggle Hidden Content
+////
+/////////
+
+var hiddenContentToggleOrb = document.createElement("div");
+hiddenContentToggleOrb.className = "hidden-content-orb orb glyph icomoon icomoon-shield";
+hiddenContentToggleOrb.id = "hidden-content-orb";
+hiddenContentToggleOrb.addEventListener("click", toggleHiddenContent, false);
+toolbarSectionContent.appendChild(hiddenContentToggleOrb);
+var hiddenContentToggle = false
+
+function toggleHiddenContent() {
+
+  hiddenContentToggle = !hiddenContentToggle;
+
+  // Toggle the icon
+  this.classList.toggle("on");
+
+  // Reveal all hidden elements.
+  if ( hiddenContentToggle ) {
+    console.log("if, hiddenContentToggle =", hiddenContentToggle);
+
+    // Desktop
+    dFrameContents.querySelectorAll('body *').forEach(function(node) {
+      revealHiddenNodes(node);
+    });
+    // Mobile
+    mFrameContents.querySelectorAll('body *').forEach(function(node) {
+      revealHiddenNodes(node);
+    });
+
+  // Hide the elements we previously revealed.
+  } else {
+    console.log("else, hiddenContentToggle =", hiddenContentToggle);
+
+    // Desktop
+    dFrameContents.querySelectorAll('[data-revealed]').forEach(function(node) {
+      hideHiddenNodes(node);
+    });
+    // Mobile
+    mFrameContents.querySelectorAll('[data-revealed]').forEach(function(node) {
+      hideHiddenNodes(node);
+    });
+
+  }
+
+}
+
+
+function revealHiddenNodes(node) {
+  if ( node.offsetParent === null && window.getComputedStyle(node).display === "none" && node.dataset.korra === undefined ) {
+
+    console.log( "computed style =", window.getComputedStyle(node).display, " | ", "inline style =", node.style.display, " | ", node );
+
+    // Mark it with a data attribute so that we know we touched. That way we can reverse it later.
+    node.dataset.revealed = true;
+
+    // If it was hidden using an inline style we need to mark it so that we can add it back in...
+    if ( node.style.display === "none" ) {
+      node.dataset.hiddenInline = "true";
+    } else {
+      node.dataset.hiddenInline = "false";
+    }
+    // If there's an inline display property here that is NOT "none". Save it so that we can restore it.
+    // Get the priority too.
+    node.dataset.originalDisplay = node.style.display;
+    node.dataset.originalDisplayPriority = node.style.getPropertyPriority('display');
+
+    // Lets remove the inline display property.
+    node.style.removeProperty('display');
+
+    // After removing it, check if it's visible now.
+    // If not, then it's being hidden in the <style> tag and we need to add an inline style appropriate for the tagname
+    // There currently isn't a way to tell what the display property was SUPPOSED to be if "none" wasn't set.
+    // 'unset' and 'initial' do not work for our use case.
+    if ( window.getComputedStyle(node).display === "none" ) {
+      if ( node.tagName === "DIV" ) {
+        node.style.setProperty ("display", "block", "important");
+      }
+      else if ( node.tagName === "TABLE" ) {
+        node.style.setProperty ("display", "table", "important");
+      }
+      else if ( node.tagName === "TBODY" ) {
+        node.style.setProperty ("display", "table-row-group", "important");
+      }
+      else if ( node.tagName === "TR" ) {
+        node.style.setProperty ("display", "table-row", "important");
+      }
+      else if ( node.tagName === "TD" || node.tagName === "TH" ) {
+        node.style.setProperty ("display", "table-cell", "important");
+      }
+      else {
+        node.style.setProperty ("display", "inline", "important");
+      }
+    }
+
+
+  }
+}
+
+function hideHiddenNodes(node) {
+  // Re-add the nodes original "display" property using the 'data' attribute we set.
+  if ( node.dataset.originalDisplay ) {
+    node.style.setProperty ("display", node.dataset.originalDisplay, node.dataset.originalDisplayPriority);
+  }
+  // If it didn't have an original display property inlined, just remove the one we added to reveal it earlier.
+  else {
+    node.style.removeProperty("display");
+  }
+
+  // Remove the label that indicated that we touched this node.
+  node.removeAttribute('data-revealed');
+  node.removeAttribute('data-hidden-inline');
+  node.removeAttribute('data-original-display');
+  node.removeAttribute('data-original-display-priority');
+}
+
+
+//////////
+////
 ////  Create Toggle Images On/Off
 ////
 /////////
@@ -2163,8 +2260,8 @@ function toggleImgDims() {
 // orbsBottom.appendChild(plainTextOrb);
 
 var plainTextStage = document.createElement("div");
-    plainTextStage.classList.add("plain-text-stage");
-    stageWrapper.appendChild(plainTextStage);
+    plainTextStage.classList.add("stage", "plain-text-stage");
+    stagesWrapper.appendChild(plainTextStage);
 
 var plainTextWrapper = document.createElement("div");
     plainTextWrapper.classList.add("plain-text-wrapper");
@@ -2270,7 +2367,9 @@ function applyQaResults(qaBar, status, msg) {
   } else if ( status === "error" ) {
     qaBar.querySelector(".qa-icon").innerHTML = svgIconX;
   }
-  qaBar.querySelector(".qa-text").innerHTML = msg;
+  if ( msg ) {
+    qaBar.querySelector(".qa-text").innerHTML = msg;
+  }
 }
 
 /////////////
@@ -2279,7 +2378,7 @@ function applyQaResults(qaBar, status, msg) {
 
 var qaResults = document.createElement("div");
 qaResults.id = "qa-results";
-leftNav.appendChild(qaResults);
+mainPane.appendChild(qaResults);
 
 
 //////////
@@ -2413,6 +2512,22 @@ appendQaBar(linksQaBar);
 // Value for this bar is calculated further down when we validate the links.
 
 
+
+//////////
+////
+////  QA Bar: Coding Bugs
+////
+/////////
+
+var codingBugsQaBar = document.createElement("div");
+codingBugsQaBar.id = "qa-coding-bugs";
+codingBugsQaBar.className = "qa-coding-bugs";
+codingBugsQaBar.dataset.errors = "0";
+appendQaBar(codingBugsQaBar);
+
+
+
+
 //////////
 ////
 ////  QA Bar: Articles
@@ -2510,7 +2625,7 @@ appendQaBar(codeWeightQaBar);
 // Let's take our original HTML (kinda) and make some modifications to try and make its contents more accurate.
 
   var htmlForSizeCalc = cleanedOriginalHtml;
-  var conditionalsExist = htmlForSizeCalc.match(/\*\|IF.+?\|\*/gi);
+  // var conditionalsExist = htmlForSizeCalc.match(/\*\|IF.+?\|\*/gi);
   console.log("ESP Conditionals: ", conditionalsExist);
 
   // Is this a MailChimp email? Detect by looking for merge tags.
@@ -2793,6 +2908,7 @@ checkZoomLevel();
 ////////////
 
 var moduleSettingsWrapper = document.createElement("section");
+    moduleSettingsWrapper.dataset.korra = "";
     moduleSettingsWrapper.id = "module-settings";
     moduleSettingsWrapper.className = "debug module-settings-wrapper";
     dFrameContents.documentElement.appendChild(moduleSettingsWrapper);
@@ -2841,6 +2957,85 @@ if (typeof moduleSettingsMenu != 'undefined') {
 ///////////////////////////////////////////////////////////////////////////////
 ////
 ////
+////    HTML/CSS BUG CHECK
+////
+////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+////////////
+////////////
+////////////
+//
+//
+//
+////////////
+////////////
+////////////
+
+
+// Outlook Bug
+// <td> vertical padding
+// Documentation
+
+(function(){
+
+  // Consider running this test on a version of the email that has @media
+  // queries stripped out so that there's no question whether it will be relevant in Outlook.
+
+  // console.group("[Bug Check] Outlook: <td> Vertical Padding");
+
+  var firstTdTop, firstTdBottom;
+
+  //
+  let tableRows = dFrameContents.querySelectorAll("tr");
+  for (let tableRow of tableRows) {
+    // Check how many table cells are in this row. We only want to address rows with 2 or more.
+    if ( tableRow.cells.length >= 2 ) {
+
+      // Loop through all <td>'s in this table row.
+      for (var i = 0; i < tableRow.cells.length; i++) {
+
+        // console.log(i, tableRow.cells.length, tableRow.cells[i]); //second console output
+
+        // Log the top and bottom padding of our first <td>
+        if ( i === 0 ) {
+          firstTdTop = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top");
+          firstTdBottom = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom");
+        }
+        // if this isn't the first <td>, check its top and bottom padding against the first <td>
+        // Throw an error if they don't match.
+        else if ( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") !== firstTdTop || window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") !== firstTdBottom ) {
+          // Error
+          logCodeBug(tableRow, "outlook", "vertical-cell-padding");
+        }
+      }
+
+    }
+  }
+
+  // console.groupEnd();
+
+})();
+
+
+if ( totalCodingBugs > 0 ) {
+  applyQaResults(codingBugsQaBar, "error");
+}
+else if ( totalCodingBugs === 0 ) {
+  applyQaResults(codingBugsQaBar, "success", "0 Bugs Found");
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+////
+////
 ////    LINK VALIDATION
 ////
 ////
@@ -2864,6 +3059,7 @@ if (typeof moduleSettingsMenu != 'undefined') {
 
 // Create the wrapper for the link-markers.
 var linkMarkerWrapper = document.createElement("section");
+linkMarkerWrapper.dataset.korra = "";
 linkMarkerWrapper.id = "link-markers";
 linkMarkerWrapper.className = "debug link-markers-wrapper";
 linkMarkerWrapper.style = "display:none";
@@ -3245,7 +3441,7 @@ findAndReplaceDOMText(dFrameBody, {
 });
 
 //
-// Prep-Program
+// Prep Program
 //
 findAndReplaceDOMText(dFrameBody, {
   find: /\b(MedBridge|[A-Z]CS) prep [Pp]rogram\b/g,
@@ -3806,6 +4002,42 @@ window.dragMoveListener = dragMoveListener;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// ==    OPEN IN APP   == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// Check the options for a selected app. If one is selected, create a button.
+// If not, do nothing.
+
+// Relies on an asynchronous call to the background to get options.
+// @TODO: This should be updated in the future to NOT run if the async call is not finished.
+
+// if ( exOptions.openInApp ) {
+
+  // Create the button and insert it.
+  var openInApp = document.createElement("a");
+  openInApp.classList.add("main-pane-extra-btn", "open-in-app-btn");
+  // openInApp.dataset.stage = "open-in-app";
+  openInApp.innerHTML = "Open in App";
+  stagePreviewBtns.insertAdjacentElement('afterend',openInApp);
+
+
+
+  // file://<file_path>[&line=<line>[&column=<column>]][&devMode][&safeMode][&newWindow]";
+  // See: https://atom.io/packages/open
+
+  // subl://open?url=file://{{file}}&line={{line}}&column={{column}}
+  // See: https://github.com/inopinatus/sublime_url
+
+// }
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3840,7 +4072,9 @@ lm.observe(dFrameContents.body);
 
 
 // Manifest Version
-var manifestVersion = document.createElement("div");
+var manifestVersion = document.createElement("a");
+manifestVersion.href = "https://github.com/jkupczak/korra-email-design-toolkit";
+manifestVersion.target = "_blank";
 manifestVersion.classList.add("manifest-version");
 manifestVersion.innerHTML = chrome.runtime.getManifest().version;
 document.body.appendChild(manifestVersion);
@@ -3855,8 +4089,47 @@ document.body.appendChild(manifestVersion);
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+// window.addEventListener('scroll', function (event) {
+// 	console.log(this);
+// 	console.log(event);
+// 	console.log(event.target);
+// }, true);
+
+
+// document.addEventListener("wheel", function (e) {
+//
+// 	console.log(e);
+// 	console.log(e.target);
+// 	console.log(e.deltaY);
+// 	console.log(e.wheelDeltaY);
+//
+//     // // get the old value of the translation (there has to be an easier way than this)
+//     // var oldVal = parseInt(document.getElementById("body").style.transform.replace("translateY(","").replace("px)",""));
+//     //
+//     // // to make it work on IE or Chrome
+//     // var variation = parseInt(e.deltaY);
+//     //
+//     // // update the body translation to simulate a scroll
+//     // document.getElementById("body").style.transform = "translateY(" + (oldVal - variation) + "px)";
+//     //
+//     // return false;
+//
+// }, true);
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 ///////
 document.querySelector("html").classList.toggle("errors");
+
+
 
 
 

@@ -95,16 +95,19 @@ function processCampaignList(campaignListParent) {
     campaignRow.classList.add("processed", "campaign-list-row");
 
     // Campaign Variables
-    var emailIcon          = campaignRow.querySelector(".c-channelIcon--email");
-    var campaignStatus     = campaignRow.querySelector(".c-campaignManager_slat_status");
-    var campaignStatusText = campaignRow.querySelector(".c-campaignManager_slat_status span").innerText;
-    var scheduledObject    = campaignRow.querySelector(".c-campaignManager_slat_details p:last-child");
-    var campaignId         = campaignRow.querySelector("input[type='checkbox']").value;
-    var campaignName       = campaignRow.querySelector("a.c-campaignManager_slat_details_link").innerText;
-    var campaignDetails    = campaignRow.querySelector(".c-campaignManager_slat_details");
-    var campaignType       = campaignRow.querySelector("[data-dojo-attach-point='node_typeName']");
-    var campaignList       = campaignRow.querySelector("[data-dojo-attach-point='node_listName']");
-    var campaignDiscipline = getDisciplineId(campaignName);
+
+    var emailIcon, campaignStatus, campaignStatusText, scheduledObject, campaignId, campaignName, campaignDetails, campaignType, campaignList, campaignDiscipline
+
+    emailIcon          = campaignRow.querySelector(".c-channelIcon--email");
+    campaignStatus     = campaignRow.querySelector(".c-campaignManager_slat_status");
+    campaignStatusText = campaignRow.querySelector(".c-campaignManager_slat_status span").innerText;
+    scheduledObject    = campaignRow.querySelector(".c-campaignManager_slat_details p[data-dojo-attach-point='node_additionalMetaData']");
+    campaignId         = campaignRow.querySelector("input[type='checkbox']").value;
+    campaignName       = campaignRow.querySelector("a.c-campaignManager_slat_details_link").innerText;
+    campaignDetails    = campaignRow.querySelector(".c-campaignManager_slat_details");
+    campaignType       = campaignRow.querySelector("[data-dojo-attach-point='node_typeName']");
+    campaignList       = campaignRow.querySelector("[data-dojo-attach-point='node_listName']");
+    campaignDiscipline = getDisciplineId(campaignName);
 
     // Begin Grouping
     console.groupCollapsed("Campaign Discipline: " + getDisciplineId(campaignName) + " - Campaign ID: " + campaignId + " - Status: " + campaignStatusText);
@@ -127,25 +130,14 @@ function processCampaignList(campaignListParent) {
         campaignRow.getElementsByClassName("c-campaignManager_slat_stats")[0].prepend(dupNode);
 
 
-
         if ( campaignStatusText === "Sent" ) {
           console.log(scheduledObject.textContent);
-          var totalSent = scheduledObject.textContent.replace(/(^.+ to| recipients)/gi,"");
+          var totalSent = scheduledObject.textContent.replace(/(^.+ to | recipients.+)/gi,"");
           console.log(totalSent);
         } else {
           var totalSent = "TBD"
         }
         dupNode.children[0].children[0].innerText = totalSent;
-
-        // Add a "Report Download" Button
-        ///////////
-        // var reportDlLink = document.createElement("a");
-        //     reportDlLink.href = "/reports/excel?id=" + campaignId;
-        //     reportDlLink.classList.add("icomoon", "icomoon-arrow-down", "button", "campaign-report-dl-button");
-        //     reportDlLink.style = "line-height:24px; height:22px; padding:0 8px; font-size:12px; margin:0;"
-        //     reportDlLink.addEventListener("click", clickedReportDLButton, false);
-        //
-        // insertAfter(reportDlLink, campaignRow.getElementsByClassName("c-campaignManager_slat_stats")[0]);
 
     }
 

@@ -60,6 +60,21 @@ function loadOptions() {
     }
 
     //////
+    /// Open in App
+    /////
+
+    console.log(options)
+    console.log(options.openInApp)
+
+    console.log("options.openInApp", options.openInApp);
+
+    if(options.openInApp !== '' && options.openInApp !== undefined){
+      document.getElementById("openInApp").value = options.openInApp;
+      console.log(options)
+      console.log(options.openInApp)
+    }
+
+    //////
     /// Link Validation
     /////
 
@@ -137,6 +152,13 @@ function saveOptions() {
 
       // Mailgun Domain Name
       bkg.setItem("mailgunDomainName", mailgunDomainName.value);
+
+    // Open in App
+    //////////
+
+      // App Selection
+      bkg.setItem("openInApp", openInApp.value);
+
 
     // Link Validation
     //////////////////
