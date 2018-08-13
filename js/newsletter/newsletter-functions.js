@@ -1117,31 +1117,6 @@ function containsObject(obj, list) {
 ///////////////////////////////////////
 /////
 /////
-/////    Log Coding Bugs
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-
-totalCodingBugs = 0;
-
-function logCodeBug(object, client, errorText) {
-  console.error("Coding Bug:", client, errorText);
-
-  updateQaBar(codingBugsQaBar, totalCodingBugs++, " Bugs Found");
-}
-
-function updateQaBar(bar, errors, string) {
-  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
-  bar.dataset.errors = errors;
-}
-
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
 /////    Create Link Error Marker and Row
 /////
 /////

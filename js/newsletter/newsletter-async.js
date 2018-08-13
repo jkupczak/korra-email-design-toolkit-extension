@@ -113,6 +113,7 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 
 function processCode(code) {
 
+  originalHtml = code;
   cleanedOriginalHtml = code;
   cleanedDesktopHtml = cleanedOriginalHtml;
   cleanedMobileHtml = cleanedOriginalHtml;

@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.7.470",
+  "version": "3.7.500",
 
   "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
 
@@ -67,6 +67,37 @@
       "js": ["js/global.js", "js/get-options.js", "js/newsletter/newsletter-async.js", "js/newsletter/mailchimp-parser.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/utilities/is-article-protected.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
 
       "run_at": "document_start"
+    },
+    {
+      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],
+      "exclude_matches": ["file:///*?view=1*", "file:///var/folders/*", "http://localhost:4567/__middleman/*"],
+
+      "css": [
+        "js/libs/codemirror/lib/codemirror.css",
+        "js/libs/codemirror/theme/monokai.css",
+        "js/libs/codemirror/addon/fold/foldgutter.css",
+        "js/libs/codemirror/addon/scroll/simplescrollbars.css"
+      ],
+
+      "js": [
+        "js/libs/codemirror/lib/codemirror.js",
+        "js/libs/codemirror/mode/css/css.js",
+        "js/libs/codemirror/mode/xml/xml.js",
+        "js/libs/codemirror/mode/javascript/javascript.js",
+        "js/libs/codemirror/mode/htmlmixed/htmlmixed.js",
+        "js/libs/codemirror/addon/display/autorefresh.js",
+        "js/libs/codemirror/addon/fold/foldcode.js",
+        "js/libs/codemirror/addon/fold/foldgutter.js",
+        "js/libs/codemirror/addon/fold/brace-fold.js",
+        "js/libs/codemirror/addon/fold/comment-fold.js",
+        "js/libs/codemirror/addon/fold/indent-fold.js",
+        "js/libs/codemirror/addon/fold/xml-fold.js",
+        "js/libs/codemirror/addon/selection/active-line.js",
+        "js/libs/codemirror/addon/selection/mark-selection.js",
+        "js/libs/codemirror/addon/scroll/simplescrollbars.js"
+      ],
+
+      "run_at": "document_end"
     },
     {
       "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],

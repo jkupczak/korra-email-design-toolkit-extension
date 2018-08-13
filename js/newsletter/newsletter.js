@@ -298,11 +298,16 @@ if ( getParameterByName("presentation") === "1" ) {
   stagePreviewBtns.addEventListener("click", changeStage, false);
 
   var viewHtmlBtn = document.createElement("div");
-  viewHtmlBtn.classList.add("stage-preview-btn", "stage-preview-btn--html", "active");
+  viewHtmlBtn.classList.add("stage-preview-btn", "stage-preview-btn--preview", "active");
   viewHtmlBtn.dataset.stage = "html";
-  viewHtmlBtn.innerHTML = "HTML";
+  viewHtmlBtn.innerHTML = "Preview";
   stagePreviewBtns.appendChild(viewHtmlBtn);
-  stagePreviewBtns.appendChild(viewHtmlBtn);
+
+  var viewCodeBtn = document.createElement("div");
+  viewCodeBtn.classList.add("stage-preview-btn", "stage-preview-btn--code");
+  viewCodeBtn.dataset.stage = "code";
+  viewCodeBtn.innerHTML = "Code";
+  stagePreviewBtns.appendChild(viewCodeBtn);
 
   var viewTextBtn = document.createElement("div");
   viewTextBtn.classList.add("stage-preview-btn", "stage-preview-btn--text");
@@ -328,16 +333,32 @@ if ( getParameterByName("presentation") === "1" ) {
 
     if ( stage === "text" ) {
       plainTextStage.style.display = "flex";
+      codeStage.style.display = "none";
       htmlStage.style.display = "none";
 
       viewTextBtn.classList.add("active");
       viewHtmlBtn.classList.remove("active");
-    } else {
+      viewCodeBtn.classList.remove("active");
+    }
+    else if ( stage === "code" ) {
+      codeStage.style.display = "flex";
       plainTextStage.style.display = "none";
-      htmlStage.style.display = "flex";
+      htmlStage.style.display = "none";
 
+      viewCodeBtn.classList.add("active");
       viewTextBtn.classList.remove("active");
+      viewHtmlBtn.classList.remove("active");
+
+      // activateCodeStage();
+    }
+    else {
+      htmlStage.style.display = "flex";
+      plainTextStage.style.display = "none";
+      codeStage.style.display = "none";
+
       viewHtmlBtn.classList.add("active");
+      viewTextBtn.classList.remove("active");
+      viewCodeBtn.classList.remove("active");
     }
 
 
@@ -455,6 +476,56 @@ if ( getParameterByName("presentation") === "1" ) {
       // }
 
     });
+
+
+
+  //////////
+  ////
+  ////  Code View
+  ////
+  /////////
+
+  // Create the Stage
+  var codeStage = document.createElement("div");
+  codeStage.classList.add("stage", "code-stage");
+  codeStage.style.display = "none";
+  stagesWrapper.appendChild(codeStage);
+
+  // function activateCodeStage() {
+
+    var myCodeMirror = CodeMirror(codeStage, {
+      value: originalHtml,
+      mode:  "htmlmixed",
+      theme: "monokai",
+      scrollbarStyle: "overlay",
+      tabSize: 2,
+      lineNumbers: true,
+      autoRefresh: true, // https://github.com/codemirror/CodeMirror/issues/798
+      lineWrapping: true,
+      styleSelectedText: true,
+      viewportMargin: Infinity,
+
+            foldGutter: {
+                rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.xml, CodeMirror.fold.brace, CodeMirror.fold.comment)
+            },
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+
+      styleActiveLine: true,
+      actions: {
+          toggleHtml: function() {
+              this.sendAction("toggleHtml")
+          },
+          toggleCss: function() {
+              this.sendAction("toggleCss")
+          },
+          viewCompiled: function() {
+              this.sendAction("viewCompiled")
+          }
+      }
+    });
+
+  // }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2527,6 +2598,20 @@ appendQaBar(codingBugsQaBar);
 
 
 
+//////////
+////
+////  QA Bar: Accessibility Warnings
+////
+/////////
+
+var accessibilityWarningsQaBar = document.createElement("div");
+accessibilityWarningsQaBar.id = "qa-accessibility-warnings";
+accessibilityWarningsQaBar.className = "qa-accessibility-warnings";
+accessibilityWarningsQaBar.dataset.errors = "0";
+appendQaBar(accessibilityWarningsQaBar);
+
+
+
 
 //////////
 ////
@@ -2950,6 +3035,93 @@ if (typeof moduleSettingsMenu != 'undefined') {
 
 
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+////
+////
+////    ACCESSIBILITY CHECKS
+////
+////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+////////////
+////////////
+////////////
+//
+//
+    totalAccessibilityWarnings = 0;
+//
+//
+////////////
+////////////
+////////////
+
+
+
+
+
+// role="presentation"
+// Prevent screen readers from dictating table formats.
+// Documentation:
+
+(function(){
+
+  console.group("Accessibility Warnings");
+
+  let tables = dFrameContents.querySelectorAll("table");
+  for (let table of tables) {
+    if ( table.getAttribute("role") !== "presentation" ) {
+      logAccessibilityWarning(table, 'Mssing role="presentation" attribute.');
+    } else {
+
+    }
+  }
+
+  console.groupEnd();
+
+})();
+
+
+/////////
+/////////
+// Finished...
+/////////
+/////////
+if ( totalAccessibilityWarnings > 0 ) {
+  applyQaResults(accessibilityWarningsQaBar, "error");
+}
+else if ( totalAccessibilityWarnings === 0 ) {
+  applyQaResults(accessibilityWarningsQaBar, "success", "0 Accessibility Warnings");
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Log Accessibility Warnings
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+function logAccessibilityWarning(object, id) {
+  console.error(id, object);
+
+  updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings++, " Accessibility Warnings");
+}
+
+function updateQaBar(bar, errors, string) {
+  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
+  bar.dataset.errors = errors;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2970,6 +3142,8 @@ if (typeof moduleSettingsMenu != 'undefined') {
 ////////////
 //
 //
+    totalCodingBugs = 0;
+//
 //
 ////////////
 ////////////
@@ -2978,14 +3152,14 @@ if (typeof moduleSettingsMenu != 'undefined') {
 
 // Outlook Bug
 // <td> vertical padding
-// Documentation
+// Documentation:
 
 (function(){
 
   // Consider running this test on a version of the email that has @media
   // queries stripped out so that there's no question whether it will be relevant in Outlook.
 
-  // console.group("[Bug Check] Outlook: <td> Vertical Padding");
+  console.group("[Bug Check] Outlook: <td> Vertical Padding");
 
   var firstTdTop, firstTdBottom;
 
@@ -3016,17 +3190,78 @@ if (typeof moduleSettingsMenu != 'undefined') {
     }
   }
 
-  // console.groupEnd();
+  console.groupEnd();
 
 })();
 
 
+
+// Outlook Bug
+// !important inline css parsing
+// Documentation:
+
+(function(){
+
+  console.group("[Bug Check] Outlook: !important parsing");
+
+  var firstTdTop, firstTdBottom;
+
+  //
+  let els = dFrameContents.querySelectorAll("*[style]");
+  for (let el of els) {
+
+    for (var i = 0; i < el.style.length; i++) {
+
+      if ( el.style.getPropertyPriority(el.style[i]) === "important" ) {
+        console.log( el.style[i] );
+        logCodeBug(el, "outlook", "important-parsing");
+      }
+
+    }
+
+  }
+
+  console.groupEnd();
+
+})();
+
+
+/////////
+/////////
+// Finished...
+/////////
+/////////
 if ( totalCodingBugs > 0 ) {
   applyQaResults(codingBugsQaBar, "error");
 }
 else if ( totalCodingBugs === 0 ) {
-  applyQaResults(codingBugsQaBar, "success", "0 Bugs Found");
+  applyQaResults(codingBugsQaBar, "success", "0 Coding Bugs Found");
 }
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Log Coding Bugs
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+function logCodeBug(object, client, errorText) {
+  console.error("Coding Bug:", client, errorText, object);
+
+  updateQaBar(codingBugsQaBar, totalCodingBugs++, " Bugs Found");
+}
+
+function updateQaBar(bar, errors, string) {
+  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
+  bar.dataset.errors = errors;
+}
+
 
 
 

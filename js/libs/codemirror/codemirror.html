@@ -1,0 +1,68 @@
+<!doctype HTML>
+<head>
+
+  <!-- js: main package -->
+  <script src="lib/codemirror.js"></script>
+
+  <!-- js: modes -->
+  <script src="mode/css/css.js"></script>
+  <script src="mode/xml/xml.js"></script>
+  <script src="mode/javascript/javascript.js"></script>
+  <script src="mode/htmlmixed/htmlmixed.js"></script>
+
+  <!-- css: theming -->
+  <link rel="stylesheet" href="lib/codemirror.css">
+  <link rel="stylesheet" href="theme/paraiso-dark.css">
+
+  <!-- js: code folding -->
+  <link rel="stylesheet" href="addon/fold/foldgutter.css">
+
+  <!-- css: code folding -->
+  <script src="addon/fold/foldcode.js"></script>
+  <script src="addon/fold/foldgutter.js"></script>
+  <script src="addon/fold/brace-fold.js"></script>
+  <script src="addon/fold/comment-fold.js"></script>
+  <script src="addon/fold/indent-fold.js"></script>
+  <script src="addon/fold/xml-fold.js"></script>
+
+  <!-- js: more addons -->
+  <script src="addon/selection/active-line.js"></script>
+  <script src="addon/selection/mark-selection.js"></script>
+
+</head>
+<body>
+<script>
+
+var string = "<html></html>";
+
+var myCodeMirror = CodeMirror(document.body, {
+  value: string,
+  mode:  "htmlmixed",
+  theme: "paraiso-dark",
+  lineNumbers: true,
+  styleSelectedText: true,
+
+        foldGutter: {
+            rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.xml, CodeMirror.fold.brace, CodeMirror.fold.comment)
+        },
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+
+  styleActiveLine: true,
+  actions: {
+      toggleHtml: function() {
+          this.sendAction("toggleHtml")
+      },
+      toggleCss: function() {
+          this.sendAction("toggleCss")
+      },
+      viewCompiled: function() {
+          this.sendAction("viewCompiled")
+      }
+  }
+});
+
+
+</script>
+
+</body>
+</html>

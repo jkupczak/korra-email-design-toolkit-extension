@@ -116,12 +116,13 @@ iframe {
   width:100%;
   height:45px;
   line-height:45px;
-  font-size:18px;
+  font-size:16px;
   font-weight:500;
   text-align:center;
 }
-  .main-pane .stage-preview-btn--html { margin-right:5px; }
-  .main-pane .stage-preview-btn--text { margin-left:5px; }
+  .main-pane .stage-preview-btn--preview { width:42%; }
+  .main-pane .stage-preview-btn--code    { width:29%; margin-left:5px; }
+  .main-pane .stage-preview-btn--text    { width:29%; margin-left:5px; }
 
 .main-pane .stage-preview-btn.active {
   background:#000;
@@ -138,12 +139,12 @@ iframe {
 }
 
 .main-pane .email-disc {
-  text-align: center;
+  /* text-align: center; */
 }
 .main-pane .document-title {
-  padding-top:14px;
-  padding-bottom:0px;
-  position: relative;
+  padding-left:12px;
+  display: flex;
+  align-items: center;
 }
 
 .main-pane .title-large, .main-pane .title-small {
@@ -157,9 +158,9 @@ iframe {
     font-weight:500;
   }
   .main-pane .title-small {
-    color: #7d7d8d;
+    color: #8b8b9b;
     font-family: 'Roboto-Regular', Roboto, sans-serif;
-    font-size:14px;
+    font-size:13px;
     font-weight:300;
   }
 
@@ -202,12 +203,13 @@ iframe {
 /********************************************/
 
 .main-pane .document-desc {
-  padding:6px 0 12px;
+  padding:6px 12px 12px;
+  display: flex;
 }
 
 .main-pane .disc-img {
   display: block;
-  width:80px;
+  width:40px;
   height:auto;
   margin:0 auto;
 }
@@ -1248,6 +1250,10 @@ body.split-view-on {
 /**********************/
 /**********************/
 
+.stage {
+  height:100%;
+  display:flex;
+}
 
   /**********************/
   /**********************/
@@ -1256,8 +1262,7 @@ body.split-view-on {
   /**********************/
 
   .html-stage {
-    height:100%;
-    display: flex;
+
   }
 
   /* Toolbar */
@@ -1609,6 +1614,24 @@ body.split-view-on {
 
 
 
+  /**********************/
+  /**********************/
+  /**    CODE STAGE   ***/
+  /**********************/
+  /**********************/
+
+  .code-stage {
+
+  }
+
+  .CodeMirror {
+    height:auto !important;
+    width: 100% !important;
+    font-size: 12px;
+  }
+
+
+
 /***********
 
   Preflight
@@ -1952,7 +1975,7 @@ html.error-status.errors:before {
 
 
 .main-pane-extra-btn {
-  margin: 0 12px 12px;
+  margin: 0 12px 6px;
   padding: 10px;
   font-weight:bold;
   text-align:center;
