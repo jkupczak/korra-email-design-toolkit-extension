@@ -153,11 +153,6 @@ function processCode(code) {
   cleanedDesktopHtml += allFramesCssString;
   cleanedMobileHtml += allFramesCssString;
 
-  // Add allFrames.js to both views
-  var allFramesScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/allFrames.js') + '"></script>';
-  cleanedDesktopHtml += allFramesScript;
-  cleanedMobileHtml += allFramesScript;
-
   //////////////
   //
   //   DESKTOP
@@ -167,6 +162,10 @@ function processCode(code) {
   // Add dFrame.js
   var dFrameFrameScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/dFrame.js') + '"></script>';
   cleanedDesktopHtml += dFrameFrameScript;
+
+  // Add keymaster.js
+  // var dFrameKeymaster = '<script data-korra src="' + chrome.extension.getURL('js/libs/keymaster.js') + '"></script>';
+  // cleanedDesktopHtml += dFrameKeymaster;
 
   // Add dFrame.css to the desktop view
   var dFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-dFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
@@ -180,11 +179,28 @@ function processCode(code) {
 
   // Add mFrame.js
   var mFrameScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/mFrame.js') + '"></script>';
-  cleanedDesktopHtml += mFrameScript;
+  cleanedMobileHtml += mFrameScript;
+
+  // Add keymaster.js
+  // var mFrameKeymaster = '<script data-korra src="' + chrome.extension.getURL('js/libs/keymaster.js') + '"></script>';
+  // cleanedMobileHtml += mFrameKeymaster;
 
   // Add mFrame.css to the mobile view
   var mFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-mFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
   cleanedMobileHtml += mFrameCssString;
+
+
+  //////////////
+  //
+  //   ALL
+  //
+  //////////////
+
+  // Add allFrames.js to both views
+  var allFramesScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/allFrames.js') + '"></script>';
+  // cleanedDesktopHtml += allFramesScript;
+  // cleanedMobileHtml += allFramesScript;
+
 
   // Now that we've got the HTML from our async call AND we've processed it...
   // buildPage();
@@ -343,9 +359,9 @@ function seqLoopReduce(someInput, times) {
 var ticks6 = (new Date()).valueOf();
 var p6 = seqLoopReduce("10 iterations: <br />", 15).then(function (result) {
     var endTicks = (new Date()).valueOf();
-    console.log("<h2>Sequential reduced, done in " + (endTicks - ticks6) + " ms: </h2>");
-    console.log(result);
-    console.log("<br />");
+    // console.log("<h2>Sequential reduced, done in " + (endTicks - ticks6) + " ms: </h2>");
+    // console.log(result);
+    // console.log("<br />");
 });
 
 

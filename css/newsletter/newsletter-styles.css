@@ -108,7 +108,7 @@ iframe {
 .main-pane .stage-preview-btns {
   display:flex;
   padding:0 12px 0 12px;
-  margin-bottom:18px;
+  margin-bottom:6px;
 }
 .main-pane .stage-preview-btn {
   background:#282830;
@@ -834,10 +834,10 @@ html.powered-up, html.powered-up body {
   display: flex;
 }
 .qa-bar .qa-text {
-  height:32px;
+  height:28px;
   font-size:12px;
   color:#44444d;
-  line-height:34px;
+  line-height:30px;
   padding-left:8px;
 }
   .qa-bar.finished       .qa-text { color:#b1b1ba; }
@@ -859,8 +859,8 @@ html.powered-up, html.powered-up body {
 
 .qa-bar .qa-icon {
   background:#000;
-  width:32px; min-width:32px; max-width: 32px;
-  height:32px; min-height:32px; max-height:32px;
+  width:28px; min-width:28px; max-width: 28px;
+  height:28px; min-height:28px; max-height:28px;
   position: relative;
   text-align: center;
 
@@ -901,8 +901,8 @@ html.powered-up, html.powered-up body {
 
 .qa-bar.finished .qa-icon:before {
   font-family: 'IcoMoon-Free' !important;
-  line-height:32px;
-  width:32px;
+  line-height:28px;
+  width:28px;
   text-align:center;
 }
 
@@ -926,6 +926,9 @@ html.powered-up, html.powered-up body {
     color:#2099ff;
     font-size:17px;
   }
+
+  .qa-bar .qa-icon .icon-check { width:16px }
+  .qa-bar .qa-icon .icon-x { width:12px }
 
 /* Preheader Bar */
 /*****************/

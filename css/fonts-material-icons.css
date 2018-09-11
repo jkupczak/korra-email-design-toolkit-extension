@@ -156,8 +156,6 @@
   .mdk-icon-xl.mdk-icon-rounded-square { border-radius:10px; }
 
   /* Colors */
-  .mdk-icon-blue {
-    background:#1e78d7 !important;
-    color:#fff !important;
-  }
-  .mdk-icon-blue:hover { background:#2986e9 !important; }
+  /* MedBridge Blue */
+  .mdk-icon-blue { background:#1e78d7 !important; color:#fff !important; } .mdk-icon-blue:hover { background:#2986e9 !important; }
+  .mdk-icon-purple { background:#5f1ed7 !important; color:#fff !important; } .mdk-icon-purple:hover { background:#6d2ce4 !important; }

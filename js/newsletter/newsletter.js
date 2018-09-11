@@ -175,8 +175,6 @@ if ( view !== "1" ) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// function buildPage() {
-
 
 
 ////////////////////
@@ -238,15 +236,11 @@ if ( getParameterByName("presentation") === "1" ) {
   console.log("alerts suppressed");
 }
 
-
-
-  // Create a new injected script.
-  // Not sure why I decided to inject this script instead of adding it to the manifest.
-  // TODO: Figure out why.
-  injectScript( chrome.extension.getURL('/js/newsletter/zoom.js'), 'body');
-
-
+  ////////////////////////////////
+  //
   // Apply class to the HTML element so that we can activate styles for this new page.
+  //
+
   document.getElementsByTagName('html')[0].classList.add("powered-up");
 
 
@@ -434,6 +428,7 @@ if ( getParameterByName("presentation") === "1" ) {
     // Apply the desktop iframes document object to a variable
     var dFrameContents = desktopIframe.contentDocument;
     var dFrameBody = dFrameContents.body;
+    var dFrameHTMLEle = dFrameContents.documentElement;
 
     // Get all links, global variable
     linkList = dFrameContents.querySelectorAll("a");
@@ -470,9 +465,7 @@ if ( getParameterByName("presentation") === "1" ) {
       // Create a UI for showing/hiding conditionals if they exist.
       ///////
       // if ( conditionalsExist ) {
-      console.log("a");
         createConditionalsUI();
-      console.log("b");
       // }
 
     });
@@ -525,6 +518,7 @@ if ( getParameterByName("presentation") === "1" ) {
     });
 
   // }
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3071,14 +3065,34 @@ if (typeof moduleSettingsMenu != 'undefined') {
 
 (function(){
 
-  console.group("Accessibility Warnings");
+  console.group("[Accessibility: role='presentation']");
 
   let tables = dFrameContents.querySelectorAll("table");
   for (let table of tables) {
     if ( table.getAttribute("role") !== "presentation" ) {
-      logAccessibilityWarning(table, 'Mssing role="presentation" attribute.');
+      logAccessibilityWarning(table, 'Missing role="presentation" attribute.');
     } else {
 
+    }
+  }
+
+  console.groupEnd();
+
+})();
+
+
+// alt=""
+// All images need an alt attribute, even if its empty
+// Documentation:
+
+(function(){
+
+  console.group("[Accessibility: alt='']");
+
+  let images = dFrameContents.querySelectorAll("img");
+  for (let image of images) {
+    if ( image.getAttribute("alt") === null ) {
+      logAccessibilityWarning(image, 'Missing alt="" attribute.');
     }
   }
 
@@ -3096,7 +3110,7 @@ if ( totalAccessibilityWarnings > 0 ) {
   applyQaResults(accessibilityWarningsQaBar, "error");
 }
 else if ( totalAccessibilityWarnings === 0 ) {
-  applyQaResults(accessibilityWarningsQaBar, "success", "0 Accessibility Warnings");
+  applyQaResults(accessibilityWarningsQaBar, "success", "No Accessibility Warnings");
 }
 
 ///////////////////////////////////////
@@ -3113,8 +3127,8 @@ else if ( totalAccessibilityWarnings === 0 ) {
 
 function logAccessibilityWarning(object, id) {
   console.error(id, object);
-
-  updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings++, " Accessibility Warnings");
+  totalAccessibilityWarnings++
+  updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings, " Accessibility Warnings");
 }
 
 function updateQaBar(bar, errors, string) {
@@ -3143,11 +3157,58 @@ function updateQaBar(bar, errors, string) {
 //
 //
     totalCodingBugs = 0;
+    totalCodingWarnings = 0;
 //
 //
 ////////////
 ////////////
 ////////////
+
+// Outlook Bug
+// No padding on <a>, <p>, or <div>
+// Documentation:
+
+(function(){
+
+  console.group("[Bug Check] Outlook: Lack of Padding Support");
+  // console.warn("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
+
+  let els = dFrameContents.querySelectorAll("a, p, div");
+  for (let el of els) {
+
+    if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
+
+      logCodeBug(el, "outlook-bug", "no-padding-support");
+
+    }
+
+  }
+  console.groupEnd();
+
+
+})();
+
+
+// Outlook Bug
+// <a> cannot link <table> elements
+// Documentation:
+
+(function(){
+
+  console.group("[Bug Check] Outlook: <a> tags cannot link <table> elements");
+  // console.warn("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
+
+  let els = dFrameContents.querySelectorAll("a table");
+  for (let el of els) {
+
+    logCodeBug(el, "outlook-bug", "<table>s cannot be linked with <a> tags in Outlook");
+
+  }
+
+  console.groupEnd();
+
+})();
+
 
 
 // Outlook Bug
@@ -3158,8 +3219,10 @@ function updateQaBar(bar, errors, string) {
 
   // Consider running this test on a version of the email that has @media
   // queries stripped out so that there's no question whether it will be relevant in Outlook.
+  // If this test runs while a mobile based media query is active, it could skew results
 
   console.group("[Bug Check] Outlook: <td> Vertical Padding");
+  console.warn("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
 
   var firstTdTop, firstTdBottom;
 
@@ -3169,22 +3232,48 @@ function updateQaBar(bar, errors, string) {
     // Check how many table cells are in this row. We only want to address rows with 2 or more.
     if ( tableRow.cells.length >= 2 ) {
 
+      // console.log(tableRow);
+
       // Loop through all <td>'s in this table row.
       for (var i = 0; i < tableRow.cells.length; i++) {
 
-        // console.log(i, tableRow.cells.length, tableRow.cells[i]); //second console output
+        // console.group();
+        //
+        // console.log(tableRow.cells[i]);
+        // console.log("table cell " + i + " of " + tableRow.cells.length);
+        // console.log("innerText length: " + tableRow.cells[i].innerText.trim().length, "innerText content: '" + tableRow.cells[i].innerText.trim() + "'");
+        // console.log("innerHTML length: " + tableRow.cells[i].innerHTML.trim().length, "innerHTML content: '" + tableRow.cells[i].innerHTML.trim() + "'");
+        // console.log("textContent length: " + tableRow.cells[i].textContent.trim().length, "textContent content: '" + tableRow.cells[i].textContent.trim() + "'");
+        //
+        // console.groupEnd();
 
-        // Log the top and bottom padding of our first <td>
-        if ( i === 0 ) {
-          firstTdTop = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top");
-          firstTdBottom = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom");
+        // We need to ignore cells that are empty.
+        // An empty table cell doesn't care if it gets different vertical padding.
+        // So although this is still bugged, no one will ever know.
+
+        // console.log("Begin check: " + i);
+        if ( !isElementEmpty(tableRow.cells[i]) ) {
+        // console.groupEnd();
+
+        console.log( i );
+        console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] )
+        console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] )
+        console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] )
+
+          // Log the top and bottom padding of our first <td>
+          if ( i === 0 ) {
+            firstTdTop = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top");
+            firstTdBottom = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom");
+          }
+          // if this isn't the first <td>, check its top and bottom padding against the first <td>
+          // Throw an error if they don't match.
+          else if ( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") !== firstTdTop || window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") !== firstTdBottom ) {
+            // Error
+            logCodeBug(tableRow.cells[i], "outlook", "vertical-cell-padding");
+          }
+
         }
-        // if this isn't the first <td>, check its top and bottom padding against the first <td>
-        // Throw an error if they don't match.
-        else if ( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") !== firstTdTop || window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") !== firstTdBottom ) {
-          // Error
-          logCodeBug(tableRow, "outlook", "vertical-cell-padding");
-        }
+
       }
 
     }
@@ -3203,6 +3292,7 @@ function updateQaBar(bar, errors, string) {
 (function(){
 
   console.group("[Bug Check] Outlook: !important parsing");
+  console.warn("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31")
 
   var firstTdTop, firstTdBottom;
 
@@ -3213,8 +3303,8 @@ function updateQaBar(bar, errors, string) {
     for (var i = 0; i < el.style.length; i++) {
 
       if ( el.style.getPropertyPriority(el.style[i]) === "important" ) {
-        console.log( el.style[i] );
-        logCodeBug(el, "outlook", "important-parsing");
+        // console.log( el.style[i] );
+        logCodeBug(el, "outlook", "important-parsing on " + el.style[i]);
       }
 
     }
@@ -3235,7 +3325,7 @@ if ( totalCodingBugs > 0 ) {
   applyQaResults(codingBugsQaBar, "error");
 }
 else if ( totalCodingBugs === 0 ) {
-  applyQaResults(codingBugsQaBar, "success", "0 Coding Bugs Found");
+  applyQaResults(codingBugsQaBar, "success", "No Coding Bugs Found");
 }
 
 
@@ -3253,8 +3343,8 @@ else if ( totalCodingBugs === 0 ) {
 
 function logCodeBug(object, client, errorText) {
   console.error("Coding Bug:", client, errorText, object);
-
-  updateQaBar(codingBugsQaBar, totalCodingBugs++, " Bugs Found");
+  totalCodingBugs++
+  updateQaBar(codingBugsQaBar, totalCodingBugs, " Bugs Found");
 }
 
 function updateQaBar(bar, errors, string) {
@@ -3531,7 +3621,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
   // case (IN)sensitive
   findAndReplaceDOMText(dFrameBody, {
-    find: /((only )?\$95|(only )?\$145|patients?|Physical Therap(y|ist)|Occupational Therap(y|ist))/gi,
+    find: /((only )?\$95|(only )?\$145|Physical Therap(y|ist)|Occupational Therap(y|ist))/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3613,6 +3703,8 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
     // - 10/30/17 Update: Per ASHA, "Unlimited Access to CEUs" is still not right. We have to say "Unlimited Access to CE Courses". This only applies to SLP.
   // 17-09-05 - Justin does not like "From the Blog" or even referring to our blog site as a blog at all.
   // 18-04-24 - Never 'Continued' Education. Only 'Continuing' Education.
+  // 18-08-28 - ASHA
+     // MedBridge is an ASHA Approved Provider and MedBridge offers courses registered for ASHA CEUs. It is incorrect to say that MedBridge offers ASHA-approved or ASHA-accredited courses because we do not approve or accredit content we only approve or accredit providers. Unlimited CEU courses is misleading – there is a limit to what you can offer
 
   ////////////////////////////////
   ////////////////////////////////
@@ -3621,7 +3713,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Case (IN)sensitive
 
     findAndReplaceDOMText(dFrameBody, {
-      find: /(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited) (ceu|course)s?|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
+      find: /(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited)|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
     // Continuing Education, not Continued Education
@@ -3916,6 +4008,185 @@ if ( getParameterByName("guides") === "1" ) {
 
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// ---
+// Keymaster.js does not support listening to iframes at this time.
+// So we are only using keymaster.js for the main document window.
+// For the desktop and mobile iframes we are listening for 'keydown' and processing
+// the event keys separately the old fashioned way.
+
+// ---
+// Despite forgetting this on several occasions, we do not need to inject iframes
+// with code to listen for or act on keypresses. We can just attach eventlisteners
+// here at the top level.
+
+////////////////////
+////////////////////
+////////////////////
+///
+///   Keypress Listening
+///
+////////////////////
+////////////////////
+////////////////////
+
+// In order to act on simultaneous keydown and scroll, we need to save the key
+// to a variable on keydown, and then erase it on keyup.
+// Required for our SyncScrolling feature further down.
+
+var currentKey = '';
+
+// Desktop Frame
+dFrameContents.addEventListener('keydown', function(e) {
+  currentKey = e;
+  processShortcut(e);
+  // console.log(e);
+});
+dFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
+
+// Mobile Frame
+mFrameContents.addEventListener('keydown', function(e) {
+  currentKey = e;
+  processShortcut(e);
+  // console.log(e);
+});
+mFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
+
+
+////////////////////
+////////////////////
+////////////////////
+///
+///   Process Shortcuts
+///
+////////////////////
+////////////////////
+////////////////////
+
+// Old Fashion because keymaster.js can't read keystrokes from iframes
+//////////////
+
+function processShortcut(e) {
+
+  // Print Desktop
+  if ( (e.ctrlKey || e.metaKey) && e.keyCode == 80 ) {
+    e.preventDefault();
+    printDesktop();
+  }
+
+  // Zoom Desktop
+  if ( (e.ctrlKey || e.metaKey) && (e.keyCode == 48 || e.keyCode == 187 || e.keyCode == 189) ) {
+    e.preventDefault();
+
+    // Zoom-out
+    if ( (e.ctrlKey || e.metaKey) && e.keyCode == 189 ) {
+      zoom("-");
+    }
+    // Zoom-in
+    if ( (e.ctrlKey || e.metaKey) && e.keyCode == 187 ) {
+      zoom("+");
+    }
+    // Reset Zoom
+    if ( (e.ctrlKey || e.metaKey) && e.keyCode == 48 ) {
+      zoom("0");
+    }
+  }
+
+}
+
+// Keymaster.js
+///////////////
+
+// Print the desktop view only.
+key('ctrl+p, ⌘+p', function() {
+  printDesktop();
+  return false;
+});
+
+// Zoom the desktop view only.
+key('ctrl+-, ⌘+-', function() {
+  zoom("-");
+  return false;
+});
+key('ctrl+=, ⌘+=', function() {
+  zoom("+");
+  return false;
+});
+key('ctrl+0, ⌘+0', function() {
+  zoom("0");
+  return false;
+});
+
+
+
+
+////////////////////
+////////////////////
+////////////////////
+///
+///   Shortcut Functions
+///
+////////////////////
+////////////////////
+////////////////////
+
+
+function printDesktop() {
+  desktopIframe.contentWindow.print();
+}
+
+
+// Zoom the desktop view only.
+var dFrameZoomStatus = document.getElementById("desktop-zoom-status");
+var currentZoomLevel = "1";
+var zoomLevels     = ["0.25", "0.33", "0.5", "0.67", "0.75", "0.8", "0.9", "1", "1.1", "1.25", "1.5", "1.75", "2"];
+var zoomLevelsText = ["25%", "33%", "50%", "67%", "75%", "80%", "90%", "100%", "110%", "125%", "150%", "175%", "200%"];
+
+function zoom(direction) {
+
+  // console.log("zoom() function inititated");
+  // console.log("zoom(direction): " + direction);
+  // console.log("currentZoomLevel: " + currentZoomLevel);
+
+  currentZoomLevel = dFrameHTMLEle.style.zoom || "1";
+
+  // Zoom-out
+  if ( direction === "-" && currentZoomLevel !== "0.25" ) {
+    dFrameHTMLEle.style.zoom   = zoomLevels[zoomLevels.indexOf(currentZoomLevel)-1]; // Go DOWN 1 level in the array.
+    dFrameZoomStatus.innerHTML = zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)-1]; // Go DOWN 1 level in the array.
+    dFrameZoomStatus.classList.add("show");
+
+    console.log( "Zoom: " + zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)-1] );
+  }
+  // Zoom-in
+  if ( direction === "+" && currentZoomLevel !== "2" ) {
+    dFrameHTMLEle.style.zoom   = zoomLevels[zoomLevels.indexOf(currentZoomLevel)+1] // Go UP 1 level in the array.
+    dFrameZoomStatus.innerHTML = zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)+1] // Go UP 1 level in the array.
+    dFrameZoomStatus.classList.add("show");
+
+    console.log( "Zoom: " + zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)+1] );
+  }
+  // Reset Zoom
+  if ( direction === "0" ) {
+    dFrameHTMLEle.style.zoom   = zoomLevels[7] // Go UP 1 level in the array.
+    dFrameZoomStatus.innerHTML = zoomLevelsText[7] // Go UP 1 level in the array.
+  }
+  // Reset Zoom
+  if ( dFrameHTMLEle.style.zoom === "1") {
+    dFrameZoomStatus.classList.remove("show");
+  }
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3924,20 +4195,40 @@ if ( getParameterByName("guides") === "1" ) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////
+//
+// Sync Scrolling can be temporarily turned off by holding ctrl or cmd while scrolling.
+// Does not work if devtools has focus.
+//
+///////////
+
 dFrameContents.addEventListener('scroll', function(e) {
-  syncScroll(dFrameContents, document.querySelector("#desktop-view"));
-  // console.groupCollapsed("dFrame is being scrolled");
-  // console.log("dFrameContents / targetFrame: ", dFrameContents);
-  // console.log("document.querySelector('#desktop-view') / iFrameObj: ", document.querySelector("#desktop-view"));
-  // console.groupEnd();
-});
-mFrameContents.addEventListener('scroll', function(e) {
-  syncScroll(mFrameContents, document.querySelector("#mobile-view"));
-  // console.log("mFrame is being scrolled");
+
+  // @TODO
+  // Can I see if a scroll happened because of a mouse wheel/trackpad/key press?
+  // As opposed to the window/iframe changing in size?
+
+  // console.log("desktop", e);
+
+  if ( key.command || key.control || currentKey.ctrlKey || currentKey.metaKey ) {
+    // console.log("command or control was held during scroll")
+  } else {
+    syncScroll(dFrameContents, document.querySelector("#desktop-view"));
+  }
 });
 
-    // dFrameContents.removeEventListener('scroll', makeBackgroundYellow, false);
-    // mFrameContents.removeEventListener('scroll', makeBackgroundYellow, false);
+mFrameContents.addEventListener('scroll', function(e) {
+
+  // console.log("mobile", e);
+
+  if ( key.command || key.control || currentKey.ctrlKey || currentKey.metaKey ) {
+    // do nothing
+  } else {
+    syncScroll(mFrameContents, document.querySelector("#mobile-view"));
+  }
+});
+
+
 
 function syncScroll(targetFrame, iFrameObj) {
 
@@ -4363,9 +4654,6 @@ document.body.appendChild(manifestVersion);
 
 ///////
 document.querySelector("html").classList.toggle("errors");
-
-
-
 
 
 

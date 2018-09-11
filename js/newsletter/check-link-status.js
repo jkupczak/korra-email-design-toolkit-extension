@@ -1,4 +1,3 @@
-
 //
 // Inspiration
 // https://github.com/ocodia/Check-My-Links

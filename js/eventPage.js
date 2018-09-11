@@ -36,9 +36,10 @@ console.warn("Korra " + chrome.runtime.getManifest().version);
 
 
 // Refreshes the current tab.
-// Implemented specifically to complient the .reload function below.
+// Implemented specifically to compliment the .reload function below.
 // When I click the Korra icon the extension reloads. After its done reloading this code runs and refreshes my active tab.
-// This was added to make development of the extension quicker. Instead of opening the Extensions settings tab I can reload the extension without ever leaving the page I'm looking at.
+// This was added to make development of the extension quicker.
+// Instead of opening the Extensions settings tab I can reload the extension without ever leaving the page I'm looking at.
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   chrome.tabs.reload(tabs[0].id);
 });
@@ -56,7 +57,11 @@ chrome.webRequest.onBeforeRequest.addListener(
       var newUrl = details.url;
       if ( /\?dl=1/i.test(newUrl) ) {
         newUrl = newUrl.replace(/\?dl=1/,"?dl=0");
-      } else {
+      }
+      else if ( /\?dl=0/i.test(newUrl) ) {
+        // do nothing
+      }
+      else {
         newUrl = "https://www.dropbox.com/s/" + newUrl.replace(/^.+?\/s\//i,"");
       }
 
@@ -248,7 +253,7 @@ function showStartPage() {
 /////////////////////////////////////////////////
 //
 //
-//
+//      FUNCTIONS
 //
 //
 /////////////////////////////////////////////////
@@ -256,7 +261,24 @@ function showStartPage() {
 /////////////////////////////////////////////////
 
 
-// code here
+// Function that allows us to inject multiple scripts at once.
+// https://stackoverflow.com/a/21535234/556079
+    // function executeScripts(tabId, injectDetailsArray)
+    // {
+    //     function createCallback(tabId, injectDetails, innerCallback) {
+    //         return function () {
+    //             chrome.tabs.executeScript(tabId, injectDetails, innerCallback);
+    //         };
+    //     }
+    //
+    //     var callback = null;
+    //
+    //     for (var i = injectDetailsArray.length - 1; i >= 0; --i)
+    //         callback = createCallback(tabId, injectDetailsArray[i], callback);
+    //
+    //     if (callback !== null)
+    //         callback();   // execute outermost function
+    // }
 
 
 ////////////////////////////// ### //////////////////////////////
@@ -282,6 +304,10 @@ function showStartPage() {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
+    // Show all frames from the requester tab.
+    // var gettingAllFrames = chrome.webNavigation.getAllFrames({tabId: sender.tab.id});
+    // console.log( gettingAllFrames );
+
     ////
     // Output to the console the message we received.
     ////
@@ -299,9 +325,79 @@ chrome.runtime.onMessage.addListener(
       sendResponse({farewell: "goodbye"});
     }
 
-    ////
-    if (request.greeting == "hello")
-      sendResponse({farewell: "goodbye"});
+    ////////////////////
+    // Dynamically loading content scripts into iframes using .executeScript();
+    // Originally designed to deal with the issue of not being able to add content scripts to iframes using the manifest.
+    // The original intention was to make my shortcut handling cleaner.
+    // On 8/20/18 I discovered a way to handle this without using an event page.
+    // It could be done in the manifest using:
+          // "all_frames": true,
+          // "match_about_blank": true,
+    // Full code:
+          // {
+          //   "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],
+          //   "exclude_matches": ["file:///*?view=1*", "file:///var/folders/*", "http://localhost:4567/__middleman/*"],
+          //
+          //   "js": ["js/libs/keymaster.js", "js/newsletter/shortcuts.js"],
+          //
+          //   "all_frames": true,
+          //   "match_about_blank": true,
+          //   "run_at": "document_idle"
+          // },
+    // But even that was not needed. Turns out a addEventListener on the iframes was enough.
+    // No need to inject anything in any fashion to get the keypresses.
+
+
+            // if (request.greeting === "runContentScript") {
+            //   console.log("Begin runContentScript");
+            //
+            //   /* ASYNC */
+            //   // Get the frameids of the tab that sent the message
+            //   ////////////////////////////////////////////////////
+            //   chrome.webNavigation.getAllFrames({tabId: sender.tab.id}, function (frames) {
+            //
+            //       framesToInject = [];
+            //
+            //       console.info(frames); // logs "FRAMES null"
+            //
+            //       for (var i = 0; i < frames.length; i++) {
+            //
+            //           console.log(frames[i]);
+            //           console.log(frames[i].frameId);
+            //
+            //           if ( frames[i].frameId > 0 ) {
+            //             framesToInject.push(frames[i].frameId);
+            //           }
+            //
+            //       }
+            //
+            //       console.log(framesToInject);
+            //       framesToInject.sort();
+            //       console.log(framesToInject);
+            //
+            //
+            //       // All of the scripts we want to inject.
+            //       custDetailsDesktop = [
+            //           { file: "js/libs/keymaster.js", allFrames: false, frameId: framesToInject[0], matchAboutBlank: true },
+            //           { file: "js/exe.js", allFrames: false, frameId: framesToInject[0], matchAboutBlank: true },
+            //           { file: "js/exe2.js", allFrames: false, frameId: framesToInject[0], matchAboutBlank: true }
+            //       ];
+            //       executeScripts(sender.tab.id, custDetailsDesktop);
+            //
+            //       custDetailsMobile = [
+            //           { file: "js/libs/keymaster.js", allFrames: false, frameId: framesToInject[1], matchAboutBlank: true },
+            //           { file: "js/exe.js", allFrames: false, frameId: framesToInject[1], matchAboutBlank: true },
+            //           { file: "js/exe2.js", allFrames: false, frameId: framesToInject[1], matchAboutBlank: true }
+            //       ];
+            //       executeScripts(sender.tab.id, custDetailsMobile);
+            //
+            //       sendResponse({farewell: "done!" });
+            //
+            //   console.log("End runContentScript");
+            //   });
+            //
+            // }
+    //////////////////////////////////////
 
     ////
     if ( request.checkLinkDB ) {

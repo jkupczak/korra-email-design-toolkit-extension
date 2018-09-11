@@ -1,8 +1,3 @@
-// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/global.js");
-///////////////////////////////////////////////////////////////
-
-console.warn("Korra " + chrome.runtime.getManifest().version);
-
 ////////////////////
 ////////////////////
 /////
@@ -27,6 +22,13 @@ console.warn("Korra " + chrome.runtime.getManifest().version);
 //
 // Get Date MMM Month
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getMonthAbbr(date) {
 
   var monthNames = [
@@ -52,6 +54,13 @@ function getMonthAbbr(date) {
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function debounce(func, wait, immediate) {
 	var timeout;
 	return function() {
@@ -81,6 +90,13 @@ function debounce(func, wait, immediate) {
 // Finding out how many times an array element appears
 // https://stackoverflow.com/a/41941954/556079
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function countInArray(array, value) {
   return array.reduce((n, x) => n + (x === value), 0);
   // console.log(countInArray([1,2,3,4,4,4,3], 4)); // 3
@@ -91,6 +107,13 @@ function countInArray(array, value) {
 // Remove a value from an array by searching for that value
 // https://stackoverflow.com/a/3954451/556079
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function removeValueFromArray(array, value) {
   var index = array.indexOf(value);
   if (index !== -1) {
@@ -103,6 +126,13 @@ function removeValueFromArray(array, value) {
 // Select the contents of an element
 // http://stackoverflow.com/a/6150060/556079
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function selectElementContents(el) {
 
   if ( el.scrollTop !== 0 ) {
@@ -120,6 +150,13 @@ function selectElementContents(el) {
 //
 // Create a <textarea> and insert a passed string. For use with Tingle.js to quickly create copyable modals.
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function createPlainTextContainer(string) {
   var plainTextContainer = document.createElement("textarea");
   plainTextContainer.className = "plain-text-modal";
@@ -129,9 +166,127 @@ function createPlainTextContainer(string) {
   return plainTextContainer;
 }
 
+/**
+ * Is an element empty of visible text or objects?
+ * @param  {[type]} arg1 [description]
+ * @return {[type]}      [description]
+ */
+function isElementEmpty(element) {
+
+  // Are there children? Check if one of them is visibile and has dimensions.
+  // If so, we don't need to check for text nodes.
+  // .children does not show text nodes.
+  if ( element.children.length > 0 ) {
+
+    for (var i = 0; i < element.children.length; i++) {
+      if ( element.offsetParent !== null && element.hidden === false ) {
+
+        // We found a visible child.
+        // Does it have an explcitly set width or height?
+        // If so, the element is NOT empty.
+        if ( element.children[i].clientWidth !== 0 || element.children[i].clientHeight !== 0 ) {
+          // console.log("Element NOT empty. Failed element visibility check.");
+          return false;
+
+        // If both "width" or "height" were 0, we still may have text nodes.
+        } else {
+          return hasVisibleCharacters(element.children[i]);
+        }
+
+      }
+      // None of the children were visible.
+      // Check if any text is visible.
+      else {
+        return hasVisibleCharacters(element, true);
+      }
+    }
+
+  }
+
+  // Are there zero children?
+  // If so, check for visible text nodes.
+  else if ( element.children.length === 0 ) {
+    return hasVisibleCharacters(element);
+  }
+
+}
+
+//
+// Has visible characters?
+//
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+function hasVisibleCharacters(element, checkImmediateChildren) {
+
+  // Find invisible characters and whitespace characters
+  // Replace them with nothing and then check if the total length of innerText is 0
+    // https://stackoverflow.com/q/51905565/556079
+    // https://stackoverflow.com/a/2812314/556079
+    // https://en.wikipedia.org/wiki/Whitespace_character
+
+  // Check only the immediate children of this element.
+  if ( checkImmediateChildren === true ) {
+
+    // console.log("looking only at immediate children: ", element.childNodes.length );
+
+    for (var i = 0; i < element.childNodes.length; i++) {
+      if ( element.childNodes[i].nodeName === "#text" ) {
+        console.log("node WAS a text node");
+        if ( element.childNodes[i].nodeValue.replace( /[^\x00-\x7F]+/g, "").length !== 0 ) {
+
+          // console.log("Some text is visible in the direct children of this <td>.");
+          // Some text is visible.
+          return false;
+        }
+
+      } else {
+        // console.log("node was NOT a text node");
+      }
+    }
+
+    // console.log("Loop finished and found NO text that is visible in the direct children of this <td>.");
+    // No text is visible.
+    return true;
+
+  }
+  // Check all text content. NOT just the immediate children.
+  else {
+
+    // console.log("looking at all children");
+
+    if ( element.innerText.replace( /[^\x00-\x7F]+/g, "").length === 0 ) {
+
+      // console.log("No text is visible in any of the children of this <td>.");
+      // No text is visible.
+      return true;
+
+    } else {
+
+      // console.log("Some text is visible in the children of this <td>.");
+      // Some text is visible.
+      return false;
+
+    }
+
+  }
+}
+
+
 //
 // Format Date
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function formatDate(date) {
 
   var monthNames = [
@@ -162,6 +317,13 @@ function formatDate(date) {
 //
 // Get Filename
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getFilename(url) {
   var filename = url.match(/.+?\..+/gi);
       filename = filename[0].replace(/.+\//gi, "");
@@ -174,6 +336,13 @@ function getFilename(url) {
 // Filenames should use YY-MM-DD.
 // YYYY can be used as well, but will be ignored. No harm!
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getEmailDate(filename) {
 
   var dateArray = filename.match(/\d\d-\d\d-\d\d/g);
@@ -204,18 +373,29 @@ function getEmailDate(filename) {
 
 }
 
-// https://plainjs.com/javascript/manipulation/wrap-an-html-structure-around-an-element-28/
-function wrap(el, wrapper) {
-  el.parentNode.insertBefore(wrapper, el);
-  wrapper.appendChild(el);
+
+
+/**
+ * Wrap a new element around a single node
+ * // https://plainjs.com/javascript/manipulation/wrap-an-html-structure-around-an-element-28/
+ * @param  {[type]} node [description]
+ * @param  {[type]} wrapper [description]
+ * @return {[type]}      [description]
+ */
+function wrap(node, wrapper) {
+  node.parentNode.insertBefore(wrapper, node);
+  wrapper.appendChild(node);
 }
 
 
-//
-// Wrap wrapper around nodes
-// Just pass a collection of nodes, and a wrapper element
-// http://stackoverflow.com/a/41391872/556079
-//
+
+/**
+ * Wrap a new element around multiple nodes
+ * http://stackoverflow.com/a/41391872/556079
+ * @param  {[type]} nodes [description]
+ * @param  {[type]} wrapper [description]
+ * @return {[type]}      [description]
+ */
 function wrapAll(nodes, wrapper) {
 
     console.log(nodes);
@@ -250,6 +430,13 @@ function wrapAll(nodes, wrapper) {
 // Access window variable from Content Script
 // http://stackoverflow.com/a/20513730/556079
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function injectScript(file, node) {
   var th = document.getElementsByTagName(node)[0];
   var s = document.createElement('script');
@@ -262,6 +449,13 @@ function injectScript(file, node) {
 //
 // Push a Browser Notification
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function browserNotification(title, tag, icon, requireClick, timer) {
   console.warn("notification fired", title, tag, icon, requireClick, timer);
 
@@ -292,6 +486,13 @@ function browserNotification(title, tag, icon, requireClick, timer) {
 //
 // Get Email Title
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getEmailTitle(fileName, disciplineId) {
 
 	var re = new RegExp("^.+?-" + disciplineId + "","gi");
@@ -315,6 +516,13 @@ function getEmailTitle(fileName, disciplineId) {
 //
 // Calculate Working days
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function calcWorkingDays(fromDate, days) {
     var count = 0;
     while (count < days) {
@@ -329,6 +537,13 @@ function calcWorkingDays(fromDate, days) {
 //
 // Is this a recent email?
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function isRecentEmail(emailDate) {
 
   var todaysDate = new Date();
@@ -346,12 +561,27 @@ function isRecentEmail(emailDate) {
 //
 //
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function addToDate(date, days) {
 
   var calculatedDate = new Date(date.setDate(date.getDate()+days));
   return calculatedDate;
 
 }
+
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function subtractFromDate(date, days) {
 
   var calculatedDate = new Date(date.setDate(date.getDate()-days));
@@ -362,6 +592,13 @@ function subtractFromDate(date, days) {
 //
 // Process string to find organization
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getOrgId(string) {
 
   var trimmedString = string.trim();
@@ -377,6 +614,13 @@ function getOrgId(string) {
 //
 // Process string to find disciplineId
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getDisciplineId(string) {
 
   var trimmedString = string.trim();
@@ -418,6 +662,13 @@ function getDisciplineId(string) {
 //
 // Process string to find disciplineId
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getDisciplineName(id) {
   if (id === "pt") {
     return "Physical Therapy"
@@ -464,6 +715,13 @@ function getDisciplineName(id) {
 //
 //
 // http://stackoverflow.com/a/2541083/556079
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getPathFromUrl(url) {
   return url.split(/[?#]/)[0];
 }
@@ -471,6 +729,13 @@ function getPathFromUrl(url) {
 //
 // Process string to find sub vs ns
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getSubStatus(string) {
 
   return /(-sub(-|\.)|-s(-|\.)|-sub$)/gi.test(string);
@@ -480,6 +745,13 @@ function getSubStatus(string) {
 //
 // Process string to find sub vs ns
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getABstatus(string) {
 
   if ( /-a\.htm/gi.test(string) ) {
@@ -493,16 +765,37 @@ function getABstatus(string) {
 }
 
 // Insert an element BEFORE another element.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function insertBefore(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode);
 }
 
 // Insert an element AFTER another element.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
 // Determine the background image of an element or its nearest parent that has one.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getBackgroundImage(el) {
     if (el == null) {
     //	console.log("null");
@@ -517,6 +810,13 @@ function getBackgroundImage(el) {
 }
 
 // http://stackoverflow.com/questions/17885855/use-dynamic-variable-string-as-regex-pattern-in-javascript
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function escapeRegExp(stringToGoIntoTheRegex) {
     return stringToGoIntoTheRegex.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
@@ -525,6 +825,13 @@ function escapeRegExp(stringToGoIntoTheRegex) {
 // Get querystring values
 // http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getParameterByName(name, url) {
     if (!url) {
       url = window.location.href;
@@ -542,6 +849,13 @@ function getParameterByName(name, url) {
 // Returns a boolean.
 // http://stackoverflow.com/a/15276975/556079
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function arrayContains(string, array) {
   return (array.indexOf(string) > -1);
 }
@@ -550,6 +864,13 @@ function arrayContains(string, array) {
 //
 // Convert a string to title case
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
@@ -557,6 +878,13 @@ function toTitleCase(str) {
 //
 // Convert a string to title case (ignore letters after the first letter)
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function toTitleCaseRestricted(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1)});
 }
@@ -569,21 +897,30 @@ function toTitleCaseRestricted(str) {
 // Getting the background-image using plain js: http://stackoverflow.com/a/24520183/556079
 // BETTER: Getting the background-image from parent nodes if the clicked element doesn't have one: http://stackoverflow.com/a/40407848/556079
 //
-window.onload = function() {
-  document.body.addEventListener('contextmenu', function(ev) {
+// Commented out on 8/24/18 because it was throwing an error when viewing .svg files.
 
-      var src = getBackgroundImage(ev.target);
-
-    //  console.log("message to send: " + src);
-
-  		chrome.runtime.sendMessage({bkgUrl: src});
-
-      return false;
-  }, false);
-}
+        // window.onload = function() {
+        //   document.body.addEventListener('contextmenu', function(ev) {
+        //
+        //       var src = getBackgroundImage(ev.target);
+        //
+        //     //  console.log("message to send: " + src);
+        //
+        //   		chrome.runtime.sendMessage({bkgUrl: src});
+        //
+        //       return false;
+        //   }, false);
+        // }
 
 // Greatest Common Factor
 // https://stackoverflow.com/a/17445322/556079
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function gcd_rec(a, b) {
   if (b) {
     return gcd_rec(b, a % b);
@@ -594,6 +931,13 @@ function gcd_rec(a, b) {
 
 //Where el is the DOM element you'd like to test for visibility
 // http://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function isHidden(el) {
     return (el.offsetParent === null)
 }
@@ -601,6 +945,13 @@ function isHidden(el) {
 // Update the query string
 // http://stackoverflow.com/a/11654596/556079
 // TIP: Set value to null to remove the key from the URL.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function updateQueryString(key, value, url) {
     if (!url) url = window.location.href;
     var re = new RegExp("([?&])" + key + "=.*?(&|#|$)(.*)", "gi"),
@@ -664,12 +1015,26 @@ function updateQueryString(key, value, url) {
 
 // Create a unique array
 // https://stackoverflow.com/a/9229821/556079
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function uniq(a) {
    return Array.from(new Set(a));
 }
 
 
 // Helper function to get an element's exact position
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function getPosition(el, frame) {
 
   var xPos = 0;
@@ -705,6 +1070,13 @@ function getPosition(el, frame) {
 }
 
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function destroy(el) {
   if ( el.target ) {
     var el = this;
@@ -713,6 +1085,13 @@ function destroy(el) {
 }
 
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function destroyAll(el) {
   for (let o of el) {
     o.parentNode.removeChild(o);
@@ -720,6 +1099,13 @@ function destroyAll(el) {
 }
 
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function destroyIfExists(el) {
   if ( elExists(el) ) {
     if ( el.target ) {
@@ -730,6 +1116,13 @@ function destroyIfExists(el) {
 }
 
 //
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function createCopyBtn(node, stringToCopy) {
   node.dataset.copy = stringToCopy;
   node.onclick = copyToClipboard;
@@ -748,6 +1141,13 @@ function createCopyBtn(node, stringToCopy) {
 // After a user action, document.execCommand('copy') cannot take more than 1000ms (pretty sure) to be run. If it does, nothing will be copied.
 // This will most often happen if after a user action we first do an AJAX call or we utilize a setTimeout.
 ////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function copyToClipboard(toCopy, msg, persist) {
 
   // console.log(this);
@@ -796,12 +1196,26 @@ function copyToClipboard(toCopy, msg, persist) {
 
 //
 /////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 //
 // Conditional Alerts
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function toast(suppress, type, string, int) {
   if ( suppress === "suppress" && suppressAlerts === true ) {
     // console.log("Alert suppressed: \"" + string + "\"");
@@ -814,6 +1228,13 @@ function toast(suppress, type, string, int) {
 }
 
 // Test if an element exists in the DOM.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function elExists(el, set) {
   if ( typeof(el) != 'undefined' && el != null ) {
     if ( set === "object" ) {
@@ -831,6 +1252,13 @@ function elExists(el, set) {
 
 // Cut a string after X characters, but if it's in the middle of a word cut the whole word
 // http://stackoverflow.com/a/10755510/556079
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function cut(text, length) {
 
   var cutat = text.lastIndexOf(' ', length);
@@ -847,6 +1275,13 @@ function cut(text, length) {
 // Round to fixed decimal place
 // both parameters can be string or number
 // https://stackoverflow.com/a/43998255/556079
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function roundTo(number, decimals) {
 
   // Don't round if this is a whole number.
@@ -863,6 +1298,13 @@ function roundTo(number, decimals) {
 
 
 // http://stackoverflow.com/a/22119674/556079
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function findAncestor (el, cls) {
     while ((el = el.parentElement) && !el.classList.contains(cls));
     return el;
@@ -870,6 +1312,13 @@ function findAncestor (el, cls) {
 
 
 // Clean a string to create a nice looking plain text version.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function cleanPlainTxt(text) {
 
   // console.log(text);
@@ -894,6 +1343,13 @@ function cleanPlainTxt(text) {
 }
 
 // Grab text from an element if it exists in the DOM.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function grabText(el) {
   if ( typeof(el) != 'undefined' && el != null ) {
     return cleanPlainTxt(el.innerText);
@@ -1144,6 +1600,13 @@ var isPlainObject = function (obj) {
 //
 ////////
 // Used in local HTML files and when visiting the blog.
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function logArticleStatusInStorge(document) {
 
   var postId = document.match(/rel\=(\"|\')shortlink(\"|\').+?\>/i)[0].match(/\d\d\d+/)[0];
@@ -1297,11 +1760,16 @@ window.ByteSize = {
 			level++;
 		}
 
+    // As mentioned above, this is where we add 1 KB to the total.
+    // This better represents the limit imposed by Gmail.
     count = count + 1;
 
 		return (plainText? count : count);
 	},
 
+  // This format is the same as above, except it also incorporates the
+  // KB, MB, or GB string to the end of our integer.
+  // It also rounds it down to 2 decimals.
 	formatStringGmail: function(count, plainText) {
 		var level = 0;
 
@@ -1311,10 +1779,38 @@ window.ByteSize = {
 		}
 
 		// Round to 2 decimals
-		count = Math.round(count*100)/100;
+      // Last Updated: 8/21/18
+      // JavaScript is not great with rounding.
+      // I was previously rounding to 2 decimals. But some values failed to round properly.
+      // 32490 is one such value that broke. Instead of 2 decimals it rounded to like 15 decimals.
+      // Rounding is not an issue when we aren't showing the user the number.
+      // But in this case it is. I've resorted to rounding to 1 decimal instead.
+      // This might have its own issues with specific numbers. We'll see if anything pops up.
 
+    // Round to 2 decimals (this is the popular method)
+    count = Math.round(count*100)/100;
+
+      // Round to 1 decimal (this is the popular method)
+      // count = Math.round( count * 10 ) / 10;
+
+      // Alternate rounding function (unused)
+      // Documentation: https://stackoverflow.com/a/12830454/556079
+      // count = roundNumber(count, 1);
+
+    // As mentioned above, this is where we add 1 KB to the total.
+    // This better represents the limit imposed by Gmail.
     count = count + 1;
 
+
+    // Catch rounding errors by converting to a string and just chopping off extra characters after 5 (##.##);
+    // Not exactly scientific...
+    count = count.toString();
+
+    if ( count.length > 5 ) {
+      count = count.substring(0,5);
+    }
+
+    // Add the prefix to the end of our integer. KB, MB, GB, etc...
 		level = ['', 'K', 'M', 'G', 'T'][level];
 
 		return (plainText? count : count) + ' ' + level + 'B';
@@ -1324,6 +1820,35 @@ window.ByteSize = {
 
 })();
 
+///////////////
+///////////////
+//
+// Rounding numbers in javascript is hard apparently.
+// This function is an alternate method of doing it.
+// https://stackoverflow.com/a/12830454/556079
+//
+///////////////
+///////////////
+
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+function roundNumber(num, scale) {
+  if(!("" + num).includes("e")) {
+    return +(Math.round(num + "e+" + scale)  + "e-" + scale);
+  } else {
+    var arr = ("" + num).split("e");
+    var sig = ""
+    if(+arr[1] + scale > 0) {
+      sig = "+";
+    }
+    return +(Math.round(+arr[0] + "e" + sig + (+arr[1] + scale)) + "e-" + scale);
+  }
+}
 
 
 ///////////////
@@ -1334,6 +1859,13 @@ window.ByteSize = {
 ///////////////
 ///////////////
 
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function findPos(object, currentDocument) {
 
   var objectPosFromTop = object.getBoundingClientRect().top + currentDocument.documentElement.scrollTop;

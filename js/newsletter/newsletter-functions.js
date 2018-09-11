@@ -1,6 +1,3 @@
-// console.warn("💌 [korra " + chrome.runtime.getManifest().version + "] loaded /js/newsletter/newsletter-functions.js");
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -64,11 +61,12 @@ var lm = new ResizeObserver( entries => {
     // Links that have a top or left of 0 are hidden. So the marker should be hidden too.
     // Possibly too aggresive. What if I actually want a link at top:0 or left:0?
     // @TODO: Switch this to find the CURRENT display of the matching link instead.
-    if ( linkFoundPos[0] === 0 || linkFoundPos[1] === 0 ) {
-      linkm.style.display = "none";
-    } else {
+            // if ( linkFoundPos[0] === 0 || linkFoundPos[1] === 0 ) {
+            //   linkm.style.display = "none";
+            // } else {
+            //   linkm.style.display = "";
+            // }
       linkm.style.display = "";
-    }
 
     // Using the links position, set the linkmarker to the 10px offset from the top and left.
     linkm.style.top  =  (linkFoundPos[0] - 10) + "px";
@@ -92,6 +90,12 @@ var lm = new ResizeObserver( entries => {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function breakdownQuerystring(url, linkObj) {
 
   // We'll create an object with keys and values
@@ -152,6 +156,12 @@ function breakdownQuerystring(url, linkObj) {
 // Load in ASAP so that we can catch everything as the page is loading.
 window.onkeydown = KeyPress;
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function KeyPress(e) {
 
   // Get the event keycodes
@@ -159,7 +169,7 @@ function KeyPress(e) {
 
   // Zoom Detection
   // Watch for Chrome zoom shortcuts, cmd/ctrl plus +/-/0
-  // Block their function and let zoom.js handle the rest.
+  // Block their function and let shortcuts.js handle the rest.
   if ( (e.ctrlKey || e.metaKey) && (evtobj.keyCode == 48 || evtobj.keyCode == 187 || evtobj.keyCode == 189) ) {
     e.preventDefault();
     checkZoomLevel();
@@ -193,6 +203,12 @@ function KeyPress(e) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function createUniqueArrayOfURLs(arr) {
 
   var uniqueLinksArray = [];
@@ -224,13 +240,25 @@ function createUniqueArrayOfURLs(arr) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function pinLinkMarker(e) {
   // http://stackoverflow.com/a/8454104/556079
   this.classList.toggle("pinned");
   this.nextSibling.style.display = this.nextSibling.style.display === 'block' ? '' : 'block';
 }
 
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function unpinLinkMarker(e) {
 
   var linkNum = this.dataset.number;
@@ -267,6 +295,12 @@ function unpinLinkMarker(e) {
 // Future Upgrade:
 // TODO https://stackoverflow.com/a/39312522/556079
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function changeMobileSize(width) {
 
   if ( typeof width === 'string' || width instanceof String ) {
@@ -327,6 +361,12 @@ function changeMobileSize(width) {
 
 // https://www.htmlgoodies.com/beyond/javascript/article.php/3724571/Using-Multiple-JavaScript-Onload-Functions.htm
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function addLoadEvent(window, func) {
   var oldonload = window.onload;
   if (typeof window.onload != 'function') {
@@ -354,6 +394,13 @@ function addLoadEvent(window, func) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+
 // https://stackoverflow.com/a/7557433/556079
 function isElementInViewport (el) {
 
@@ -364,6 +411,13 @@ function isElementInViewport (el) {
         rect.left < (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */ &&
         rect.top < (window.innerHeight || document.documentElement.clientHeight) /* or $(window).height() */;
 }
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 
 // A modification of isElementInViewport(el) from => https://stackoverflow.com/a/7557433/556079
 function isElementVisible (el) {
@@ -391,7 +445,12 @@ function isElementVisible (el) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function linkValidationLoop(linkList, dummyLinkList, ageCheck) {
 
   // Verify the visibility of all links in Desktop and Mobile.
@@ -556,6 +615,12 @@ console.info("linkInfoArray", linkInfoArray);
 // The primary means of determining visibility is offsetTop and offsetLeft.
 // If we check these before the page is loaded they can often return a value of 0.
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function verifyLinkVisibility(linkList) {
 
   // Modify this to use the dummyIframe for both desktop and mobile so that we can avoid errors.
@@ -668,6 +733,12 @@ function verifyLinkVisibility(linkList) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function createImgInfoArray(imgList) {
 
 
@@ -866,6 +937,13 @@ function createImgInfoArray(imgList) {
 
 // Source: https://stackoverflow.com/a/43839304/556079
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+
 // This function gets run only once dFrame is finished loading. See newsletter.js
 function getImgSizes(imgInfoArray) {
 
@@ -925,6 +1003,13 @@ function getImgSizes(imgInfoArray) {
 // So we need to take the URL and load them as an image. Once loaded we can grab their natural width and height.
 // UNFINISHED: I can probably use info from background-size to determine the rendered width and height
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+
 // Code below taken and modified from here:
 // https://blog.crimx.com/2017/03/09/get-all-images-in-dom-including-background-en/
 function loadImgNow (i, src, timeout = 500) {
@@ -967,6 +1052,12 @@ function loadImgNow (i, src, timeout = 500) {
 
 // https://stackoverflow.com/a/18650828/556079
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function prettyFileSize(bytes, decimals) {
    if(bytes == 0) return '0 Bytes';
    var k = 1000, // https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript#comment77017916_29127320
@@ -989,6 +1080,12 @@ function prettyFileSize(bytes, decimals) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function loadIframe(iframe, html, base, name) {
 
   // I should consider cloning the iframe instead of loading 2 more like this.
@@ -1031,6 +1128,12 @@ function loadIframe(iframe, html, base, name) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function mostCommonString(searchTerm, linkList) {
 
   if ( !/utm_/.test(searchTerm) ) {
@@ -1099,7 +1202,12 @@ function mostCommonString(searchTerm, linkList) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function containsObject(obj, list) {
     var i;
     for (i = 0; i < list.length; i++) {
@@ -1125,6 +1233,12 @@ function containsObject(obj, list) {
 ///////////////////////////////////////
 
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 
 // Function to handle creating error markers, error tags (that explain the error), and incrementing the error counter.
 function createLinkErrorRow(linkObj, msg, type, icon, marker) {
@@ -1137,11 +1251,6 @@ function createLinkErrorRow(linkObj, msg, type, icon, marker) {
   if ( type === "error" ) {
     linkObj.dataset.error = true;
   }
-
-  // console.log(linkObj);
-  // console.log("[" + linkObj.dataset.number + "] " + link);
-
-  // console.error("Error Found: " + msg);
 
   // Target the link marker in dFrame based on which link we're looking at right now
   var linkMarker = dFrameContents.querySelector("#link-markers .link-marker[data-number='" + linkObj.dataset.number + "']")
@@ -1233,7 +1342,12 @@ function createLinkErrorRow(linkObj, msg, type, icon, marker) {
 ///////////////////////////////////////
 
 
-
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function preflightError() {
 
   var currentValue = parseInt(preflightTotal.innerHTML);
@@ -1312,6 +1426,12 @@ totalXHRs = 0;
 var options = getOptions(); // Deprecated. This function was taken from another extension. Doesn't really work for me.
 var linkMarkersList = [];
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function validateLinks(linkObj, i) {
 
   // Set link URL to a variable.
@@ -1429,22 +1549,27 @@ function validateLinks(linkObj, i) {
     singleLinkInfoArray['checkStatus'] = false;
 
   // merge tags
-  } else if ( /^\*\|.+?\|\*/.test(linkHref) ) {
+} else if ( /^\*\|.+?\|\*$/.test(linkHref) ) {
     singleLinkInfoArray['espMergeTag'] = "mailchimp";
     singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
     singleLinkInfoArray['checkStatus'] = false;
 
-  } else if ( /^\[\[.+?\]\]/.test(linkHref) ) {
+  } else if ( /^\[\[.+?\]\]$/.test(linkHref) ) {
     singleLinkInfoArray['espMergeTag'] = "getresponse";
     singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
     singleLinkInfoArray['checkStatus'] = false;
 
-  } else if ( /^\[.+?\]/.test(linkHref) ) {
+  } else if ( /^\[.+?\]$/.test(linkHref) ) {
     singleLinkInfoArray['espMergeTag'] = "sendgrid";
     singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
     singleLinkInfoArray['checkStatus'] = false;
 
-  } else if ( /^\%\%.+?\%\%/.test(linkHref) ) {
+  } else if ( /^#.+?#$/.test(linkHref) ) {
+    singleLinkInfoArray['espMergeTag'] = "on24";
+    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray['checkStatus'] = false;
+
+  } else if ( /^\%\%.+?\%\%$/.test(linkHref) ) {
     singleLinkInfoArray['espMergeTag'] = "pardot";
     singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
     singleLinkInfoArray['checkStatus'] = false;
@@ -2367,7 +2492,12 @@ function validateLinks(linkObj, i) {
 // Recipient must be an Authorized Recipient in order to send using the sandbox (300 messages a day max)
   // https://app.mailgun.com/app/account/authorized
 
-
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 function sendEmail() {
   console.log(mailgunApiKey);
 

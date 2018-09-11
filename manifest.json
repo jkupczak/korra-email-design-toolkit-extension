@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.7.500",
+  "version": "3.7.512",
 
   "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
 
@@ -40,6 +40,7 @@
     "storage",
     "tabs",
     "history",
+    "webNavigation",
     "contextMenus",
     "clipboardWrite",
     "clipboardRead",
@@ -105,10 +106,12 @@
 
       "css": ["css/global_styles.css", "css/libs/alertify.css"],
 
-      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/dropbox-share.js", "js/libs/email-remove-unused-css.umd.js", "js/libs/string-collapse-white-space.umd.js", "js/libs/alertify.js", "js/email-labeling.js", "js/newsletter/newsletter.js"],
+      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/dropbox-share.js", "js/libs/email-remove-unused-css.umd.js", "js/libs/string-collapse-white-space.umd.js", "js/libs/alertify.js", "js/email-labeling.js", "js/libs/keymaster.js", "js/newsletter/newsletter.js"],
 
       "run_at": "document_end"
     },
+
+
 
     {
       "matches": ["http://localhost:4567/*"],

@@ -25,18 +25,29 @@ var toggleColumnsBtn = document.querySelector("div > div.reorder:first-child");
 
   document.arrive(".profile-view", {fireOnAttributesModification: true, existing: true}, function() {
 
-    this.style = "padding-left:12px;"
+    this.style = "padding-left:28px;"
 
     var email = this.querySelectorAll("a")[0].innerText;
 
+    // Link to the admin page
     var adminLink = document.createElement("a");
     adminLink.classList.add("material-icons", "mdk-icon-btn", "mdk-icon-circle", "mdk-icon-xs", "mdk-icon-blue");
     adminLink.innerHTML = "person_pin";
     adminLink.target = "_blank";
     adminLink.href = "https://www.medbridgeeducation.com/admin/students/index?txt_search=" + email;
-    adminLink.style = "margin:auto; position:absolute; top:0; bottom:0; left:5px;"
+    adminLink.style = "margin:auto; position:absolute; top:0; bottom:0; left:0px;"
 
     this.appendChild(adminLink);
+
+    // Quick copy icon
+    var copyLink = document.createElement("div");
+    copyLink.classList.add("material-icons", "mdk-icon-btn", "mdk-icon-circle", "mdk-icon-xs", "mdk-icon-purple");
+    copyLink.innerHTML = "bookmark";
+    copyLink.style = "margin:auto; position:absolute; top:0; bottom:0; left:22px;"
+
+    createCopyBtn(copyLink, email);
+
+    this.appendChild(copyLink);
 
   });
 

@@ -187,7 +187,7 @@ function processMcConditionals(document) {
 //////////////////////
 function createConditionalsUI() {
 
-  console.log("begin creating conditionals ui");
+  // console.log("begin creating conditionals ui");
 
   // Conditionals Pane - Main Wrapper
   var conPane = document.createElement("div");

@@ -1,7 +1,3 @@
-// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter/dFrame.js");
-/////////////////////////////////////////////////////////////////////////
-
-
 ////////
 //////// Remember scroll position after reloads
 ////////
@@ -18,3 +14,15 @@ window.addEventListener('scroll', function(e) {
   sessionStorage.setItem('scrollPosDframe', window.scrollY);
 
 });
+
+
+
+//////###########
+//////###########
+//////###########
+//
+//
+//  This can be done from outside the iframe in a content script
+//  Use: document.getElementById("desktop-view").contentWindow.scrollY
+//
+//
