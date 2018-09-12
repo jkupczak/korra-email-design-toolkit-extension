@@ -1307,7 +1307,7 @@ body.split-view-on {
     flex-grow:1;
     z-index:2;
     position: relative;
-    background:url("chrome-extension://__MSG_@@extension_id__/img/tempbg12.png") top left repeat #26262d;
+    background:url("chrome-extension://__MSG_@@extension_id__/img/desktop-iframe-background.png") top left repeat #26262d;
     /* box-shadow: inset -1px 0 0 0 #414148; */
     box-shadow: inset 0 0 0 1px #3a3a41;
 

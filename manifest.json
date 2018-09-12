@@ -3,9 +3,9 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.7.512",
+  "version": "3.7.600",
 
-  "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files, MedBridge, and MailChimp.",
+  "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files.",
 
   "background": {
     "scripts": ["js/libs/chrome-storage-promise.js", "js/get-options.js", "js/eventPage.js"],
@@ -32,6 +32,7 @@
     "default_icon": "icons/192-korra.png",
     "default_title": "Korra"
   },
+
   "permissions": [
     "webRequest",
     "webRequestBlocking",
@@ -106,7 +107,7 @@
 
       "css": ["css/global_styles.css", "css/libs/alertify.css"],
 
-      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/dropbox-share.js", "js/libs/email-remove-unused-css.umd.js", "js/libs/string-collapse-white-space.umd.js", "js/libs/alertify.js", "js/email-labeling.js", "js/libs/keymaster.js", "js/newsletter/newsletter.js"],
+      "js": ["js/libs/findAndReplaceDOMText.js", "js/libs/tingle.js", "js/libs/interact.js", "js/newsletter/dropbox-share.js", "js/libs/email-remove-unused-css.umd.js", "js/libs/string-collapse-white-space.umd.js", "js/libs/alertify.js", "js/discipline-labeling.js", "js/libs/keymaster.js", "js/newsletter/newsletter.js"],
 
       "run_at": "document_end"
     },
@@ -121,133 +122,23 @@
 
 
 
+                    {
+                      "matches": ["*://*.dropbox.com/s/*", "*://*.dropbox.com/work/*", "*://*.dropbox.com/home/*"],
+                      "js": ["js/global.js", "js/get-options.js", "js/libs/arrive.js", "js/libs/chrome-storage-promise.js", "js/libs/Dropbox-sdk.min.js", "js/libs/alertify.js", "js/dropbox/dropbox-file-viewer.js"],
+                      "css": [ "css/libs/alertify.css", "css/alertify.medbridge.css"],
+                      "run_at": "document_start"
+                    },
 
 
-    {
-      "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*"],
-      "css": ["css/global_styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css"],
-      "js": ["js/libs/alertify.js"],
-      "run_at": "document_end"
-    },
-
-    {
-      "matches": ["*://*.medbridgeeducation.com/*", "*://*.medbridgemassage.com/*", "*://*.mailchimp.com/*"],
-      "js": ["js/global.js"],
-      "run_at": "document_start"
-    },
-
-    {
-      "matches": ["*://*.dropbox.com/s/*", "*://*.dropbox.com/work/*", "*://*.dropbox.com/home/*"],
-      "js": ["js/global.js", "js/get-options.js", "js/libs/arrive.js", "js/libs/chrome-storage-promise.js", "js/libs/Dropbox-sdk.min.js", "js/libs/alertify.js", "js/dropbox/dropbox-file-viewer.js"],
-      "css": [ "css/libs/alertify.css", "css/alertify.medbridge.css"],
-      "run_at": "document_start"
-    },
 
     {
       "matches": ["*://*.medbridgeeducation.com/blog/*"],
       "exclude_matches": ["*://*.medbridgeeducation.com/blog/wp-admin*"],
-      "css": ["css/medbridge/medbridge-blog.css"],
-      "js": ["js/utilities/is-article-protected.js", "js/medbridge/medbridge-blog.js"],
-      "all_frames": true
-    },
-    {
-      "matches": ["*://*.medbridgeeducation.com/blog/201*", "*://*.medbridgeeducation.com/blog/?p=*"],
-      "js": ["js/medbridge/medbridge-blog-posts.js"]
-    },
-    {
-      "matches": ["*://*.medbridgeeducation.com/blog/wp-admin/edit.php*"],
-      "js": ["js/global.js", "js/medbridge/medbridge-blog-admin-posts.js"]
-    },
-
-    {
-      "matches": ["*://*.mailchimp.com/*"],
-      "exclude_matches": ["*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
-      "css": ["css/fonts-material-icons.css", "css/libs/tingle.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/mailchimp/mailchimp-global-styles.css"],
-      "js": ["js/libs/arrive.js", "js/libs/tingle.js", "js/libs/alertify.js", "js/mailchimp/mailchimp-global.js"]
-    },
-        {
-          "matches": ["*://*.mailchimp.com/campaigns/*", "*://*.mailchimp.com/reports/*"],
-          "exclude_matches": ["*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
-          "js": ["js/email-labeling.js"],
-          "run_at": "document_end"
-        },
-        {
-          "matches": ["*://*.mailchimp.com/campaigns/edit?id=*", "*://*.mailchimp.com/campaigns/wizard/variateconfirm*", "*://*.mailchimp.com/campaigns/wizard/confirm*"],
-          "js": ["js/utilities/total-protected-articles.js", "js/mailchimp/mailchimp-confirm-sending.js"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/campaigns/wizard/variateconfirm*", "*://*.mailchimp.com/campaigns/wizard/confirm*"],
-          "js": ["js/mailchimp/mailchimp-block-scheduling.js"],
-          "css": ["css/mailchimp/mailchimp-block-scheduling.css"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/campaigns/*"],
-          "exclude_matches": ["*://*.mailchimp.com/campaigns/edit*", "*://*.mailchimp.com/campaigns/preview-content-html?id=*"],
-          "js": ["js/mailchimp/mailchimp-campaigns.js"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/reports/clickmap-data*"],
-          "js": ["js/mailchimp/clickmap-data.js"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/reports/show*", "*://*.mailchimp.com/campaigns/show*"],
-          "js": ["js/libs/moment.js", "js/mailchimp/mailchimp-reports.js"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/reports/*"],
-          "exclude_matches": ["*://*.mailchimp.com/reports/show*"],
-          "js": ["js/libs/moment.js", "js/mailchimp/mailchimp-reports-overview.js"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/campaigns/wizard/html-paste*"],
-          "js": ["js/mailchimp/mailchimp-design.js"],
-          "css": ["css/mailchimp/mailchimp-design.css"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/campaigns/preview-paste-code-html*"],
-          "js": ["js/global.js", "js/mailchimp/mailchimp-design-iframe.js"],
-          "all_frames": true
-        },
-        {
-          "matches": ["*://*.mailchimp.com/lists/dashboard/imports*"],
-          "js": ["js/mailchimp/mailchimp-import-history.js"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/lists/members/?id=*", "*://*.mailchimp.com/lists/members?id=*"],
-          "js": ["js/mailchimp/mailchimp-lists.js", "js/mailchimp/mailchimp-copy-and-duplicate-segment-criteria.js"],
-          "css": ["css/mailchimp/automate-list-actions.css"]
-        },
-        {
-          "matches": ["*://*.mailchimp.com/reports/show*"],
-          "js": ["js/mailchimp/mailchimp-capture.js"]
-        },
-
-
-
-    {
-      "matches": ["*://*.medbridgeeducation.com/*"],
-      "exclude_matches": ["*://*.medbridgeeducation.com/blog/wp*", "*://*.medbridgeeducation.com/admin/*"],
-      "js": ["js/medbridge/medbridge.js"]
-    },
-    {
-      "matches": ["*://*.medbridgeeducation.com/courses/*", "*://*.medbridgeeducation.com/courses?*"],
-      "css": ["css/libs/tingle.css", "css/medbridge/medbridge-courses.css"],
-      "js": ["js/libs/tidy.js", "js/libs/tingle.js", "js/medbridge/medbridge-courses.js"]
-    },
-
-
-
-    {
-      "matches": ["*://console.aws.amazon.com/s3/*"],
-      "css": ["css/global_styles.css", "css/fonts-material-icons.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/aws-styles.css"],
-      "js": ["js/global.js", "js/libs/arrive.js", "js/libs/alertify.js", "js/aws.js"],
-      "run_at": "document_end"
-    },
-    {
-      "matches": ["*://*.medbridgesolution.com/show_subscribers_list.html*"],
-      "js": ["js/global.js", "js/getresponse/getresponse_collect_emails_from_popup.js"],
+      "js": ["js/utilities/is-article-protected.js"],
       "all_frames": true
     }
+
+
   ]
 
 }

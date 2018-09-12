@@ -1,4 +1,4 @@
-console.warn("Korra " + chrome.runtime.getManifest().version);
+console.info("Korra " + chrome.runtime.getManifest().version);
 
 // !!!!!!!!!!!!!
 // EVENT / BACKGROUND PAGE
@@ -107,7 +107,7 @@ chrome.webRequest.onBeforeRequest.addListener(
       ids = '';
     }
     chrome.browserAction.setBadgeText({text: ids}); // We have 10+ protected articles
-    chrome.browserAction.setBadgeBackgroundColor([0,0,0,100]); // Black badge
+    chrome.browserAction.setBadgeBackgroundColor({color: [0,0,0,100]}); // Black badge
   }
 
   // Get protectedarticles value from chrome.storage when background page loads
@@ -478,41 +478,28 @@ logChromeStorage();
 //
 //==============================
 
-// Check the time. Display alerts more frequently after 12 PM.
-function getCurrentHour() {
+// ### No longer using
 
-  var currentHour = new Date().getHours();
-
-  if ( currentHour >= 12 ) {
-    var alarmTime = 15;
-  } else {
-    var alarmTime = 30;
-  }
-
-  // console.log("The current hour is " + currentHour + ".");
-
-  // Create the alarm:
-  chrome.alarms.create('mailchimp-draft-reminder', {
-    periodInMinutes: alarmTime
-  });
-}
-
-getCurrentHour();
-
-
-
-
-////////////////////////////// ### //////////////////////////////
-////////////////////////////// ### //////////////////////////////
-////_________________________________________________________////
-
-
-
-chrome.alarms.onAlarm.addListener(function(alarm) {
-  if (alarm.name == 'mailchimp-draft-reminder') {
-    mailchimpCheckAndAlert();
-  }
-});
+        // // Check the time. Display alerts more frequently after 12 PM.
+        // function getCurrentHour() {
+        //
+        //   var currentHour = new Date().getHours();
+        //
+        //   if ( currentHour >= 12 ) {
+        //     var alarmTime = 15;
+        //   } else {
+        //     var alarmTime = 30;
+        //   }
+        //
+        //   // console.log("The current hour is " + currentHour + ".");
+        //
+        //   // Create the alarm:
+        //   chrome.alarms.create('mailchimp-draft-reminder', {
+        //     periodInMinutes: alarmTime
+        //   });
+        // }
+        //
+        // getCurrentHour();
 
 
 
@@ -522,31 +509,49 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 ////_________________________________________________________////
 
 
-var totalNotificationsSent;
+// ### no longer using
 
-function mailchimpCheckAndAlert() {
+        // chrome.alarms.onAlarm.addListener(function(alarm) {
+        //   if (alarm.name == 'mailchimp-draft-reminder') {
+        //     mailchimpCheckAndAlert();
+        //   }
+        // });
 
-  logChromeStorage();
 
-  getCurrentHour();
 
-  chrome.storage.sync.get( function(result) {
 
-    var pendingDraftsFromStorage = obj.pendingDrafts;
-    var urgentDraftsFromSotrage = obj.urgentDrafts;
+////////////////////////////// ### //////////////////////////////
+////////////////////////////// ### //////////////////////////////
+////_________________________________________________________////
 
-    if ( urgentDraftsFromSotrage > 0 ) {
 
-      mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromStorage);
-      totalNotificationsSent++
-      // console.log("Notifications Sent: " + totalNotificationsSent);
+// ### No longer using
 
-    }
-  });
-
-  // console.warn("10 minutes remaining until the next notification.");
-
-}
+      // var totalNotificationsSent;
+      //
+      // function mailchimpCheckAndAlert() {
+      //
+      //   logChromeStorage();
+      //
+      //   getCurrentHour();
+      //
+      //   chrome.storage.sync.get( function(result) {
+      //
+      //     var pendingDraftsFromStorage = obj.pendingDrafts;
+      //     var urgentDraftsFromSotrage = obj.urgentDrafts;
+      //
+      //     if ( urgentDraftsFromSotrage > 0 ) {
+      //
+      //       mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromStorage);
+      //       totalNotificationsSent++
+      //       // console.log("Notifications Sent: " + totalNotificationsSent);
+      //
+      //     }
+      //   });
+      //
+      //   // console.warn("10 minutes remaining until the next notification.");
+      //
+      // }
 
 
 
@@ -560,38 +565,40 @@ function mailchimpCheckAndAlert() {
 // mailchimpCheckAndAlert();
 
 
-function mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromStorage) {
-  if (Notification.permission !== "granted")
-    Notification.requestPermission();
-  else {
-    console.log("Notification opened via eventPage.js.");
-    var notification = new Notification(urgentDraftsFromSotrage + ' Urgent Drafts', {
-      tag: "mailchimp", // Notifications with the same tag will replace each other instead of all showing up. - https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API#Replacing_existing_notifications
-      icon: chrome.extension.getURL('img/mailchimp-notification.png'),
-      body: "Hey there! You have " + urgentDraftsFromSotrage + " urgent drafts in MailChimp (and " + pendingDraftsFromStorage + " total pending drafts), get on it!",
-      requireInteraction: true
-    });
+// ### No longer using
 
-    // Automatically close after 3 minutes.
-    setTimeout( function() {
-      // notification.close.bind(notification);
-      console.log(notification);
-      notification.close();
-      console.log("Notification scheduled for automatic dismissal right now. Dismissing if still present.");
-    }, 180000);
-    // }, 1800);
-
-    // setTimeout(notification.close.bind(notification), 180000);
-
-    notification.onclick = function () {
-      // window.open("https://us2.admin.mailchimp.com/campaigns/");
-      notification.close();
-      console.log("Notification closed via click.");
-    };
-
-  }
-
-}
+      // function mailchimpDraftsNotification(urgentDraftsFromSotrage, pendingDraftsFromStorage) {
+      //   if (Notification.permission !== "granted")
+      //     Notification.requestPermission();
+      //   else {
+      //     console.log("Notification opened via eventPage.js.");
+      //     var notification = new Notification(urgentDraftsFromSotrage + ' Urgent Drafts', {
+      //       tag: "mailchimp", // Notifications with the same tag will replace each other instead of all showing up. - https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API#Replacing_existing_notifications
+      //       icon: chrome.extension.getURL('img/mailchimp-notification.png'),
+      //       body: "Hey there! You have " + urgentDraftsFromSotrage + " urgent drafts in MailChimp (and " + pendingDraftsFromStorage + " total pending drafts), get on it!",
+      //       requireInteraction: true
+      //     });
+      //
+      //     // Automatically close after 3 minutes.
+      //     setTimeout( function() {
+      //       // notification.close.bind(notification);
+      //       console.log(notification);
+      //       notification.close();
+      //       console.log("Notification scheduled for automatic dismissal right now. Dismissing if still present.");
+      //     }, 180000);
+      //     // }, 1800);
+      //
+      //     // setTimeout(notification.close.bind(notification), 180000);
+      //
+      //     notification.onclick = function () {
+      //       // window.open("https://us2.admin.mailchimp.com/campaigns/");
+      //       notification.close();
+      //       console.log("Notification closed via click.");
+      //     };
+      //
+      //   }
+      //
+      // }
 
 
 

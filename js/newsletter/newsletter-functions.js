@@ -1593,7 +1593,7 @@ function validateLinks(linkObj, i) {
 
   // Is this the first time this link appears in the DOM?
 	if ( xhrLoopArray.includes(linkHref) ) {
-    console.error("This link (" + i + ") is a duplicate.");
+    console.log("This link (" + i + ") is a duplicate.");
     singleLinkInfoArray['firstInstance'] = false;
   } else {
     console.log("This link (" + i + ") is unique.");

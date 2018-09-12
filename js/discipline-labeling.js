@@ -1,6 +1,3 @@
-// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/email-labeling.js");
-///////////////////////////////////////////////////////////////////////
-
 //
 // Remove default favicon
 //

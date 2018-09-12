@@ -1,6 +1,3 @@
-console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/utilities/total-protected-articles.js");
-/////////////////////////////////////////////////////////////////////////////////////////////
-
 // Get Protected Articles value from chrome.storage
 
   // get

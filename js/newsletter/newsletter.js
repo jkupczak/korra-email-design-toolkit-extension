@@ -2506,7 +2506,7 @@ if ( !preheader90Pattern.test(textMinusPreheader) ) {
 
   for (var i = 0; i < preheaderTotalWords; i++) {
 
-    console.error(i);
+    console.info(i);
 
     if ( preheader90[i].length > 300 ) {
       // Strings that were too long were breaking, returning as invalid regexes below. So lets just skip them until we can find a solution.
@@ -3171,7 +3171,7 @@ function updateQaBar(bar, errors, string) {
 (function(){
 
   console.group("[Bug Check] Outlook: Lack of Padding Support");
-  // console.warn("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
+  // console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
 
   let els = dFrameContents.querySelectorAll("a, p, div");
   for (let el of els) {
@@ -3196,7 +3196,7 @@ function updateQaBar(bar, errors, string) {
 (function(){
 
   console.group("[Bug Check] Outlook: <a> tags cannot link <table> elements");
-  // console.warn("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
+  // console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
 
   let els = dFrameContents.querySelectorAll("a table");
   for (let el of els) {
@@ -3222,7 +3222,7 @@ function updateQaBar(bar, errors, string) {
   // If this test runs while a mobile based media query is active, it could skew results
 
   console.group("[Bug Check] Outlook: <td> Vertical Padding");
-  console.warn("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
+  console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
 
   var firstTdTop, firstTdBottom;
 
@@ -3292,7 +3292,7 @@ function updateQaBar(bar, errors, string) {
 (function(){
 
   console.group("[Bug Check] Outlook: !important parsing");
-  console.warn("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31")
+  console.info("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31")
 
   var firstTdTop, firstTdBottom;
 
