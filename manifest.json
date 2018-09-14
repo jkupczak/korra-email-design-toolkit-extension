@@ -3,19 +3,20 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.7.600",
+  "version": "3.7.603",
+  "description": "Automate the QA process, debugging and testing of your emails.",
 
-  "description": "Automate email design, testing, and marketing tasks. Upgrades the user experience of local HTML files.",
 
-  "background": {
-    "scripts": ["js/libs/chrome-storage-promise.js", "js/get-options.js", "js/eventPage.js"],
-    "persistent": true
+
+  "icons": {
+    "192": "icons/icon-192.png"
+  },
+  "browser_action": {
+    "default_icon": "icons/icon-192.png",
+    "default_title": "Korra"
   },
 
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
-  },
+
 
   "web_accessible_resources": [
     "fonts/*",
@@ -27,12 +28,6 @@
     "icons/*",
     "startpage/index.html"
   ],
-
-  "browser_action": {
-    "default_icon": "icons/192-korra.png",
-    "default_title": "Korra"
-  },
-
   "permissions": [
     "webRequest",
     "webRequestBlocking",
@@ -54,10 +49,16 @@
     "file:///*"
   ],
 
-  "icons": {
-    "192": "icons/192-korra.png"
-  },
 
+
+  "background": {
+    "scripts": ["js/libs/chrome-storage-promise.js", "js/get-options.js", "js/eventPage.js"],
+    "persistent": true
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "content_scripts": [
 
     {
