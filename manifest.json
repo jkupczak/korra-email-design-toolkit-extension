@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.7.603",
+  "version": "3.7.604",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 
@@ -26,6 +26,7 @@
     "js/*",
     "css/*",
     "icons/*",
+    "korra/*",
     "startpage/index.html"
   ],
   "permissions": [
@@ -60,6 +61,12 @@
     "open_in_tab": true
   },
   "content_scripts": [
+
+    {
+      "matches": ["*://*/korra/*"],
+      "js": ["js/global.js"],
+      "run_at": "document_start"
+    },
 
     {
       "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],

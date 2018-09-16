@@ -651,24 +651,6 @@ function awsFilepath(link) {
 	link = link.match(/^.+\//i, "");
   return link;
 
-  //
-	// var filePath = link.replace(/^.+?\.com\//gi, "");
-	//     filePath = filePath.match(/^.+\//gi, "");
-  //
-	// var splitUrl = filePath.split("/");
-	// splitUrl.pop();
-  //
-	// var arrayLength = splitUrl.length;
-	// var awsPrefix = splitUrl[0];
-  // awsPrefix = awsPrefix.replace(/\+/gi, "%20"); // Image URLs use a + for spaces in a folder name, but you have to %20 when looking at that folder on AWS.
-  //
-	// for (var i = 1; i < arrayLength; i++) {
-	//     console.log(splitUrl[i]);
-  //
-	//     awsPrefix = awsPrefix + "/" + splitUrl[i];
-	// }
-  //
-	// return awsPrefix
 }
 
 ///////////////////////////////////////////////
@@ -681,17 +663,54 @@ function awsFilepath(link) {
 ////_________________________________________________________////
 
 
+// chrome.extension.onMessage.addListener(onRequest);
+// var beginLinkCheck = function beginLinkCheck(tab) {
+//     chrome.tabs.executeScript(tab.id, {file:'functions.js'});
+//     chrome.tabs.executeScript(tab.id, {file:'check.js'}, function () {
+//         chrome.tabs.sendMessage(tab.id, {options:getOptions(), action:"initial"});
+//     });
+// };
+// chrome.tabs.onUpdated.addListener(function(tabid, changeinfo, tab) {
+//     chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+//      var activeTab = arrayOfTabs[0];
+//      //If the active tab was updated
+//      if(activeTab.id == tab.id){
+//         var url = tab.url;
+//         if (url !== undefined && changeinfo.status == "complete" && getItem("autoCheck")=="true") {
+//           beginLinkCheck(tab);
+//         }
+//      }
+//   });
+// });
+
+
+////////////////////////////// ### //////////////////////////////
+////////////////////////////// ### //////////////////////////////
+////_________________________________________________________////
+
+
+// What does this do?
+chrome.contextMenus.onClicked.addListener(onClickHandler);
+
+
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // The onClicked callback function.
 function onClickHandler(info, tab) {
-  if (info.menuItemId == "radio1" || info.menuItemId == "radio2") {
+
+  if (info.menuItemId == "validateLinks") {
+    beginLinkCheck();
+  }
+
+  else if (info.menuItemId == "radio1" || info.menuItemId == "radio2") {
     console.log("radio item " + info.menuItemId +
                 " was clicked (previous checked state was "  +
                 info.wasChecked + ")");
-  } else if (info.menuItemId == "checkbox1" || info.menuItemId == "checkbox2") {
+  }
+
+  else if (info.menuItemId == "checkbox1" || info.menuItemId == "checkbox2") {
     console.log(JSON.stringify(info));
     console.log("checkbox item " + info.menuItemId +
                 " was clicked, state is now: " + info.checked +
@@ -718,60 +737,130 @@ function onClickHandler(info, tab) {
 
 
 
-chrome.contextMenus.onClicked.addListener(onClickHandler);
+///////////////////////////////////
+///////////////////////////////////
+///////////////////////////////////
+
 
 // Set up context menu tree at install time.
 chrome.runtime.onInstalled.addListener(function() {
 
+  // 'Validate Links' on this page
+  chrome.contextMenus.create({
+    "title": "Validate Links",
+    "contexts": ["all"],
+    "documentUrlPatterns": ["file:///*", "*://*/*"],
+    "id": "validateLinks"
+  });
+
+  // Separator
+  chrome.contextMenus.create({ "id": "sep", "type":'separator' });
+
+  // AMAZON
   // Load the AWS page based on the Amazon Image that is clicked
   // Can I load different scripts based on the image clicked? And load different "title" text to match those different images?
-  chrome.contextMenus.create({"title": "Open image folder in AWS", "contexts":["image"], "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://s3.amazonaws.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "context" + "image" });
+  chrome.contextMenus.create({
+    "title": "Open image folder in AWS",
+    "contexts": ["image"],
+    "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://s3.amazonaws.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
+    "id": "context" + "image"
+  });
 
   // Create one test item for each context type.
-	  var contexts = ["all","page","selection","link","editable","video",
-	                  "audio","browser_action","page_action"];
-	  for (var i = 0; i < contexts.length; i++) {
-	    var context = contexts[i];
-	    var title = "Test '" + context + "' menu item";
-	    var id = chrome.contextMenus.create({"title": title, "contexts":[context],
-	                                         "id": "context" + context});
-	    // console.log("'" + context + "' item:" + id);
-	  }
+  var contexts = ["all", "page", "selection", "link", "editable", "video", "audio", "browser_action", "page_action"];
+
+  for (var i = 0; i < contexts.length; i++) {
+    var context = contexts[i];
+    var title = "Test '" + context + "' menu item";
+    var id = chrome.contextMenus.create({
+      "title": title,
+      "contexts": [context],
+      "id": "context" + context
+    });
+    // console.log("'" + context + "' item:" + id);
+  }
+
+
+  // Separator
+  chrome.contextMenus.create({ "id": "sep", "type":'separator' });
+
 
   // Create a parent item and two children.
+  chrome.contextMenus.create({
+    "title": "Test parent item",
+    "id": "parent"
+  });
 
-  chrome.contextMenus.create({"id": "sep", "type":'separator'});
-  chrome.contextMenus.create({"title": "Test parent item", "id": "parent"});
-  chrome.contextMenus.create(
-      {"title": "Child 1", "parentId": "parent", "id": "child1"});
-  chrome.contextMenus.create(
-      {"title": "Child 2", "parentId": "parent", "id": "child2"});
+  chrome.contextMenus.create({
+    "title": "Child 1",
+    "parentId": "parent",
+    "id": "child1"
+  });
+
+  chrome.contextMenus.create({
+    "title": "Child 2",
+    "parentId": "parent",
+    "id": "child2"
+  });
   console.log("parent child1 child2");
 
   // Create some radio items.
-  chrome.contextMenus.create({"title": "Radio 1", "type": "radio",
-                              "id": "radio1"});
-  chrome.contextMenus.create({"title": "Radio 2", "type": "radio",
-                              "id": "radio2"});
+  chrome.contextMenus.create({
+    "title": "Radio 1",
+    "type": "radio",
+    "id": "radio1"
+  });
+
+  chrome.contextMenus.create({
+    "title": "Radio 2",
+    "type": "radio",
+    "id": "radio2"
+  });
   console.log("radio1 radio2");
 
   // Create some checkbox items.
-  chrome.contextMenus.create(
-      {"title": "Checkbox1", "type": "checkbox", "id": "checkbox1"});
-  chrome.contextMenus.create(
-      {"title": "Checkbox2", "type": "checkbox", "id": "checkbox2"});
+  chrome.contextMenus.create({
+    "title": "Checkbox1",
+    "type": "checkbox",
+    "id": "checkbox1"
+  });
+
+  chrome.contextMenus.create({
+    "title": "Checkbox2",
+    "type": "checkbox",
+    "id": "checkbox2"
+  });
   console.log("checkbox1 checkbox2");
 
-  chrome.contextMenus.create({"title": "Radio 3", "type": "radio",
-                              "id": "radio3"});
+  chrome.contextMenus.create({
+    "title": "Radio 3",
+    "type": "radio",
+    "id": "radio3"
+  });
 
-  chrome.contextMenus.create({"id": "sep2", "type":'separator'});
+  chrome.contextMenus.create({
+    "id": "sep2",
+    "type": "separator"
+  });
 
+  chrome.contextMenus.create({
+    "id": "sep1",
+    "type": "separator"
+  });
 
-  chrome.contextMenus.create({"id": "sep1", "type":'separator'});
+  chrome.contextMenus.create({
+    "title": "Open image folder in AWS!",
+    "contexts": ["all"],
+    "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
+    "id": "backgroundImageAWS"
+  });
 
-  chrome.contextMenus.create({"title": "Open image folder in AWS!", "contexts":["all"], "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "backgroundImageAWS"});
-  chrome.contextMenus.create({"title": "Open background image in new tab", "contexts":["all"], "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"], "id": "viewBackgroundImg"});
+  chrome.contextMenus.create({
+    "title": "Open background image in new tab",
+    "contexts": ["all"],
+    "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
+    "id": "viewBackgroundImg"
+  });
 
 
 });
