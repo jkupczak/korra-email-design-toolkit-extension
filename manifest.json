@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.7.604",
+  "version": "4.0.0",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 
@@ -25,6 +25,7 @@
     "img/*",
     "js/*",
     "css/*",
+    "link-validation/*",
     "icons/*",
     "korra/*",
     "startpage/index.html"
@@ -74,7 +75,7 @@
 
       "css": ["css/newsletter/newsletter-beforeload.css", "css/newsletter/newsletter-styles.css", "css/libs/alertify.css", "css/alertify.medbridge.css", "css/libs/tingle.css"],
 
-      "js": ["js/global.js", "js/get-options.js", "js/newsletter/newsletter-async.js", "js/newsletter/mailchimp-parser.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "js/newsletter/check-links-in-storage.js", "js/utilities/is-article-protected.js", "js/newsletter/newsletter-functions.js", "js/newsletter/check-link-status.js"],
+      "js": ["js/global.js", "js/get-options.js", "js/newsletter/newsletter-async.js", "js/newsletter/mailchimp-parser.js", "js/libs/Dropbox-sdk.min.js", "js/libs/moment.js", "js/newsletter/svg-icons.js", "js/libs/chrome-storage-promise.js", "link-validation/js/check-links-in-storage.js", "link-validation/js/link-validation.js", "link-validation/js/check-link-status.js", "js/utilities/is-article-protected.js", "js/newsletter/newsletter-functions.js"],
 
       "run_at": "document_start"
     },
@@ -144,7 +145,18 @@
       "exclude_matches": ["*://*.medbridgeeducation.com/blog/wp-admin*"],
       "js": ["js/utilities/is-article-protected.js"],
       "all_frames": true
-    }
+    },
+
+
+
+                    {
+                      "matches": ["*://*.mailchimp.com/*"],
+                      "js": ["js/libs/moment.js", "js/libs/chrome-storage-promise.js", "link-validation/js/check-links-in-storage.js", "link-validation/js/link-validation.js", "link-validation/js/check-link-status.js"]
+                    },
+                    {
+                      "matches": ["*://*.mailchimp.com/campaigns/wizard/html-paste*"],
+                      "js": ["js/mailchimp-link-check.js"]
+                    }
 
 
   ]

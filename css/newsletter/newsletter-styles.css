@@ -1507,11 +1507,9 @@ body.split-view-on {
 
 
 .mobile-device-view {
-  /*max-width:480px;*/
-  /*width:100%;*/
 
-  /* background: #000; */
-
+  transition: width .3s ease 0s;
+  
   width:320px;
   max-width:480px;
   min-width:320px;

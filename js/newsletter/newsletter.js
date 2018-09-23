@@ -430,14 +430,6 @@ if ( getParameterByName("presentation") === "1" ) {
     var dFrameBody = dFrameContents.body;
     var dFrameHTMLEle = dFrameContents.documentElement;
 
-    // Get all links, global variable
-    linkList = dFrameContents.querySelectorAll("a");
-    linkListArr = Array.from(linkList);
-    linkInfoArray = [];
-
-    linkListUniqueURLs = createUniqueArrayOfURLs(linkListArr);
-    linkListUniqueURLs.push("https://www.google.com");
-
     // Get all images
     let imgList = dFrameContents.images; // better?
     createImgInfoArray(imgList);
@@ -862,8 +854,6 @@ var isRecentEmail = isRecentEmail(emailDate);
 ///// Global error variables
 ///////////
 var totalErrors = 0;
-var totalLinkErrors = 0;
-var totalLinkWarnings = 0;
 var totalTextErrors = 0;
 
 ///////////
@@ -1249,7 +1239,7 @@ htmlStage.appendChild(htmlToolBar);
   var preflightStatus = document.createElement("div");
   preflightStatus.id = "preflight";
   preflightStatus.className = "preflight-wrapper initial-load";
-  preflightStatus.innerHTML = '<div id="preflight-total" class="preflight-status preflight-total">0</div><div class="preflight-rocket preflight-status icomoon icomoon-rocket"></div>'
+  preflightStatus.innerHTML = '<div id="preflight-total" class="value preflight-status preflight-total">0</div><div class="preflight-rocket preflight-status icomoon icomoon-rocket"></div>'
   preflightStatus.addEventListener("click", showPreflight, false);
   htmlToolBar.appendChild(preflightStatus);
 
@@ -3255,10 +3245,10 @@ function updateQaBar(bar, errors, string) {
         if ( !isElementEmpty(tableRow.cells[i]) ) {
         // console.groupEnd();
 
-        console.log( i );
-        console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] )
-        console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] )
-        console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] )
+        // console.log( i );
+        // console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] )
+        // console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] )
+        // console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] )
 
           // Log the top and bottom padding of our first <td>
           if ( i === 0 ) {
@@ -3382,19 +3372,11 @@ function updateQaBar(bar, errors, string) {
 ////////////
 
 
-// Create the wrapper for the link-markers.
-var linkMarkerWrapper = document.createElement("section");
-linkMarkerWrapper.dataset.korra = "";
-linkMarkerWrapper.id = "link-markers";
-linkMarkerWrapper.className = "debug link-markers-wrapper";
-linkMarkerWrapper.style = "display:none";
-dFrameContents.documentElement.appendChild(linkMarkerWrapper);
-
 // Begin by running the loop function for all links.
 // This will validate all links in dFrame and in dummy frame.
 
-// dframe links, dummy frame links, age check
-linkValidationLoop(linkList, dummyLinkList, "false");
+// frameToCheck, dframe links, dummy frame links, age check
+linkValidationLoop("korraLocalFile", desktopIframe, "false", preflightStatus, dummyLinkList);
 
 
 
@@ -4581,10 +4563,6 @@ var resizeEndWidth = dFrameStartingWidth;
 // Watch desktopIframe for size changes.
 // Helps to control the display of the desktopiframe's width in a little overlayed badge
 ro.observe(desktopIframe);
-
-// Watch the contents of the desktopIframe for size changes.
-// Modifies placement of link markers.
-lm.observe(dFrameContents.body);
 
 
 

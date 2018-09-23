@@ -146,10 +146,19 @@
 								<div class="link-condition">
 									<select>
 										<option selected></option>
-										<option value="fileUrl">File URL</option>
-										<option value="filename">Filename</option>
-										<option value="linkClass">Link Class</option>
+										<option value="linkedUrl">Linked URL (including # tags)</option>
+										<option value="linkedUrlDomainOnly">Linked Domain Only</option>
+										<option value="linkedUrlPathnameOnly">Linked Pathname Only</option>
+										<option value="linkedUrlQuerystringOnly">Linked Querystring Only</option>
+										<option value="linkedUrlHashtagOnly">Linked Hashtag Only</option>
+										<option value="currentUrlFull">Current URL (including # tags)</option>
+										<option value="currentUrlDomainOnly">Current URL Domain</option>
+										<option value="currentUrlPathnameOnly">Current URL Pathname</option>
+										<option value="currentUrlFilenameOnly">Current URL Filename (for local files)</option>
+										<option value="currentUrlHashtagOnly">Current URL Hashtag</option>
 										<option value="linkId">Link ID</option>
+										<option value="linkClass">Link Class</option>
+										<option value="linkAttribute">Link Attribute</option>
 										<option value="linkedText">Linked Text</option>
 										<option value="linkedImageUrl">Linked Image URL</option>
 										<option value="linkedImageAltText">Linked Image ALT Text</option>
@@ -190,11 +199,11 @@
 								</div>
 
 								<select>
-									<option value="fullUrl" selected>Full URL (includes # tags)</option>
-									<option value="domainOnly">Domain Only</option>
-									<option value="pathnameOnly">Pathname Only</option>
-									<option value="querystringOnly">Querystring Only</option>
-									<option value="hashtagOnly">Hashtag Only</option>
+									<option value="urlFull" selected>URL (including # tags)</option>
+									<option value="urlDomainOnly">Domain Only</option>
+									<option value="urlPathnameOnly">Pathname Only</option>
+									<option value="urlQuerystringOnly">Querystring Only</option>
+									<option value="urlHashtagOnly">Hashtag Only</option>
 								</select>
 
 								<select>

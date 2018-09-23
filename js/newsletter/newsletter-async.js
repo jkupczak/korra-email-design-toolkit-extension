@@ -1,8 +1,3 @@
-// console.warn(" 💎💎💎 [korra-email-design-tooklit] loaded /js/newsletter-async.js");
-/////////////////////////////////////////////////////////////////////////
-
-
-///////
 ///////
 ///////
 var getHtml = new Promise(function(resolve, reject) {
@@ -264,6 +259,7 @@ if ( isinss ) {
             // Apply our result to a global variable so that we can use it throughout our other scripts.
             // Maybe not the best way to handle this?
             exOptions = items;
+            korraOptions = items;
 
             console.groupCollapsed("Options from Storage (exOptions)");
             console.log(exOptions);

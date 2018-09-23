@@ -51,7 +51,7 @@ function onRequest(i, linkHref, linkObj) {
 
       // We're online
       // If the DOM needs to be parsed, or if we aren't caching links, then we need to XHR right now.
-      if ( XHRisNecessary(options) === true ) {
+      if ( XHRisNecessary(korraOptions) === true ) {
 
         //TODO we need to check if we're offline...
 
@@ -147,12 +147,12 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
       // if ( response !== false ) {
 
         // then we process the response we got from cache or XHR
-        processLinkStatusResponse(i, linkHref, linkObj, response, options);
+        processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions);
 
         // Now that the response has been processed, was this link the first of other identical links?
         if ( linkInfoArray[i]['firstInstance'] === true ) {
           // if so, process these results again for all other matching links in the DOM
-          applyXHRResultsToDupeLinks(linkHref, response, options);
+          applyXHRResultsToDupeLinks(linkHref, response, korraOptions);
         } else {
           console.error("!!!! ERROR !!!! not the first instance of this link"); // technically this should never fire because the !== false above should stop it
         }
@@ -169,7 +169,7 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
 /////////////////
 /////////////////
 /////////////////
-function applyXHRResultsToDupeLinks(linkHref, response, options) {
+function applyXHRResultsToDupeLinks(linkHref, response, korraOptions) {
 
   // console.log("running applyXHRResultsToDupeLinks on links that match", linkHref);
 
@@ -179,7 +179,7 @@ function applyXHRResultsToDupeLinks(linkHref, response, options) {
 
     if ( linkInfoArray[i]['url'] === linkHref && linkInfoArray[i]['firstInstance'] === false ) {
 
-      processLinkStatusResponse(i, linkHref, linkObj, response, options);
+      processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions);
 
     }
 
@@ -266,7 +266,7 @@ function manualXHRLinkCheck() {
 ////////////////
 ////////////////
 ////////////////
-function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
+function processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions) {
 
   // Results
   // console.log("response [" + response.source + "]:", i, response);
@@ -299,7 +299,7 @@ function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
 
     // Make sure there are no overrides in place to prevent caching. Either on all links or this specific link.
     // If not, then add it to chrome.storage
-    if ( options.cache == 'true' && response.addToCache !== false ) {
+    if ( korraOptions.cache == 'true' && response.addToCache !== false ) {
       linkStorage.addLink(linkHref, response);
     }
 
@@ -361,7 +361,7 @@ function checkIfArticleProtected(i, linkObj, response) {
 ////////
 function createLinkStatusRow(i, linkObj, response) {
 
-  var currentErrorWrapper = dFrameContents.querySelector("section.link-errors[data-number='" + i + "'] .link-info-container");
+  var currentErrorWrapper = frameContents.querySelector(".link-errors[data-number='" + i + "'] .link-info-container");
 
   if ( response.redirectOK === false ) {
     currentErrorWrapper.classList.add("error");
@@ -390,7 +390,7 @@ function createLinkStatusRow(i, linkObj, response) {
       cacheTimeString = cacheTimeString + " days ago"
     }
 
-    var sourceTime = "<span id='last-checked'>" + cacheTimeString + "</span>";
+    var sourceTime = "<korra-div id='last-checked'>" + cacheTimeString + "</korra-div>";
 
   } else if ( response.source == "offline" ) {
     var source = "Status";
@@ -406,12 +406,12 @@ function createLinkStatusRow(i, linkObj, response) {
   }
 
   // Destroy the status container if it already exists.
-  destroyIfExists(currentErrorWrapper.querySelectorAll(".link-status-wrapper")[0]);
+  destroyIfElementExists(currentErrorWrapper.querySelectorAll(".link-status-wrapper")[0]);
 
   // Wrapper for the XHR'd Link Status
-  var linkErrorXHRStatus = document.createElement("section");
+  var linkErrorXHRStatus = document.createElement("korra-div");
   linkErrorXHRStatus.className = "link-status-wrapper link-info-wrapper";
-  linkErrorXHRStatus.innerHTML = "<section class='status-bubble'><section class='status-code'><span id='status-text'><b>" + response.statusText + "</b></span> " + statusCode + "</section><section class='status-age'><b id='cache-status'>" + source + "</b> " + sourceTime + "</div></section>";
+  linkErrorXHRStatus.innerHTML = "<korra-div class='status-bubble'><korra-div class='status-code'><korra-span id='status-text'><korra-bold>" + response.statusText + "</korra-bold></korra-span> " + statusCode + "</korra-div><korra-div class='status-age'><korra-bold id='cache-status'>" + source + "</korra-bold> " + sourceTime + "</korra-div></korra-div>";
 
   currentErrorWrapper.appendChild(linkErrorXHRStatus);
 
@@ -632,8 +632,8 @@ function assignErrorRows(i, linkHref, linkObj, response) {
 // Should DOM be parsed to check for #'s || OR || is caching set to off?
 // If so, XHR is necessary.
 ////////
-function XHRisNecessary(options, linkHref) {
-  if ( shouldDOMbeParsed(linkHref, options.parseDOM) === true || options.cache == 'false' ) {
+function XHRisNecessary(korraOptions, linkHref) {
+  if ( shouldDOMbeParsed(linkHref, korraOptions.parseDOM) === true || korraOptions.cache == 'false' ) {
     return true;
   }
   return false;

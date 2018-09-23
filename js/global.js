@@ -445,6 +445,21 @@ function injectScript(file, node) {
   th.appendChild(s);
 }
 
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+function injectStylesheet(file, node) {
+  var th = document.getElementsByTagName(node)[0];
+  var s = document.createElement('link');
+  s.setAttribute('rel', 'stylesheet');
+  s.setAttribute('type', 'text/css');
+  s.setAttribute('href', file);
+  th.appendChild(s);
+}
+
 
 //
 // Push a Browser Notification
@@ -1012,19 +1027,6 @@ function updateQueryString(key, value, url) {
 // }
 
 
-
-// Create a unique array
-// https://stackoverflow.com/a/9229821/556079
-
-/**
- * [someFunction description]
- * @param  {[type]} arg1 [description]
- * @param  {[type]} arg2 [description]
- * @return {[type]}      [description]
- */
-function uniq(a) {
-   return Array.from(new Set(a));
-}
 
 
 // Helper function to get an element's exact position
