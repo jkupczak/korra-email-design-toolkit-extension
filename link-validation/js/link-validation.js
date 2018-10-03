@@ -1392,9 +1392,13 @@ function validateLinks(linkObj, i) {
       // If the email has a discipline, the link to the courses page needs one too.
       // Check the discipline of the email against the hashtag that's being used for links meant to go to the courses page
       if ( emailDisc === "multi" || emailDisc === "all" || emailDisc === null || emailDisc === undefined ) {
-        if ( /#/gi.test(linkHref) ) {
-          createLinkErrorRow(linkObj, "Remove the hashtag. This email has no assigned discipline to link to.");
-        }
+
+        // Removed on 9/25/18
+        // I was editing a Pardot campaign that had no discipline set. But we were linking to the #nursing category of the courses page.
+        // This threw an error when I'd rather it hadn't.
+        // if ( /#/gi.test(linkHref) ) {
+        //   createLinkErrorRow(linkObj, "Remove the hashtag. This email has no assigned discipline to link to.");
+        // }
 
       } else {
         if ( !/#/gi.test(linkHref) ) {
@@ -1410,6 +1414,9 @@ function validateLinks(linkObj, i) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
           if ( emailDisc === "slp" && !/#\/?speech-language-pathology/gi.test(linkHref) ) {
+            createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
+          }
+          if ( emailDisc === "nr" && !/#\/?nursing/gi.test(linkHref) ) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
         }
@@ -1490,7 +1497,7 @@ function validateLinks(linkObj, i) {
 
 
     // Check for unecessary discipline hastags. Should only be used when linking to courses page
-    if ( /#\/?(speech-language-pathology|physical-therapy|athletic-training|occupational-therapy)/gi.test(linkHref) && ( !/(_url=courses|\/courses)(#|\/|\?|&|$)/gi.test(linkHref) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(linkHref) ) ) {
+    if ( /#\/?(speech-language-pathology|physical-therapy|nursing|athletic-training|occupational-therapy)/gi.test(linkHref) && ( !/(_url=courses|\/courses)(#|\/|\?|&|$)/gi.test(linkHref) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(linkHref) ) ) {
       createLinkErrorRow(linkObj, "Unecessary hashtag.");
     }
 

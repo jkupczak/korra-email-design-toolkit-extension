@@ -313,12 +313,12 @@ if ( getParameterByName("presentation") === "1" ) {
 
 
   function changeStage() {
-    console.log(event)
-    console.log(event.target)
-    console.log(event.target.data)
-    console.log(event.target.dataset)
-    console.log(event.target.dataset.stage)
-    console.log(this)
+    console.log(event);
+    console.log(event.target);
+    console.log(event.target.data);
+    console.log(event.target.dataset);
+    console.log(event.target.dataset.stage);
+    console.log(this);
 
     var btn = event.target;
     var stage = event.target.dataset.stage;
@@ -414,9 +414,9 @@ if ( getParameterByName("presentation") === "1" ) {
 
     var desktopIframe = document.createElement("iframe");
     desktopIframe.className = "iframe-desktop-view";
-    desktopIframe.id = "desktop-view"
-    desktopIframeParent.appendChild(desktopIframe)
-    desktopIframeResizeWrapper.appendChild(desktopIframeParent)
+    desktopIframe.id = "desktop-view";
+    desktopIframeParent.appendChild(desktopIframe);
+    desktopIframeResizeWrapper.appendChild(desktopIframeParent);
 
     var desktopResizeHtml = '<div data-resize="top-right" class="resize-handler resize-corner resize-point-top resize-point-right resize-point-top-right"></div><div data-resize="bottom-right" class="resize-handler resize-corner resize-point-right resize-point-bottom resize-point-bottom-right"></div><div data-resize="bottom-left" class="resize-handler resize-corner resize-point-bottom resize-point-left resize-point-bottom-left"></div><div data-resize="top-left" class="resize-handler resize-corner resize-point-left resize-point-top resize-point-top-left"></div><div data-resize="top" class="resize-handler resize-side resize-point-top  resize-point-top-right resize-point-top-left"></div><div data-resize="right" class="resize-handler resize-side resize-point-right resize-point-top-right  resize-point-bottom-right"></div><div data-resize="bottom" class="resize-handler resize-side resize-point-bottom resize-point-bottom-right resize-point-bottom-left"></div><div data-resize="left" class="tap-to-resize resize-handler resize-side resize-point-left resize-point-bottom-left resize-point-top-left"></div>';
     desktopIframeResizeWrapper.insertAdjacentHTML('beforeend', desktopResizeHtml);
@@ -444,13 +444,13 @@ if ( getParameterByName("presentation") === "1" ) {
       }
       // console.log("imgUrls", imgUrls);
 
-      handleNetErr = function(e) { return e };
+      handleNetErr = function(e) { return e; };
       Promise.all(imgUrls.map(function(e) {
-        return fetch(e).catch(handleNetErr)
+        return fetch(e).catch(handleNetErr);
       })).then(function(e) {
-        console.log('then',e) // Outputs: 'then', [Response, TypeError]
+        console.log('then',e); // Outputs: 'then', [Response, TypeError]
       }).catch(function(e) {
-        console.log('err',e)
+        console.log('err',e);
       });
 
       ////////
@@ -498,13 +498,13 @@ if ( getParameterByName("presentation") === "1" ) {
       styleActiveLine: true,
       actions: {
           toggleHtml: function() {
-              this.sendAction("toggleHtml")
+              this.sendAction("toggleHtml");
           },
           toggleCss: function() {
-              this.sendAction("toggleCss")
+              this.sendAction("toggleCss");
           },
           viewCompiled: function() {
-              this.sendAction("viewCompiled")
+              this.sendAction("viewCompiled");
           }
       }
     });
@@ -551,7 +551,7 @@ if ( getParameterByName("presentation") === "1" ) {
     var dummyIframe = document.createElement("iframe");
     dummyIframe.className = "dummy-iframe";
     dummyIframe.style = "width:800px; position:absolute; left:-99999px; top:-9999px; z-index: -99999; opacity:0; pointer-events:none;";
-    document.body.appendChild(dummyIframe)
+    document.body.appendChild(dummyIframe);
     // Function to load iframe with HTML.
     loadIframe(dummyIframe, cleanedOriginalHtml, false);
     // Set the dummy frame contents
@@ -576,16 +576,16 @@ if ( getParameterByName("presentation") === "1" ) {
 
     var mobileDeviceWrapper = document.createElement("div");
     mobileDeviceWrapper.className = "mobile-device-view";
-    mobileIframeWrapper.appendChild(mobileDeviceWrapper)
+    mobileIframeWrapper.appendChild(mobileDeviceWrapper);
 
     var mobileIframeParent = document.createElement("div");
     mobileIframeParent.className = "mobile-iframe-parent iframe-parent";
 
     var mobileIframe = document.createElement("iframe");
     mobileIframe.className = "iframe-mobile-view";
-    mobileIframe.id = "mobile-view"
-    mobileIframeParent.appendChild(mobileIframe)
-    mobileDeviceWrapper.appendChild(mobileIframeParent)
+    mobileIframe.id = "mobile-view";
+    mobileIframeParent.appendChild(mobileIframe);
+    mobileDeviceWrapper.appendChild(mobileIframeParent);
 
     // Function to load iframe with HTML.
     loadIframe(mobileIframe, cleanedMobileHtml, true, "mobile");
@@ -617,7 +617,7 @@ if ( getParameterByName("presentation") === "1" ) {
     var mobileIframeSetting = document.createElement("div");
     mobileIframeSetting.className = "mobile-iframe-settings";
 
-    mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim active" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>'
+    mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim active" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>';
 
     mobileIframeSetting.addEventListener("click", changeMobileSize, false);
 
@@ -722,7 +722,7 @@ if ( isLocalCampaign ) {
 
       // If no email date is found in the filename, set the emailDate variable to be today's date.
       if ( isNaN(emailDate) == true ) { // ref - http://stackoverflow.com/a/1353710/556079
-        emailDate = new Date();;
+        emailDate = new Date();
       }
 
       var emailMonth = emailDate.getMonth();
@@ -752,12 +752,12 @@ if ( isLocalCampaign ) {
 
       if ( inLocalDbFolder ) {
 
-        var filenameEscaped = escapeRegExp(fileName)
+        var filenameEscaped = escapeRegExp(fileName);
         var filenameReplacePattern = new RegExp(filenameEscaped + "($|.+?)", "gi");
 
       // TODO fix this
 
-        var localParentFolder = pageUrl.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, '')
+        var localParentFolder = pageUrl.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, '');
 
             localParentFolder = localParentFolder.replace(filenameReplacePattern, "");
 
@@ -765,7 +765,7 @@ if ( isLocalCampaign ) {
 
 } else {
 
-    var emailDisc = "unknown"
+    var emailDisc = "unknown";
 
     var emailDate = null;
     var emailMonth = null;
@@ -793,26 +793,26 @@ var emailOrgName;
 var emailSubTypeName;
 
 if ( /\-ns( +|(%20)+)?[\.\-\(]/gi.test(pageUrl) ) {
-  emailSubType = "ns"
-  emailSubTypeName = "Non-Subscribers"
+  emailSubType = "ns";
+  emailSubTypeName = "Non-Subscribers";
 } else if ( /\-sub( +|(%20)+)?[\.\-\(]/gi.test(pageUrl) ) {
-  emailSubType = "sub"
-  emailSubTypeName = "Subscribers"
+  emailSubType = "sub";
+  emailSubTypeName = "Subscribers";
 }
 if ( /\-Fox\-/gi.test(pageUrl) ) {
-  emailSubType = "sub"
-  emailOrgName = "fox"
-  emailSubTypeName = "Subscribers"
+  emailSubType = "sub";
+  emailOrgName = "fox";
+  emailSubTypeName = "Subscribers";
 }
 if ( /\-(EH|HS)\-/gi.test(pageUrl) ) {
-  emailSubType = "sub"
-  emailOrgName = "hs"
-  emailSubTypeName = "Subscribers"
+  emailSubType = "sub";
+  emailOrgName = "hs";
+  emailSubTypeName = "Subscribers";
 }
 if ( /\-DR\-/gi.test(pageUrl) ) {
-  emailSubType = "sub"
-  emailOrgName = "dr"
-  emailSubTypeName = "Subscribers"
+  emailSubType = "sub";
+  emailOrgName = "dr";
+  emailSubTypeName = "Subscribers";
 }
 
 ///////////
@@ -1044,7 +1044,7 @@ if ( isLocalCampaign ) {
     // Create HTML for email date
     var showEmailDate = "";
     if ( isNaN(emailDate) == false ) { // ref - http://stackoverflow.com/a/1353710/556079
-      showEmailDate = '<div class="title-small"><span>' + dateFormatted + '</span></div>'
+      showEmailDate = '<div class="title-small"><span>' + dateFormatted + '</span></div>';
     }
     // var pageTitle = document.createElement("div");
     // pageTitle.className = "page-title";
@@ -1063,7 +1063,7 @@ if ( isLocalCampaign ) {
         var abTestingOpposite = "A";
       }
       // abTitleIcon = "<a href='" + abUrl + "' class='ab-status " + abTesting + "'><span></span></a>"
-      abTitleIcon = '<a href="' + abUrl + '" class="container ab-status ' + abTesting + '"><div class="card"><div class="face front"><span>' + abTestingUpper + '</span></div><div class="face back"><span>' + abTestingOpposite + '</span></div></div></a>'
+      abTitleIcon = '<a href="' + abUrl + '" class="container ab-status ' + abTesting + '"><div class="card"><div class="face front"><span>' + abTestingUpper + '</span></div><div class="face back"><span>' + abTestingOpposite + '</span></div></div></a>';
     }
 
     // Create HTML for Header Icon based on Discipline
@@ -1115,15 +1115,22 @@ if ( isLocalCampaign ) {
           } else {
             iconCode = svgOTHERns;
           }
+      // NR
+      } else if ( emailDisc === "nr" ) {
+          if ( emailSubType === "sub" ) {
+            iconCode = svgNRsub;
+          } else {
+            iconCode = svgNRns;
+          }
       // MASSAGE
       } else if ( emailDisc === "lmt" ) {
           if ( emailSubType === "sub" ) {
-            iconCode = svgLMTsub
+            iconCode = svgLMTsub;
           } else {
-            iconCode = svgLMTns
+            iconCode = svgLMTns;
           }
       } else {
-        iconCode = '<img class="disc-img" src="' + chrome.extension.getURL('favicons/' + emailDisc + iconSuffix + '.png') + '">'
+        iconCode = '<img class="disc-img" src="' + chrome.extension.getURL('favicons/' + emailDisc + iconSuffix + '.png') + '">';
       }
       // Wrap it up in a div
       headerIcon = "<div class='disc-img svg-" + emailDisc + "'>" + iconCode + "</div>";
@@ -1152,15 +1159,15 @@ if ( isLocalCampaign ) {
       var orgLogo;
 
       if ( emailOrgName === "fox" ) {
-        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/fox.png') + "' class='organization-logo'>"
+        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/fox.png') + "' class='organization-logo'>";
         console.error(orgLogo);
       }
       if ( emailOrgName === "dr" ) {
-        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/drayer.png') + "' class='organization-logo'>"
+        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/drayer.png') + "' class='organization-logo'>";
         console.error(orgLogo);
       }
       if ( emailOrgName === "hs" ) {
-        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/hs.png') + "' class='organization-logo'>"
+        orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/hs.png') + "' class='organization-logo'>";
         console.error(orgLogo);
       }
 
@@ -1239,7 +1246,7 @@ htmlStage.appendChild(htmlToolBar);
   var preflightStatus = document.createElement("div");
   preflightStatus.id = "preflight";
   preflightStatus.className = "preflight-wrapper initial-load";
-  preflightStatus.innerHTML = '<div id="preflight-total" class="value preflight-status preflight-total">0</div><div class="preflight-rocket preflight-status icomoon icomoon-rocket"></div>'
+  preflightStatus.innerHTML = '<div id="preflight-total" class="value preflight-status preflight-total">0</div><div class="preflight-rocket preflight-status icomoon icomoon-rocket"></div>';
   preflightStatus.addEventListener("click", showPreflight, false);
   htmlToolBar.appendChild(preflightStatus);
 
@@ -1263,7 +1270,7 @@ htmlStage.appendChild(htmlToolBar);
       }
     });
 
-    var preflightHTML = "<div id='preflight-window'><div class='preflight-header'>Preflight Check</div><div class='main-checks'><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div></div>"
+    var preflightHTML = "<div id='preflight-window'><div class='preflight-header'>Preflight Check</div><div class='main-checks'><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div></div>";
     preflightWindow.setContent(preflightHTML);
 
     preflightWindow.open();
@@ -1405,7 +1412,7 @@ function paneToggle() {
 var shareOrb = document.createElement("div");
 shareOrb.className = "share-orb orb glyph";
 shareOrb.innerHTML = svgIconShare;
-if ( isLocalHost ) { shareOrb.classList.add("off") };
+if ( isLocalHost ) { shareOrb.classList.add("off"); }
 shareOrb.addEventListener("click", getDbShareLink, false);
 orbsTop.appendChild(shareOrb);
 
@@ -1502,13 +1509,13 @@ function showDims() {
   if ( showDimsToggle ) {
     history.replaceState(null,null, updateQueryString("showdims", "1") );
 
-    [].forEach.call(dFrameContents.querySelectorAll("*:not(section)"),function(a){ a.dataset.dimsColor = Math.floor(Math.random() * Math.floor(30)) });
-    [].forEach.call(mFrameContents.querySelectorAll("*:not(section)"),function(a){ a.dataset.dimsColor = Math.floor(Math.random() * Math.floor(30)) });
+    [].forEach.call(dFrameContents.querySelectorAll("*:not(section)"),function(a){ a.dataset.dimsColor = Math.floor(Math.random() * Math.floor(30)); });
+    [].forEach.call(mFrameContents.querySelectorAll("*:not(section)"),function(a){ a.dataset.dimsColor = Math.floor(Math.random() * Math.floor(30)); });
 
   } else {
     history.replaceState(null,null, updateQueryString("showdims") );
-    [].forEach.call(dFrameContents.querySelectorAll("*"),function(a){a.style.outline=""});
-    [].forEach.call(mFrameContents.querySelectorAll("*"),function(a){a.style.outline=""});
+    [].forEach.call(dFrameContents.querySelectorAll("*"),function(a){a.style.outline="";});
+    [].forEach.call(mFrameContents.querySelectorAll("*"),function(a){a.style.outline="";});
   }
 
   document.getElementById("show-dims-orb").classList.toggle("on");
@@ -1547,7 +1554,7 @@ function showDims() {
   } else {
 
     let dFrameTdList = dFrameContents.querySelectorAll("td");
-    var tdCount = 0
+    var tdCount = 0;
 
     console.groupCollapsed("<td> Group (dFrameContents) - Total <td>'s Processed: " + dFrameTdList.length);
 
@@ -1561,7 +1568,7 @@ function showDims() {
     for (let tdEle of dFrameTdList) {
       if ( (tdEle.clientWidth !== 0 && tdEle.clientHeight !== 0) && (tdEle.clientWidth < 650) ) {
 
-        tdCount++
+        tdCount++;
 
         var tdPos = getPosition(tdEle, dFrameContents);
 
@@ -1590,7 +1597,7 @@ function showDims() {
 
 
     let mFrameTdList = mFrameContents.querySelectorAll("td");
-    var tdCount = 0
+    var tdCount = 0;
 
     console.groupCollapsed("<td> Group (mFrame) - Total <td>'s Processed: " + mFrameTdList.length);
 
@@ -1601,7 +1608,7 @@ function showDims() {
         // console.log(tdEle.clientHeight);
         // console.log(tdEle.clientWidth);
 
-        tdCount++
+        tdCount++;
 
         var tdPos = getPosition(tdEle, mFrameContents);
 
@@ -1841,7 +1848,7 @@ customOrb.className = "custom-orb orb glyph";
 customOrb.id = "custom-orb";
 customOrb.addEventListener("click", sendEmail, false);
 // orbsBottom.appendChild(customOrb); // OFF for now
-var presentationToggle = false
+var presentationToggle = false;
 
 
 
@@ -1856,7 +1863,7 @@ styleOrb.className = "style-orb orb glyph";
 styleOrb.id = "style-orb";
 styleOrb.addEventListener("click", toggleStyles, false);
 toolbarSectionContent.appendChild(styleOrb);
-var styleToggle = false
+var styleToggle = false;
 
 function toggleStyles() {
 
@@ -1936,7 +1943,7 @@ editOrb.className = "edit-orb orb glyph";
 editOrb.id = "edit-orb";
 editOrb.addEventListener("click", editEmail, false);
 toolbarSectionContent.appendChild(editOrb);
-var editToggle = false
+var editToggle = false;
 
 function editEmail() {
   editToggle = !editToggle;
@@ -1960,7 +1967,7 @@ hiddenContentToggleOrb.className = "hidden-content-orb orb glyph icomoon icomoon
 hiddenContentToggleOrb.id = "hidden-content-orb";
 hiddenContentToggleOrb.addEventListener("click", toggleHiddenContent, false);
 toolbarSectionContent.appendChild(hiddenContentToggleOrb);
-var hiddenContentToggle = false
+var hiddenContentToggle = false;
 
 function toggleHiddenContent() {
 
@@ -2080,7 +2087,7 @@ imagesToggleOrb.className = "images-orb orb glyph";
 imagesToggleOrb.id = "images-orb";
 imagesToggleOrb.addEventListener("click", toggleImages, false);
 toolbarSectionContent.appendChild(imagesToggleOrb);
-var imagesToggle = false
+var imagesToggle = false;
 
 function toggleImages() {
 
@@ -2189,7 +2196,7 @@ function toggleImgDims() {
 
 
     let dFrameImgDimsList = dFrameContents.querySelectorAll("img");
-    var imgDimsCount = 0
+    var imgDimsCount = 0;
 
     console.groupCollapsed("<img> Group (dFrameContents) - Total <img>'s Processed: " + dFrameImgDimsList.length);
     for (let imgDimsEle of dFrameImgDimsList) {
@@ -2240,17 +2247,17 @@ function toggleImgDims() {
         if ( imgDimsFontSizeSmall > 18 ) {
           imgDimsFontSizeSmall = 18;
         }
-        naturalWidthText = "<section style='font-size:" + imgDimsFontSizeSmall + "px'>full size</section>"
+        naturalWidthText = "<section style='font-size:" + imgDimsFontSizeSmall + "px'>full size</section>";
 
       } else  if ( ( imgNaturalWidth !== 0 || imgNaturalHeight !== 0 ) && (imgNaturalWidth !== imgClientWidth && imgNaturalHeight !== imgClientHeight) ) {
 
-        naturalWidthText = "<section style='font-size:" + imgDimsFontSizeSmall + "px'>" + imgNaturalWidth + "x" + imgNaturalHeight + "</section>"
+        naturalWidthText = "<section style='font-size:" + imgDimsFontSizeSmall + "px'>" + imgNaturalWidth + "x" + imgNaturalHeight + "</section>";
 
       }
 
 
 
-      imgDimsMarker.innerHTML = "<section><section>" + imgClientWidth + "x" + imgClientHeight + "</section>" + naturalWidthText + "</section>"
+      imgDimsMarker.innerHTML = "<section><section>" + imgClientWidth + "x" + imgClientHeight + "</section>" + naturalWidthText + "</section>";
       dFrameContents.getElementById("img-dims-markers").appendChild(imgDimsMarker);
 
       console.log(imgDimsEle);
@@ -2408,8 +2415,8 @@ function processModuleText(moduleType) {
 
 function appendQaBar(newBar) {
 
-  newBar.className = "qa-bar"
-  newBar.innerHTML = "<div class='qa-title'><div class='qa-icon'></div><div class='qa-text'>Processing...</div></div>"
+  newBar.className = "qa-bar";
+  newBar.innerHTML = "<div class='qa-title'><div class='qa-icon'></div><div class='qa-text'>Processing...</div></div>";
   qaResults.appendChild(newBar);
 
 }
@@ -2454,7 +2461,7 @@ preheader150 = [preheader150.slice(0, 90), "<span class='preheader-back'>", preh
 
 var preheaderTextPreview = document.createElement("div");
 preheaderTextPreview.innerHTML = preheader150;
-preheaderTextPreview.className = "preheader-preview-text"
+preheaderTextPreview.className = "preheader-preview-text";
 preheaderQaBar.appendChild(preheaderTextPreview);
 
 
@@ -2984,13 +2991,13 @@ var moduleSettingsWrapper = document.createElement("section");
 
 
 let moduleList = dFrameContents.querySelectorAll("[data-mod]");
-var i = 0
+var i = 0;
 
 console.groupCollapsed("Modules Group - Total Modules Found: " + moduleList.length);
 
 for (let module of moduleList) {
 
-  i++
+  i++;
   module.dataset.moduleCount = i;
   console.log(i);
 
@@ -3117,7 +3124,7 @@ else if ( totalAccessibilityWarnings === 0 ) {
 
 function logAccessibilityWarning(object, id) {
   console.error(id, object);
-  totalAccessibilityWarnings++
+  totalAccessibilityWarnings++;
   updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings, " Accessibility Warnings");
 }
 
@@ -3282,7 +3289,7 @@ function updateQaBar(bar, errors, string) {
 (function(){
 
   console.group("[Bug Check] Outlook: !important parsing");
-  console.info("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31")
+  console.info("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31");
 
   var firstTdTop, firstTdBottom;
 
@@ -3333,7 +3340,7 @@ else if ( totalCodingBugs === 0 ) {
 
 function logCodeBug(object, client, errorText) {
   console.error("Coding Bug:", client, errorText, object);
-  totalCodingBugs++
+  totalCodingBugs++;
   updateQaBar(codingBugsQaBar, totalCodingBugs, " Bugs Found");
 }
 
@@ -3979,7 +3986,7 @@ window.onload = function () {
     console.log("img dimensions revealed");
   }
 
-}
+};
 
 // These functions don't need to wait for the layout to settle down.
 
@@ -4150,16 +4157,16 @@ function zoom(direction) {
   }
   // Zoom-in
   if ( direction === "+" && currentZoomLevel !== "2" ) {
-    dFrameHTMLEle.style.zoom   = zoomLevels[zoomLevels.indexOf(currentZoomLevel)+1] // Go UP 1 level in the array.
-    dFrameZoomStatus.innerHTML = zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)+1] // Go UP 1 level in the array.
+    dFrameHTMLEle.style.zoom   = zoomLevels[zoomLevels.indexOf(currentZoomLevel)+1]; // Go UP 1 level in the array.
+    dFrameZoomStatus.innerHTML = zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)+1]; // Go UP 1 level in the array.
     dFrameZoomStatus.classList.add("show");
 
     console.log( "Zoom: " + zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)+1] );
   }
   // Reset Zoom
   if ( direction === "0" ) {
-    dFrameHTMLEle.style.zoom   = zoomLevels[7] // Go UP 1 level in the array.
-    dFrameZoomStatus.innerHTML = zoomLevelsText[7] // Go UP 1 level in the array.
+    dFrameHTMLEle.style.zoom   = zoomLevels[7]; // Go UP 1 level in the array.
+    dFrameZoomStatus.innerHTML = zoomLevelsText[7]; // Go UP 1 level in the array.
   }
   // Reset Zoom
   if ( dFrameHTMLEle.style.zoom === "1") {
@@ -4378,7 +4385,7 @@ function resetDesktopResize() {
     desktopIframeWrapper.classList.add("full-sized");
     resizeActive = false;
   }
-};
+}
 
 
 

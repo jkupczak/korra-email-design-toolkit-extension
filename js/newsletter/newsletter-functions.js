@@ -108,9 +108,9 @@ function breakdownQuerystring(url, linkObj) {
     });
   }
 
-  return qsObject
+  return qsObject;
 
-};
+}
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -138,7 +138,7 @@ window.onkeydown = KeyPress;
 function KeyPress(e) {
 
   // Get the event keycodes
-  var evtobj = window.event? event : e
+  var evtobj = window.event? event : e;
 
   // Zoom Detection
   // Watch for Chrome zoom shortcuts, cmd/ctrl plus +/-/0
@@ -247,7 +247,7 @@ function addLoadEvent(window, func) {
         oldonload();
       }
       func();
-    }
+    };
   }
 }
 
@@ -385,9 +385,9 @@ function createImgInfoArray(imgList) {
 
     var singleImgInfoArray = {};
 
-    singleImgInfoArray['object'] = img; //img object
-    singleImgInfoArray['url'] = img.src; //img url
-    singleImgInfoArray['presentation'] = "img"; //kind (img)
+    singleImgInfoArray.object = img; //img object
+    singleImgInfoArray.url = img.src; //img url
+    singleImgInfoArray.presentation = "img"; //kind (img)
 
     imgInfoArray.push(singleImgInfoArray);
   }
@@ -419,44 +419,44 @@ function createImgInfoArray(imgList) {
 
     desktopIframe.addEventListener("load", function checkImages(e) {
 
-      var i = 0
+      var i = 0;
 
       for (let img of imgList) {
 
         // Check if image is broken
         if ( img.naturalWidth === 0 && img.naturalHeight === 0 ) {
           totalBrokenImages++;
-          imgInfoArray[i]['broken'] = true;
+          imgInfoArray[i].broken = true;
         } else {
-          imgInfoArray[i]['broken'] = false;
+          imgInfoArray[i].broken = false;
 
           // Natural dimensions
-          imgInfoArray[i]['naturalWidth'] = img.naturalWidth;
-          imgInfoArray[i]['naturalHeight'] = img.naturalHeight;
+          imgInfoArray[i].naturalWidth = img.naturalWidth;
+          imgInfoArray[i].naturalHeight = img.naturalHeight;
 
           // GCF
-          var naturalRatioGcf = gcd_rec(imgInfoArray[i]['naturalWidth'], imgInfoArray[i]['naturalHeight']);
-          imgInfoArray[i]['naturalRatio'] = (img.naturalWidth / naturalRatioGcf) + ":" + (img.naturalHeight / naturalRatioGcf);
+          var naturalRatioGcf = gcd_rec(imgInfoArray[i].naturalWidth, imgInfoArray[i].naturalHeight);
+          imgInfoArray[i].naturalRatio = (img.naturalWidth / naturalRatioGcf) + ":" + (img.naturalHeight / naturalRatioGcf);
 
           // Desktop
           //////////
           var desktop = [];
-          desktop['hidden'] = isHidden(img);
+          desktop.hidden = isHidden(img);
 
-          if ( !desktop['hidden'] ) {
+          if ( !desktop.hidden ) {
 
             // Displayed dimensions - desktop
-            desktop['displayedWidth'] = img.width;
-            desktop['displayedHeight'] = img.height;
+            desktop.displayedWidth = img.width;
+            desktop.displayedHeight = img.height;
 
             // Scaled dimensions - desktop
-            desktop['scaledWidth']  =  img.width/imgInfoArray[i]['naturalWidth']
-            desktop['scaledHeight'] =  img.height/imgInfoArray[i]['naturalHeight'];
+            desktop.scaledWidth  =  img.width/imgInfoArray[i].naturalWidth;
+            desktop.scaledHeight =  img.height/imgInfoArray[i].naturalHeight;
 
-            var desktopRatioGcf = gcd_rec(desktop['displayedWidth'], desktop['displayedHeight']);
-            desktop['desktopRatio'] = (desktop['displayedWidth'] / desktopRatioGcf) + ":" + (desktop['displayedHeight'] / desktopRatioGcf);
+            var desktopRatioGcf = gcd_rec(desktop.displayedWidth, desktop.displayedHeight);
+            desktop.desktopRatio = (desktop.displayedWidth / desktopRatioGcf) + ":" + (desktop.displayedHeight / desktopRatioGcf);
 
-            desktop['ratioDifference'] = desktop['scaledWidth'] - desktop['scaledHeight'];
+            desktop.ratioDifference = desktop.scaledWidth - desktop.scaledHeight;
 
             // Testing Ratio/Scaling Data
             //////////
@@ -469,33 +469,33 @@ function createImgInfoArray(imgList) {
             // var expectedHeight = calculateAspectRatioFit(img.naturalWidth, img.naturalHeight, img.width, img.height);
             // var resizeRatio = Math.round(img.naturalWidth / img.width*10) / 10;
 
-            desktop['resizeRatio'] = img.naturalWidth / img.width;
-            var expectedHeight = img.naturalHeight / desktop['resizeRatio'];
+            desktop.resizeRatio = img.naturalWidth / img.width;
+            var expectedHeight = img.naturalHeight / desktop.resizeRatio;
 
             // Check if image is stretched
             if ( expectedHeight - img.height <= 1 && expectedHeight - img.height >= -1 ) {
-              desktop['stretched'] = false;
+              desktop.stretched = false;
             } else {
               totalStretchedImages++;
-              desktop['stretched'] = true;
+              desktop.stretched = true;
             }
 
           } else {
-            desktop['stretched']       = null;
-            desktop['displayedWidth']  = null;
-            desktop['displayedHeight'] = null;
-            desktop['scaledWidth']     = null;
-            desktop['scaledHeight']    = null;
-            desktop['desktopRatio']    = null;
+            desktop.stretched       = null;
+            desktop.displayedWidth  = null;
+            desktop.displayedHeight = null;
+            desktop.scaledWidth     = null;
+            desktop.scaledHeight    = null;
+            desktop.desktopRatio    = null;
           }
           // End Desktop
 
           // Add desktop results to object
-          imgInfoArray[i]['desktop'] = desktop;
+          imgInfoArray[i].desktop = desktop;
 
         }
 
-        i++
+        i++;
 
       }
       // console.log("totalStretchedImages", totalStretchedImages);
@@ -590,17 +590,17 @@ function getImgSizes(imgInfoArray) {
   for (let img of imgInfoArray) {
 
     // sync
-    imgInfoArray[i]['dimensions'] = { "width": imgInfoArray[i]['object'].width, "height": imgInfoArray[i]['object'].height, "naturalWidth": imgInfoArray[i]['object'].naturalWidth, "naturalHeight": imgInfoArray[i]['object'].naturalHeight, "displayratio": roundTo(imgInfoArray[i]['object'].naturalWidth / imgInfoArray[i]['object'].width, 2) }
-    i++
+    imgInfoArray[i].dimensions = { "width": imgInfoArray[i].object.width, "height": imgInfoArray[i].object.height, "naturalWidth": imgInfoArray[i].object.naturalWidth, "naturalHeight": imgInfoArray[i].object.naturalHeight, "displayratio": roundTo(imgInfoArray[i].object.naturalWidth / imgInfoArray[i].object.width, 2) };
+    i++;
 
     //async
     fetch(img.url).then(
       // console.log("wow"),
       resp => resp.blob())
     .then(blob => {
-      imgInfoArray[k]['size'] = { "size": blob.size, "prettysize": prettyFileSize(blob.size, 1) }
-      imgInfoArray[k]['type'] = blob.type;
-      k++
+      imgInfoArray[k].size = { "size": blob.size, "prettysize": prettyFileSize(blob.size, 1) };
+      imgInfoArray[k].type = blob.type;
+      k++;
     });
 
   }
@@ -611,7 +611,7 @@ function getImgSizes(imgInfoArray) {
   var j = 0;
   for (let img of imgInfoArray) {
 
-    if ( imgInfoArray[j]['presentation'] === "background-img" ) {
+    if ( imgInfoArray[j].presentation === "background-img" ) {
       loadImgNow(j, img.url);
     } else {
       // console.error('not bg!')
@@ -649,26 +649,26 @@ function getImgSizes(imgInfoArray) {
 // https://blog.crimx.com/2017/03/09/get-all-images-in-dom-including-background-en/
 function loadImgNow (i, src, timeout = 500) {
   var imgPromise = new Promise((resolve, reject) => {
-    let img = new Image()
+    let img = new Image();
     img.onload = () => {
       resolve({
         src: src,
         width: img.naturalWidth,
         height: img.naturalHeight
-      })
-    }
-    img.onerror = reject
-    img.src = src
-  })
+      });
+    };
+    img.onerror = reject;
+    img.src = src;
+  });
   var timer = new Promise((resolve, reject) => {
-    setTimeout(reject, timeout)
-  })
+    setTimeout(reject, timeout);
+  });
   // This code wasn't return data that I could use. This code was added on to make it work for me
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve
   imgPromise.then(function(value) {
-    imgInfoArray[i]['dimensions'] = { "naturalWidth": value['width'], "naturalHeight": value['height'] }
+    imgInfoArray[i].dimensions = { "naturalWidth": value.width, "naturalHeight": value.height };
   });
-  return Promise.race([imgPromise, timer])
+  return Promise.race([imgPromise, timer]);
 
 }
 
@@ -825,7 +825,7 @@ function preflightNotifierSuccess() {
 
 function updatePreflightErrorTotal(type, i) {
 
-  console.groupCollapsed("updatePreflightErrorTotal function initiated.")
+  console.groupCollapsed("updatePreflightErrorTotal function initiated.");
 
   var currentValue = parseInt(preflightTotal.innerHTML);
 
@@ -834,7 +834,7 @@ function updatePreflightErrorTotal(type, i) {
     console.log("Adding " + i + " to total error value.");
     currentValue = currentValue + i;
     preflightTotal.innerHTML = currentValue;
-  } else if ( type = "success" ) {
+  } else if ( type === "success" ) {
     console.log("Subtracting " + i + " from total error value.");
     currentValue = currentValue - i;
     preflightTotal.innerHTML = currentValue;
@@ -886,7 +886,7 @@ function sendEmail() {
 
   var emailTo      = "Korra via Mailgun <postmaster@" + mailgunDomainName + ">";
   var emailFrom    = "james@medbridgeed.com";
-  var emailSubject = "Hello from Korra & Mailgun"
+  var emailSubject = "Hello from Korra & Mailgun";
 
   var data = new FormData();
   data.append("from", emailTo);

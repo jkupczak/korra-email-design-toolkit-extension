@@ -153,13 +153,13 @@ iframe {
 
 .main-pane .title-large, .main-pane .title-small {
   -webkit-font-smoothing: antialiased;
-  padding-bottom:4px;
 }
   .main-pane .title-large {
     color: #ffffff;
     font-size:18px;
     font-family: 'Roboto-Bold', Roboto, sans-serif;
     font-weight:500;
+    padding-bottom:4px;
   }
   .main-pane .title-small {
     color: #8b8b9b;
@@ -1509,7 +1509,7 @@ body.split-view-on {
 .mobile-device-view {
 
   transition: width .3s ease 0s;
-  
+
   width:320px;
   max-width:480px;
   min-width:320px;

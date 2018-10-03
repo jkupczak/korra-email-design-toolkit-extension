@@ -645,6 +645,7 @@ function getDisciplineId(string) {
   else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "ot";     }
   else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { var disciplineId = "slp";    }
   else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { var disciplineId = "other";  }
+  else if ( /-NR(\s|-|\.|$)/gi.test(trimmedString) )              { var disciplineId = "nr";    }
   else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "lmt";    }
 
   else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";     }
@@ -658,17 +659,6 @@ function getDisciplineId(string) {
   else if ( /-All(\-|\.|$)/gi.test(trimmedString) )                { var disciplineId = "all";    }
 
   else { var disciplineId = undefined }
-
-
-  ////
-  // console.groupCollapsed("getDisciplineId - " + disciplineId);
-  //
-  //   console.log("running function on trimmedString: " + trimmedString);
-  //   console.log("function returned this: " + disciplineId);
-  //   console.log(this);
-  //
-  // console.groupEnd();
-  ////
 
   return disciplineId;
 
@@ -702,6 +692,9 @@ function getDisciplineName(id) {
   }
   else if (id === "lmt") {
     return "Massage"
+  }
+  else if (id === "nr") {
+    return "Nursing"
   }
   else if (id === "ent") {
     return "Enterprise"
