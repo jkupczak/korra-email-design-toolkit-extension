@@ -1,0 +1,46 @@
+/////////////
+//
+//   TODO
+//
+/////////////
+
+
+https://www.medbridgeeducation.com/sign-in/?after_signin_url=patient-engagement-for-speech-language-pathology?utm_content=header
+This resolved as OK even though its not. The failed redirect check should have caught this. Might have something to do with using after_signin_url.
+Check this.
+ON HOLD UNTIL after_signin_url is fixed on dev's side.
+
+
+//////////////////////////////////
+
+
+Atlassian has an awesome left nav. Copy it.
+https://medbridge.atlassian.net/wiki/discover/all-updates
+
+
+//////////////////////////////////
+
+
+When the desktop view is loaded but the window size is causing the mobile styling to take affect, the function that checks for stretched images is saying there's an error. Find out why.
+
+file:///Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/SLP/2018/06-SLP/18-06-04-Luckman/18-06-04-SLP-Courtney-Luckman-Stuttering-Adults-ns.html
+
+
+//////////////////////////////////
+
+
+lt is less than a specific version.
+gt is greater than a specific version.
+lte is less than or equal to a specific version.
+gte is greater than or equal to a specific version.
+
+--
+
+
+ Outlook 2000, 2002, 2003, 2011 and 2016 do not use code inside <!--[if gte mso 9]>.
+ https://litmus.com/community/discussions/388-whats-the-purpose-of-the-gte-mso-9-ie-conditional-comment
+
+
+Try the example here: https://backgrounds.cm/
+
+https://litmus.com/community/learning/8-outlook-overview
