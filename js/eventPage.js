@@ -1,5 +1,45 @@
 console.info("Korra " + chrome.runtime.getManifest().version);
 
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+
+
+//this is a global var and to be added to any timestamp in ms
+var dateCurrent= new Date(),
+    correction = dateCurrent.getTimezoneOffset()*60*1000;
+
+
+//now when calling history.search I'm calculating that correction in
+//eg. for yestrday
+
+var dN = Date.now(),
+d1 = dN%86400000,
+b = correction + dN - d1,
+a = b - 86400000;
+
+chrome.history.search({
+  text:       'file\:\/\/\/',
+  startTime:  a,
+  endTime:    b,
+  maxResults: 100000
+}, items => console.log(items));
+
+
+chrome.history.search({
+    text: ".html",
+    startTime: 0,
+    maxResults: 0
+}, items => console.log(items));
+
+
+function historyItems() {
+
+  console.log("historyItems()");
+
+}
+
+
 // !!!!!!!!!!!!!
 // EVENT / BACKGROUND PAGE
 // NO DOM ACCESS

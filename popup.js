@@ -1,4 +1,17 @@
 console.log("popup.html loaded");
+/////////////////////////////////
+
+chrome.history.search({
+      'text': 'POST',
+      'maxResults': 50,
+  }, function(historyItems){
+});
+
+function historyItems() {
+
+  console.log("historyItems()");
+
+}
 
 document.body.style = "color:red !important;";
 
