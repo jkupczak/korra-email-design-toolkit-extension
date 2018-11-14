@@ -696,6 +696,11 @@ if ( isLocalCampaign ) {
       var fileName = getFilename(pageUrl);
 
       ///////////
+      ///// Get the filepath.
+      ///////////
+      var filepath = pageUrl;
+
+      ///////////
       ///// Get the Discipline
       ///////////
       var emailDisc = getDisciplineId(fileName);
@@ -740,6 +745,9 @@ if ( isLocalCampaign ) {
       } else if ( /^SG\-/i.test(fileName) ) {
         emailPlatform = "sg";
         emailPlatformName = "SendGrid";
+      } else if ( /\/Pardot\//i.test(filepath) ) {
+        emailPlatform = "pd";
+        emailPlatformName = "Pardot";
       } else {
         emailPlatform = "mc";
         emailPlatformName = "MailChimp";
@@ -792,10 +800,10 @@ var emailSubType;
 var emailOrgName;
 var emailSubTypeName;
 
-if ( /\-ns( +|(%20)+)?[\.\-\(]/gi.test(pageUrl) ) {
+if ( /(_|\-)ns( +|(%20)+)?[_\.\-\(]/gi.test(pageUrl) ) {
   emailSubType = "ns";
   emailSubTypeName = "Non-Subscribers";
-} else if ( /\-sub( +|(%20)+)?[\.\-\(]/gi.test(pageUrl) ) {
+} else if ( /(_|\-)sub( +|(%20)+)?[_\.\-\(]/gi.test(pageUrl) ) {
   emailSubType = "sub";
   emailSubTypeName = "Subscribers";
 }
@@ -3383,6 +3391,15 @@ function updateQaBar(bar, errors, string) {
 // This will validate all links in dFrame and in dummy frame.
 
 // frameToCheck, dframe links, dummy frame links, age check
+/////
+// @
+// @
+// @ TODO
+// @ This only works right now because its so far down the file.
+// @ The truth is that if it were called earlier, it would fail because its not waiting for the iframe to load.
+// @ Fix this.
+// @
+// @
 linkValidationLoop("korraLocalFile", desktopIframe, "false", preflightStatus, dummyLinkList);
 
 
@@ -3437,7 +3454,8 @@ function countCitations() {
 }
 
 // Run a check on all text in the email
-highlightTextErrors();
+highlightTextErrors(dFrameBody);
+highlightTextErrors(preheaderTextPreview);
 
 
 
@@ -3461,12 +3479,12 @@ highlightTextErrors();
       };
     }
 
-function highlightTextErrors() {
+function highlightTextErrors(stage) {
 //
 // SPAM TRIGGER WORD
 //
 // Click|Click below|Click here|Click to remove|
-findAndReplaceDOMText(dFrameBody, {
+findAndReplaceDOMText(stage, {
   find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Pennies a day|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
   wrap: 'span', wrapClass: "text-error"
 });
@@ -3479,7 +3497,7 @@ findAndReplaceDOMText(dFrameBody, {
 // Platform Checks
 if ( emailPlatform === "gr" ) {
   // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /(\*\|.+?\|\*|\[[^\[\]]+?\][^\]])/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3487,7 +3505,7 @@ if ( emailPlatform === "gr" ) {
 
 if ( emailPlatform === "mc" ) {
   // Do not use [[getresponse]] merge tags with a MailChimp email.
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /\[\[?.+?\]\]?/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3495,7 +3513,7 @@ if ( emailPlatform === "mc" ) {
 
 if ( emailPlatform === "sg" ) {
   // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /(\*\|.+?\|\*|\[\[.+?\]\])/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3510,32 +3528,32 @@ if ( emailPlatform === "sg" ) {
 
 // Promo Codes
   if ( emailDisc !== "pt" ) {
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?PT\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "at" ) {
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?AT\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "ot" ) {
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?OT\b)/gi,
       wrap: 'span',
       wrapClass: "text-error"
     });
   }
   if ( emailDisc !== "slp" ) {
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?SLP\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
   }
   if ( emailDisc === "other" ) {
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /(Promo Code.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
@@ -3549,7 +3567,7 @@ if ( emailPlatform === "sg" ) {
 //////////
 if ( emailDisc === "pt" || emailDisc === "other" || emailDisc === "ot" || emailDisc === "at" ) {
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /((only )?\$95|(only )?\$145)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3558,7 +3576,7 @@ if ( emailDisc === "pt" || emailDisc === "other" || emailDisc === "ot" || emailD
 
 if ( emailDisc === "slp" ) {
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /((only )?\$200|(only )?\$250)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3567,7 +3585,7 @@ if ( emailDisc === "slp" ) {
 
 if ( emailDisc === "lmt" || emailDisc === "ent" ) {
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /\$95|\$145|\$200|\$250/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3584,14 +3602,14 @@ if ( emailDisc === "lmt" || emailDisc === "ent" ) {
 if ( emailDisc === "pt" || emailDisc === "other" ) {
 
   // case sensitive
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /\b(ASHA|AOTA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
 
   // case (IN)sensitive
-  findAndReplaceDOMText(dFrameBody, {
-    find: /(BOC\-Approved|Athletic Train(er|ing)|Occupational Therap(y|ist))/gi,
+  findAndReplaceDOMText(stage, {
+    find: /(BOC\-Approved|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist)))/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3603,14 +3621,14 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "at" ) {
 
   // case sensitive
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /\b(ASHA|AOTA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
 
   // case (IN)sensitive
-  findAndReplaceDOMText(dFrameBody, {
-    find: /((only )?\$95|(only )?\$145|Physical Therap(y|ist)|Occupational Therap(y|ist))/gi,
+  findAndReplaceDOMText(stage, {
+    find: /((only )?\$95|(only )?\$145|Physical (Courses?|Therap(y|ist))|Occupational (Courses?|Therap(y|ist)))/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3622,14 +3640,14 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 } else if ( emailDisc === "ot" ) {
 
   // case sensitive
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /\b(ASHA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
 
   // case (IN)sensitive
-  findAndReplaceDOMText(dFrameBody, {
-    find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing))/gi,
+  findAndReplaceDOMText(stage, {
+    find: /(BOC\-Approved|Physical (Courses?|Therap(y|ist))|Athletic Train(er|ing))/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
@@ -3640,15 +3658,35 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //////////
 } else if ( emailDisc === "slp" ) {
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /\b(AOTA|APTA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
-  findAndReplaceDOMText(dFrameBody, {
-    find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing)|Occupational Therap(y|ist)|patient outcomes?|clinician)/gi,
+  findAndReplaceDOMText(stage, {
+    find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist))|patient outcomes?|clinician)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
+
+//////////
+////
+//// Nursing - NR
+////
+//////////
+} else if ( emailDisc === "nr" ) {
+
+  // case sensitive
+  findAndReplaceDOMText(stage, {
+    find: /\b(ASHA|AOTA)\b/g,
+    wrap: 'span', wrapClass: "text-error"
+  });
+
+  // case (IN)sensitive
+  findAndReplaceDOMText(stage, {
+    find: /(BOC\-Approved|Athletic Train(er|ing)|(Physical|Occupational) (Courses?|Therap(y|ist)))/gi,
+    wrap: 'span', wrapClass: "text-error"
+  });
+
 
 //////////
 ////
@@ -3657,12 +3695,12 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //////////
 } else if ( emailDisc === "lmt" ) {
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /\b(ASHA|AOTA)\b/g,
     wrap: 'span', wrapClass: "text-error"
   });
   // case-insensitive
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /(BOC\-Approved|Physical Therap(y|ist)|CCC\-SLP|patient engagement tool)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3701,23 +3739,23 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // All Disciplines and Audiences
   // Case (IN)sensitive
 
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited)|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
     // Continuing Education, not Continued Education
     // Speech-Language needa a hyphen
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /(continued education|speech language)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
     // Link Arrows → Arrows need to be immediately preceded by a non-breaking space to ensure it doesn't get dropped to the next line
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /(?:(?!\u00a0).{1}|^.{0,0})(\u2192)(?!\u00a0)/gi,
       wrap: 'span', wrapClass: "text-error"
     });
     // CE Courses, not CEU Courses
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /\bCEU Course/gi,
       wrap: 'span', wrapClass: "text-error"
     });
@@ -3726,11 +3764,11 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Case Sensitive
   ////
 
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
       wrap: 'span', wrapClass: "text-error"
     });
-    findAndReplaceDOMText(dFrameBody, {
+    findAndReplaceDOMText(stage, {
       find: /\bCross-Track\b/g,
       wrap: 'span', wrapClass: "text-error"
     });
@@ -3740,7 +3778,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 // NUMBERS - MISSING COMMAS
 // Ignore numbers that start with 0, the end of phone numbers (-####), common years (1990-1999, 2001-2040), MedBridge address (1633, 98109)
 //
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
   	find: globalRegexWithFilter(/[^-–:#]\b[1-9]\d\d\d\b/g, function(theMatch) {
     	return !/(98109|1633|199[0-9]|20[0-4][0-9])/g.test(theMatch);
     }),
@@ -3751,7 +3789,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //
 // PRODUCT CAPITALIZATION
 //
-findAndReplaceDOMText(dFrameBody, {
+findAndReplaceDOMText(stage, {
   find: /MedBridge ((?:patient [Ee]|Patient e)ngagement|Prep\-program|prep\-[Pp]rogram)/g,
   wrap: 'span', wrapClass: "text-error"
 });
@@ -3759,12 +3797,12 @@ findAndReplaceDOMText(dFrameBody, {
 //
 // Prep Program
 //
-findAndReplaceDOMText(dFrameBody, {
+findAndReplaceDOMText(stage, {
   find: /\b(MedBridge|[A-Z]CS) prep [Pp]rogram\b/g,
   wrap: 'span', wrapClass: "text-error"
 });
 
-findAndReplaceDOMText(dFrameBody, {
+findAndReplaceDOMText(stage, {
   find: /\bprep\-programs?\b/gi,
   wrap: 'span', wrapClass: "text-error"
 });
@@ -3773,8 +3811,8 @@ findAndReplaceDOMText(dFrameBody, {
 // Subscriber
 //
 if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
-  findAndReplaceDOMText(dFrameBody, {
-    find: /(win a free subscription|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|\bin a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
+  findAndReplaceDOMText(stage, {
+    find: /(win a free subscription|First Chapter Free|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|\bin a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 }
@@ -3783,7 +3821,7 @@ if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
 // Non-Subscribers
 //
 if ( emailSubType === "ns" ) {
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /(Start Now|Refer(\-| )a(\-| )Friend|in(?:cluded with)? your (?:(?:MedBridge )?s|annual (?:MedBridge )?s)ubscription)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3794,12 +3832,12 @@ if ( emailSubType === "ns" ) {
 //
 if ( outsideOrg ) {
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /additional cost|Refer(\-| )a(\-| )Friend/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /Enterprise/g,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3810,7 +3848,7 @@ if ( outsideOrg ) {
 // emailAnySale
 //
 if ( (emailSubType === "ns" || emailSubType === "sub") && !emailAnySale ) {
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /(only )?\$(200|95|145|250)( |!|\.)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3821,14 +3859,14 @@ if ( (emailSubType === "ns" || emailSubType === "sub") && !emailAnySale ) {
 //
 
 if ( emailAnySale && emailDisc !== "lmt" ) {
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /50%/gi,
     wrap: 'span', wrapClass: "text-error"
   });
 }
 // Massage Pricing
 if ( emailAnySale && emailDisc === "lmt" ) {
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /40%/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3838,12 +3876,12 @@ if ( emailAnySale && emailDisc === "lmt" ) {
 //
 // Grammar
 //
-findAndReplaceDOMText(dFrameBody, {
+findAndReplaceDOMText(stage, {
   find: /evidence based EBP/gi,
   wrap: 'span', wrapClass: "text-error"
 });
 
-findAndReplaceDOMText(dFrameBody, {
+findAndReplaceDOMText(stage, {
   find: /evidence\-based EBP/gi,
   wrap: 'span', wrapClass: "text-error"
 });
@@ -3852,7 +3890,7 @@ findAndReplaceDOMText(dFrameBody, {
 
 if ( outsideOrg ) {
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /(request a demo|part of an? (group|organization)|sign(\-| )up|\bsubscribe\b)/gi,
     wrap: 'span', wrapClass: "text-error"
   });
@@ -3862,7 +3900,7 @@ if ( outsideOrg ) {
 
 if ( emailDisc === "slp" ) {
 
-  findAndReplaceDOMText(dFrameBody, {
+  findAndReplaceDOMText(stage, {
     find: /Unlimited (Access to )?(CE'?s|CEU'?s)/gi,
     // Must say CE Courses
     wrap: 'span', wrapClass: "text-error"
@@ -3872,7 +3910,7 @@ if ( emailDisc === "slp" ) {
 
 
 // Check for words that would typically be linked by stupid Gmail. Like "tomorrow" linking to the calendar.
-findAndReplaceDOMText(dFrameBody, {
+findAndReplaceDOMText(stage, {
   find: /tomorrow|noon/gi,
   wrap: 'span', wrapClass: "text-error gmail-fix", forceContext: true
 });

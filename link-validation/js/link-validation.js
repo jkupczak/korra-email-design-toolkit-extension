@@ -65,7 +65,6 @@ if ( frameContentsPassed.tagName === "IFRAME" ) {
   frameContents = frameContentsPassed;
 }
 
-
 // Make the frameContents a global variable
 /////////////
 errorBox = errorBoxPassed;
@@ -83,7 +82,8 @@ linkListUniqueURLs.push("https://www.google.com");
 // Temporary Variables
 /////////////
 if ( typeof emailSubType === 'undefined' ) {
-  emailSubType = "sub";
+  // In the absence of a emailsubtype, use "ns"
+  emailSubType = "ns";
 }
 if (typeof outsideOrg === 'undefined') {
   outsideOrg = false;
@@ -130,7 +130,7 @@ frameContents.documentElement.appendChild(validationStylesheet);
 
   if ( dummyLinkList ) {
     addLoadEvent(dummyIframe, function() {
-      verifyLinkVisibility(dummyLinkList)
+      verifyLinkVisibility(dummyLinkList);
     });
   }
 
@@ -192,7 +192,7 @@ frameContents.documentElement.appendChild(validationStylesheet);
   //////////////////////////////
   //////////////////////////////
 
-  var i = 0
+  var i = 0;
   for (let linkObj of linkList) {
 
     var linkErrors = 0;
@@ -204,7 +204,7 @@ frameContents.documentElement.appendChild(validationStylesheet);
 
     validateLinks(linkObj, i);
 
-    i++
+    i++;
 
   }
   console.groupEnd();
@@ -231,7 +231,7 @@ frameContents.documentElement.appendChild(validationStylesheet);
 
   frameContents.addEventListener("load", function positionLinkMarkers(e) {
 
-    var i = 0
+    var i = 0;
     for (let linkObj of linkList) {
 
       // Get the position of the current link.
@@ -253,7 +253,7 @@ frameContents.documentElement.appendChild(validationStylesheet);
       }
       linkMarker.classList.add("positioned");
 
-      i++
+      i++;
 
     }
     // We're done, remove the eventlistener.
@@ -397,7 +397,7 @@ function createLinkErrorRow(linkObj, msg, type, icon, marker) {
 
   // Set the 'type' to error if one wasn't passed.
   if ( !type ) {
-    type = "error"
+    type = "error";
   }
 
   if ( type === "error" ) {
@@ -405,14 +405,14 @@ function createLinkErrorRow(linkObj, msg, type, icon, marker) {
   }
 
   // Target the link marker in dFrame based on which link we're looking at right now
-  var linkMarker = frameContents.querySelector("#link-markers .link-marker[data-number='" + linkObj.dataset.number + "']")
+  var linkMarker = frameContents.querySelector("#link-markers .link-marker[data-number='" + linkObj.dataset.number + "']");
   linkMarker.classList.add("has-message");
 
   // Create an error pill
   var errorRow = document.createElement("korra-div");
       errorRow.dataset.korra = "";
   var errorRowText = document.createElement("korra-div");
-      errorRowText.innerHTML = msg
+      errorRowText.innerHTML = msg;
   errorRow.appendChild(errorRowText);
 
 
@@ -428,7 +428,7 @@ function createLinkErrorRow(linkObj, msg, type, icon, marker) {
 
     errorRow.classList.add("warning");
     linkMarker.classList.add("warning");
-    totalLinkWarnings++
+    totalLinkWarnings++;
 
   } else {
 
@@ -448,7 +448,7 @@ function createLinkErrorRow(linkObj, msg, type, icon, marker) {
       linkMarker.children[0].innerHTML = "1";
     } else {
       var currentLinkErrors = Number(linkMarker.children[0].innerHTML);
-      currentLinkErrors++
+      currentLinkErrors++;
       linkMarker.children[0].innerHTML = currentLinkErrors;
     }
 
@@ -522,12 +522,20 @@ function validateLinks(linkObj, i) {
   var linkHref = linkObj.getAttribute("href");
 
   // Making our counter for console.log 2 digits instead of 1. (1 vs 01)
+  var iLog;
   if ( i < 10 ) {
-    var iLog = "0" + i;
-  } else { iLog = i; }
+    iLog = "0" + i;
+  } else {
+    iLog = i;
+  }
 
   // Check link url length
-  if ( linkHref.length > 70 ) { var ell = "..." } else { var ell = "" }
+  var ell;
+  if ( linkHref.length > 70 ) {
+    ell = "...";
+  } else {
+    ell = "";
+  }
 
   console.group("[" + iLog + "] " + linkHref.substring(0,70) + ell);
   console.log(linkObj);
@@ -597,94 +605,94 @@ function validateLinks(linkObj, i) {
   // Holds all of the data for a single link.
   var singleLinkInfoArray = {};
 
-  singleLinkInfoArray['object'] = linkObj; //link object
-  singleLinkInfoArray['url'] = linkHref; //link url
-  singleLinkInfoArray['text'] = linkObj.textContent.trim(); //link text
-  singleLinkInfoArray['imgsLinked'] = linkObj.querySelectorAll('img'); // images linked
-  singleLinkInfoArray['querystring'] = decipherQuerystring(linkHref, linkObj); //querystring
-  singleLinkInfoArray['espMergeTag'] = false;
-  singleLinkInfoArray['type'] = null;
-  singleLinkInfoArray['checkStatus'] = null;
+  singleLinkInfoArray.object = linkObj; //link object
+  singleLinkInfoArray.url = linkHref; //link url
+  singleLinkInfoArray.text = linkObj.textContent.trim(); //link text
+  singleLinkInfoArray.imgsLinked = linkObj.querySelectorAll('img'); // images linked
+  singleLinkInfoArray.querystring = decipherQuerystring(linkHref, linkObj); //querystring
+  singleLinkInfoArray.espMergeTag = false;
+  singleLinkInfoArray.type = null;
+  singleLinkInfoArray.checkStatus = null;
 
   // What kind of content is linked? text, img, none, or mixed (text and img)
   /////
-  if ( singleLinkInfoArray['imgsLinked'].length > 0 && singleLinkInfoArray['text'] !== "" ) {
-    singleLinkInfoArray['contentLinked'] = 'mixed';
+  if ( singleLinkInfoArray.imgsLinked.length > 0 && singleLinkInfoArray.text !== "" ) {
+    singleLinkInfoArray.contentLinked = 'mixed';
 
-  } else if ( singleLinkInfoArray['imgsLinked'].length > 0 ) {
-    singleLinkInfoArray['contentLinked'] = 'img';
+  } else if ( singleLinkInfoArray.imgsLinked.length > 0 ) {
+    singleLinkInfoArray.contentLinked = 'img';
 
-  } else if ( singleLinkInfoArray['text'] ) {
-    singleLinkInfoArray['contentLinked'] = 'text';
+  } else if ( singleLinkInfoArray.text ) {
+    singleLinkInfoArray.contentLinked = 'text';
 
   } else {
-    singleLinkInfoArray['contentLinked'] = 'none';
+    singleLinkInfoArray.contentLinked = 'none';
   }
 
   // Assign a type to the URL based on how its written
   // mailto
   if ( linkObj.protocol === "mailto:" ) {
-    singleLinkInfoArray['type'] = "mailto"; //mailto link
-    singleLinkInfoArray['checkStatus'] = false;
+    singleLinkInfoArray.type = "mailto"; //mailto link
+    singleLinkInfoArray.checkStatus = false;
 
   // empty link
   } else if ( linkHref === "" ) {
-    singleLinkInfoArray['type'] = "empty"; //empty
-    singleLinkInfoArray['checkStatus'] = false;
+    singleLinkInfoArray.type = "empty"; //empty
+    singleLinkInfoArray.checkStatus = false;
 
   // merge tags
 } else if ( /^\*\|.+?\|\*$/.test(linkHref) ) {
-    singleLinkInfoArray['espMergeTag'] = "mailchimp";
-    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
-    singleLinkInfoArray['checkStatus'] = false;
+    singleLinkInfoArray.espMergeTag = "mailchimp";
+    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.checkStatus = false;
 
   } else if ( /^\[\[.+?\]\]$/.test(linkHref) ) {
-    singleLinkInfoArray['espMergeTag'] = "getresponse";
-    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
-    singleLinkInfoArray['checkStatus'] = false;
+    singleLinkInfoArray.espMergeTag = "getresponse";
+    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.checkStatus = false;
 
   } else if ( /^\[.+?\]$/.test(linkHref) ) {
-    singleLinkInfoArray['espMergeTag'] = "sendgrid";
-    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
-    singleLinkInfoArray['checkStatus'] = false;
+    singleLinkInfoArray.espMergeTag = "sendgrid";
+    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.checkStatus = false;
 
   } else if ( /^#.+?#$/.test(linkHref) ) {
-    singleLinkInfoArray['espMergeTag'] = "on24";
-    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
-    singleLinkInfoArray['checkStatus'] = false;
+    singleLinkInfoArray.espMergeTag = "on24";
+    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.checkStatus = false;
 
   } else if ( /^\%\%.+?\%\%$/.test(linkHref) ) {
-    singleLinkInfoArray['espMergeTag'] = "pardot";
-    singleLinkInfoArray['type'] = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
-    singleLinkInfoArray['checkStatus'] = false;
+    singleLinkInfoArray.espMergeTag = "pardot";
+    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.checkStatus = false;
 
   // http
   } else if ( linkObj.protocol === "http:" ) {
-    singleLinkInfoArray['type'] = "http"; //normal link
-    singleLinkInfoArray['checkStatus'] = true;
+    singleLinkInfoArray.type = "http"; //normal link
+    singleLinkInfoArray.checkStatus = true;
 
   // https
   } else if ( linkObj.protocol === "https:" ) {
-    singleLinkInfoArray['type'] = "https"; //secure link
-    singleLinkInfoArray['checkStatus'] = true;
+    singleLinkInfoArray.type = "https"; //secure link
+    singleLinkInfoArray.checkStatus = true;
 
   // unknown
   } else {
-    singleLinkInfoArray['type'] = "unknown"; //no idea what this link is
-    singleLinkInfoArray['checkStatus'] = true;
+    singleLinkInfoArray.type = "unknown"; //no idea what this link is
+    singleLinkInfoArray.checkStatus = true;
 
   }
 
   // Is this the first time this link appears in the DOM?
 	if ( xhrLoopArray.includes(linkHref) ) {
     console.log("This link (" + i + ") is a duplicate.");
-    singleLinkInfoArray['firstInstance'] = false;
+    singleLinkInfoArray.firstInstance = false;
   } else {
     console.log("This link (" + i + ") is unique.");
-    singleLinkInfoArray['firstInstance'] = true;
+    singleLinkInfoArray.firstInstance = true;
   }
   xhrLoopArray.push(linkHref); // Add it to the array.
-  singleLinkInfoArray['instanceOrder'] = countInsideArray(xhrLoopArray, linkHref); // Apply an order #. (eg. the 4th instance of this exact link in the DOM)
+  singleLinkInfoArray.instanceOrder = countInsideArray(xhrLoopArray, linkHref); // Apply an order #. (eg. the 4th instance of this exact link in the DOM)
 
 
   ////////////////
@@ -705,7 +713,7 @@ function validateLinks(linkObj, i) {
   // VALIDATE MERGE TAGS
   //////////////////////
   // If this is a merge tag link - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
-  if ( singleLinkInfoArray['type'] === "merge tag" ) {
+  if ( singleLinkInfoArray.type === "merge tag" ) {
 
     // Links in an email for the GetResponse Platform
     if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
@@ -730,7 +738,7 @@ function validateLinks(linkObj, i) {
 
   // VALIDATE MAILTOS
   ///////////////////
-  else if ( singleLinkInfoArray['type'] === "mailto" ) {
+  else if ( singleLinkInfoArray.type === "mailto" ) {
     // @ TODO
   }
 
@@ -746,7 +754,7 @@ function validateLinks(linkObj, i) {
 
     // Check if we're online. If not, we need to apply a warning badge.
     // This excludes merge tags since there's nothing to check except for formatting.
-    if ( !navigator.onLine && singleLinkInfoArray['checkStatus'] === true ) {
+    if ( !navigator.onLine && singleLinkInfoArray.checkStatus === true ) {
       createLinkErrorRow(linkObj, "Be aware that you are currently offline.", "warning");
     }
 
@@ -756,56 +764,56 @@ function validateLinks(linkObj, i) {
 
     // MedBridgeEd
     if ( /\.medbridgeeducation\.com/gi.test(linkObj.hostname) ) {
-      singleLinkInfoArray['isMedBridgeEdLink'] = true;
+      singleLinkInfoArray.isMedBridgeEdLink = true;
     } else {
-      singleLinkInfoArray['isMedBridgeEdLink'] = false;
+      singleLinkInfoArray.isMedBridgeEdLink = false;
     }
 
     // Massage
     if ( /\.medbridgemassage\.com/gi.test(linkObj.hostname) ) {
-      singleLinkInfoArray['isMedBridgeMassageLink'] = true;
+      singleLinkInfoArray.isMedBridgeMassageLink = true;
     } else {
-      singleLinkInfoArray['isMedBridgeMassageLink'] = false;
+      singleLinkInfoArray.isMedBridgeMassageLink = false;
     }
 
     // MedBridge Brand
-    if ( singleLinkInfoArray['isMedBridgeEdLink'] || singleLinkInfoArray['isMedBridgeMassageLink'] ) {
-      singleLinkInfoArray['isMedBridgeBrandLink'] = true;
+    if ( singleLinkInfoArray.isMedBridgeEdLink || singleLinkInfoArray.isMedBridgeMassageLink ) {
+      singleLinkInfoArray.isMedBridgeBrandLink = true;
     } else {
-      singleLinkInfoArray['isMedBridgeBrandLink'] = false;
+      singleLinkInfoArray.isMedBridgeBrandLink = false;
     }
 
     //// Is Blog Link
-    if ( singleLinkInfoArray['isMedBridgeEdLink'] && (/\.com\/blog/.test(linkHref) || /url=\/?blog.+?p=/.test(linkHref) || /\-blog(\/|\?)/.test(linkHref) || /after_affiliate_url=\/?blog/.test(linkHref)) ) {
-      singleLinkInfoArray['isBlogLink'] = true;
+    if ( singleLinkInfoArray.isMedBridgeEdLink && (/\.com\/blog/.test(linkHref) || /url=\/?blog.+?p=/.test(linkHref) || /\-blog(\/|\?)/.test(linkHref) || /after_affiliate_url=\/?blog/.test(linkHref)) ) {
+      singleLinkInfoArray.isBlogLink = true;
     } else {
-      singleLinkInfoArray['isBlogLink'] = false;
+      singleLinkInfoArray.isBlogLink = false;
     }
 
     // Is Article Link
-    if ( singleLinkInfoArray['isMedBridgeEdLink'] && /blog/i.test(linkHref) && /(\/20\d\d\/\d\d\/|p=.+)/i.test(linkHref) && !/p=2503/gi.test(linkHref) ) {
-      singleLinkInfoArray['isArticle'] = true;
+    if ( singleLinkInfoArray.isMedBridgeEdLink && /blog/i.test(linkHref) && /(\/20\d\d\/\d\d\/|p=.+)/i.test(linkHref) && !/p=2503/gi.test(linkHref) ) {
+      singleLinkInfoArray.isArticle = true;
     } else {
-      singleLinkInfoArray['isArticle'] = false;
+      singleLinkInfoArray.isArticle = false;
     }
 
     // is Marketing URL
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && /(\.com\/(gr|mc)?trk\-|after_affiliate_url=)/gi.test(linkHref) ) {
-      singleLinkInfoArray['isMarketingUrl'] = true;
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && /(\.com\/(gr|mc)?trk\-|after_affiliate_url=)/gi.test(linkHref) ) {
+      singleLinkInfoArray.isMarketingUrl = true;
     } else {
-      singleLinkInfoArray['isMarketingUrl'] = false;
+      singleLinkInfoArray.isMarketingUrl = false;
     }
 
     // Has tracking link back (after_affiliate_url)
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && /after_affiliate_url/gi.test(linkHref) ) {
-      singleLinkInfoArray['hasTrackingLinkback'] = true;
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && /after_affiliate_url/gi.test(linkHref) ) {
+      singleLinkInfoArray.hasTrackingLinkback = true;
     } else {
-      singleLinkInfoArray['hasTrackingLinkback'] = false;
+      singleLinkInfoArray.hasTrackingLinkback = false;
     }
 
     // Needs Google Tracking (utm_content
     linkNeedsGoogleTracking = false;
-    if ( singleLinkInfoArray['isMedBridgeEdLink'] && !outsideOrg ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && !outsideOrg && emailPlatform === "mc" ) {
       linkNeedsGoogleTracking = true;
     } else {
       linkNeedsGoogleTracking = false;
@@ -813,8 +821,8 @@ function validateLinks(linkObj, i) {
     console.log("linkNeedsGoogleTracking - " + linkNeedsGoogleTracking);
 
     ////
-    var linkNeedsPromoCode
-    if ( (emailSubType === "ns" && !outsideOrg && emailDisc !== "ent") && singleLinkInfoArray['isMedBridgeBrandLink'] ) {
+    var linkNeedsPromoCode;
+    if ( (emailSubType === "ns" && !outsideOrg && emailPlatform !== "pd" && emailDisc !== "ent" ) && singleLinkInfoArray.isMedBridgeBrandLink ) {
       linkNeedsPromoCode = true;
     } else {
       linkNeedsPromoCode = false;
@@ -929,14 +937,14 @@ function validateLinks(linkObj, i) {
     ////-----------------------------////
     ////
     // DON'T USE UTM - outsideOrg and off domain urls should not have utms
-    if ( /utm_content/gi.test(linkHref) && !singleLinkInfoArray['isMedBridgeEdLink'] ) {
+    if ( /utm_content/gi.test(linkHref) && !singleLinkInfoArray.isMedBridgeEdLink ) {
       createLinkErrorRow(linkObj, "Remove <code>utm_content</code> parameter in non-MedBridge links.");
     }
 
     ////-----------------------------////
     ////
     // MedBridge links must be https. If only because it makes sorting links easier when we do our metrics
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && singleLinkInfoArray['type'] !== "https" ) {
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && singleLinkInfoArray.type !== "https" ) {
       createLinkErrorRow(linkObj, "Use <code>https</code> for MedBridge links.");
     }
 
@@ -946,14 +954,14 @@ function validateLinks(linkObj, i) {
     // eg. If most links say trk-sep-17-davenport, but this one says trk-sep-17-walter, throw an error.
     // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common occurence.
 
-    if ( emailSubType === "ns" && singleLinkInfoArray['isMarketingUrl'] && linkNeedsPromoCode ) {
+    if ( emailSubType === "ns" && singleLinkInfoArray.isMarketingUrl && linkNeedsPromoCode ) {
       // Ignore if the links pathname ends in -student
       if ( !commonTrkUrlRegex.test(linkHref) && !/\-student\/?$/gi.test(linkObj.pathname) ) {
         createLinkErrorRow(linkObj, "Tracking URL is missing or inconsistent, " + commonTrkUrl + " is most common. - " + linkHref);
       }
     }
 
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailPlatform !== "gr" ) {
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && emailPlatform !== "gr" ) {
       if ( commonUtmSource ) {
         if ( !commonUtmSourceRegex.test(linkHref) ) {
           createLinkErrorRow(linkObj, "<code>utm_source</code> is missing or inconsistent, " + commonUtmSource + " is most common.");
@@ -968,7 +976,7 @@ function validateLinks(linkObj, i) {
 
     ////
     // Check for whitelabeling versus www
-    if ( outsideOrg && singleLinkInfoArray['isMedBridgeEdLink'] ) {
+    if ( outsideOrg && singleLinkInfoArray.isMedBridgeEdLink ) {
 
       if ( /https?:\/\/(www\.)?med/.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Missing whitelabeling.");
@@ -978,7 +986,7 @@ function validateLinks(linkObj, i) {
       }
 
     }
-    if ( !outsideOrg && singleLinkInfoArray['isMedBridgeEdLink'] && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(linkHref) ) {
+    if ( !outsideOrg && singleLinkInfoArray.isMedBridgeEdLink && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Remove whitelabeling.");
     }
 
@@ -1009,7 +1017,7 @@ function validateLinks(linkObj, i) {
       // Add characters you want to ignore twice. Like *, |, and '.
       if ( !/\?([\@\%\.\w-]+(=[\!\'\*\|\:\+\@\%\.\/\w-]*)?(&[\@\%\.\w-]+(=[\'\*\|\+\@\%\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
         createLinkErrorRow(linkObj, "Invalid querystring.");
-        console.log(linkHrefNoHash)
+        console.log(linkHrefNoHash);
       }
 
     }
@@ -1086,7 +1094,7 @@ function validateLinks(linkObj, i) {
     //
     // console.log("emailSubType: " + emailSubType);
     // console.log("outsideOrg: " + outsideOrg);
-    // console.log("singleLinkInfoArray['isMedBridgeBrandLink']: " + singleLinkInfoArray['isMedBridgeBrandLink']);
+    // console.log("singleLinkInfoArray.isMedBridgeBrandLink: " + singleLinkInfoArray.isMedBridgeBrandLink);
 
     if ( linkNeedsGoogleTracking && emailPlatform !== "gr" ) {
 
@@ -1094,7 +1102,7 @@ function validateLinks(linkObj, i) {
 
       if ( elementExists(moduleNumber) ) {
 
-        var moduleNumber = moduleNumber.getAttribute("data-module-count");
+        moduleNumber = moduleNumber.getAttribute("data-module-count");
         var moduleNumberMatch = new RegExp("utm_content=.*?mod" + moduleNumber + "(\/|\-|&|$|#)", "gi");
 
         // mod followed by 1 or 2 digits, followed by - or # or & or the link ends.
@@ -1120,10 +1128,12 @@ function validateLinks(linkObj, i) {
     // Ignore if there's no text, or it's an image (unless that image has alt text).
     ////
 
-        // Get the img child first.
-        if ( elementExists(linkObj.getElementsByTagName('img')[0]) ) {
-          var linkedImg = linkObj.getElementsByTagName('img')[0];
-        }
+    var linkedImg;
+
+    // Get the img child first.
+    if ( elementExists(linkObj.getElementsByTagName('img')[0]) ) {
+      linkedImg = linkObj.getElementsByTagName('img')[0];
+    }
 
     if ( linkObj.style.color === '' && (linkObj.textContent !== '' || linkedImg.alt !== '' ) ) {
       createLinkErrorRow(linkObj, "Missing color in style attribute.");
@@ -1138,7 +1148,7 @@ function validateLinks(linkObj, i) {
 
     ////
     // Check for old fashioned marketing URLS in sub, ent, or outsideOrg
-    if ( (outsideOrg || emailSubType === "sub" || emailDisc === "ent" ) && (singleLinkInfoArray['isMedBridgeBrandLink'] && /\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
+    if ( (outsideOrg || emailSubType === "sub" || emailDisc === "ent" ) && (singleLinkInfoArray.isMedBridgeBrandLink && /\.com\/(gr|mc)?trk\-/gi.test(linkHref) || /after_affiliate_url/gi.test(linkHref)) ) {
       createLinkErrorRow(linkObj, "Do not use a Marketing URL.");
     }
 
@@ -1150,7 +1160,7 @@ function validateLinks(linkObj, i) {
 
     }
 
-    else if ( emailSubType === "ns" && !outsideOrg && singleLinkInfoArray['isMedBridgeBrandLink'] && ( singleLinkInfoArray['isArticle'] || /\-article/gi.test(linkHref) ) ) {
+    else if ( emailSubType === "ns" && !outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink && ( singleLinkInfoArray.isArticle || /\-article/gi.test(linkHref) ) ) {
 
       if ( emailAnySale && !/medium=email/gi.test(linkHref)) { // Any sale email
         createLinkErrorRow(linkObj, "Add <code>medium=email</code>.");
@@ -1162,7 +1172,7 @@ function validateLinks(linkObj, i) {
     //
     // Check ns emails
     //
-    if ( singleLinkInfoArray['isMedBridgeEdLink'] && emailSubType === "ns" ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && emailSubType === "ns" ) {
 
       // Webinars
       if ( /\.com\/webinars(\?|\/|#|$)[^d]/gi.test(linkHref) ) {
@@ -1174,7 +1184,7 @@ function validateLinks(linkObj, i) {
     //
     // Check sub emails
     //
-    if ( singleLinkInfoArray['isMedBridgeEdLink'] && (emailSubType === "sub" || outsideOrg) ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && (emailSubType === "sub" || outsideOrg) ) {
 
       //
       if ( /\.com\/continuing-education(\?|\/|#|$)/gi.test(linkHref) ) {
@@ -1193,11 +1203,11 @@ function validateLinks(linkObj, i) {
       // Check for sub=yes
       ////
       // sub=yes is required in blog links.
-      if ( singleLinkInfoArray['isBlogLink'] && !/sub=yes/gi.test(linkHref) ) {
+      if ( singleLinkInfoArray.isBlogLink && !/sub=yes/gi.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Add <code>sub=yes</code>.");
       }
       // sub=yes should not be in any other links.
-      if ( ( !singleLinkInfoArray['isBlogLink'] && !/\-(blog|article)/gi.test(linkHref) ) && /sub=yes/gi.test(linkHref) ) {
+      if ( ( !singleLinkInfoArray.isBlogLink && !/\-(blog|article)/gi.test(linkHref) ) && /sub=yes/gi.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Remove <code>sub=yes</code>.");
       }
 
@@ -1205,7 +1215,7 @@ function validateLinks(linkObj, i) {
 
     ////
     // Check for broken article links in sub
-    if ( singleLinkInfoArray['isMedBridgeEdLink'] && emailSubType === "sub" && /p=\d\d\d/gi.test(linkHref) && !/\.com\/blog(\/|\?)/gi.test(linkHref) ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && emailSubType === "sub" && /p=\d\d\d/gi.test(linkHref) && !/\.com\/blog(\/|\?)/gi.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Article link is broken.");
     }
 
@@ -1217,13 +1227,13 @@ function validateLinks(linkObj, i) {
 
     ////
     // Verify links in A/B emails if it looks like the link is using -a or -b.
-    if ( singleLinkInfoArray['isMarketingUrl'] && abTesting === "a" && /\-b[\?\/]/i.test(linkHref) ) {
+    if ( singleLinkInfoArray.isMarketingUrl && abTesting === "a" && /\-b[\?\/]/i.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Fix a/b version.");
     }
-    if ( singleLinkInfoArray['isMarketingUrl'] && abTesting === "b" && /\-a[\?\/]/i.test(linkHref) ) {
+    if ( singleLinkInfoArray.isMarketingUrl && abTesting === "b" && /\-a[\?\/]/i.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Fix a/b version.");
     }
-    if ( singleLinkInfoArray['isMarketingUrl'] && (abTesting !== "a" && abTesting !== "b") && /\-(a|b)[\?\/]/i.test(linkHref) ) {
+    if ( singleLinkInfoArray.isMarketingUrl && (abTesting !== "a" && abTesting !== "b") && /\-(a|b)[\?\/]/i.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Remove -a/-b.");
     }
 
@@ -1231,29 +1241,29 @@ function validateLinks(linkObj, i) {
     ////
     // Link Text Hints
     // Only test for link -vs- text inconsistencies if we've determined that the linked content actually includes text.
-    if ( singleLinkInfoArray['contentLinked'] === 'mixed' || singleLinkInfoArray['contentLinked'] === 'text' ) {
+    if ( singleLinkInfoArray.contentLinked === 'mixed' || singleLinkInfoArray.contentLinked === 'text' ) {
 
       // Request a Demo
       if ( ( /(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref) ) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing|Request/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
         createLinkErrorRow(linkObj, "Text and URL are inconsistent (Demo Request related).");
       }
       // Request EMR Integration
-      if ( (singleLinkInfoArray['contentLinked'] === 'mixed' || singleLinkInfoArray['contentLinked'] === 'text') && (/Request (EMR|Integration)/gi.test(linkObj.textContent) && !/#request-integration/i.test(linkHref)) || (!/Request|EMR|Integration/gi.test(linkObj.textContent) && /#request-integration/i.test(linkHref)) ) {
+      if ( (singleLinkInfoArray.contentLinked === 'mixed' || singleLinkInfoArray.contentLinked === 'text') && (/Request (EMR|Integration)/gi.test(linkObj.textContent) && !/#request-integration/i.test(linkHref)) || (!/Request|EMR|Integration/gi.test(linkObj.textContent) && /#request-integration/i.test(linkHref)) ) {
         createLinkErrorRow(linkObj, "Text and URL are inconsistent (EMR Integration related).");
       }
 
     }
 
     if ( emailOrgName !== "hs" ) {
-      if ( /\barticle\b/gi.test(linkObj.textContent) && !singleLinkInfoArray['isArticle'] ) {
+      if ( /\barticle\b/gi.test(linkObj.textContent) && !singleLinkInfoArray.isArticle ) {
         createLinkErrorRow(linkObj, "Text references an article but the URL does not go to one.");
       }
-      if ( /\barticles\b/gi.test(linkObj.textContent) && !singleLinkInfoArray['isBlogLink'] ) {
+      if ( /\barticles\b/gi.test(linkObj.textContent) && !singleLinkInfoArray.isBlogLink ) {
         createLinkErrorRow(linkObj, "Text references articles but the URL does not go to the blog.");
       }
       // This was a failed experiment. I later realized that we would want to link article titles that don't
       // have the word "Read" or "Article" in them.
-      // if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray['isArticle'] ) {
+      // if ( !/Read|Article/gi.test(linkObj.textContent) && singleLinkInfoArray.isArticle ) {
       //   createLinkErrorRow(linkObj, "Link text does not match url (article related) [2].");
       // }
     }
@@ -1261,7 +1271,7 @@ function validateLinks(linkObj, i) {
     ////
     // Enterprise
     // Deprecated - Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
-    // if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "sub" && emailDisc === "ent" && /request\-a\-demo/gi.test(linkHref) ) {
+    // if ( singleLinkInfoArray.isMedBridgeBrandLink && emailSubType === "sub" && emailDisc === "ent" && /request\-a\-demo/gi.test(linkHref) ) {
     //   createLinkErrorRow(linkObj, "no demo requests in enterprise sub");
     // }
 
@@ -1317,7 +1327,7 @@ function validateLinks(linkObj, i) {
     ////
     // Tracking URL - Discipline Check
 
-    if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && emailSubType === "ns" && singleLinkInfoArray['isMedBridgeBrandLink'] && !/\/courses\/details\//g.test(linkHref) && singleLinkInfoArray['isMarketingUrl'] ) {
+    if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && emailSubType === "ns" && singleLinkInfoArray.isMedBridgeBrandLink && !/\/courses\/details\//g.test(linkHref) && singleLinkInfoArray.isMarketingUrl ) {
 
       if ( emailDisc === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Missing/wrong discipline.");
@@ -1338,7 +1348,7 @@ function validateLinks(linkObj, i) {
 
     // Homepage - Discipline Check
     // Checking NS and SUB.
-    if ( emailDisc !== "multi" && emailDisc !== "all" && emailDisc !== null && emailDisc !== undefined && !outsideOrg && singleLinkInfoArray['isMedBridgeBrandLink'] ) {
+    if ( emailDisc !== "multi" && emailDisc !== "all" && emailDisc !== null && emailDisc !== undefined && !outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink ) {
 
       if ( (emailDisc !== "pt" && emailDisc !== "other") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(linkHref) || /\.com\/physical-therapy\/?(\?|$)/gi.test(linkHref)) ) {
         createLinkErrorRow(linkObj, "Wrong homepage.");
@@ -1450,11 +1460,11 @@ function validateLinks(linkObj, i) {
 
     // Pricing
     // SUB
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "sub" && /\.com\/(cart|pricing)/gi.test(linkHref) ) {
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && emailSubType === "sub" && /\.com\/(cart|pricing)/gi.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Don't link to the pricing or cart pages in subscriber emails.");
     }
     // NS -
-    if ( singleLinkInfoArray['isMedBridgeBrandLink'] && emailSubType === "ns" ) {
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && emailSubType === "ns" ) {
 
       // Pricing Page - Discipline Check
       if ( /pricing/gi.test(linkHref) ) {
@@ -1534,7 +1544,7 @@ function validateLinks(linkObj, i) {
   // End of link validation.
   // console.error(i, link);
 
-  singleLinkInfoArray['errors'] = allErrorMsgsForCurrentLink;
+  singleLinkInfoArray.errors = allErrorMsgsForCurrentLink;
   linkInfoArray.push(singleLinkInfoArray);
 
 
@@ -1543,7 +1553,7 @@ function validateLinks(linkObj, i) {
   // As a result, they are always "approved" for the first time.
   // This is annoying, lets just not show them on page load.
   // The approval marks are still there, and can be viewed if a toggle is clicked.
-  if ( singleLinkInfoArray['type'] === "merge tag" || singleLinkInfoArray['type'] === "mailto" ) {
+  if ( singleLinkInfoArray.type === "merge tag" || singleLinkInfoArray.type === "mailto" ) {
     linkMarker.classList.add("do-not-highlight");
   }
 
@@ -1551,9 +1561,9 @@ function validateLinks(linkObj, i) {
   // Check the links status (async) and add the results to the array.
 
   // Only check the link if checkStatus is true
-  if ( singleLinkInfoArray['checkStatus'] === true ) {
+  if ( singleLinkInfoArray.checkStatus === true ) {
     // Skip links that are duplicates. When the original link is done being XHR'd we'll apply the results to all matching links.
-    if ( singleLinkInfoArray['firstInstance'] === true ) {
+    if ( singleLinkInfoArray.firstInstance === true ) {
       onRequest(i, linkHref, linkObj);
     }
   // checkStatus is False, so we're done. Turn off the loading icon.
@@ -1598,18 +1608,18 @@ function verifyLinkVisibility(linkList) {
   // Modify this to use the dummyIframe for both desktop and mobile so that we can avoid errors.
 
   // Get link position in desktop view and check desktop visibility
-  var i = 0
+  var i = 0;
   for (let linkObj of linkList) {
 
-    linkInfoArray[i]['desktopposition'] = { "top": linkObj.getBoundingClientRect().top, "left": linkObj.getBoundingClientRect().left }
+    linkInfoArray[i].desktopposition = { "top": linkObj.getBoundingClientRect().top, "left": linkObj.getBoundingClientRect().left };
 
     // Link Visibility (Desktop)
     if ( isElementVisible(linkObj) ) {
-      linkInfoArray[i]['desktopVisibile'] = false;
+      linkInfoArray[i].desktopVisibile = false;
     } else {
-      linkInfoArray[i]['desktopVisible'] = true;
+      linkInfoArray[i].desktopVisibile = true;
     }
-    i++
+    i++;
   }
 
 
@@ -1619,18 +1629,18 @@ function verifyLinkVisibility(linkList) {
   dummyIframe.style.width = "360px";
 
   // Do another loop.
-  var j = 0
+  var j = 0;
   for (let linkObj of linkList) {
 
-    linkInfoArray[j]['mobileposition'] = { "top": linkObj.getBoundingClientRect().top, "left": linkObj.getBoundingClientRect().left }
+    linkInfoArray[j].mobileposition = { "top": linkObj.getBoundingClientRect().top, "left": linkObj.getBoundingClientRect().left };
 
     // Link Visibility (Mobile)
     if ( isElementVisible(linkObj) ) {
-      linkInfoArray[j]['mobileVisible'] = false;
+      linkInfoArray[j].mobileVisible = false;
     } else {
-      linkInfoArray[j]['mobileVisible'] = true;
+      linkInfoArray[j].mobileVisible = true;
     }
-    j++
+    j++;
   }
 
   // We're done here. Kill the dummy iframe.
@@ -1733,9 +1743,9 @@ function findLinkPos(object, currentDocument) {
 function mostCommonString(searchTerm, linkList) {
 
   if ( !/utm_/.test(searchTerm) ) {
-    var searchTerm = new RegExp(/\.com\/.+?\?/i);
+    searchTerm = new RegExp(/\.com\/.+?\?/i);
   } else {
-    var searchTerm = new RegExp(escapeRegEx(searchTerm) + ".+?(&|$)","i");
+    searchTerm = new RegExp(escapeRegEx(searchTerm) + ".+?(&|$)","i");
   }
 
   ///////////
@@ -1843,9 +1853,9 @@ function decipherQuerystring(url, linkObj) {
     });
   }
 
-  return qsObject
+  return qsObject;
 
-};
+}
 
 
 /**
@@ -1889,7 +1899,7 @@ function elementExists(el, set) {
 function destroyIfElementExists(el) {
   if ( elementExists(el) ) {
     if ( el.target ) {
-      var el = this;
+      el = this;
     }
     el.parentNode.removeChild(el);
   }
@@ -1919,12 +1929,12 @@ function createUniqueArrayOfURLs(arr) {
 
   var uniqueLinksArray = [];
 
-  var i = 0
+  var i = 0;
   for (let linkObj of arr) {
 
-    uniqueLinksArray.push(linkObj.getAttribute("href"))
+    uniqueLinksArray.push(linkObj.getAttribute("href"));
 
-    i++
+    i++;
 
   }
 

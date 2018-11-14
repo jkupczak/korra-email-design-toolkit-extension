@@ -161,7 +161,8 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     // Until that's ready, show options.html instead
     // chrome.tabs.create({ url: chrome.extension.getURL('options.html') });
 
-    chrome.runtime.reload();
+    // Temporarily off
+    // chrome.runtime.reload();
 
   }
 
@@ -782,7 +783,8 @@ chrome.runtime.onInstalled.addListener(function() {
 
 
   // Separator
-  chrome.contextMenus.create({ "id": "sep", "type":'separator' });
+  // Commented out, was causing an error
+  // chrome.contextMenus.create({ "id": "sep", "type":'separator' });
 
 
   // Create a parent item and two children.

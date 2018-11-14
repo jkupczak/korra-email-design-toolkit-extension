@@ -1,3 +1,18 @@
+console.log("popup.html loaded");
+
+document.body.style = "color:red !important;";
+
+document.getElementById("status").innerText = "Reloaded!";
+
+document.getElementById("reload-extension").addEventListener("click", function() {
+  console.log("Reload Korra button was clicked.");
+  document.getElementById("status").innerText = "Reloaded!";
+  chrome.runtime.reload();
+}, false);
+
+document.getElementById("title").insertAdjacentHTML("beforeend", Math.floor((Math.random() * 10) + 1));
+
+
 // Copyright (c) 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.

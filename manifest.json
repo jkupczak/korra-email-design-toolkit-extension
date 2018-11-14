@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra: Email Design Toolkit",
-  "version": "3.8.0",
+  "version": "3.8.3",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 
@@ -11,9 +11,11 @@
   "icons": {
     "192": "icons/icon-192.png"
   },
+
   "browser_action": {
     "default_icon": "icons/icon-192.png",
-    "default_title": "Korra"
+    "default_title": "Korra",
+    "default_popup": "popup.html"
   },
 
 

@@ -256,3 +256,39 @@ body:active ~ .toolkit-element-baseline-overlay {
   width:100%;
   margin-top:25px;
 } */
+
+
+
+/* ================= */
+
+.text-error {
+  background: rgba(255, 244, 125, 0.6);
+  color:#605c31;
+  animation: textError .5s ease infinite;
+
+  border-radius:12px;
+}
+  @keyframes textError {
+    0%   {  box-shadow:0 0 0 4px rgba(255, 244, 125, 0.6); }
+    50%  {  box-shadow:0 0 0 8px rgba(255, 244, 125, 0.6); }
+    100% {  box-shadow:0 0 0 4px rgba(255, 244, 125, 0.6); }
+  }
+
+.text-error.gmail-fix {
+  background: rgba(146, 206, 255, 0.6);
+  color:#314460;
+  animation: gmailFix .5s ease infinite;
+}
+  @keyframes gmailFix {
+    0%   {  box-shadow:0 0 0 3px rgba(146, 206, 255, 0.6); }
+    50%  {  box-shadow:0 0 0 6px rgba(146, 206, 255, 0.6); }
+    100% {  box-shadow:0 0 0 3px rgba(146, 206, 255, 0.6); }
+  }
+
+.text-errors-off .text-error, .all-helpers-off .text-error {
+  box-shadow: none;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  animation:none;
+}
