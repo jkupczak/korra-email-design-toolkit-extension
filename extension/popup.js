@@ -1,6 +1,7 @@
 console.log("popup.html loaded");
 /////////////////////////////////
 
+
 chrome.history.search({
       'text': 'POST',
       'maxResults': 50,
@@ -144,3 +145,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+
+
+document.getElementById("sent-test").addEventListener("click", function() {
+
+  sendEmail( document.getElementById("email-code").value );
+
+}, false);

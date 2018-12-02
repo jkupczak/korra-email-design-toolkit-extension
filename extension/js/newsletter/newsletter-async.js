@@ -106,7 +106,7 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 ////////////////////////////////////
 
 
-function processCode(code) {
+var processCode = function (code) {
 
   originalHtml = code;
   cleanedOriginalHtml = code;
@@ -119,8 +119,9 @@ function processCode(code) {
 
     conditionalsExist = true;
 
+    // OFF UNTIL THIS IS 100% DONE
     // Parse the conditionals from MailChimp if they exists.
-    cleanedDesktopHtml = processMcConditionals(cleanedDesktopHtml);
+    // cleanedDesktopHtml = processMcConditionals(cleanedDesktopHtml);
 
   } else {
     conditionalsExist = false;
@@ -290,7 +291,7 @@ if ( isinss ) {
 function resolveOptions(items) {
 
   // [OPTION]: Dropbox Folder Name
-  dropboxFolderName = items.dropboxFolderName;
+  dropboxFolderName = items.fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"");
   // console.log("dropboxFolderName:", dropboxFolderName);
 
   // [OPTION]: Dropbox Access Token

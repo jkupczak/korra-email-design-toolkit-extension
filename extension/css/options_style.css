@@ -22,16 +22,21 @@ body {
 }
 
 #content{
-    background-color: white;
-    border: 1px solid #DDD;
     margin: 0px auto 20px;
     padding: 0;
     width: 100%;
     max-width: 1140px;
-    border-radius: 4px;
-    box-shadow: 0px 0px 10px #ddd;
 }
 
+.main-container {
+    border-radius: 4px;
+    box-shadow: 0px 0px 10px #ddd;
+    background-color: white;
+    border: 1px solid #DDD;
+}
+.secondary-container {
+  padding:25px 30px 50px 5px;
+}
 h1 {
     color:#333333;
     font-size:1.5em;
@@ -110,13 +115,13 @@ p{
     color: #666;
 }
 
-span{
+/* span{
     font-family: monospace;
     background: #D9EDF7;
     padding: 3px;
     color: #3A87AD;
     border-radius: 5px;
-}
+} */
 
 label{
     font-weight: bold;
@@ -202,15 +207,8 @@ hr{
   display: flex;
   justify-content: center;
   align-items: center;
-  padding:20px;
+  padding:40px;
   flex-direction:column;
-}
-#save-options button {
-  width:250px;
-  height:40px;
-  font-size:18px;
-  font-weight:bold;
-  border-radius:4px;
 }
 
 
@@ -354,4 +352,97 @@ hr{
 }
 .link-match-custom-rule:not(.expanded) .rule-title-and-desc .link-condition-title {
   margin-bottom:0;
+}
+
+
+/****************/
+/****************/
+/****************/
+
+#saved-notification {
+
+  opacity:0;
+
+  box-shadow:0 0 20px #33cd8a;
+
+  background: #33cd8a;
+  color:#fff;
+  font-weight:bold;
+  font-size:20px;
+  padding:0 25px;
+  border-radius: 25px;
+
+  height:50px; line-height:50px;
+
+  position:fixed;
+  display:block;
+  bottom:30px; right:30px;
+
+}
+
+#saved-notification.pop { animation: pop .25s ease 1; animation-fill-mode: forwards; }
+#saved-notification.hide { animation: hide .5s ease 1; animation-fill-mode: forwards; }
+
+@keyframes pop {
+  0%    { transform: scale(0, 0); opacity:0; }
+  90%   { transform: scale(1.1, 1.1); opacity:1; }
+  100%  { transform: scale(1, 1); opacity:1; }
+}
+
+@keyframes hide {
+  0%    { transform: scale(1, 1); opacity:1; }
+  10%   { transform: scale(1.2, 1.2); }
+  100%  { transform: scale(0, 0); opacity:0; }
+}
+/****************/
+/****************/
+/****************/
+
+.transfer-settings {}
+.transfer-settings span {
+  font-weight:bold;
+  cursor:pointer;
+  margin-right:15px;
+}
+
+/****************/
+/****************/
+/****************/
+
+.save-btn {
+  padding:30px 60px;
+  background:#fff;
+  border-radius:3px;
+  box-shadow:0 2px 4px rgba(0,0,0,0.2);
+  text-align:center;
+  font-size:26px;
+  cursor:pointer;
+}
+.save-btn:hover {
+  background:#8f15ff;
+  color:#fff;
+}
+
+/****************/
+/****************/
+/****************/
+
+@media only screen and (max-width: 960px) {
+
+  body { padding:0;
+    margin:0;
+  }
+  #content {
+    margin:0;
+    max-width: 100%;
+  }
+  .main-container {
+    box-shadow:none;
+    border-radius:0;
+    border:none;
+  }
+  .secondary-container {
+    padding:30px 30px 50px 30px;
+  }
+
 }

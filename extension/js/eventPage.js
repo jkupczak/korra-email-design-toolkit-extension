@@ -494,10 +494,10 @@ chrome.runtime.onMessage.addListener(
 // http://stackoverflow.com/a/27432365/556079
 function logChromeStorage() {
   chrome.storage.sync.get(function(result) {
-    console.log(result)
+    console.log(result);
   });
   chrome.storage.local.get(function(result) {
-    console.log(result)
+    console.log(result);
   });
 }
 

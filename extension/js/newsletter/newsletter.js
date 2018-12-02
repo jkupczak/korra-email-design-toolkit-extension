@@ -594,6 +594,7 @@ if ( getParameterByName("presentation") === "1" ) {
 
     // Apply the mobile iframes document object to a variable
     var mFrameContents = mobileIframe.contentDocument;
+    var mFrameBody = mFrameContents.body;
 
     // Quick <style> Injection
     //
@@ -934,7 +935,7 @@ var fadeWidthStatus;
 // Watch window for resizing. If it's resized, reset the desktopIframe
 window.addEventListener('resize', resetDesktopResize, true);
 
-function showdFrameWidthStatus(currentWidth, override, source) {
+var showdFrameWidthStatus = function (currentWidth, override, source) {
 
   // console.log("source", source, "currentWidth", currentWidth, "dFrameStartingWidth", dFrameStartingWidth, "resizeEndWidth", resizeEndWidth, "widthNow", desktopIframe.offsetWidth, "override", override)
   // console.log(dFrameStartingWidth, desktopIframe.clientWidth, desktopIframe.offsetWidth)
@@ -970,7 +971,7 @@ function showdFrameWidthStatus(currentWidth, override, source) {
 
   }
 
-}
+};
 
 // https://stackoverflow.com/a/39312522/556079
 
@@ -1324,7 +1325,7 @@ orbsBottom.appendChild(paneToggleOrb);
 var currentleftNavPaneStatus = 1;
 var currentmobilePaneStatus = 1;
 
-function paneToggle() {
+var paneToggle = function () {
 
   // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
 
@@ -1408,7 +1409,7 @@ function paneToggle() {
 
     // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
 
-}
+};
 
 
 //////////
@@ -1934,8 +1935,8 @@ linkErrorsOrb.id = "link-errors-orb";
 /////////
 
 var textErrorsOrb = document.createElement("div");
-textErrorsOrb.className = "text-errors-orb orb glyph";
-textErrorsOrb.id = "text-errors-orb";
+textErrorsOrb.className = "text-highlights-orb orb glyph";
+textErrorsOrb.id = "text-highlights-orb";
 // textErrorsOrb.addEventListener("click", toggleTextErrors, false);
 // toolbarSectionOverlays.appendChild(textErrorsOrb);
 
@@ -3453,274 +3454,289 @@ function countCitations() {
   // console.log( "Asterisks", asters);
 }
 
-// Run a check on all text in the email
-highlightTextErrors(dFrameBody);
-highlightTextErrors(preheaderTextPreview);
+var highlightTextErrors = function (stage) {
 
-
-
-// This function allows findAndReplaceDOMText to exclude matches. This functionality is not built-in to the script so we need this function.
-// Visit this closed issue on GitHub for more info: https://github.com/padolsey/findAndReplaceDOMText/issues/64
-
-    function globalRegexWithFilter(regex, filterFn) {
-      if (!regex.global) {
-        throw new Error('Regex must be global');
+  // This function allows findAndReplaceDOMText to exclude matches. This functionality is not built-in to the script so we need this function.
+  // Visit this closed issue on GitHub for more info: https://github.com/padolsey/findAndReplaceDOMText/issues/64
+  var globalRegexWithFilter = function (regex, filterFn) {
+    if (!regex.global) {
+      throw new Error('Regex must be global');
+    }
+    function exec(text) {
+      var result = regex.exec(text);
+      if (result && !filterFn(result[0])) {
+        return exec(text);
       }
-      function exec(text) {
-        var result = regex.exec(text);
-        if (result && !filterFn(result[0])) {
-          return exec(text);
-        }
-        return result;
-      }
-      return {
-        global: true,
-        exec: exec
-      };
+      return result;
+    }
+    return {
+      global: true,
+      exec: exec
+    };
+  };
+
+  //
+  // SPAM TRIGGER WORD
+  //
+  // Click|Click below|Click here|Click to remove|
+  findAndReplaceDOMText(stage, {
+    find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Pennies a day|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
+    wrap: 'span', wrapClass: "text-highlight"
+  });
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  ///////////////////////////////////////////
+  ////                                   ////
+  ////    CONDITIONALS HIGHLIGHTING      ////
+  ////                                   ////
+  ///////////////////////////////////////////
+
+  if ( emailPlatform === "mc" ) {
+    // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
+    findAndReplaceDOMText(stage, {
+      find: /\*\|((IF|END|ELSEIF|INTERESTED):.+?|ELSE:)\|\*/gi,
+      wrap: 'span', wrapClass: "text-highlight esp-conditional"
+    });
+  }
+
+
+  /////////////////////////////////
+  ////                         ////
+  ////    PLATFORM CHECKS      ////
+  ////                         ////
+  /////////////////////////////////
+
+  if ( emailPlatform === "gr" ) {
+    // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
+    findAndReplaceDOMText(stage, {
+      find: /(\*\|.+?\|\*|\[[^\[\]]+?\][^\]])/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
+  }
+
+  if ( emailPlatform === "mc" ) {
+    // Do not use [[getresponse]] merge tags with a MailChimp email.
+    findAndReplaceDOMText(stage, {
+      find: /\[\[?.+?\]\]?/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
+  }
+
+  if ( emailPlatform === "sg" ) {
+    // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
+    findAndReplaceDOMText(stage, {
+      find: /(\*\|.+?\|\*|\[\[.+?\]\])/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
+  }
+
+
+
+  /////////////////////////////////
+  ////                         ////
+  ////    DISCIPLINE CHECKS    ////
+  ////                         ////
+  /////////////////////////////////
+
+
+  // Promo Codes
+    if ( emailDisc !== "pt" ) {
+      findAndReplaceDOMText(stage, {
+        find: /(Promo Code.+?\b[A-Za-z0-9]+?PT\b)/gi,
+        wrap: 'span', wrapClass: "text-highlight"
+      });
+    }
+    if ( emailDisc !== "at" ) {
+      findAndReplaceDOMText(stage, {
+        find: /(Promo Code.+?\b[A-Za-z0-9]+?AT\b)/gi,
+        wrap: 'span', wrapClass: "text-highlight"
+      });
+    }
+    if ( emailDisc !== "ot" ) {
+      findAndReplaceDOMText(stage, {
+        find: /(Promo Code.+?\b[A-Za-z0-9]+?OT\b)/gi,
+        wrap: 'span',
+        wrapClass: "text-highlight"
+      });
+    }
+    if ( emailDisc !== "slp" ) {
+      findAndReplaceDOMText(stage, {
+        find: /(Promo Code.+?\b[A-Za-z0-9]+?SLP\b)/gi,
+        wrap: 'span', wrapClass: "text-highlight"
+      });
+    }
+    if ( emailDisc === "other" ) {
+      findAndReplaceDOMText(stage, {
+        find: /(Promo Code.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
+        wrap: 'span', wrapClass: "text-highlight"
+      });
     }
 
-function highlightTextErrors(stage) {
-//
-// SPAM TRIGGER WORD
-//
-// Click|Click below|Click here|Click to remove|
-findAndReplaceDOMText(stage, {
-  find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Pennies a day|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
-  wrap: 'span', wrapClass: "text-error"
-});
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////
+  ////
+  //// Pricing
+  ////
+  //////////
+  if ( emailDisc === "pt" || emailDisc === "other" || emailDisc === "ot" || emailDisc === "at" ) {
 
-
-// Platform Checks
-if ( emailPlatform === "gr" ) {
-  // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
-  findAndReplaceDOMText(stage, {
-    find: /(\*\|.+?\|\*|\[[^\[\]]+?\][^\]])/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
-}
-
-if ( emailPlatform === "mc" ) {
-  // Do not use [[getresponse]] merge tags with a MailChimp email.
-  findAndReplaceDOMText(stage, {
-    find: /\[\[?.+?\]\]?/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
-}
-
-if ( emailPlatform === "sg" ) {
-  // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
-  findAndReplaceDOMText(stage, {
-    find: /(\*\|.+?\|\*|\[\[.+?\]\])/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
-}
-
-/////////////////////////////////
-////                         ////
-////    DISCIPLINE CHECKS    ////
-////                         ////
-/////////////////////////////////
-
-
-// Promo Codes
-  if ( emailDisc !== "pt" ) {
     findAndReplaceDOMText(stage, {
-      find: /(Promo Code.+?\b[A-Za-z0-9]+?PT\b)/gi,
-      wrap: 'span', wrapClass: "text-error"
+      find: /((only )?\$95|(only )?\$145)/gi,
+      wrap: 'span', wrapClass: "text-highlight"
     });
+
   }
-  if ( emailDisc !== "at" ) {
+
+  if ( emailDisc === "slp" ) {
+
     findAndReplaceDOMText(stage, {
-      find: /(Promo Code.+?\b[A-Za-z0-9]+?AT\b)/gi,
-      wrap: 'span', wrapClass: "text-error"
+      find: /((only )?\$200|(only )?\$250)/gi,
+      wrap: 'span', wrapClass: "text-highlight"
     });
+
   }
-  if ( emailDisc !== "ot" ) {
+
+  if ( emailDisc === "lmt" || emailDisc === "ent" ) {
+
     findAndReplaceDOMText(stage, {
-      find: /(Promo Code.+?\b[A-Za-z0-9]+?OT\b)/gi,
-      wrap: 'span',
-      wrapClass: "text-error"
+      find: /\$95|\$145|\$200|\$250/gi,
+      wrap: 'span', wrapClass: "text-highlight"
     });
-  }
-  if ( emailDisc !== "slp" ) {
-    findAndReplaceDOMText(stage, {
-      find: /(Promo Code.+?\b[A-Za-z0-9]+?SLP\b)/gi,
-      wrap: 'span', wrapClass: "text-error"
-    });
-  }
-  if ( emailDisc === "other" ) {
-    findAndReplaceDOMText(stage, {
-      find: /(Promo Code.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
-      wrap: 'span', wrapClass: "text-error"
-    });
+
   }
 
 
-//////////
-////
-//// Pricing
-////
-//////////
-if ( emailDisc === "pt" || emailDisc === "other" || emailDisc === "ot" || emailDisc === "at" ) {
 
-  findAndReplaceDOMText(stage, {
-    find: /((only )?\$95|(only )?\$145)/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
+  //////////
+  ////
+  //// Physical Therapy - PT
+  ////
+  //////////
+  if ( emailDisc === "pt" || emailDisc === "other" ) {
 
-}
+    // case sensitive
+    findAndReplaceDOMText(stage, {
+      find: /\b(ASHA|AOTA)\b/g,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
-if ( emailDisc === "slp" ) {
+    // case (IN)sensitive
+    findAndReplaceDOMText(stage, {
+      find: /(BOC\-Approved|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist)))/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
-  findAndReplaceDOMText(stage, {
-    find: /((only )?\$200|(only )?\$250)/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
+  //////////
+  ////
+  //// Athletic Training - AT
+  ////
+  //////////
+  } else if ( emailDisc === "at" ) {
 
-}
+    // case sensitive
+    findAndReplaceDOMText(stage, {
+      find: /\b(ASHA|AOTA)\b/g,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
-if ( emailDisc === "lmt" || emailDisc === "ent" ) {
+    // case (IN)sensitive
+    findAndReplaceDOMText(stage, {
+      find: /((only )?\$95|(only )?\$145|Physical (Courses?|Therap(y|ist))|Occupational (Courses?|Therap(y|ist)))/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
-  findAndReplaceDOMText(stage, {
-    find: /\$95|\$145|\$200|\$250/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
+  //////////
+  ////
+  //// Occupational Therapy - OT
+  ////
+  //////////
+  } else if ( emailDisc === "ot" ) {
 
-}
+    // case sensitive
+    findAndReplaceDOMText(stage, {
+      find: /\b(ASHA)\b/g,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
+    // case (IN)sensitive
+    findAndReplaceDOMText(stage, {
+      find: /(BOC\-Approved|Physical (Courses?|Therap(y|ist))|Athletic Train(er|ing))/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
+  //////////
+  ////
+  //// Speech Language Pathology - SLP
+  ////
+  //////////
+  } else if ( emailDisc === "slp" ) {
 
-//////////
-////
-//// Physical Therapy - PT
-////
-//////////
-if ( emailDisc === "pt" || emailDisc === "other" ) {
+    findAndReplaceDOMText(stage, {
+      find: /\b(AOTA|APTA)\b/g,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
+    // case-insensitive
+    findAndReplaceDOMText(stage, {
+      find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist))|patient outcomes?|clinician)/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
-  // case sensitive
-  findAndReplaceDOMText(stage, {
-    find: /\b(ASHA|AOTA)\b/g,
-    wrap: 'span', wrapClass: "text-error"
-  });
+  //////////
+  ////
+  //// Nursing - NR
+  ////
+  //////////
+  } else if ( emailDisc === "nr" ) {
 
-  // case (IN)sensitive
-  findAndReplaceDOMText(stage, {
-    find: /(BOC\-Approved|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist)))/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
+    // case sensitive
+    findAndReplaceDOMText(stage, {
+      find: /\b(ASHA|AOTA)\b/g,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
-//////////
-////
-//// Athletic Training - AT
-////
-//////////
-} else if ( emailDisc === "at" ) {
-
-  // case sensitive
-  findAndReplaceDOMText(stage, {
-    find: /\b(ASHA|AOTA)\b/g,
-    wrap: 'span', wrapClass: "text-error"
-  });
-
-  // case (IN)sensitive
-  findAndReplaceDOMText(stage, {
-    find: /((only )?\$95|(only )?\$145|Physical (Courses?|Therap(y|ist))|Occupational (Courses?|Therap(y|ist)))/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
-
-//////////
-////
-//// Occupational Therapy - OT
-////
-//////////
-} else if ( emailDisc === "ot" ) {
-
-  // case sensitive
-  findAndReplaceDOMText(stage, {
-    find: /\b(ASHA)\b/g,
-    wrap: 'span', wrapClass: "text-error"
-  });
-
-  // case (IN)sensitive
-  findAndReplaceDOMText(stage, {
-    find: /(BOC\-Approved|Physical (Courses?|Therap(y|ist))|Athletic Train(er|ing))/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
-
-//////////
-////
-//// Speech Language Pathology - SLP
-////
-//////////
-} else if ( emailDisc === "slp" ) {
-
-  findAndReplaceDOMText(stage, {
-    find: /\b(AOTA|APTA)\b/g,
-    wrap: 'span', wrapClass: "text-error"
-  });
-  // case-insensitive
-  findAndReplaceDOMText(stage, {
-    find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist))|patient outcomes?|clinician)/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
-
-//////////
-////
-//// Nursing - NR
-////
-//////////
-} else if ( emailDisc === "nr" ) {
-
-  // case sensitive
-  findAndReplaceDOMText(stage, {
-    find: /\b(ASHA|AOTA)\b/g,
-    wrap: 'span', wrapClass: "text-error"
-  });
-
-  // case (IN)sensitive
-  findAndReplaceDOMText(stage, {
-    find: /(BOC\-Approved|Athletic Train(er|ing)|(Physical|Occupational) (Courses?|Therap(y|ist)))/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
+    // case (IN)sensitive
+    findAndReplaceDOMText(stage, {
+      find: /(BOC\-Approved|Athletic Train(er|ing)|(Physical|Occupational) (Courses?|Therap(y|ist)))/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
 
-//////////
-////
-//// Massage
-////
-//////////
-} else if ( emailDisc === "lmt" ) {
+  //////////
+  ////
+  //// Massage
+  ////
+  //////////
+  } else if ( emailDisc === "lmt" ) {
 
-  findAndReplaceDOMText(stage, {
-    find: /\b(ASHA|AOTA)\b/g,
-    wrap: 'span', wrapClass: "text-error"
-  });
-  // case-insensitive
-  findAndReplaceDOMText(stage, {
-    find: /(BOC\-Approved|Physical Therap(y|ist)|CCC\-SLP|patient engagement tool)/gi,
-    wrap: 'span', wrapClass: "text-error"
-  });
+    findAndReplaceDOMText(stage, {
+      find: /\b(ASHA|AOTA)\b/g,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
+    // case-insensitive
+    findAndReplaceDOMText(stage, {
+      find: /(BOC\-Approved|Physical Therap(y|ist)|CCC\-SLP|patient engagement tool)/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
 
-//////////
-////
-//// Enterprise
-////
-//////////
-} else if ( emailDisc === "ent" ) {
-  // Enterprise
+  //////////
+  ////
+  //// Enterprise
+  ////
+  //////////
+  } else if ( emailDisc === "ent" ) {
+    // Enterprise
 
-  ///
+    ///
 
-}
+  }
 
-
-//
-// ALL
-//
+  //
+  // ALL
+  //
 
   // NOTES ABOUT TEXT WARNINGS ---
   ////////////////////////////////
@@ -3740,24 +3756,24 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   // Case (IN)sensitive
 
     findAndReplaceDOMText(stage, {
-      find: /(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited)|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
-      wrap: 'span', wrapClass: "text-error"
+      find: /CRRN[^\®]|(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited)|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
+      wrap: 'span', wrapClass: "text-highlight"
     });
     // Continuing Education, not Continued Education
     // Speech-Language needa a hyphen
     findAndReplaceDOMText(stage, {
       find: /(continued education|speech language)/gi,
-      wrap: 'span', wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-highlight"
     });
     // Link Arrows → Arrows need to be immediately preceded by a non-breaking space to ensure it doesn't get dropped to the next line
     findAndReplaceDOMText(stage, {
       find: /(?:(?!\u00a0).{1}|^.{0,0})(\u2192)(?!\u00a0)/gi,
-      wrap: 'span', wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-highlight"
     });
     // CE Courses, not CEU Courses
     findAndReplaceDOMText(stage, {
       find: /\bCEU Course/gi,
-      wrap: 'span', wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-highlight"
     });
 
   // All Disciplines and Audiences
@@ -3766,11 +3782,11 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 
     findAndReplaceDOMText(stage, {
       find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
-      wrap: 'span', wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-highlight"
     });
     findAndReplaceDOMText(stage, {
       find: /\bCross-Track\b/g,
-      wrap: 'span', wrapClass: "text-error"
+      wrap: 'span', wrapClass: "text-highlight"
     });
 
 
@@ -3782,7 +3798,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
   	find: globalRegexWithFilter(/[^-–:#]\b[1-9]\d\d\d\b/g, function(theMatch) {
     	return !/(98109|1633|199[0-9]|20[0-4][0-9])/g.test(theMatch);
     }),
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 
 
@@ -3791,7 +3807,7 @@ if ( emailDisc === "pt" || emailDisc === "other" ) {
 //
 findAndReplaceDOMText(stage, {
   find: /MedBridge ((?:patient [Ee]|Patient e)ngagement|Prep\-program|prep\-[Pp]rogram)/g,
-  wrap: 'span', wrapClass: "text-error"
+  wrap: 'span', wrapClass: "text-highlight"
 });
 
 //
@@ -3799,12 +3815,12 @@ findAndReplaceDOMText(stage, {
 //
 findAndReplaceDOMText(stage, {
   find: /\b(MedBridge|[A-Z]CS) prep [Pp]rogram\b/g,
-  wrap: 'span', wrapClass: "text-error"
+  wrap: 'span', wrapClass: "text-highlight"
 });
 
 findAndReplaceDOMText(stage, {
   find: /\bprep\-programs?\b/gi,
-  wrap: 'span', wrapClass: "text-error"
+  wrap: 'span', wrapClass: "text-highlight"
 });
 
 //
@@ -3813,7 +3829,7 @@ findAndReplaceDOMText(stage, {
 if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
   findAndReplaceDOMText(stage, {
     find: /(win a free subscription|First Chapter Free|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|\bin a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 }
 
@@ -3823,7 +3839,7 @@ if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
 if ( emailSubType === "ns" ) {
   findAndReplaceDOMText(stage, {
     find: /(Start Now|Refer(\-| )a(\-| )Friend|in(?:cluded with)? your (?:(?:MedBridge )?s|annual (?:MedBridge )?s)ubscription)/gi,
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 }
 
@@ -3834,12 +3850,12 @@ if ( outsideOrg ) {
 
   findAndReplaceDOMText(stage, {
     find: /additional cost|Refer(\-| )a(\-| )Friend/gi,
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 
   findAndReplaceDOMText(stage, {
     find: /Enterprise/g,
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 
 }
@@ -3850,7 +3866,7 @@ if ( outsideOrg ) {
 if ( (emailSubType === "ns" || emailSubType === "sub") && !emailAnySale ) {
   findAndReplaceDOMText(stage, {
     find: /(only )?\$(200|95|145|250)( |!|\.)/gi,
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 }
 
@@ -3861,14 +3877,14 @@ if ( (emailSubType === "ns" || emailSubType === "sub") && !emailAnySale ) {
 if ( emailAnySale && emailDisc !== "lmt" ) {
   findAndReplaceDOMText(stage, {
     find: /50%/gi,
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 }
 // Massage Pricing
 if ( emailAnySale && emailDisc === "lmt" ) {
   findAndReplaceDOMText(stage, {
     find: /40%/gi,
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 }
 
@@ -3878,12 +3894,12 @@ if ( emailAnySale && emailDisc === "lmt" ) {
 //
 findAndReplaceDOMText(stage, {
   find: /evidence based EBP/gi,
-  wrap: 'span', wrapClass: "text-error"
+  wrap: 'span', wrapClass: "text-highlight"
 });
 
 findAndReplaceDOMText(stage, {
   find: /evidence\-based EBP/gi,
-  wrap: 'span', wrapClass: "text-error"
+  wrap: 'span', wrapClass: "text-highlight"
 });
 
 
@@ -3892,7 +3908,7 @@ if ( outsideOrg ) {
 
   findAndReplaceDOMText(stage, {
     find: /(request a demo|part of an? (group|organization)|sign(\-| )up|\bsubscribe\b)/gi,
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 
 }
@@ -3903,7 +3919,7 @@ if ( emailDisc === "slp" ) {
   findAndReplaceDOMText(stage, {
     find: /Unlimited (Access to )?(CE'?s|CEU'?s)/gi,
     // Must say CE Courses
-    wrap: 'span', wrapClass: "text-error"
+    wrap: 'span', wrapClass: "text-highlight"
   });
 
 }
@@ -3912,13 +3928,18 @@ if ( emailDisc === "slp" ) {
 // Check for words that would typically be linked by stupid Gmail. Like "tomorrow" linking to the calendar.
 findAndReplaceDOMText(stage, {
   find: /tomorrow|noon/gi,
-  wrap: 'span', wrapClass: "text-error gmail-fix", forceContext: true
+  wrap: 'span', wrapClass: "text-highlight gmail-fix", forceContext: true
 });
 
 
 
-}
+};
 // end function
+
+// Run a check on all text in the email
+highlightTextErrors(dFrameBody);
+highlightTextErrors(mFrameBody);
+highlightTextErrors(preheaderTextPreview);
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3955,9 +3976,9 @@ if ( /Refer(\-| )a(\-| )Friend/gi.test(dFrameContents.body.textContent) ) {
 ////////////
 ////////////
 
-function toggleHelpers() {
+var toggleHelpers = function() {
   dFrameContents.documentElement.classList.toggle("all-helpers-off");
-}
+};
 
 // Turns off link error badges
 if ( getParameterByName("helpers") === "0" ) {
@@ -3966,25 +3987,25 @@ if ( getParameterByName("helpers") === "0" ) {
 }
 
 
-    function toggleLinkMarkers() {
+var toggleLinkMarkers = function () {
 
-      if ( this.nodeType !== 1 ) {
-        dFrameContents.getElementById("link-markers").classList.add("on-page-load");
-      } else if ( dFrameContents.querySelector(".on-page-load") ) {
-        dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
-      } else {
-        dFrameContents.getElementById("link-markers").classList.toggle("hidden");
-      }
+  if ( this.nodeType !== 1 ) {
+    dFrameContents.getElementById("link-markers").classList.add("on-page-load");
+  } else if ( dFrameContents.querySelector(".on-page-load") ) {
+    dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
+  } else {
+    dFrameContents.getElementById("link-markers").classList.toggle("hidden");
+  }
 
-      linkMarkersToggle = !linkMarkersToggle;
+  linkMarkersToggle = !linkMarkersToggle;
 
-      if ( linkMarkersToggle ) {
-        history.replaceState(null,null, updateQueryString("links", "0") );
-      } else {
-        history.replaceState(null,null, updateQueryString("links") );
-      }
+  if ( linkMarkersToggle ) {
+    history.replaceState(null,null, updateQueryString("links", "0") );
+  } else {
+    history.replaceState(null,null, updateQueryString("links") );
+  }
 
-    }
+};
 
 
 window.onload = function () {
@@ -4101,7 +4122,7 @@ mFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 // Old Fashion because keymaster.js can't read keystrokes from iframes
 //////////////
 
-function processShortcut(e) {
+var processShortcut = function (e) {
 
   // Print Desktop
   if ( (e.ctrlKey || e.metaKey) && e.keyCode == 80 ) {
@@ -4127,7 +4148,7 @@ function processShortcut(e) {
     }
   }
 
-}
+};
 
 // Keymaster.js
 ///////////////
@@ -4166,9 +4187,9 @@ key('ctrl+0, ⌘+0', function() {
 ////////////////////
 
 
-function printDesktop() {
+var printDesktop = function () {
   desktopIframe.contentWindow.print();
-}
+};
 
 
 // Zoom the desktop view only.
@@ -4177,7 +4198,7 @@ var currentZoomLevel = "1";
 var zoomLevels     = ["0.25", "0.33", "0.5", "0.67", "0.75", "0.8", "0.9", "1", "1.1", "1.25", "1.5", "1.75", "2"];
 var zoomLevelsText = ["25%", "33%", "50%", "67%", "75%", "80%", "90%", "100%", "110%", "125%", "150%", "175%", "200%"];
 
-function zoom(direction) {
+var zoom = function (direction) {
 
   // console.log("zoom() function inititated");
   // console.log("zoom(direction): " + direction);
@@ -4210,7 +4231,7 @@ function zoom(direction) {
   if ( dFrameHTMLEle.style.zoom === "1") {
     dFrameZoomStatus.classList.remove("show");
   }
-}
+};
 
 
 
@@ -4257,7 +4278,7 @@ mFrameContents.addEventListener('scroll', function(e) {
 
 
 
-function syncScroll(targetFrame, iFrameObj) {
+var syncScroll = function (targetFrame, iFrameObj) {
 
   // console.log("syncScroll function activated.")
 
@@ -4303,7 +4324,7 @@ function syncScroll(targetFrame, iFrameObj) {
     matchingFrameScroll.contentWindow.scrollTo(0,matchingFramePos);
   }
 
-}
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4328,7 +4349,7 @@ function syncScroll(targetFrame, iFrameObj) {
 
 window.addEventListener('visibilitychange', activatePreflightNotifier, true);
 
-function activatePreflightNotifier() {
+var activatePreflightNotifier = function () {
 
   // console.log("activatePreflightNotifier initiated");
 
@@ -4358,7 +4379,7 @@ function activatePreflightNotifier() {
 
   }, 1000);
 
-}
+};
 activatePreflightNotifier();
 
 
@@ -4411,7 +4432,7 @@ COMPLETE ==========
 
 */
 
-function resetDesktopResize() {
+var resetDesktopResize = function () {
   if (resizeActive) {
     console.log("resetDesktopResize initiated");
     dFrameStartingWidth = desktopIframe.offsetWidth;
@@ -4423,7 +4444,7 @@ function resetDesktopResize() {
     desktopIframeWrapper.classList.add("full-sized");
     resizeActive = false;
   }
-}
+};
 
 
 
@@ -4531,7 +4552,7 @@ var j = 0;
 // When I click and hold on a drag handler...
 // interact('.resize-drag').on('hold', showdFrameWidthStatus(desktopIframe.offsetWidth, false, "hold") );
 
-function dragMoveListener (event) {
+var dragMoveListener = function (event) {
   var target = event.target,
       // keep the dragged position in the data-x/data-y attributes
       x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
@@ -4545,7 +4566,7 @@ function dragMoveListener (event) {
   // update the posiion attributes
   target.setAttribute('data-x', x);
   target.setAttribute('data-y', y);
-}
+};
 
 // this is used later in the resizing and gesture demos
 window.dragMoveListener = dragMoveListener;

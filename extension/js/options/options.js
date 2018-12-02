@@ -81,7 +81,7 @@ function createNewRule() {
     // On/Off
     var toggleRule = document.createElement("div");
     toggleRule.className = "tool tool-toggle tool-toggle-off";
-    toggleRule.innerHTML = svgToggleOff
+    toggleRule.innerHTML = svgToggleOff;
     toolsWrapper.appendChild(toggleRule);
 
   newRuleRow.appendChild(toolsWrapper);
@@ -198,110 +198,279 @@ function ruleFunctions(e) {
 /////////////////////////////////
 /////////////////////////////////
 
-function loadOptions() {
+// Self-executing function
 
-  var bkg = chrome.runtime.getBackgroundPage(function(bkg){
+          // (function(){
+          //
+          //   var bkg = chrome.runtime.getBackgroundPage(function(bkg){
+          //
+          //     var options = bkg.getOptions();
+          //     console.log(options);
+          //
+          //     //////
+          //     /// Dropbox
+          //     /////
+          //
+          //     console.error("hi!");
+          //
+          //     console.log("options.dropboxAccessToken", options.dropboxAccessToken);
+          //     // Dropbox Access Token
+          //     if(options.dropboxAccessToken !== '' && options.dropboxAccessToken !== undefined){
+          //       document.getElementById("dropboxAccessToken").value = options.dropboxAccessToken;
+          //     }
+          //
+          //     console.log("options.fullPathToDropboxFolder", options.fullPathToDropboxFolder);
+          //     // Dropbox Parent Folder
+          //     if(options.fullPathToDropboxFolder !== '' && options.fullPathToDropboxFolder !== undefined){
+          //       document.getElementById("fullPathToDropboxFolder").value = options.fullPathToDropboxFolder;
+          //     }
+          //
+          //     //////
+          //     /// Sending Tests
+          //     /////
+          //
+          //     console.log(options);
+          //     console.log(options.mailgunApiKey);
+          //
+          //     console.log("options.mailgunApiKey", options.mailgunApiKey);
+          //     // Mailgun API Key
+          //     if(options.mailgunApiKey !== '' && options.mailgunApiKey !== undefined){
+          //       document.getElementById("mailgunApiKey").value = options.mailgunApiKey;
+          //       console.log(options);
+          //       console.log(options.mailgunApiKey);
+          //     }
+          //
+          //     console.log("options.mailgunDomainName", options.mailgunDomainName);
+          //     // Mailgun Domain Name
+          //     if(options.mailgunDomainName !== '' && options.mailgunDomainName !== undefined){
+          //       document.getElementById("mailgunDomainName").value = options.mailgunDomainName;
+          //     }
+          //
+          //     //////
+          //     /// Open in App
+          //     /////
+          //
+          //     console.log(options)
+          //     console.log(options.openInApp)
+          //
+          //     console.log("options.openInApp", options.openInApp);
+          //
+          //     if(options.openInApp !== '' && options.openInApp !== undefined){
+          //       document.getElementById("openInApp").value = options.openInApp;
+          //       console.log(options)
+          //       console.log(options.openInApp)
+          //     }
+          //
+          //     //////
+          //     /// Link Validation
+          //     /////
+          //
+          //     if(options.cache == 'true'){
+          //       document.getElementById("cache").checked = true;
+          //     }
+          //
+          //     if(options.noFollow == 'true'){
+          //       document.getElementById("noFollow").checked = true;
+          //     }
+          //
+          //     if(options.parseDOM == 'true'){
+          //       document.getElementById("parseDOM").checked = true;
+          //     }
+          //
+          //     if(options.trailingHash == 'true'){
+          //       document.getElementById("trailingHash").checked = true;
+          //     }
+          //
+          //     if(options.emptyLink == 'true'){
+          //       document.getElementById("emptyLink").checked = true;
+          //     }
+          //
+          //     if(options.noHrefAttr == 'true'){
+          //       document.getElementById("noHrefAttr").checked = true;
+          //     }
+          //     if(options.autoCheck == 'true'){
+          //       document.getElementById("autoCheck").checked = true;
+          //     }
+          //
+          //     document.getElementById("blacklistEntries").value = options.blacklist.split(" ");
+          //     var requestType = document.getElementById("requestType");
+          //
+          //     for (var i = 0; i < requestType.children.length; i++) {
+          //       var requestTypechild = requestType.children[i];
+          //         if (requestTypechild.value == options.checkType) {
+          //         requestTypechild.selected = "true";
+          //         break;
+          //       }
+          //     }
+          //   });
+          // })();
 
-    var options = bkg.getOptions();
+(function(){
+
+  console.info("loading options");
+
+  chrome.storage.sync.get(function(options) {
+
     console.log(options);
 
-    //////
-    /// Dropbox
-    /////
+    // Being looping through each key/value pair
+    Object.keys(options).forEach(function (key) {
 
-    console.error("hi!");
+    	console.log("key:", key, "/ value:", options[key]); // The object key
+    	// console.log(options[key]); // The object value
 
-    console.log("options.dropboxAccessToken", options.dropboxAccessToken);
-    // Dropbox Access Token
-    if(options.dropboxAccessToken !== '' && options.dropboxAccessToken !== undefined){
-      document.getElementById("dropboxAccessToken").value = options.dropboxAccessToken;
-    }
 
-    console.log("options.fullPathToDropboxFolder", options.fullPathToDropboxFolder);
-    // Dropbox Parent Folder
-    if(options.fullPathToDropboxFolder !== '' && options.fullPathToDropboxFolder !== undefined){
-      document.getElementById("fullPathToDropboxFolder").value = options.fullPathToDropboxFolder;
-    }
+      var input = document.querySelector("[name='" + key + "']");
 
-    //////
-    /// Mailgun
-    /////
+      // If the key matched an input
+      if ( input ) {
 
-    console.log(options)
-    console.log(options.mailgunApiKey)
+        // Look for <input> tags first
+        if ( input.tagName === 'INPUT' ) {
 
-    console.log("options.mailgunApiKey", options.mailgunApiKey);
-    // Mailgun API Key
-    if(options.mailgunApiKey !== '' && options.mailgunApiKey !== undefined){
-      document.getElementById("mailgunApiKey").value = options.mailgunApiKey;
-      console.log(options)
-      console.log(options.mailgunApiKey)
-    }
+          if ( input.type === 'checkbox' ) {
+            if ( options[key] === '1' ) {
+              input.checked = true;
+            } else {
+              input.checked = false;
+            }
+          }
+          else if ( input.type === "text" ) {
+            input.value = options[key];
+          }
 
-    console.log("options.mailgunDomainName", options.mailgunDomainName);
-    // Mailgun Domain Name
-    if(options.mailgunDomainName !== '' && options.mailgunDomainName !== undefined){
-      document.getElementById("mailgunDomainName").value = options.mailgunDomainName;
-    }
+        }
 
-    //////
-    /// Open in App
-    /////
+        // look for <select> boxes
+        else if ( input.tagName === 'SELECT' ) {
 
-    console.log(options)
-    console.log(options.openInApp)
+          for (var i = 0; i < input.length; i++) {
+            if ( options[key] === input.options[i].value ) {
+              input.selectedIndex = i;
+              break;
+            }
+          }
 
-    console.log("options.openInApp", options.openInApp);
+        }
 
-    if(options.openInApp !== '' && options.openInApp !== undefined){
-      document.getElementById("openInApp").value = options.openInApp;
-      console.log(options)
-      console.log(options.openInApp)
-    }
+        // look for <textarea> boxes
+        else if ( input.tagName === 'TEXTAREA' ) {
+          input.value = options[key];
+        }
 
-    //////
-    /// Link Validation
-    /////
-
-    if(options.cache == 'true'){
-      document.getElementById("cache").checked = true;
-    }
-
-    if(options.noFollow == 'true'){
-      document.getElementById("noFollow").checked = true;
-    }
-
-    if(options.parseDOM == 'true'){
-      document.getElementById("parseDOM").checked = true;
-    }
-
-    if(options.trailingHash == 'true'){
-      document.getElementById("trailingHash").checked = true;
-    }
-
-    if(options.emptyLink == 'true'){
-      document.getElementById("emptyLink").checked = true;
-    }
-
-    if(options.noHrefAttr == 'true'){
-      document.getElementById("noHrefAttr").checked = true;
-    }
-    if(options.autoCheck == 'true'){
-      document.getElementById("autoCheck").checked = true;
-    }
-
-    document.getElementById("blacklistEntries").value = options.blacklist.split(" ");
-    var requestType = document.getElementById("requestType");
-
-    for (var i = 0; i < requestType.children.length; i++) {
-      var requestTypechild = requestType.children[i];
-        if (requestTypechild.value == options.checkType) {
-        requestTypechild.selected = "true";
-        break;
       }
-    }
+
+
+
+
+    });
+
   });
-}
+
+})();
+
+
+/*!
+ * Serialize all form data into an array
+ * (c) 2018 Chris Ferdinandi, MIT License, https://gomakethings.com
+ * @param  {Node}   form The form to serialize
+ * @return {String}      The serialized form data
+ */
+var serializeArray = function () {
+
+  // Get form
+  var form = document.getElementById("korra-options");
+
+	// Setup our serialized data
+	var serialized = [];
+
+  var bkg = chrome.runtime.getBackgroundPage(function(bkg){
+  	// Loop through each field in the form
+  	for (var i = 0; i < form.elements.length; i++) {
+
+  		var field = form.elements[i];
+
+  		// Don't serialize fields without a name, submits, buttons, file and reset inputs, and disabled fields
+  		if (!field.name || field.disabled || field.type === 'file' || field.type === 'reset' || field.type === 'submit' || field.type === 'button') continue;
+
+  		// If a multi-select, get all selections
+  		// if (field.type === 'select-multiple') {
+  		// 	for (var n = 0; n < field.options.length; n++) {
+  		// 		if (!field.options[n].selected) continue;
+  		// 		serialized.push({
+  		// 			name: field.name,
+  		// 			value: field.options[n].value
+  		// 		});
+  		// 	}
+  		// }
+
+      else if ( field.type === 'checkbox' ) {
+
+        if ( field.checked === true ) {
+          bkg.setItem(field.name, "1");
+        }
+        else {
+          bkg.setItem(field.name, "0");
+        }
+
+      }
+
+  		// Convert field data to a query string
+  		else if (field.type !== 'radio') {
+
+        bkg.setItem(field.name, field.value);
+
+  			serialized.push({
+  				name: field.name,
+  				value: field.value
+  			});
+
+  		}
+  	}
+	});
+
+  // Save successful.
+  ///////////////////
+  ///////////////////
+
+      var notificationIcon = document.getElementById("saved-notification");
+
+      // Stop any animations currently in progress.
+      if ( typeof hideSaveAnim !== 'undefined' ) {
+        clearTimeout(hideSaveAnim);
+      }
+
+      notificationIcon.classList.remove("hide");
+      notificationIcon.classList.remove("pop");
+      void notificationIcon.offsetWidth;
+
+      notificationIcon.classList.add("pop");
+
+      hideSaveAnim = setTimeout(function() {
+        notificationIcon.classList.remove("pop");
+        notificationIcon.classList.add("hide");
+      }, 1500);
+
+
+  //////////
+  //////////
+  console.log(serialized);
+	return serialized;
+
+};
+
+
+/////////////////////////////////
+/////////////////////////////////
+/////////////////////////////////
+//
+//
+//
+//
+//
+/////////////////////////////////
+/////////////////////////////////
+/////////////////////////////////
 
 function saveOptions() {
   console.log("running saveOptions()");
@@ -323,7 +492,7 @@ function saveOptions() {
       bkg.setItem("fullPathToDropboxFolder", fullPathToDropboxFolder);
 
       // Just the Dropbox folder name
-      var dropboxFolderName = fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"")
+      var dropboxFolderName = fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"");
       bkg.setItem("dropboxFolderName", dropboxFolderName);
 
       // Local user path
@@ -374,7 +543,37 @@ function deleteObjectStore(){
   }, 2000);
 }
 
-document.getElementById('save').addEventListener('click', saveOptions);
+
 document.getElementById('clearCache').addEventListener('click', deleteObjectStore);
 
-loadOptions();
+
+
+////////////////////////////
+////////////////////////////
+//
+//    Saving
+//
+////////////////////////////
+////////////////////////////
+
+// Listen for clicks on the save button
+document.getElementById('serialize').addEventListener('click', serializeArray);
+
+// Detect changes to inputs
+document.addEventListener('change', serializeArray, false);
+
+// CMD/CTRL+S Keyboard shortcut
+window.onkeydown = KeyPress;
+
+function KeyPress(e) {
+
+  // Get the event keycodes
+  var evtobj = window.event? event : e;
+
+  // Save
+  if ( (e.ctrlKey || e.metaKey) && evtobj.keyCode == 83 ) {
+    e.preventDefault();
+    serializeArray();
+  }
+
+}

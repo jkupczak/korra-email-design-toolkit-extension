@@ -35,15 +35,22 @@
      -->
   </head>
   <body>
-
     <div class="main" style="width:780px; height:580px; background:rebeccapurple; box-shadow:0 0 20px 20px green;">
+
       <div id="title">popup.html</div>
       <button id="reload-extension">Reload Korra</button>
 
       <div id="status"></div>
       <img id="image-result" hidden>
-    </div>
 
+      <div class="send-test">
+        <textarea id="email-code"></textarea>
+        <button id="sent-test">Send Test</button>
+      </div>
+
+    </div>
   </body>
+  <script src="js/utilities/load-options.js"></script>
+  <script src="js/utilities/mailgun.js"></script>
   <script src="popup.js"></script>
 </html>

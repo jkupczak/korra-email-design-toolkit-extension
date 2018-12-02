@@ -261,12 +261,15 @@ body:active ~ .toolkit-element-baseline-overlay {
 
 /* ================= */
 
-.text-error {
+.text-highlight {
   background: rgba(255, 244, 125, 0.6);
   color:#605c31;
   animation: textError .5s ease infinite;
 
-  border-radius:12px;
+  border-radius:16px;
+}
+.text-highlight.no-anim {
+  animation: none;
 }
   @keyframes textError {
     0%   {  box-shadow:0 0 0 4px rgba(255, 244, 125, 0.6); }
@@ -274,7 +277,7 @@ body:active ~ .toolkit-element-baseline-overlay {
     100% {  box-shadow:0 0 0 4px rgba(255, 244, 125, 0.6); }
   }
 
-.text-error.gmail-fix {
+.text-highlight.gmail-fix {
   background: rgba(146, 206, 255, 0.6);
   color:#314460;
   animation: gmailFix .5s ease infinite;
@@ -285,7 +288,15 @@ body:active ~ .toolkit-element-baseline-overlay {
     100% {  box-shadow:0 0 0 3px rgba(146, 206, 255, 0.6); }
   }
 
-.text-errors-off .text-error, .all-helpers-off .text-error {
+.text-highlight.esp-conditional {
+  background: rgba(192, 146, 255, 0.6);
+  box-shadow:0 0 0 4px rgba(192, 146, 255, 0.6);
+  color:#3f3160;
+  animation: none;
+  /* font-family:monospace; */
+}
+
+.text-highlights-off .text-highlight, .all-helpers-off .text-highlight {
   box-shadow: none;
   border-radius: 0;
   background: none;

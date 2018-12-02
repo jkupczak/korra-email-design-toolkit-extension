@@ -29,7 +29,7 @@ function getDbShareLink() {
 
       } else {
 
-        console.log("This page is a local file and the shareable link has not been retrieved yet. Running callDropbox().")
+        console.log("This page is a local file and the shareable link has not been retrieved yet. Running callDropbox().");
         callDropbox("copy", this);
 
       }
@@ -46,15 +46,15 @@ function callDropbox(action, source) {
     console.log("dropboxFolderName:", dropboxFolderName);
   console.groupEnd();
 
-  var dropboxEscapedParentFolder = escapeRegExp(dropboxFolderName)
+  var dropboxEscapedParentFolder = escapeRegExp(dropboxFolderName);
   var dropboxTestPattern = new RegExp("^.+?" + dropboxEscapedParentFolder, "gi");
 
   if ( dropboxTestPattern.test(document.URL) ) {
 
     console.log("Yes! This file exists in the local DropBox folder. [" + document.URL + "]");
 
-    var dropboxFilePath = document.URL.replace(dropboxTestPattern, "")
-    var dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "")
+    var dropboxFilePath = document.URL.replace(dropboxTestPattern, "");
+    var dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "");
     var dropboxFilePath = decodeURIComponent(dropboxFilePath); // the API does not accept encoded paths (eg %20 instead of a space)
 
     //

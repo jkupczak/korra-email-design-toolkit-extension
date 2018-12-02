@@ -656,7 +656,7 @@ function getDisciplineId(string) {
 
   else if ( /-(Physical)(\s|-|\.|$)/gi.test(trimmedString) )       { var disciplineId = "pt";     }
   else if ( /-Athletic(\s|-|\.|$)/gi.test(trimmedString) )         { var disciplineId = "at";     }
-  else if ( /-All(\-|\.|$)/gi.test(trimmedString) )                { var disciplineId = "all";    }
+  else if ( /-All(\-|\.|$)/gi.test(trimmedString) )                { var disciplineId = "multi";    }
 
   else { var disciplineId = undefined }
 
