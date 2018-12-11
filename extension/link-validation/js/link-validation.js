@@ -537,7 +537,7 @@ function validateLinks(linkObj, i) {
     ell = "";
   }
 
-  console.group("[" + iLog + "] " + linkHref.substring(0,70) + ell);
+  console.groupCollapsed("[" + iLog + "] " + linkHref.substring(0,70) + ell);
   console.log(linkObj);
 
   //

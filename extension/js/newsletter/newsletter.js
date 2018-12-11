@@ -312,51 +312,6 @@ if ( getParameterByName("presentation") === "1" ) {
   mainPane.appendChild(stagePreviewBtns);
 
 
-  function changeStage() {
-    console.log(event);
-    console.log(event.target);
-    console.log(event.target.data);
-    console.log(event.target.dataset);
-    console.log(event.target.dataset.stage);
-    console.log(this);
-
-    var btn = event.target;
-    var stage = event.target.dataset.stage;
-
-    btn.classList.toggle("active");
-
-    if ( stage === "text" ) {
-      plainTextStage.style.display = "flex";
-      codeStage.style.display = "none";
-      htmlStage.style.display = "none";
-
-      viewTextBtn.classList.add("active");
-      viewHtmlBtn.classList.remove("active");
-      viewCodeBtn.classList.remove("active");
-    }
-    else if ( stage === "code" ) {
-      codeStage.style.display = "flex";
-      plainTextStage.style.display = "none";
-      htmlStage.style.display = "none";
-
-      viewCodeBtn.classList.add("active");
-      viewTextBtn.classList.remove("active");
-      viewHtmlBtn.classList.remove("active");
-
-      // activateCodeStage();
-    }
-    else {
-      htmlStage.style.display = "flex";
-      plainTextStage.style.display = "none";
-      codeStage.style.display = "none";
-
-      viewHtmlBtn.classList.add("active");
-      viewTextBtn.classList.remove("active");
-      viewCodeBtn.classList.remove("active");
-    }
-
-
-  }
   //////////
   ////
   ////  This holds all of our various views.
@@ -1155,11 +1110,16 @@ if ( isLocalCampaign ) {
     var documentDesc = document.createElement("div");
     documentDesc.className = "document-desc";
 
+    var documentDescWrapper = document.createElement("div");
+    documentDescWrapper.className = "document-desc-wrapper";
+
+    documentDesc.appendChild(documentDescWrapper);
+
     if ( headerIcon ) {
       var documentIcon = document.createElement("div");
       documentIcon.innerHTML = headerIcon;
       documentIcon.className = "document-icon";
-      documentDesc.appendChild(documentIcon);
+      documentDescWrapper.appendChild(documentIcon);
     }
 
 
@@ -1208,7 +1168,7 @@ if ( isLocalCampaign ) {
       var documentTitle = document.createElement("div");
       documentTitle.innerHTML = headerAudienceText;
       documentTitle.className = "document-title";
-      documentDesc.appendChild(documentTitle);
+      documentDescWrapper.appendChild(documentTitle);
     }
 
 
@@ -1467,7 +1427,7 @@ function swapUrl() {
   combUnusedCssOrb.addEventListener("click", processHtmlforUnusedCss, false);
   orbsBottom.appendChild(combUnusedCssOrb);
 
-  function processHtmlforUnusedCss() {
+  var processHtmlforUnusedCss = function() {
 
     var html = cleanedOriginalHtml;
     var result = emailRemoveUnusedCss(html, {
@@ -1493,7 +1453,7 @@ function swapUrl() {
 
     // copyToClipboard(result.result, "success", true);
 
-  }
+  };
 
 
 
@@ -1511,7 +1471,7 @@ showDimsOrb.addEventListener("click", showDims, false);
 toolbarSectionOverlays.appendChild(showDimsOrb);
 var showDimsToggle = false;
 
-function showDims() {
+var showDims = function() {
 
   showDimsToggle = !showDimsToggle;
 
@@ -1647,7 +1607,7 @@ function showDims() {
   }
 
   toggleImgDims();
-}
+};
 
 
 //////////
@@ -1874,7 +1834,7 @@ styleOrb.addEventListener("click", toggleStyles, false);
 toolbarSectionContent.appendChild(styleOrb);
 var styleToggle = false;
 
-function toggleStyles() {
+var toggleStyles = function() {
 
   styleToggle = !styleToggle;
 
@@ -1912,7 +1872,7 @@ function toggleStyles() {
 
   document.getElementById("style-orb").classList.toggle("on");
 
-}
+};
 
 
 //////////
@@ -2177,7 +2137,7 @@ function toggleImages() {
 
 var imgDimsToggle = false;
 
-function toggleImgDims() {
+var toggleImgDims = function() {
 
   imgDimsToggle = !imgDimsToggle;
 
@@ -2422,16 +2382,16 @@ function processModuleText(moduleType) {
 /////
 /////////////////////////////
 
-function appendQaBar(newBar) {
+var appendQaBar = function(newBar) {
 
   newBar.className = "qa-bar";
   newBar.innerHTML = "<div class='qa-title'><div class='qa-icon'></div><div class='qa-text'>Processing...</div></div>";
   qaResults.appendChild(newBar);
 
-}
+};
 
 // After a test has concluded, run this function to update the icon that shows the status.
-function applyQaResults(qaBar, status, msg) {
+var applyQaResults = function(qaBar, status, msg) {
   qaBar.classList.add("finished", status);
   if ( status === "success" ) {
     qaBar.querySelector(".qa-icon").innerHTML = svgIconCheck;
@@ -2441,7 +2401,7 @@ function applyQaResults(qaBar, status, msg) {
   if ( msg ) {
     qaBar.querySelector(".qa-text").innerHTML = msg;
   }
-}
+};
 
 /////////////
 // QA RESULTS Container
@@ -2451,6 +2411,15 @@ var qaResults = document.createElement("div");
 qaResults.id = "qa-results";
 mainPane.appendChild(qaResults);
 
+/////////
+//// Temporary pane for show errors.
+/////////
+var errorLogWrapper = document.createElement("div");
+errorLogWrapper.className = "error-log-wrapper scrollable";
+var errorLogRows = document.createElement("div");
+errorLogRows.id = "error-log-rows";
+errorLogWrapper.appendChild(errorLogRows);
+mainPane.appendChild(errorLogWrapper);
 
 //////////
 ////
@@ -3062,7 +3031,16 @@ if (typeof moduleSettingsMenu != 'undefined') {
 ////////////
 
 
-
+try {
+  emailAllCharsWithinAscii(originalHtml);
+}
+catch(error) {
+  console.error(error);
+  var err = error.toString().replace(/^Error\:.+?: /i, "");
+  errorLog("error", err);
+  // expected output: SyntaxError: unterminated string literal
+  // Note - error messages will vary depending on browser
+}
 
 
 // role="presentation"
@@ -3119,6 +3097,11 @@ else if ( totalAccessibilityWarnings === 0 ) {
   applyQaResults(accessibilityWarningsQaBar, "success", "No Accessibility Warnings");
 }
 
+var updateQaBar = function(bar, errors, string) {
+  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
+  bar.dataset.errors = errors;
+};
+
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -3131,16 +3114,11 @@ else if ( totalAccessibilityWarnings === 0 ) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-function logAccessibilityWarning(object, id) {
+var logAccessibilityWarning = function(object, id) {
   console.error(id, object);
   totalAccessibilityWarnings++;
   updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings, " Accessibility Warnings");
-}
-
-function updateQaBar(bar, errors, string) {
-  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
-  bar.dataset.errors = errors;
-}
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3333,31 +3311,6 @@ if ( totalCodingBugs > 0 ) {
 else if ( totalCodingBugs === 0 ) {
   applyQaResults(codingBugsQaBar, "success", "No Coding Bugs Found");
 }
-
-
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
-/////    Log Coding Bugs
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-
-function logCodeBug(object, client, errorText) {
-  console.error("Coding Bug:", client, errorText, object);
-  totalCodingBugs++;
-  updateQaBar(codingBugsQaBar, totalCodingBugs, " Bugs Found");
-}
-
-function updateQaBar(bar, errors, string) {
-  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
-  bar.dataset.errors = errors;
-}
-
 
 
 

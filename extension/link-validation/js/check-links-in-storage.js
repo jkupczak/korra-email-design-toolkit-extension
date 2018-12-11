@@ -114,7 +114,7 @@ var linkStorage = function(){
   ////////////
   ////////////
   var getLink = function(url) {
-    // console.log("getLink", url)
+    // console.log("getLink", url);
 
     var promise = new Promise(function(resolve, reject){
 

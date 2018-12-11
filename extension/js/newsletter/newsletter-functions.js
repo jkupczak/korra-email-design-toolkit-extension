@@ -789,6 +789,32 @@ function containsObject(obj, list) {
 ///////////////////////////////////////
 /////
 /////
+/////
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var errorLog = function(type, string) {
+
+  errorLogRows.insertAdjacentHTML("beforeend", "<div class='error-log-row log-type-" + type + "'>" + string + "");
+
+};
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
 /////    Update preflight error total
 /////
 /////
@@ -856,3 +882,96 @@ function updatePreflightErrorTotal(type, i) {
 
   console.groupEnd();
 }
+
+
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+
+  var changeStage = function() {
+    console.log(event);
+    console.log(event.target);
+    console.log(event.target.data);
+    console.log(event.target.dataset);
+    console.log(event.target.dataset.stage);
+    console.log(this);
+
+    var btn = event.target;
+    var stage = event.target.dataset.stage;
+
+    btn.classList.toggle("active");
+
+    if ( stage === "text" ) {
+      plainTextStage.style.display = "flex";
+      codeStage.style.display = "none";
+      htmlStage.style.display = "none";
+
+      viewTextBtn.classList.add("active");
+      viewHtmlBtn.classList.remove("active");
+      viewCodeBtn.classList.remove("active");
+    }
+    else if ( stage === "code" ) {
+      codeStage.style.display = "flex";
+      plainTextStage.style.display = "none";
+      htmlStage.style.display = "none";
+
+      viewCodeBtn.classList.add("active");
+      viewTextBtn.classList.remove("active");
+      viewHtmlBtn.classList.remove("active");
+
+      // activateCodeStage();
+    }
+    else {
+      htmlStage.style.display = "flex";
+      plainTextStage.style.display = "none";
+      codeStage.style.display = "none";
+
+      viewHtmlBtn.classList.add("active");
+      viewTextBtn.classList.remove("active");
+      viewCodeBtn.classList.remove("active");
+    }
+
+
+  };
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Log Coding Bugs
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var logCodeBug = function(object, client, errorText) {
+  console.error("Coding Bug:", client, errorText, object);
+  errorLog("warning", errorText );
+  totalCodingBugs++;
+  updateQaBar(codingBugsQaBar, totalCodingBugs, " Bugs Found");
+};

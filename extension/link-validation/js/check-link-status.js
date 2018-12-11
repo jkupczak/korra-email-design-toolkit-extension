@@ -51,7 +51,7 @@ function onRequest(i, linkHref, linkObj) {
 
       // We're online
       // If the DOM needs to be parsed, or if we aren't caching links, then we need to XHR right now.
-      if ( XHRisNecessary(korraOptions) === true ) {
+      if ( XHRisNecessary(korraOptions) === '1' ) {
 
         //TODO we need to check if we're offline...
 
@@ -174,16 +174,16 @@ function applyXHRResultsToDupeLinks(linkHref, response, korraOptions) {
   // console.log("running applyXHRResultsToDupeLinks on links that match", linkHref);
 
   // Start a new loop through all links in the DOM
-  var i = 0
+  var i = 0;
   for (let linkObj of linkList) {
 
-    if ( linkInfoArray[i]['url'] === linkHref && linkInfoArray[i]['firstInstance'] === false ) {
+    if ( linkInfoArray[i].url === linkHref && linkInfoArray[i].firstInstance === false ) {
 
       processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions);
 
     }
 
-    i++
+    i++;
 
   }
 
@@ -235,23 +235,23 @@ function manualXHRLinkCheck() {
     console.log('removed');
 
     // Loop through all links and XHR them
-    var i = 0
+    var i = 0;
     for (let linkObj of linkList) {
 
       resetLinkMarker(linkMarkersList[i]);
 
       // Only check the link if checkStatus is true
-      if ( linkInfoArray[i]['checkStatus'] === true ) {
+      if ( linkInfoArray[i].checkStatus === true ) {
         // Skip links that are duplicates. When the original link is done being XHR'd we'll apply the results to all matching links.
-        if ( linkInfoArray[i]['firstInstance'] === true ) {
-          onRequest(i, linkInfoArray[i]['url'], linkObj);
+        if ( linkInfoArray[i].firstInstance === true ) {
+          onRequest(i, linkInfoArray[i].url, linkObj);
         }
       // checkStatus is False, so we're done. Turn off the loading icon.
       } else {
         linkMarkerDone(linkMarkersList[i]);
       }
 
-      i++
+      i++;
 
     }
   }, function(error) {
@@ -299,8 +299,10 @@ function processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions)
 
     // Make sure there are no overrides in place to prevent caching. Either on all links or this specific link.
     // If not, then add it to chrome.storage
-    if ( korraOptions.cache == 'true' && response.addToCache !== false ) {
+    console.log(korraOptions.cache, response.addToCache);
+    if ( korraOptions.cache === '1' && response.addToCache !== false ) {
       linkStorage.addLink(linkHref, response);
+    } else {
     }
 
   }
@@ -335,19 +337,19 @@ function checkIfArticleProtected(i, linkObj, response) {
   // console.error(i, "checkIfArticleProtected()");
 
   // Check Article Protected Status
-  if ( linkInfoArray[i]['isArticle'] ) {
+  if ( linkInfoArray[i].isArticle ) {
     // console.error(i, "isArticle = true");
 
     // Save the article's status to chrome.storage for use elsewhere.
     logArticleStatusInStorge(response.document);
 
     if ( isArticleProtected(response.document) ) {
-      linkInfoArray[i]['articleProtected'] = true;
+      linkInfoArray[i].articleProtected = true;
       response.articleProtected = true;
       response.addToCache = false;
       createLinkErrorRow(linkObj, "Article is protected.", "error", null, "lock");
     } else {
-      linkInfoArray[i]['articleProtected'] = false;
+      linkInfoArray[i].articleProtected = false;
       response.articleProtected = false;
     }
   } else {
@@ -383,21 +385,21 @@ function createLinkStatusRow(i, linkObj, response) {
     var cacheTimeString = moment().diff(moment(response.timestamp), 'days');
 
     if ( cacheTimeString <= 0 ) {
-      cacheTimeString = " today"
+      cacheTimeString = " today";
     } else if ( cacheTimeString === 1 ) {
-      cacheTimeString = cacheTimeString + " day ago"
+      cacheTimeString = cacheTimeString + " day ago";
     } else {
-      cacheTimeString = cacheTimeString + " days ago"
+      cacheTimeString = cacheTimeString + " days ago";
     }
 
     var sourceTime = "<korra-div id='last-checked'>" + cacheTimeString + "</korra-div>";
 
   } else if ( response.source == "offline" ) {
     var source = "Status";
-    var sourceTime = " not checked"
+    var sourceTime = " not checked";
   } else {
     var source = "Checked";
-    var sourceTime = " just now"
+    var sourceTime = " just now";
   }
 
   var statusCode = "";
@@ -452,7 +454,7 @@ function checkResponseURL(i, linkObj, response) {
   // If the pathname of the original non-tracking link is "/", then we intended to hit the homepage.
   // If its not, and we actually DID land on the homepage (by checking the code in the response), throw an error.
   // This means the page is broken/non-existant on MedBridge.
-  if ( linkInfoArray[i]['isMedBridgeBrandLink'] && !linkInfoArray[i]['hasTrackingLinkback'] && linkObj.pathname !== "/" && response.isHomepage ) {
+  if ( linkInfoArray[i].isMedBridgeBrandLink && !linkInfoArray[i].hasTrackingLinkback && linkObj.pathname !== "/" && response.isHomepage ) {
 
     createLinkErrorRow(linkObj, "MedBridge URL does not exist.");
 
@@ -460,7 +462,7 @@ function checkResponseURL(i, linkObj, response) {
 
   // TRACKING LINKS
   /////////////////
-  if ( linkInfoArray[i]['isMedBridgeBrandLink'] && linkInfoArray[i]['hasTrackingLinkback'] ) {
+  if ( linkInfoArray[i].isMedBridgeBrandLink && linkInfoArray[i].hasTrackingLinkback ) {
 
     // Check succesful redirection of tracking links on MedBridge
     // Non-existant MedBridge pages just land on the homepage with the tracking URL intact.
@@ -486,7 +488,7 @@ function checkResponseURL(i, linkObj, response) {
 
     }
 
-    else if ( isMedBridgeHomepage(response.document) && ( !/^(\/|)$/.test(linkInfoArray[i]['querystring']['after_affiliate_url']) && !/^(\/|)$/.test(linkObj.pathname) ) ) {
+    else if ( isMedBridgeHomepage(response.document) && ( !/^(\/|)$/.test(linkInfoArray[i].querystring.after_affiliate_url) && !/^(\/|)$/.test(linkObj.pathname) ) ) {
 
       createLinkErrorRow(linkObj, "MedBridge URL does not exist.");
       response.addToCache = false;
@@ -533,7 +535,7 @@ function checkURL(i, linkHref, linkObj) {
         response.source = "xhr";
 
         // Set Status
-        response.status = xhr.status
+        response.status = xhr.status;
 
         if ( xhr.status !== 0 ) {
 
@@ -552,7 +554,7 @@ function checkURL(i, linkHref, linkObj) {
         // Else, the status came back as 0. Which means we couldn't connect at all. Likely because the URL is mistyped.
         // This is different from not being able to connect because we have no internet.
         } else {
-          response.statusText = "Error"
+          response.statusText = "Error";
         }
 
         resolve(response);
@@ -633,7 +635,7 @@ function assignErrorRows(i, linkHref, linkObj, response) {
 // If so, XHR is necessary.
 ////////
 function XHRisNecessary(korraOptions, linkHref) {
-  if ( shouldDOMbeParsed(linkHref, korraOptions.parseDOM) === true || korraOptions.cache == 'false' ) {
+  if ( shouldDOMbeParsed(linkHref, korraOptions.parseDOM) === '1' || korraOptions.cache === '0' ) {
     return true;
   }
   return false;

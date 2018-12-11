@@ -2,7 +2,7 @@
 
   "manifest_version": 2,
 
-  "name": "Korra for Email: Design Toolkit & QA Automation",
+  "name": "Korra for Email: Design & QA Automation",
   "version": "3.8.6",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
@@ -108,7 +108,8 @@
         "link-validation/js/check-link-status.js",
         "js/utilities/is-article-protected.js",
         "js/newsletter/newsletter-functions.js",
-        "js/utilities/mailgun.js"
+        "js/utilities/mailgun.js",
+        "js/libs/email-all-chars-within-ascii.umd.js"
       ],
 
       "run_at": "document_start"
