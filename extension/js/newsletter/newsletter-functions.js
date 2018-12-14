@@ -891,7 +891,7 @@ function updatePreflightErrorTotal(type, i) {
 ///////////////////////////////////////
 /////
 /////
-/////    
+/////
 /////
 /////
 ///////////////////////////////////////
@@ -951,6 +951,20 @@ function updatePreflightErrorTotal(type, i) {
 
   };
 
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var updateQaBar = function(bar, errors, string) {
+  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
+  bar.dataset.errors = errors;
+};
+
+
+
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -963,6 +977,7 @@ function updatePreflightErrorTotal(type, i) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+
 /**
  * [someFunction description]
  * @param  {[type]} arg1 [description]
@@ -974,4 +989,30 @@ var logCodeBug = function(object, client, errorText) {
   errorLog("warning", errorText );
   totalCodingBugs++;
   updateQaBar(codingBugsQaBar, totalCodingBugs, " Bugs Found");
+};
+
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Log Accessibility Warnings
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var logAccessibilityWarning = function(object, id) {
+  console.error(id, object);
+  totalAccessibilityWarnings++;
+  updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings, " Accessibility Warnings");
 };

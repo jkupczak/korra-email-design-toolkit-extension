@@ -498,7 +498,10 @@ if ( getParameterByName("presentation") === "1" ) {
   //     Used to gather data about the desktop and mobile views on page load.
   //     Necessary because our normal, visible iframes for desktop and mobile could load at different widths.
   //     For example, our normal desktop view might load at a mobile width because the browser window is too small.
-  //     Or the normal mobiel view might not load at all because it was set to hidden on the previous page load.
+  //     Or the normal mobile view might not load at all because it was set to hidden on the previous page load.
+  //
+  //     The dummy view can be loaded in the background at a set width to simulate desktop and mobile.
+  //     And since it's hidden, we don't have to have CSS that adjusts it for UI/UX purposes.
   //
   //////////////////////
 
@@ -2409,17 +2412,8 @@ var applyQaResults = function(qaBar, status, msg) {
 
 var qaResults = document.createElement("div");
 qaResults.id = "qa-results";
+qaResults.className = "scrollable";
 mainPane.appendChild(qaResults);
-
-/////////
-//// Temporary pane for show errors.
-/////////
-var errorLogWrapper = document.createElement("div");
-errorLogWrapper.className = "error-log-wrapper scrollable";
-var errorLogRows = document.createElement("div");
-errorLogRows.id = "error-log-rows";
-errorLogWrapper.appendChild(errorLogRows);
-mainPane.appendChild(errorLogWrapper);
 
 //////////
 ////
@@ -2838,6 +2832,17 @@ textWarningsQaBar.className = "qa-text-warnings";
 // appendQaBar(textWarningsQaBar);
 
 
+/////////
+//// Temporary pane for show errors.
+/////////
+var errorLogWrapper = document.createElement("div");
+errorLogWrapper.className = "error-log-wrapper";
+var errorLogRows = document.createElement("div");
+errorLogRows.id = "error-log-rows";
+errorLogWrapper.appendChild(errorLogRows);
+qaResults.appendChild(errorLogWrapper);
+
+
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3097,28 +3102,7 @@ else if ( totalAccessibilityWarnings === 0 ) {
   applyQaResults(accessibilityWarningsQaBar, "success", "No Accessibility Warnings");
 }
 
-var updateQaBar = function(bar, errors, string) {
-  bar.querySelectorAll(".qa-text")[0].innerHTML = errors + string;
-  bar.dataset.errors = errors;
-};
 
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
-/////    Log Accessibility Warnings
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-
-var logAccessibilityWarning = function(object, id) {
-  console.error(id, object);
-  totalAccessibilityWarnings++;
-  updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings, " Accessibility Warnings");
-};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3155,9 +3139,8 @@ var logAccessibilityWarning = function(object, id) {
 (function(){
 
   console.group("[Bug Check] Outlook: Lack of Padding Support");
-  // console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
 
-  let els = dFrameContents.querySelectorAll("a, p, div");
+  let els = dummyFrameContents.querySelectorAll("a, p, div");
   for (let el of els) {
 
     if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
@@ -3180,7 +3163,6 @@ var logAccessibilityWarning = function(object, id) {
 (function(){
 
   console.group("[Bug Check] Outlook: <a> tags cannot link <table> elements");
-  // console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
 
   let els = dFrameContents.querySelectorAll("a table");
   for (let el of els) {
