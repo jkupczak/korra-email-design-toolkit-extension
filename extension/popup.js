@@ -1,18 +1,17 @@
 console.log("popup.html loaded");
 /////////////////////////////////
 
-
-chrome.history.search({
-      'text': 'POST',
-      'maxResults': 50,
-  }, function(historyItems){
-});
-
-function historyItems() {
-
-  console.log("historyItems()");
-
-}
+// chrome.history.search({
+//       'text': 'POST',
+//       'maxResults': 50,
+//   }, function(historyItems){
+// });
+//
+// function historyItems() {
+//
+//   console.log("historyItems()");
+//
+// }
 
 document.body.style = "color:red !important;";
 
@@ -147,9 +146,53 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
+///////////////
+///////////////
+///////////////
 document.getElementById("sent-test").addEventListener("click", function() {
 
-  sendEmail( document.getElementById("email-code").value );
+  sendEmail( document.getElementById("send-email-code").value );
 
 }, false);
+
+
+///////////////
+///////////////
+///////////////
+document.getElementById("preview-email").addEventListener("click", function() {
+
+  previewEmail( document.getElementById("preview-email-code").value );
+
+}, false);
+
+
+var previewEmail = function(code) {
+  console.log(code);
+
+  var uniqueId = "unsavedCode-" + uuidv4();
+
+  var bkg = chrome.runtime.getBackgroundPage(function(bkg){
+
+    bkg.setItem(uniqueId, code, "local");
+
+    chrome.tabs.create({
+      url: 'preview.html?unsaved-file=' + uniqueId
+    }, callback);
+
+    function callback(data) {
+      console.log(data);
+    }
+
+  });
+
+};
+
+
+///////////////
+///////////////
+///////////////
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}

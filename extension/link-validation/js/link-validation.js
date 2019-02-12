@@ -2,7 +2,7 @@
 var totalLinkErrors = 0;
 var totalLinkWarnings = 0;
 
-function launchLinkValidation(source, frameContentsPassed, ageCheck, errorBox, dummyLinkList) {
+function launchLinkValidation(source, frameContentsPassed, errorBox, dummyLinkList) {
 
   // Get our options from chrome.storage.async
   var getAllOptions = new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ function launchLinkValidation(source, frameContentsPassed, ageCheck, errorBox, d
 
             // Now that we have our options, we can run the link check
             ///////
-            linkValidationLoop(source, frameContentsPassed, ageCheck, errorBox, dummyLinkList);
+            linkValidationLoop(source, frameContentsPassed, errorBox, dummyLinkList);
 
           }
       });
@@ -50,11 +50,12 @@ function launchLinkValidation(source, frameContentsPassed, ageCheck, errorBox, d
 
 /**
  * [someFunction description]
- * @param  {[type]} arg1 [description]
- * @param  {[type]} arg2 [description]
- * @return {[type]}      [description]
+ * @param  {[string]} source [where the links are located]
+ * @param  {[object]} frameContentsPassed [the frame where the links are located]
+ * @param  {[type]}   errorBoxPassed [location where the errors should be logged]
+ * @param  {[type]}   dummyLinkList [a list of links from a separate copy of the main frame]
  */
-function linkValidationLoop(source, frameContentsPassed, ageCheck, errorBoxPassed, dummyLinkList) {
+var linkValidationLoop = function (source, frameContentsPassed, errorBoxPassed, dummyLinkList) {
 
 // Make the frameContents a global variable
 /////////////
@@ -531,13 +532,18 @@ function validateLinks(linkObj, i) {
 
   // Check link url length
   var ell;
-  if ( linkHref.length > 70 ) {
-    ell = "...";
-  } else {
-    ell = "";
+  if ( linkHref ) {
+    if ( linkHref.length > 70 ) {
+      ell = linkHref.substring(0,70) + "...";
+    } else {
+      ell = linkHref;
+    }
+  }
+  else {
+    ell = "no href attribute";
   }
 
-  console.groupCollapsed("[" + iLog + "] " + linkHref.substring(0,70) + ell);
+  console.groupCollapsed("[" + iLog + "] " + ell);
   console.log(linkObj);
 
   //
@@ -631,17 +637,16 @@ function validateLinks(linkObj, i) {
 
   // Assign a type to the URL based on how its written
   // mailto
-  if ( linkObj.protocol === "mailto:" ) {
-    singleLinkInfoArray.type = "mailto"; //mailto link
-    singleLinkInfoArray.checkStatus = false;
-
-  // empty link
-  } else if ( linkHref === "" ) {
+  if ( !linkHref || linkHref === "" ) {
     singleLinkInfoArray.type = "empty"; //empty
     singleLinkInfoArray.checkStatus = false;
 
+  } else if ( linkObj.protocol === "mailto:" ) {
+    singleLinkInfoArray.type = "mailto"; //mailto link
+    singleLinkInfoArray.checkStatus = false;
+
   // merge tags
-} else if ( /^\*\|.+?\|\*$/.test(linkHref) ) {
+  } else if ( /^\*\|.+?\|\*$/.test(linkHref) ) {
     singleLinkInfoArray.espMergeTag = "mailchimp";
     singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
     singleLinkInfoArray.checkStatus = false;
@@ -709,11 +714,22 @@ function validateLinks(linkObj, i) {
   ////////////////
   ////////////////
 
+  // If the link doesn't have an href attribute, stop this loop.
+  if ( !linkHref ) {
+    createLinkErrorRow(linkObj, "Missing href attribute.");
+    // linkMarkerDone(linkMarker);
+  }
+
+  // Empty link? Skip it.
+  ///////////////////////
+  else if ( linkHref === "" ) {
+    createLinkErrorRow(linkObj, "Empty Link.");
+  }
 
   // VALIDATE MERGE TAGS
   //////////////////////
   // If this is a merge tag link - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
-  if ( singleLinkInfoArray.type === "merge tag" ) {
+  else if ( singleLinkInfoArray.type === "merge tag" ) {
 
     // Links in an email for the GetResponse Platform
     if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(linkHref) ) { // Look for MailChimp and SendGrid merge tags.
@@ -740,12 +756,6 @@ function validateLinks(linkObj, i) {
   ///////////////////
   else if ( singleLinkInfoArray.type === "mailto" ) {
     // @ TODO
-  }
-
-  // Empty link? Skip it.
-  ///////////////////////
-  else if ( linkHref === "" ) {
-    createLinkErrorRow(linkObj, "Empty Link.");
   }
 
   // VALIDATE ALL OTHER LINKS
@@ -1075,10 +1085,12 @@ function validateLinks(linkObj, i) {
       // console.log("emailDate.getMonth(); " + emailDate.getMonth());
 
       // Check the date in a tracking URL if the email's filename has a date in it to match against
-      if ( emailDate.getMonth() ) {
-        var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
-        if ( !monthPattern.test(linkHref) ) {
-          createLinkErrorRow(linkObj, "Link should include '-" + emailMonthAbbr + "-' to match month in filename.");
+      if ( labelsAvailable ) {
+        if ( emailDate.getMonth() ) {
+          var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
+          if ( !monthPattern.test(linkHref) ) {
+            createLinkErrorRow(linkObj, "Link should include '-" + emailMonthAbbr + "-' to match month in filename.");
+          }
         }
       }
 
@@ -1244,7 +1256,7 @@ function validateLinks(linkObj, i) {
     if ( singleLinkInfoArray.contentLinked === 'mixed' || singleLinkInfoArray.contentLinked === 'text' ) {
 
       // Request a Demo
-      if ( ( /(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref) ) || (!/(Group Pricing|Part of an organization|Request (Group|a Demo|Info))|Pricing|Request/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
+      if ( ( /(Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref) ) || (!/(Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
         createLinkErrorRow(linkObj, "Text and URL are inconsistent (Demo Request related).");
       }
       // Request EMR Integration
@@ -1401,7 +1413,7 @@ function validateLinks(linkObj, i) {
 
       // If the email has a discipline, the link to the courses page needs one too.
       // Check the discipline of the email against the hashtag that's being used for links meant to go to the courses page
-      if ( emailDisc === "multi" || emailDisc === "all" || emailDisc === null || emailDisc === undefined ) {
+      if ( emailDisc === "enterprise" || emailDisc === "ent" || emailDisc === "multi" || emailDisc === "all" || emailDisc === null || emailDisc === undefined ) {
 
         // Removed on 9/25/18
         // I was editing a Pardot campaign that had no discipline set. But we were linking to the #nursing category of the courses page.
@@ -1606,7 +1618,6 @@ function validateLinks(linkObj, i) {
 function verifyLinkVisibility(linkList) {
 
   // Modify this to use the dummyIframe for both desktop and mobile so that we can avoid errors.
-
   // Get link position in desktop view and check desktop visibility
   var i = 0;
   for (let linkObj of linkList) {
@@ -1620,11 +1631,10 @@ function verifyLinkVisibility(linkList) {
       linkInfoArray[i].desktopVisibile = true;
     }
     i++;
+
   }
 
-
   // Get link position in mobile view and check mobile visibility
-
   // Change dummy iframe width to be mobile sized.
   dummyIframe.style.width = "360px";
 
@@ -1646,6 +1656,8 @@ function verifyLinkVisibility(linkList) {
   // We're done here. Kill the dummy iframe.
   // 4/28/18 - Actually, keep it. We'll use it to generate the plaintext.
   // destroy(dummyIframe);
+
+  console.log("end verifyLinkVisibility");
 
 }
 

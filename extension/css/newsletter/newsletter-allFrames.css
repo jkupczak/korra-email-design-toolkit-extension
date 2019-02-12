@@ -266,7 +266,7 @@ body:active ~ .toolkit-element-baseline-overlay {
   color:#605c31;
   animation: textError .5s ease infinite;
 
-  border-radius:16px;
+  border-radius:999px;
 }
 .text-highlight.no-anim {
   animation: none;

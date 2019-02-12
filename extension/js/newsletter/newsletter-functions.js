@@ -805,7 +805,9 @@ function containsObject(obj, list) {
  */
 var errorLog = function(type, string) {
 
-  errorLogRows.insertAdjacentHTML("beforeend", "<div class='error-log-row log-type-" + type + "'>" + string + "");
+  console.log(string);
+  console.log(escapeXml(string));
+  errorLogRows.insertAdjacentHTML("beforeend", "<div class='error-log-row log-type-" + type + "'>" + escapeXml(string) + "");
 
 };
 
@@ -984,7 +986,7 @@ var updateQaBar = function(bar, errors, string) {
  * @param  {[type]} arg2 [description]
  * @return {[type]}      [description]
  */
-var logCodeBug = function(object, client, errorText) {
+var logCodeBug = function(object, client, errorText, type) {
   console.error("Coding Bug:", client, errorText, object);
   errorLog("warning", errorText );
   totalCodingBugs++;

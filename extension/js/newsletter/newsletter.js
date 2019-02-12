@@ -182,10 +182,14 @@ if ( view !== "1" ) {
 ////////////////////
 ///
 ///    Clean the page of the original HTML and styling before restructuring it.
+///    Only do this if we're transforming a local html file that hasn't been loaded on a chrome extension page.
+///    i.e. we're at file:///
 ///
 ////////////////////
 ////////////////////
 ////////////////////
+
+if ( environment === "local" ) {
 
   // Destroy all <style> tags.
   let styleBlocks = document.querySelectorAll("style");
@@ -207,6 +211,7 @@ if ( view !== "1" ) {
   var newBody = document.createElement("body");
   insertAfter(newBody, document.head);
 
+}
 
 
 //////////////////////
@@ -247,10 +252,12 @@ if ( getParameterByName("presentation") === "1" ) {
 //////////
 
 
-  // Create Main Container
-  var mainContainer = document.createElement("div");
-  mainContainer.className = "main-container";
-  document.body.appendChild(mainContainer);
+  // 2/11/19 - Removed as part of the switch to using an extension page.
+  //// Create Main Container
+  // var mainContainer = document.createElement("div");
+  // mainContainer.className = "main-container";
+  // document.body.appendChild(mainContainer);
+  var mainContainer = document.getElementById("main-container");
 
 
 //////////
@@ -266,10 +273,12 @@ if ( getParameterByName("presentation") === "1" ) {
   ////
   /////////
 
-  // Create the "panes" div that will hold all left-hand side UIs.
-  var panes = document.createElement("div");
-  panes.className = "panes";
-  mainContainer.appendChild(panes);
+  // 2/11/19 - Removed as part of the switch to using an extension page.
+  // // Create the "panes" div that will hold all left-hand side UIs.
+  // var panes = document.createElement("div");
+  // panes.className = "panes";
+  // mainContainer.appendChild(panes);
+  var panes = document.getElementById("panes");
 
           // Create Split View
           // console.log("activate split mode");
@@ -322,11 +331,12 @@ if ( getParameterByName("presentation") === "1" ) {
   ////
   /////////
 
-  // Create the Stage
-  var stagesWrapper = document.createElement("div");
-  stagesWrapper.className = "stages";
-  mainContainer.appendChild(stagesWrapper);
-
+  // 2/11/19 - Removed as part of the switch to using an extension page.
+  // // Create the Stage
+  // var stages = document.createElement("div");
+  // stages.className = "stages";
+  // mainContainer.appendChild(stages);
+  var stages = document.getElementById("stages");
 
 
   //////////
@@ -338,7 +348,7 @@ if ( getParameterByName("presentation") === "1" ) {
   // Create the Stage
   var htmlStage = document.createElement("div");
   htmlStage.classList.add("stage", "html-stage");
-  stagesWrapper.appendChild(htmlStage);
+  stages.appendChild(htmlStage);
 
 
   //////////////////////
@@ -429,7 +439,7 @@ if ( getParameterByName("presentation") === "1" ) {
   var codeStage = document.createElement("div");
   codeStage.classList.add("stage", "code-stage");
   codeStage.style.display = "none";
-  stagesWrapper.appendChild(codeStage);
+  stages.appendChild(codeStage);
 
   // function activateCodeStage() {
 
@@ -443,7 +453,7 @@ if ( getParameterByName("presentation") === "1" ) {
       autoRefresh: true, // https://github.com/codemirror/CodeMirror/issues/798
       lineWrapping: true,
       styleSelectedText: true,
-      viewportMargin: Infinity,
+      // viewportMargin: Infinity, // This really really slows down CodeMirror when you're viewing a big file. disabled on 1/16/18
 
             foldGutter: {
                 rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.xml, CodeMirror.fold.brace, CodeMirror.fold.comment)
@@ -602,25 +612,26 @@ if ( getParameterByName("presentation") === "1" ) {
 ///////////
 // var pageUrl = document.URL;
 // Piece the URL together to prevent using a URL that has querystring parameters.
-var pageUrl = document.location.origin + document.location.pathname;
+// var pageUrl = document.location.origin + document.location.pathname; // changed to fileLocation
 
-if ( /dropboxusercontent/gi.test(pageUrl) ) {
+if ( /dropboxusercontent/gi.test(fileLocation) ) {
   var onDropbox = true;
-} else if ( /^file\:\/\/\//gi.test(pageUrl) ) {
+} else if ( /^chrome-extension\:|file\:\/\/\//gi.test(fileLocation) && savedFile ) {
   var isLocalFile = true;
-} else if ( /\/\/localhost\:/gi.test(pageUrl) ) {
+} else if ( /\/\/localhost\:/gi.test(fileLocation) ) {
   var isLocalHost = true;
-  if ( /localhost\:4567/gi.test(pageUrl) ) {
+  if ( /localhost\:4567/gi.test(fileLocation) ) {
     var onMiddleman = true;
   }
-} else if ( /mailchimp\.com\/campaigns\/preview\-content\-html\?id\=/i.test(pageUrl) ) {
+} else if ( /mailchimp\.com\/campaigns\/preview\-content\-html\?id\=/i.test(fileLocation) ) {
   var isMailChimpCampaign = true;
 }
 
+var isLocalCampaign;
 if ( isLocalFile || isLocalHost ) {
-
-  var isLocalCampaign = true;
-
+  isLocalCampaign = true;
+} else {
+  isLocalCampaign = false;
 }
 
 // Check if the current file is in the local Dropbox folder by checking what was entered in the options page against the document URL.
@@ -630,13 +641,13 @@ if ( isLocalFile || isLocalHost ) {
 // var re = escapeRegExp(dropboxFolderName);
 //     re = new RegExp(re,"i");
 //
-// if ( re.test(pageUrl) ) {
+// if ( re.test(fileLocation) ) {
 //   var inLocalDbFolder = true;
 // } else {
 //   var inLocalDbFolder = false;
 // }
 
-if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(pageUrl) ) {
+if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(fileLocation) ) {
   var inLocalDbFolder = true;
   // console.error("yes!");
 } else {
@@ -647,37 +658,28 @@ if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(pageUrl) ) {
 ///////////
 ///// Get Discipline
 ///////////
+
 if ( isLocalCampaign ) {
-
-      ///////////
-      ///// Get the filename.
-      ///////////
-      var fileName = getFilename(pageUrl);
-
-      ///////////
-      ///// Get the filepath.
-      ///////////
-      var filepath = pageUrl;
 
       ///////////
       ///// Get the Discipline
       ///////////
-      var emailDisc = getDisciplineId(fileName);
+      var emailDisc = getDisciplineId(filename);
 
       ///////////
       ///// Get the A/B Status.
       ///////////
-      var abTesting = getABstatus(fileName);
+      var abTesting = getABstatus(filename);
 
       ///////////
       ///// Get Email Title
       ///////////
-      var emailTitle = getEmailTitle(fileName, emailDisc);
+      var emailTitle = getEmailTitle(filename, emailDisc);
 
       ///////////
       ///// Get Date of Email
       ///////////
-      var emailDate = getEmailDate(fileName) || new Date();
+      var emailDate = getEmailDate(filename) || new Date();
 
       ///////////
       ///// Get Date of Email
@@ -698,13 +700,13 @@ if ( isLocalCampaign ) {
 
       var emailPlatform;
       var emailPlatformName;
-      if ( /^GR\-/i.test(fileName) ) {
+      if ( /^GR\-/i.test(filename) ) {
         emailPlatform = "gr";
         emailPlatformName = "GetResponse";
-      } else if ( /^SG\-/i.test(fileName) ) {
+      } else if ( /^SG\-/i.test(filename) ) {
         emailPlatform = "sg";
         emailPlatformName = "SendGrid";
-      } else if ( /\/Pardot\//i.test(filepath) ) {
+      } else if ( /\/Pardot\//i.test(filePath) ) {
         emailPlatform = "pd";
         emailPlatformName = "Pardot";
       } else {
@@ -719,12 +721,12 @@ if ( isLocalCampaign ) {
 
       if ( inLocalDbFolder ) {
 
-        var filenameEscaped = escapeRegExp(fileName);
+        var filenameEscaped = escapeRegExp(filename);
         var filenameReplacePattern = new RegExp(filenameEscaped + "($|.+?)", "gi");
 
       // TODO fix this
 
-        var localParentFolder = pageUrl.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, '');
+        var localParentFolder = fileLocation.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, '');
 
             localParentFolder = localParentFolder.replace(filenameReplacePattern, "");
 
@@ -759,24 +761,24 @@ var emailSubType;
 var emailOrgName;
 var emailSubTypeName;
 
-if ( /(_|\-)ns( +|(%20)+)?[_\.\-\(]/gi.test(pageUrl) ) {
+if ( /(_|\-)ns( +|(%20)+)?[_\.\-\(]/gi.test(fileLocation) ) {
   emailSubType = "ns";
   emailSubTypeName = "Non-Subscribers";
-} else if ( /(_|\-)sub( +|(%20)+)?[_\.\-\(]/gi.test(pageUrl) ) {
+} else if ( /(_|\-)sub( +|(%20)+)?[_\.\-\(]/gi.test(fileLocation) ) {
   emailSubType = "sub";
   emailSubTypeName = "Subscribers";
 }
-if ( /\-Fox\-/gi.test(pageUrl) ) {
+if ( /\-Fox\-/gi.test(fileLocation) ) {
   emailSubType = "sub";
   emailOrgName = "fox";
   emailSubTypeName = "Subscribers";
 }
-if ( /\-(EH|HS)\-/gi.test(pageUrl) ) {
+if ( /\-(EH|HS)\-/gi.test(fileLocation) ) {
   emailSubType = "sub";
   emailOrgName = "hs";
   emailSubTypeName = "Subscribers";
 }
-if ( /\-DR\-/gi.test(pageUrl) ) {
+if ( /\-DR\-/gi.test(fileLocation) ) {
   emailSubType = "sub";
   emailOrgName = "dr";
   emailSubTypeName = "Subscribers";
@@ -788,7 +790,7 @@ if ( /\-DR\-/gi.test(pageUrl) ) {
 ///////////
 
 var outsideOrg = false;
-if ( /\-(EH|HS|DR|Fox)\-/gi.test(pageUrl) ) {
+if ( /\-(EH|HS|DR|Fox)\-/gi.test(fileLocation) ) {
   outsideOrg = true;
 }
 
@@ -802,10 +804,10 @@ var emailAnySale = false;
 var emailSale = false;
 var emailPresale = false;
 
-if ( /\-Sale\-/gi.test(pageUrl) ) {
+if ( /\-Sale\-/gi.test(fileLocation) ) {
   emailSale = true;
   emailAnySale = true;
-} else if ( /\-Presale\-/gi.test(pageUrl) ) {
+} else if ( /\-Presale\-/gi.test(fileLocation) ) {
   emailPresale = true;
   emailAnySale = true;
 }
@@ -834,9 +836,9 @@ console.groupCollapsed("Global variables based on filename");
   console.groupEnd();
 
   console.group("Location");
-    console.log("pageUrl = " + pageUrl);
+    console.log("fileLocation = " + fileLocation);
     console.log("inLocalDbFolder = " + inLocalDbFolder);
-    console.log("fileName = " + fileName);
+    console.log("filename = " + filename);
   console.groupEnd();
 
   console.log("abTesting = " + abTesting);
@@ -888,10 +890,6 @@ dFrameSizeStatus.appendChild(dFrameZoomStatus);
 desktopIframeResizeWrapper.appendChild(dFrameSizeStatus);
 
 var fadeWidthStatus;
-
-
-// Watch window for resizing. If it's resized, reset the desktopIframe
-window.addEventListener('resize', resetDesktopResize, true);
 
 var showdFrameWidthStatus = function (currentWidth, override, source) {
 
@@ -1021,11 +1019,11 @@ if ( isLocalCampaign ) {
     var abTitleIcon = "";
     if ( abTesting === "a" || abTesting === "b" ) {
       if ( abTesting === "a" ) {
-        var abUrl = pageUrl.replace(/\-a\./gi, "-b.");
+        var abUrl = fileLocation.replace(/\-a\./gi, "-b.");
         var abTestingUpper = "A";
         var abTestingOpposite = "B";
       } else {
-        var abUrl = pageUrl.replace(/\-b\./gi, "-a.");
+        var abUrl = fileLocation.replace(/\-b\./gi, "-a.");
         var abTestingUpper = "B";
         var abTestingOpposite = "A";
       }
@@ -1089,6 +1087,13 @@ if ( isLocalCampaign ) {
           } else {
             iconCode = svgNRns;
           }
+      // ENT
+      } else if ( emailDisc === "ent" ) {
+            if ( emailSubType === "sub" ) {
+              iconCode = svgENTsub;
+            } else {
+              iconCode = svgENTns;
+            }
       // MASSAGE
       } else if ( emailDisc === "lmt" ) {
           if ( emailSubType === "sub" ) {
@@ -1143,10 +1148,7 @@ if ( isLocalCampaign ) {
         console.error(orgLogo);
       }
 
-      // pageTitle.innerHTML += orgLogo;
     }
-
-
 
 
     // Create HTML for Header Audience Text
@@ -1174,11 +1176,9 @@ if ( isLocalCampaign ) {
       documentDescWrapper.appendChild(documentTitle);
     }
 
-
     if ( headerAudienceText || headerIcon ) {
       mainPane.prepend(documentDesc);
     }
-
 
 
 }
@@ -1276,19 +1276,37 @@ htmlStage.appendChild(htmlToolBar);
 
 //////////
 ////
-////  Create Pane Toggle Orb
+////
 ////
 /////////
 
-var paneToggleOrb = document.createElement("div");
-paneToggleOrb.className = "pane-orb orb glyph";
-paneToggleOrb.addEventListener("click", paneToggle, false);
-orbsBottom.appendChild(paneToggleOrb);
+
+var resetDesktopResize = function () {
+  if (resizeActive) {
+    console.log("resetDesktopResize initiated");
+    dFrameStartingWidth = desktopIframe.offsetWidth;
+    document.documentElement.classList.remove("desktop-view-resized");
+    desktopIframeResizeWrapper.removeAttribute("style");
+    desktopIframeResizeWrapper.removeAttribute("data-x");
+    desktopIframeResizeWrapper.removeAttribute("data-y");
+    showdFrameWidthStatus(desktopIframe.offsetWidth, true, "resetDesktopResize");
+    desktopIframeWrapper.classList.add("full-sized");
+    resizeActive = false;
+  }
+};
+
+
+//////////
+////
+////  Create Pane Toggle Orb
+////
+/////////
 
 var currentleftNavPaneStatus = 1;
 var currentmobilePaneStatus = 1;
 
 var paneToggle = function () {
+  console.log("toggle pane");
 
   // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
 
@@ -1373,6 +1391,11 @@ var paneToggle = function () {
     // console.log("currentleftNavPaneStatus", currentleftNavPaneStatus, "currentmobilePaneStatus", currentmobilePaneStatus);
 
 };
+
+var paneToggleOrb = document.createElement("div");
+paneToggleOrb.className = "pane-orb orb glyph";
+paneToggleOrb.addEventListener("click", paneToggle, false);
+orbsBottom.appendChild(paneToggleOrb);
 
 
 //////////
@@ -1470,7 +1493,6 @@ function swapUrl() {
 var showDimsOrb = document.createElement("div");
 showDimsOrb.id = "show-dims-orb";
 showDimsOrb.className = "show-dims-orb orb glyph";
-showDimsOrb.addEventListener("click", showDims, false);
 toolbarSectionOverlays.appendChild(showDimsOrb);
 var showDimsToggle = false;
 
@@ -1611,6 +1633,9 @@ var showDims = function() {
 
   toggleImgDims();
 };
+
+// add an event listener
+showDimsOrb.addEventListener("click", showDims, false);
 
 
 //////////
@@ -1798,6 +1823,19 @@ orbsBottom.appendChild(powerOrb);
 
 //////////
 ////
+////   Send Test
+////
+/////////
+
+var sendTestOrb = document.createElement("div");
+sendTestOrb.className = "send-test-orb orb glyph icomoon icomoon-mail";
+sendTestOrb.id = "send-test-orb";
+sendTestOrb.addEventListener("click", openEmailTestWindow, false);
+orbsBottom.appendChild(sendTestOrb);
+
+
+//////////
+////
 ////   Re-Check Links via AJAX
 ////
 /////////
@@ -1833,7 +1871,6 @@ var presentationToggle = false;
 var styleOrb = document.createElement("div");
 styleOrb.className = "style-orb orb glyph";
 styleOrb.id = "style-orb";
-styleOrb.addEventListener("click", toggleStyles, false);
 toolbarSectionContent.appendChild(styleOrb);
 var styleToggle = false;
 
@@ -1877,6 +1914,8 @@ var toggleStyles = function() {
 
 };
 
+// Add an event listener
+styleOrb.addEventListener("click", toggleStyles, false);
 
 //////////
 ////
@@ -2278,7 +2317,7 @@ var toggleImgDims = function() {
 
   }
 
-}
+};
 
 
 
@@ -2295,7 +2334,7 @@ var toggleImgDims = function() {
 
 var plainTextStage = document.createElement("div");
     plainTextStage.classList.add("stage", "plain-text-stage");
-    stagesWrapper.appendChild(plainTextStage);
+    stages.appendChild(plainTextStage);
 
 var plainTextWrapper = document.createElement("div");
     plainTextWrapper.classList.add("plain-text-wrapper");
@@ -2851,6 +2890,40 @@ qaResults.appendChild(errorLogWrapper);
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+/////////////
+// Main Pane Footer
+/////////////
+
+var paneFooter = document.createElement("div");
+paneFooter.className = "pane-footer";
+
+// Manifest Version
+var manifestVersion = document.createElement("a");
+manifestVersion.href = "https://github.com/jkupczak/korra-email-design-toolkit";
+manifestVersion.target = "_blank";
+manifestVersion.classList.add("manifest-version");
+manifestVersion.innerHTML = chrome.runtime.getManifest().version;
+paneFooter.appendChild(manifestVersion);
+
+// Settings Link
+var settingsLink = document.createElement("div");
+settingsLink.className = "settings-link icomoon icomoon-cog icon-btn";
+settingsLink.addEventListener('click', function() {
+	chrome.runtime.sendMessage({openOptions: 'options'});
+});
+paneFooter.appendChild(settingsLink);
+
+mainPane.appendChild(paneFooter);
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 //
 // Modify our page view/style/css based on the querystring before we start modifying dFrame and mFrameContents.
 //
@@ -3041,11 +3114,15 @@ try {
 }
 catch(error) {
   console.error(error);
+  console.error(error.toString());
+  console.error(escapeXml(error.toString()));
+  console.error(error.toString().replace(/&/gi,"@"));
   var err = error.toString().replace(/^Error\:.+?: /i, "");
   errorLog("error", err);
   // expected output: SyntaxError: unterminated string literal
   // Note - error messages will vary depending on browser
 }
+
 
 
 // role="presentation"
@@ -3136,16 +3213,26 @@ else if ( totalAccessibilityWarnings === 0 ) {
 // No padding on <a>, <p>, or <div>
 // Documentation:
 
+
 (function(){
 
   console.group("[Bug Check] Outlook: Lack of Padding Support");
 
-  let els = dummyFrameContents.querySelectorAll("a, p, div");
-  for (let el of els) {
+  for (let el of dummyFrameContents.querySelectorAll("p, div")) {
 
     if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
 
       logCodeBug(el, "outlook-bug", "no-padding-support");
+
+    }
+
+  }
+
+  for (let el of dummyFrameContents.querySelectorAll("a")) {
+
+    if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
+
+      logCodeBug(el, "outlook-bug", "no-padding-support", "warning");
 
     }
 
@@ -3195,6 +3282,7 @@ else if ( totalAccessibilityWarnings === 0 ) {
   //
   let tableRows = dFrameContents.querySelectorAll("tr");
   for (let tableRow of tableRows) {
+    console.log("row begin");
     // Check how many table cells are in this row. We only want to address rows with 2 or more.
     if ( tableRow.cells.length >= 2 ) {
 
@@ -3221,21 +3309,23 @@ else if ( totalAccessibilityWarnings === 0 ) {
         if ( !isElementEmpty(tableRow.cells[i]) ) {
         // console.groupEnd();
 
-        // console.log( i );
-        // console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] )
-        // console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] )
-        // console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] )
+          console.log( i );
+          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] );
+          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] );
+          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] );
 
           // Log the top and bottom padding of our first <td>
           if ( i === 0 ) {
             firstTdTop = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top");
             firstTdBottom = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom");
+            console.log(firstTdTop, firstTdBottom);
           }
           // if this isn't the first <td>, check its top and bottom padding against the first <td>
           // Throw an error if they don't match.
           else if ( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") !== firstTdTop || window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") !== firstTdBottom ) {
             // Error
             logCodeBug(tableRow.cells[i], "outlook", "vertical-cell-padding");
+            console.log( firstTdTop, firstTdBottom, "|", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") );
           }
 
         }
@@ -3336,7 +3426,7 @@ else if ( totalCodingBugs === 0 ) {
 // @ Fix this.
 // @
 // @
-linkValidationLoop("korraLocalFile", desktopIframe, "false", preflightStatus, dummyLinkList);
+linkValidationLoop("korraLocalFile", desktopIframe, preflightStatus, dummyLinkList);
 
 
 
@@ -3852,7 +3942,7 @@ if ( outsideOrg ) {
 if ( emailDisc === "slp" ) {
 
   findAndReplaceDOMText(stage, {
-    find: /Unlimited (Access to )?(CE'?s|CEU'?s)/gi,
+    find: /CEU Sale|Unlimited (Access to )?(CE'?s|CEU'?s)/gi,
     // Must say CE Courses
     wrap: 'span', wrapClass: "text-highlight"
   });
@@ -4367,21 +4457,9 @@ COMPLETE ==========
 
 */
 
-var resetDesktopResize = function () {
-  if (resizeActive) {
-    console.log("resetDesktopResize initiated");
-    dFrameStartingWidth = desktopIframe.offsetWidth;
-    document.documentElement.classList.remove("desktop-view-resized");
-    desktopIframeResizeWrapper.removeAttribute("style");
-    desktopIframeResizeWrapper.removeAttribute("data-x");
-    desktopIframeResizeWrapper.removeAttribute("data-y");
-    showdFrameWidthStatus(desktopIframe.offsetWidth, true, "resetDesktopResize");
-    desktopIframeWrapper.classList.add("full-sized");
-    resizeActive = false;
-  }
-};
 
-
+// Watch window for resizing. If it's resized, reset the desktopIframe
+window.addEventListener('resize', resetDesktopResize, true);
 
 interact('.resize-handler')
   .on('doubletap', function (event) {
@@ -4525,13 +4603,11 @@ window.dragMoveListener = dragMoveListener;
 // if ( exOptions.openInApp ) {
 
   // Create the button and insert it.
-  var openInApp = document.createElement("a");
-  openInApp.classList.add("main-pane-extra-btn", "open-in-app-btn");
-  // openInApp.dataset.stage = "open-in-app";
-  openInApp.innerHTML = "Open in App";
-  stagePreviewBtns.insertAdjacentElement('afterend',openInApp);
-
-
+  // var openInEditorLink = document.createElement("a");
+  // openInEditorLink.classList.add("main-pane-extra-btn", "open-in-editor-btn");
+  // // openInApp.dataset.stage = "open-in-app";
+  // openInEditorLink.innerHTML = "Open in Editor";
+  // stagePreviewBtns.insertAdjacentElement('afterend',openInEditorLink);
 
   // file://<file_path>[&line=<line>[&column=<column>]][&devMode][&safeMode][&newWindow]";
   // See: https://atom.io/packages/open
@@ -4566,23 +4642,6 @@ var resizeEndWidth = dFrameStartingWidth;
 ro.observe(desktopIframe);
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-
-// Manifest Version
-var manifestVersion = document.createElement("a");
-manifestVersion.href = "https://github.com/jkupczak/korra-email-design-toolkit";
-manifestVersion.target = "_blank";
-manifestVersion.classList.add("manifest-version");
-manifestVersion.innerHTML = chrome.runtime.getManifest().version;
-document.body.appendChild(manifestVersion);
 
 
 

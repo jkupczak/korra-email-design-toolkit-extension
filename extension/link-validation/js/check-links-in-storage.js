@@ -140,7 +140,7 @@ var linkStorage = function(){
     // console.log(linkstatus)
     var promise = new Promise(function(resolve, reject) {
 
-      var key = {}
+      var key = {};
       var data = {"status": linkstatus.status, "statusText": linkstatus.statusText, "responseURL": linkstatus.responseURL, "isRedirect": linkstatus.isRedirect, "isArticle": linkstatus.isArticle, "timestamp": new Date().getTime() };
 
       key[linkHref] = data;

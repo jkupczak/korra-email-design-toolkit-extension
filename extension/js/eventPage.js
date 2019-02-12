@@ -5,6 +5,67 @@ console.info("Korra " + chrome.runtime.getManifest().version);
 ///////////////////////////////////////////////////////
 
 
+// Log all data from chrome.storage.sync
+// http://stackoverflow.com/a/27432365/556079
+
+options = {};
+
+// Get Sync
+chrome.storage.sync.get(function(result) {
+  options.sync = result;
+  // Open Options Pinned?
+  if ( result.openPinnedOptions === "1" ) {
+    openOptionsTab({pinned: true, active: false});
+  }
+  console.log(options);
+
+});
+
+// Get Local
+chrome.storage.local.get(function(result) {
+  options.local = result;
+
+  console.log(options);
+});
+
+
+
+
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+
+
+
+
+
+// Helper function to open up the options page
+var openOptionsTab = function(options) {
+
+  var defaults = {
+		url: chrome.extension.getURL('options.html')
+	};
+
+  if ( options.shortcut ) {
+    defaults.url = defaults.url + options.shortcut;
+  }
+  if ( options.pinned ) {
+    defaults.pinned = options.pinned;
+  }
+  defaults.active = options.active;
+
+
+  chrome.tabs.create(defaults);
+
+};
+
+
+
+
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+
 //this is a global var and to be added to any timestamp in ms
 var dateCurrent= new Date(),
     correction = dateCurrent.getTimezoneOffset()*60*1000;
@@ -91,6 +152,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 // https://developer.chrome.com/extensions/webRequest
 chrome.webRequest.onBeforeRequest.addListener(
     function(details) {
+      console.log("chrome.webRequest.onBeforeRequest");
       console.log(details);
       // return {cancel: true};
 
@@ -115,6 +177,21 @@ chrome.webRequest.onBeforeRequest.addListener(
     ["blocking"]
 );
 
+
+
+chrome.webRequest.onBeforeRequest.addListener(
+  function(details) {
+    console.log("chrome.webRequest.onBeforeRequest");
+    console.log(details);
+
+    return { redirectUrl: chrome.extension.getURL('preview.html?file=') + details.url };
+  },
+  {
+    urls: ["file://*"]
+  },
+  ["blocking"]
+);
+
 // Views on Dropbox
 // https://www.dropbox.com/s/sp7b14k2ejj1r3e/18-04-10-Other-John-Snyder-Avascular-Necrosis-ns-a.html?dl=0
 
@@ -122,6 +199,25 @@ chrome.webRequest.onBeforeRequest.addListener(
 // https://dl.dropboxusercontent.com/s/sp7b14k2ejj1r3e/18-04-10-Other-John-Snyder-Avascular-Necrosis-ns-a.html
 // https://www.dropbox.com/s/sp7b14k2ejj1r3e/18-04-10-Other-John-Snyder-Avascular-Necrosis-ns-a.html?dl=1
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//
+//    Protect Article Tracker - Badge Update
+//
+//
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+chrome.tabs.create({
+  url: 'preview.html'
+}, callback);
+
+function callback(data) {
+  console.log(data);
+}
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -190,11 +286,10 @@ chrome.webRequest.onBeforeRequest.addListener(
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 
-
 // Handle clicks on the icon.
 chrome.browserAction.onClicked.addListener(function(tab) {
 
-  if ( localStorage['fileAccessOff'] ) {
+  if ( localStorage.fileAccessOff ) {
     showStartPage(1);
   } else {
     // Show popup HTML with information.
@@ -221,26 +316,86 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 
-
 // Listen for installation at runtime
 chrome.runtime.onInstalled.addListener(handleInstalled);
-
 
 // When onInstalled is detected, do this.
 function handleInstalled(details) {
 
-  console.log(details.reason);
-
   // If this is a new install...
   if ( details.reason == 'install') {
-    chrome.storage.sync.set({ 'newInstalled': true });
-    showStartPage();
 
-    // Set default values on install
+    // Set default options to storage.sync
+    setDefaultOptions();
+
+    // mark this extension as having just been installed
+    chrome.storage.sync.set({
+      'newInstalled': true
+    });
+
+    // Set default options to storage.local
     chrome.storage.local.set({ 'protectedarticles': "" });
 
+    // Show start page to provide instructions
+    showStartPage();
+
+  }
+}
+
+//
+// Set the default options to chrome.storage.sync
+// Used on first initilization (first install)
+// and whenever the user specifically requests to reset all options to defaullt.
+function setDefaultOptions(reset) {
+
+  // clear storage if we're resetting the options
+  if (reset) {
+    chrome.storage.sync.clear(function() {
+      var error = chrome.runtime.lastError;
+      if (error) {
+        console.error(error);
+      }
+    });
   }
 
+  // set the default options
+  chrome.storage.sync.set({
+    // General
+
+    // Views
+    'synchronizeScrolling': '1',
+    'mobileViewVisibility': '1',
+    'mobileWidthDefault': '320',
+    'mobileWidth': ['320', '360', '375', '414', '480'],
+
+    // Sharing
+
+    // Sending Tests
+
+    // App Integrations
+
+    // Variables
+
+    // Link Validation
+    'cacheValidLinks': '1',
+    'autoCheckLinks': '1',
+    'checkNoFollowLinks': '1',
+
+    // Code Validation
+
+    // Images
+
+    // Text and Grammer
+
+    // Accessibility
+
+    // Other Tools
+
+    // Alerts
+
+    // install status
+    'newInstalled': true
+  });
 }
 
 
@@ -250,28 +405,32 @@ function checkForFileAccessOption() {
 	chrome.extension.isAllowedFileSchemeAccess(function (answer) {
 
     console.log("chrome.extension.isAllowedFileSchemeAccess", answer);
-    console.log("localStorage['fileAccessOff']", localStorage['fileAccessOff']);
+    console.log("localStorage.fileAccessOff", localStorage.fileAccessOff);
 
 			if (answer) {
-        console.log("a", localStorage['fileAccessOff']);
-					if (localStorage['fileAccessOff']) {
+        console.log("a", localStorage.fileAccessOff);
+					if (localStorage.fileAccessOff) {
 							localStorage.removeItem('fileAccessOff');
 							showStartPage(2);
-              console.log(localStorage["b", 'fileAccessOff'])
+              console.log(localStorage["b", 'fileAccessOff']);
 					}
-          console.log("c", localStorage['fileAccessOff']);
+          console.log("c", localStorage.fileAccessOff);
 			} else {
-				localStorage['fileAccessOff'] = true;
-        console.log("d", localStorage['fileAccessOff']);
+				localStorage.fileAccessOff = true;
+        console.log("d", localStorage.fileAccessOff);
 			}
 	});
 
-};
+}
 checkForFileAccessOption();
 
 
 // Function to determine what content should be shown
 // Skip step 1 if needed (page that shows how to turn on file access)
+function sss() {
+
+}
+
 function showStartPage() {
 
   console.log(arguments);
@@ -285,8 +444,7 @@ function showStartPage() {
 				path += '#step-' + step;
 		}
 		chrome.tabs.create({ url: chrome.extension.getURL(path) });
-};
-
+}
 
 
 /////////////////////////////////////////////////
@@ -352,13 +510,13 @@ chrome.runtime.onMessage.addListener(
     ////
     // Output to the console the message we received.
     ////
-  	console.log(request);
-  	console.log(sender);
-  	console.log(sender.tab.id);
-    console.log(sender.tab ?
-                "Message received from a content script: " + sender.tab.url :
-                "from the extension");
-
+    console.group('sendMessage received');
+    	console.log(request);
+    	console.log(sender);
+      console.log("tabId:", sender.tab.id, sender.tab ?
+                  "Message received from a content script: " + sender.tab.url :
+                  "from the extension");
+    console.groupEnd();
 
 
     ////
@@ -450,10 +608,10 @@ chrome.runtime.onMessage.addListener(
     // This code receives the message and loads the URL.
     // sender.tab.id is used to open the URL in the same tab that sent the message.
     // without that, the following code would open the URL in the currently active tab instead.
-    if ( /^file:.+\//gi.test(request.greeting) && /dropbox\.com/gi.test(sender.url) ) {
-  		chrome.tabs.update(sender.tab.id, {
-  		     url: request.greeting
-  		});
+    if ( request.message.source === "dropbox" ) {
+
+      initDropboxRedirect(request, sender);
+
     }
 
     // @TODO what is this
@@ -470,6 +628,22 @@ chrome.runtime.onMessage.addListener(
 
     }
 
+    // Open the Options page
+    ////////////////////////
+    if ( request.openOptions ) {
+
+      // var optionsShortcut = chrome.extension.getURL('options.html');
+      var options = {index: sender.tab.index + 1};
+
+      // Link directly to a specific section.
+      if ( /^section\-/gi.test(request.openOptions) ) {
+        options.shortcut = "#" + request.openOptions;
+      }
+
+      openOptionsTab(options);
+
+    }
+
     // Get right-click background image message
     // Use a function to save it outside of this listener.
     // http://stackoverflow.com/a/26373282/556079
@@ -480,28 +654,6 @@ chrome.runtime.onMessage.addListener(
     return true;
 
   });
-
-
-
-////////////////////////////// ### //////////////////////////////
-////////////////////////////// ### //////////////////////////////
-////_________________________________________________________////
-
-
-
-
-// Log all data from chrome.storage.sync
-// http://stackoverflow.com/a/27432365/556079
-function logChromeStorage() {
-  chrome.storage.sync.get(function(result) {
-    console.log(result);
-  });
-  chrome.storage.local.get(function(result) {
-    console.log(result);
-  });
-}
-
-logChromeStorage();
 
 
 
@@ -679,7 +831,7 @@ function saveMessage(data) {
 
 function trimUrl(url) {
  var url = url.replace(/(^("| +)|("| +)$)/gi, "");
- return url
+ return url;
 }
 
 function awsFilename(link) {
@@ -906,3 +1058,23 @@ chrome.runtime.onInstalled.addListener(function() {
 
 
 });
+
+
+/////////////////
+/////////////////
+/////////////////
+
+var initDropboxRedirect = function(request, sender) {
+
+    // Only open the link if auto redirect is set to on.
+    if ( request.message.type === "auto" && options.sync.autoRedirectDropboxLinkstoLocal === "0" ) return;
+
+    console.log(options.local.fullPathToDropboxFolder);
+
+    var localUrl = "file:///" + options.local.fullPathToDropboxFolder + "/" + request.message.url;
+
+		chrome.tabs.update(sender.tab.id, {
+		    url: localUrl
+		});
+
+}

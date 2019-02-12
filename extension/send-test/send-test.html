@@ -2,12 +2,61 @@
 <html>
   <head>
   	<title>Korra: Options</title>
+    <link rel="stylesheet" type="text/css" href="send-test.css" />
   </head>
   <body>
+
 	 <div id="content">
 
-     Send Test
+     <div class="options">
+       <h1>Send Test</h1>
+
+       <div class="">
+         <div class="fields">
+           <div class="field">
+             <select>
+               <option value="mailgun" selected>Mailgun</option>
+               <option value="sparkpost">SparkPost</option>
+             </select>
+           </div>
+
+           <div class="field">
+             <input id="to" type="text">
+             <div id="saved-email-addresses">
+
+             </div>
+           </div>
+
+           <div class="field">
+             <input id="subject" type="text" value="Test email from Korra via Mailgun">
+           </div>
+
+           <div>
+             <textarea id="notes"></textarea>
+           </div>
+         </div>
+
+         <div>
+           <div>
+             <textarea id="html"></textarea>
+           </div>
+           <div>
+             <textarea id="text"></textarea>
+           </div>
+         </div>
+       </div>
+
+     </div>
+
+     <div class="send">
+       <button id="send">Send Email</button>
+       <button id="cancel">Cancel</button>
+     </div>
+
 
     </div>
+
+    <script src="send-test-plugin.js"></script>
+    <script src="send-test-page.js"></script>
   </body>
 </html>

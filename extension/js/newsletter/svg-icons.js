@@ -17,7 +17,7 @@
   // Share
   var svgIconShare = '<svg class="icon-share" fill="#000000" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>';
 
-  var svgIconBaseline = '<svg class="icon-baseline" fill="#a19fad" height="32" viewBox="0 0 24 24" width="32"><path d="M0 0h24v24H0z" fill="none"/><path d="M0 20h24v4H0z" fill-opacity="1"/><path d="M11 3L5.5 17h2.25l1.12-3h6.25l1.12 3h2.25L13 3h-2zm-1.38 9L12 5.67 14.38 12H9.62z"/></svg>'
+  var svgIconBaseline = '<svg class="icon-baseline" fill="#a19fad" height="32" viewBox="0 0 24 24" width="32"><path d="M0 0h24v24H0z" fill="none"/><path d="M0 20h24v4H0z" fill-opacity="1"/><path d="M11 3L5.5 17h2.25l1.12-3h6.25l1.12 3h2.25L13 3h-2zm-1.38 9L12 5.67 14.38 12H9.62z"/></svg>';
 
 // Discipline Icons
 ///////////////////
@@ -59,6 +59,13 @@
 
   // Other SUB
   var svgOTHERsub = '<svg class="icon-other-sub" viewBox="0 0 300 300"><path style="fill:#97CC17" d="M299.2 134.2C291.8 64 236 8.2 165.8 0.8L165 0H0v165l0.8 0.8C8.2 236 64 291.8 134.2 299.2l0.8 0.8h165V135L299.2 134.2z"/><polygon style="fill:#FFFFFF" points="226.8 108 166.7 132.8 171.7 63.2 130.2 63.2 135.1 131.5 73.2 106.1 60.6 142.7 123.8 160.1 79.6 212.9 113.1 234.8 148.8 179.7 184.3 236.8 217.9 213.9 175.4 162.5 239.4 145 "/></svg>';
+
+
+  // ENT NS
+  var svgENTns = '<svg class="icon-ent-ns" viewBox="0 0 300 300"><circle cx="150" cy="150" r="150" fill="#406d93"/><path d="M197.5 163.1H132v41.3h77.4v32h-119V63.6h119.3v32.2H132v36.4h65.5v30.9z" fill="#fff"/></svg>';
+
+  // ENT SUB
+  var svgENTsub = '<svg class="icon-ent-sub" viewBox="0 0 300 300""><path d="M299.2 134.2C291.8 64 236 8.2 165.8.8L165 0H0v165l.8.8C8.2 236 64 291.8 134.2 299.2l.8.8h165V135l-.8-.8z" fill="#406d93"/><path d="M197.5 163.1H132v41.3h77.4v32h-119V63.6h119.3v32.2H132v36.4h65.5v30.9z" fill="#fff"/></svg>';
 
 
 

@@ -1,3 +1,8 @@
+////
+////
+////
+////
+////
 function getDbShareLink() {
 
   t0 = performance.now();
@@ -18,13 +23,13 @@ function getDbShareLink() {
 
       source.classList.remove("loading");
       copyToClipboard(dropboxUrlInput, "success", true);
-      console.log("Shareable link found in the DOM. Copying to clipboard.")
+      console.log("Shareable link found in the DOM. Copying to clipboard.");
 
     } else {
 
       if ( onDropbox ) {
 
-        console.log("This page is currently being viewed on Dropbox.com. Running processDbLink().")
+        console.log("This page is currently being viewed on Dropbox.com. Running processDbLink().");
         processDbLink(document.URL, "copy", source);
 
       } else {
@@ -38,8 +43,29 @@ function getDbShareLink() {
   }
 }
 
-
+////
+////
+////
+////
+////
+var dropboxFolderName;
 function callDropbox(action, source) {
+
+    dbx = new Dropbox({ accessToken: korraOptions.dropboxAccessToken });
+    if ( korraOptions.dropboxAccessToken ) {
+      // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
+    } else {
+      console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + korraOptions.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
+    }
+
+  console.log(dropboxFolderName);
+  console.log(korraOptionsLocal);
+  console.log(korraOptionsLocal.fullPathToDropboxFolder);
+
+  dropboxFolderName = korraOptionsLocal.fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"");
+
+console.log(dropboxFolderName);
+
 
   console.group("callDropbox()");
     console.log("action:", action, "source:", source);
@@ -54,8 +80,8 @@ function callDropbox(action, source) {
     console.log("Yes! This file exists in the local DropBox folder. [" + document.URL + "]");
 
     var dropboxFilePath = document.URL.replace(dropboxTestPattern, "");
-    var dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "");
-    var dropboxFilePath = decodeURIComponent(dropboxFilePath); // the API does not accept encoded paths (eg %20 instead of a space)
+        dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "");
+        dropboxFilePath = decodeURIComponent(dropboxFilePath); // the API does not accept encoded paths (eg %20 instead of a space)
 
     //
     // Dropbox API SDK - http://dropbox.github.io/dropbox-sdk-js/#toc0__anchor
@@ -64,8 +90,6 @@ function callDropbox(action, source) {
     //
 
     var shareableLink = "";
-
-    // console.log("dropboxFilePath - " + dropboxFilePath);
 
     ////
     // Check Dropbox for a shareable link that might already exist.
@@ -126,10 +150,15 @@ function callDropbox(action, source) {
 }
 
 
+////
+////
+////
+////
+////
 function processDbLink(shareableLink, action, source) {
 
   // console.error(shareableLink + ", " + action);
-  console.log("Link retrieved from Dropbox API. Running processDbLink().")
+  console.log("Link retrieved from Dropbox API. Running processDbLink().");
 
   if ( shareableLink.length > 0 ) {
 

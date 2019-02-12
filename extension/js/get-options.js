@@ -35,13 +35,21 @@ function log(txt) {
 ////////
 // OPTIONS: Set items in chrome.storage.sync
 ////////
-function setItem(key, value) {
+function setItem(key, value, location) {
 
   console.log("running setItem()");
 
   console.log("Setting item with function setItem(" + key + ", " + value +")");
 
-    chrome.storage.promise.sync.set({[key]: value}).then(function() {
+    var storage;
+    if ( location === "local" ) {
+      storage = chrome.storage.promise.local;
+    }
+    else {
+      storage = chrome.storage.promise.sync;
+    }
+
+    storage.set({[key]: value}).then(function() {
       // resolved
       console.log('set');
     }, function(error) {

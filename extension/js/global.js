@@ -19,6 +19,26 @@
 ////// Global Functions
 ////
 
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var escapeXml = function(unsafe) {
+    return unsafe.replace(/[<>&'"]/g, function (c) {
+        switch (c) {
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '&': return '&amp;';
+            case '\'': return '&apos;';
+            case '"': return '&quot;';
+        }
+    });
+};
+
+
 //
 // Get Date MMM Month
 //
@@ -325,10 +345,34 @@ function formatDate(date) {
  * @return {[type]}      [description]
  */
 function getFilename(url) {
-  var filename = url.match(/.+?\..+/gi);
-      filename = filename[0].replace(/.+\//gi, "");
 
-  return filename
+  var filename = url.match(/.+?(\.html?)/, ""); // find everything through the first instance of .html? This removes everything after it
+  filename = filename[0].replace(/.+\//, ""); // remove everything up through the last /
+
+  return filename;
+}
+
+//
+// Get Filepath
+//
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+function getFilePath(url) {
+
+  var filePath;
+
+  if ( environment === "extension" ) {
+    filePath = url.replace(/\[^\/]+/,"");
+  } else {
+    filepath = document.location.origin + document.location.pathname;
+  }
+
+  return filePath;
 }
 
 //
@@ -398,16 +442,17 @@ function wrap(node, wrapper) {
  */
 function wrapAll(nodes, wrapper) {
 
-    console.log(nodes);
-    console.log(wrapper);
+    // console.log(nodes);
+    // console.log(wrapper);
 
+    var parent, previousSibling;
     // Cache the current parent and previous sibling of the first node.
     if ( nodes.constructor === Array ) {
-      var parent = nodes[0].parentNode;
-      var previousSibling = nodes[0].previousSibling;
+      parent = nodes[0].parentNode;
+      previousSibling = nodes[0].previousSibling;
     } else {
-      var parent = nodes.parentNode;
-      var previousSibling = nodes.previousSibling;
+      parent = nodes.parentNode;
+      previousSibling = nodes.previousSibling;
     }
 
     // Place each node in wrapper.
@@ -639,26 +684,27 @@ function getOrgId(string) {
 function getDisciplineId(string) {
 
   var trimmedString = string.trim();
+  var disciplineId = "";
 
-       if ( /-PT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";     }
-  else if ( /-AT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "at";     }
-  else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "ot";     }
-  else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { var disciplineId = "slp";    }
-  else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { var disciplineId = "other";  }
-  else if ( /-NR(\s|-|\.|$)/gi.test(trimmedString) )              { var disciplineId = "nr";    }
-  else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { var disciplineId = "lmt";    }
+       if ( /-PT(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "pt";     }
+  else if ( /-AT(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "at";     }
+  else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "ot";     }
+  else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { disciplineId = "slp";    }
+  else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { disciplineId = "other";  }
+  else if ( /-NR(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "nr";    }
+  else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { disciplineId = "lmt";    }
 
-  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "pt";     }
-  // else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { var disciplineId = "fox";    }
-  else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )             { var disciplineId = undefined;     }
-  else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { var disciplineId = "multi";  }
-  else if ( /-(ENT|Enterprise|MFB)(\s|-|\.|$)/gi.test(trimmedString) ) { var disciplineId = "ent";}
+  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "pt";     }
+  // else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { disciplineId = "fox";    }
+  else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )             { disciplineId = undefined;     }
+  else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { disciplineId = "multi";  }
+  else if ( /(^PD_|-(ENT|Enterprise|MFB)(\s|-|\.|$))/gi.test(trimmedString) ) { disciplineId = "ent";}
 
-  else if ( /-(Physical)(\s|-|\.|$)/gi.test(trimmedString) )       { var disciplineId = "pt";     }
-  else if ( /-Athletic(\s|-|\.|$)/gi.test(trimmedString) )         { var disciplineId = "at";     }
-  else if ( /-All(\-|\.|$)/gi.test(trimmedString) )                { var disciplineId = "multi";    }
+  else if ( /-(Physical)(\s|-|\.|$)/gi.test(trimmedString) )       { disciplineId = "pt";     }
+  else if ( /-Athletic(\s|-|\.|$)/gi.test(trimmedString) )         { disciplineId = "at";     }
+  else if ( /-All(\-|\.|$)/gi.test(trimmedString) )                { disciplineId = "multi";    }
 
-  else { var disciplineId = undefined }
+  else { disciplineId = undefined }
 
   return disciplineId;
 
@@ -1102,6 +1148,7 @@ function destroyAll(el) {
  * @return {[type]}      [description]
  */
 function destroyIfExists(el) {
+  console.log(el);
   if ( elExists(el) ) {
     if ( el.target ) {
       var el = this;

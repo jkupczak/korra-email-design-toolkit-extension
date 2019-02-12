@@ -1,9 +1,7 @@
-/////////////
-//
-//   TODO
-//
-/////////////
+CodeMirror bugs out and won't scroll when the page doesn't have a valid doctype. For example, <!DOCTYPE> is an invalid doctype.
+This might be the final straw in deciding to move over to a chrome extension page rather than cleaning up .html pages.
 
+----
 
 https://www.medbridgeeducation.com/sign-in/?after_signin_url=patient-engagement-for-speech-language-pathology?utm_content=header
 This resolved as OK even though its not. The failed redirect check should have caught this. Might have something to do with using after_signin_url.

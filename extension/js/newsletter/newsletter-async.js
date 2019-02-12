@@ -1,59 +1,42 @@
 ///////
 ///////
-var getHtml = new Promise(function(resolve, reject) {
+// Where are we?
+///////
+///////
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", document.URL, true);
+var environment, fileLocation, savedFile, labelsAvailable;
 
-  // When xhring a local file, the response.status is 0
-  xhr.onload = function (e) {
-    // if (this.status === 0) {
+// We're viewing a locally saved file through the file: protocol.
+if ( document.location.protocol !== "chrome-extension:" ) {
+  environment = "local";
+  fileLocation = document.URL;
+  savedFile = true;
+  labelsAvailable = true;
 
-      console.log(this);
+// We're viewing code through the chrome-extension: protocol.
+} else {
+  environment  = "extension";
+  fileLocation = getParameterByName("file");
+  // The code is not saved as a file, it's saved to chrome.storage.local.
+  if ( !fileLocation ) {
+    fileLocation = getParameterByName("unsaved-file");
+    savedFile = false;
+    labelsAvailable = false;
+  // The code is saved as a local file.
+  } else {
+    savedFile = true;
+    labelsAvailable = true;
+  }
+}
 
-      processCode(this.response);
-      resolve(this.response);
-
-    // } else {
-    //   reject({
-    //     status: this.status,
-    //     statusText: xhr.statusText
-    //   });
-    // }
-  };
-  xhr.onerror = function () {
-    reject({
-      status: this.status,
-      statusText: xhr.statusText
-    });
-  };
-  xhr.send();
-
-});
-
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
-Promise.all([getAllOptions, getHtml]).then(function(values) {
-  // HTML and options are ready...
-  // do something
-
-        setTimeout(function(){
-          // Check the options for a value.
-          if ( exOptions.openInApp === "atom" ) {
-            var appLink = 'atom://open?url=';
-          } else if ( exOptions.openInApp === "sublime" ) {
-            var appLink = 'subl://open?url=';
-          }
+if ( savedFile ) {
+  var filename = getFilename(fileLocation);
+  var filePath = getFilePath(fileLocation);
+}
 
 
-          // Create the link
-          if (typeof openInApp != "undefined") {
-            openInApp.href = appLink + document.location.origin + document.location.pathname;
-          }
-
-
-        }, 1000);
-
-});
+///////
+///////
 
 
 var view = getParameterByName("view");
@@ -145,7 +128,7 @@ var processCode = function (code) {
   cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
 
   // Add allFrames.css to both views
-  var allFramesCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-allFrames.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
+  var allFramesCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-allFrames.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">';
   cleanedDesktopHtml += allFramesCssString;
   cleanedMobileHtml += allFramesCssString;
 
@@ -164,7 +147,7 @@ var processCode = function (code) {
   // cleanedDesktopHtml += dFrameKeymaster;
 
   // Add dFrame.css to the desktop view
-  var dFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-dFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
+  var dFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-dFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">';
   cleanedDesktopHtml += dFrameCssString;
 
   //////////////
@@ -182,7 +165,7 @@ var processCode = function (code) {
   // cleanedMobileHtml += mFrameKeymaster;
 
   // Add mFrame.css to the mobile view
-  var mFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-mFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">'
+  var mFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-mFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">';
   cleanedMobileHtml += mFrameCssString;
 
 
@@ -201,10 +184,103 @@ var processCode = function (code) {
   // Now that we've got the HTML from our async call AND we've processed it...
   // buildPage();
 
-}
+};
 
 
+///////////////////////////////////
+///////////////////////////////////
+///////////////////////////////////
+///////////////////////////////////
 
+var getHtml = new Promise(function(resolve, reject) {
+
+  if ( !savedFile ) {
+
+    chrome.storage.promise.local.get(fileLocation).then(function(items) {
+      // resolved
+      console.log(items); // => {'foo': 'bar'}
+      processCode(items[fileLocation]);
+      resolve(items[fileLocation]);
+    }, function(error) {
+      // rejected
+      console.log(error);
+    });
+
+  } else {
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", fileLocation, false); // true = async, false = sync
+
+    // When xhring a local file, the response.status is 0
+    xhr.onload = function (e) {
+      // if (this.status === 0) {
+
+      processCode(this.response);
+      resolve(this.response);
+
+      // } else {
+      //   reject({
+      //     status: this.status,
+      //     statusText: xhr.statusText
+      //   });
+      // }
+    };
+    xhr.onerror = function () {
+      console.error("error");
+      reject({
+        status: this.status,
+        statusText: xhr.statusText
+      });
+    };
+    xhr.send();
+
+  }
+
+});
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+Promise.all([getAllOptions, getHtml]).then(function(values) {
+
+  // console.warn("getAllOptions and getHtml promised returned");
+  //@TODO
+  // This doesn't actually work. The options aren't available! :(((
+
+      // HTML and options are ready...
+      // do something
+
+    // @@IDEA: Wait until the user clicks the button to assign an href.
+    setTimeout(function(){
+
+        destroyIfExists( document.querySelector("#loading-wrapper") );
+
+        var editorPath = "";
+
+        // if ( typeof exOptions.openInEditor !== 'undefined' ) {
+
+          var openInEditorLink = document.createElement("a");
+          openInEditorLink.classList.add("main-pane-extra-btn", "open-in-editor-btn");
+          openInEditorLink.innerHTML = "Open in Editor";
+          stagePreviewBtns.insertAdjacentElement('afterend',openInEditorLink);
+
+          if ( exOptions.openInEditor === "atom" ) {
+             editorPath = 'atom://open?url=';
+          } else if ( exOptions.openInEditor === "sublime" ) {
+            editorPath = 'subl://open?url=';
+          }
+          openInEditorLink.href = editorPath + fileLocation;
+
+        // }
+
+
+    }, 1000);
+
+});
+
+
+///////////////////////////////////
+///////////////////////////////////
+///////////////////////////////////
+///////////////////////////////////
 // Modify these to pull ALL options instead.
 
 // TODO
@@ -282,6 +358,30 @@ if ( isinss ) {
             resolve(items);
           }
       });
+
+      chrome.storage.local.get(null, (items) => {
+          let err = chrome.runtime.lastError;
+          if (err) {
+
+            //@TODO What do I do if the call errors out?!
+            reject(err);
+
+          } else {
+
+            // Apply our result to a global variable so that we can use it throughout our other scripts.
+            // Maybe not the best way to handle this?
+            exOptionsLocal = items;
+            korraOptionsLocal = items;
+
+            console.groupCollapsed("Options from Storage (exOptions)");
+            console.log(exOptions);
+            console.groupEnd();
+
+            resolveOptions(items);
+
+            resolve(items);
+          }
+      });
   });
 
 }
@@ -291,36 +391,17 @@ if ( isinss ) {
 function resolveOptions(items) {
 
   // [OPTION]: Dropbox Folder Name
-  dropboxFolderName = items.fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"");
-  // console.log("dropboxFolderName:", dropboxFolderName);
+  // if (items.fullPathToDropboxFolder) {
+    // dropboxFolderName = items.fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"");
 
-  // [OPTION]: Dropbox Access Token
-  dbx = new Dropbox({ accessToken: items.dropboxAccessToken });
-  if ( items.dropboxAccessToken ) {
-    // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
-  } else {
-    console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + items.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
-  }
-
-  // [OPTION]: Mailgun API Key
-  mailgunApiKey = items.mailgunApiKey;
-  // console.log("mailgunApiKey:", mailgunApiKey);
-
-  // [OPTION]: Mailgun Domain Name
-  mailgunDomainName = items.mailgunDomainName.trim();
-  // console.log("mailgunDomainName:", mailgunDomainName);
-
-  // [OPTION]:
-  // [OPTION]:
-  // [OPTION]:
-  // [OPTION]:
-  // [OPTION]:
-  // [OPTION]:
-  // [OPTION]:
-  // [OPTION]:
-  // [OPTION]:
-  // [OPTION]:
-
+    // [OPTION]: Dropbox Access Token
+                // dbx = new Dropbox({ accessToken: items.dropboxAccessToken });
+                // if ( items.dropboxAccessToken ) {
+                //   // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
+                // } else {
+                //   console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + items.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
+                // }
+  // }
 
 }
 
@@ -335,7 +416,7 @@ function doTheWork(input, i) {
         setTimeout(function () {
             var output = (input || "") + i + " ";
             resolve(output);
-        }, Math.floor(Math.random() * 200) + 1)
+        }, Math.floor(Math.random() * 200) + 1);
     });
 }
 
@@ -361,6 +442,21 @@ var p6 = seqLoopReduce("10 iterations: <br />", 15).then(function (result) {
     // console.log("<br />");
 });
 
+
+
+
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+
+if ( savedFile ) {
+  saveFileHistory(fileLocation);
+}
 
 
 

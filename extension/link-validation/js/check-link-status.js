@@ -299,8 +299,8 @@ function processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions)
 
     // Make sure there are no overrides in place to prevent caching. Either on all links or this specific link.
     // If not, then add it to chrome.storage
-    console.log(korraOptions.cache, response.addToCache);
-    if ( korraOptions.cache === '1' && response.addToCache !== false ) {
+    console.log(korraOptions.cacheValidLinks, response.addToCache);
+    if ( korraOptions.cacheValidLinks === '1' && response.addToCache !== false ) {
       linkStorage.addLink(linkHref, response);
     } else {
     }
@@ -560,7 +560,7 @@ function checkURL(i, linkHref, linkObj) {
         resolve(response);
 
       }
-    }
+    };
 
     try {
       // xhr.open(getOption("checkType"), url, true);
@@ -635,7 +635,7 @@ function assignErrorRows(i, linkHref, linkObj, response) {
 // If so, XHR is necessary.
 ////////
 function XHRisNecessary(korraOptions, linkHref) {
-  if ( shouldDOMbeParsed(linkHref, korraOptions.parseDOM) === '1' || korraOptions.cache === '0' ) {
+  if ( shouldDOMbeParsed(linkHref, korraOptions.parseDOM) === '1' || korraOptions.cacheValidLinks === '0' ) {
     return true;
   }
   return false;

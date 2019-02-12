@@ -25,26 +25,23 @@ if ( /dropbox(.+)?\.com\/(s|home|content_link)/gi.test(pageUrl) ) {
 }
 
 //
-// Get Filename
-//
-// var fileName = getFilename(pageUrl);
-// console.log(fileName);
-
-
-//
 // Discipline Identifier
 //
-if ( /(^file|localhost\:)/i.test(pageUrl) ) {
+if ( /(^(chrome\-extension|file)|localhost\:)/i.test(pageUrl) ) {
 	var fileName = getFilename(pageUrl);
-	var disciplineSearch = fileName;
+	var disciplineSearch = filename;
 } else if ( !onMailchimp ) {
 
 } else {
 	var availableNode = document.querySelector(".wizard-header") || document.querySelector("h1") || document.querySelector(".c-checklistEditor div.header > h2:first-child");
-	var disciplineSearch = availableNode.innerText;
+	var disciplineSearch = availableNode.innerText || "";
 	// console.log("disciplineSearch = " + disciplineSearch)
 }
-var disciplineId = getDisciplineId(disciplineSearch) || "";
+
+if ( disciplineSearch ) {
+	var disciplineId = getDisciplineId(disciplineSearch) || "";
+}
+
 // console.log(disciplineId);
 
 ////
@@ -121,19 +118,11 @@ if ( !onMailchimp ) {
 ////
 //// Change the default page favicon to something that more easily identifies the category of the email.
 ////
-
-
 var favicon = disciplineId;
 var animatedFavicon
 
 //Sub check
 if ( getSubStatus(disciplineSearch) ) { favicon = favicon + "-sub"; }
-
-//A/B Test check
-// if ( getABstatus(disciplineSearch) ) { favicon = favicon + "-" + getABstatus(disciplineSearch); }
-
-// Fox Check
-// if ( /\-Fox\-/gi.test(document.URL) ) {	if ( favicon === "" ) { favicon += "fox"; } else { favicon += "-fox"; } };
 
 //Dropbox check
 if ( onDropbox ) {	favicon = favicon + "-dropbox"; }
@@ -158,8 +147,6 @@ if ( !onMailchimp ) {
 	// For some reason, this tag affects the loading/use of fonts (specifically Roboto), SOMETIMES. Adding it to the DOM and then moving it a second time fixes this. I do not know why.
 	faviconWrapper.insertBefore(faviconLink, faviconWrapper.firstChild); // Add it to the <head> tag.
 	faviconWrapper.appendChild(faviconLink); // Move it around inside the <head> to fix font issues with the page.
-
-	// console.log("Favicon = " + favicon);
 
 	if ( animatedFavicon ) {
 		setInterval(function() {

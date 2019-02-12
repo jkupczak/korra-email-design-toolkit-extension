@@ -97,7 +97,7 @@ iframe {
 .main-container .stages {
   order:2;
   width:100%;
-  padding:10px;
+  padding:0;
 
   height:100vh;
   min-height:100vh;
@@ -647,7 +647,9 @@ html.powered-up, html.powered-up body {
 
 .ajax-orb { order:12; }
 .ajax-orb.on, .ajax-orb:hover { background:#1b3b84; }
-/* .ajax-orb:before { content:"\e97d"; } */
+
+.send-test-orb { order:12; }
+.ajax-orb:hover { background:#1b3b84; }
 
 .custom-orb { order:12; }
 .custom-orb.on, .custom-orb:hover { background:#1b3b84; }
@@ -1398,7 +1400,7 @@ body.split-view-on {
 /**********************/
 
 .mobile-view-wrapper {
-  padding:0 0 0 10px;
+  padding:15px;
 
   margin:0;
   height: initial;
@@ -1676,6 +1678,14 @@ body.split-view-on {
     font-size: 12px;
   }
 
+  /*
+   * CodeMirror doesn't break long words by default.
+   * Instead they stretch the container and you lose sight of your vertical scrollbar.
+   * Add this code to fix that.
+   * http://codemirror.977696.n3.nabble.com/Word-Wrap-td3732913.html
+   */
+  .CodeMirror-wrap pre { word-break: break-all !important; }
+
 
 
 /***********
@@ -1952,25 +1962,6 @@ body.split-view-on {
 /*************************/
 /*************************/
 
-.manifest-version {
-  font-size:10px;
-  color:#fff;
-  opacity:.125;
-  position:absolute;
-  bottom:0px; left:0px;
-  padding:7px 7px 7px 28px;
-  cursor:default;
-
-  display: flex;
-  align-items: center;
-}
-
-.manifest-version:hover {
-  opacity:1;
-  background:#494973;
-  cursor:pointer;
-}
-
 
 
 /* ERROR CHECKING */
@@ -2064,8 +2055,8 @@ html.error-status.errors:before {
   background: #000;
 }
 
-.open-in-app-btn {
-  margin-bottom:0;
+.open-in-editor-btn {
+  margin-bottom:6px;
 }
 
 /****************/
@@ -2197,6 +2188,55 @@ html.error-status.errors:before {
   background: none;
   color: inherit;
   animation:none;
+}
+
+
+/* ================= */
+/* ================= */
+/* ================= */
+/* ================= */
+
+.pane-footer {
+    /* background:#202027; */
+    height:30px;
+    max-height:30px;
+    min-height:30px;
+    margin-top:auto;
+    display:flex;
+}
+.pane-footer .settings-link {
+  width:40px; height:30px;
+  line-height:30px; text-align:center;
+  margin-left:auto;
+}
+.pane-footer .settings-link:hover {
+  color:#fff;
+}
+.pane-footer .settings-link:hover {
+  animation: rotateOnce .25s ease 1 forwards;
+}
+
+  @keyframes rotateOnce {
+    0%   { transform: scale(1.1, 1.1); }
+    100% { transform: scale(1.2, 1.2); }
+  }
+
+.pane-footer .manifest-version {
+  margin-right:auto;
+  font-size:10px;
+  color:#fff;
+  opacity:.125;
+  padding:7px 7px 7px 28px;
+  cursor:default;
+
+  display: flex;
+  align-items: center;
+}
+
+.pane-footer .manifest-version:hover {
+  opacity:1;
+  background:#494973;
+  cursor:pointer;
 }
 
 

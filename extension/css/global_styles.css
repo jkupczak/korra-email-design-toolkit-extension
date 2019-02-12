@@ -15,6 +15,10 @@
 }
 
 :root {
+
+  --korra-purple: #8f15ff;
+  --korra-blue: #3fd1ff;
+
   --mb-blue:        #1e78d7;
   --mb-blue-hover:  #1964b3;
 
@@ -258,6 +262,8 @@
     font-weight: normal;
     font-style: normal;
 }
+
+.icon-btn:hover { cursor:pointer; }
 
 .icomoon {
     /* use !important to prevent issues with browser extensions that change fonts */

@@ -3,9 +3,8 @@
   "manifest_version": 2,
 
   "name": "Korra for Email: Design & QA Automation",
-  "version": "3.8.7",
+  "version": "3.9.0",
   "description": "Automate the QA process, debugging and testing of your emails.",
-
 
 
   "icons": {
@@ -64,24 +63,27 @@
     ],
     "persistent": true
   },
+
+
+
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
   },
-  "content_scripts": [
 
+
+
+  "content_scripts": [
     {
       "matches": ["*://*/*", "file:///*"],
-      "js": ["send-test/send-test.js"],
-      "run_at": "document_idle"
+      "js": ["send-test/invoke-send-test.js"],
+      "run_at": "document_start"
     },
-
     {
       "matches": ["*://*/korra/*"],
       "js": ["js/global.js"],
       "run_at": "document_start"
     },
-
     {
       "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],
       "exclude_matches": ["file:///*?view=1*", "file:///var/folders/*", "http://localhost:4567/__middleman/*"],
@@ -97,12 +99,13 @@
       "js": [
         "js/global.js",
         "js/get-options.js",
+        "js/libs/chrome-storage-promise.js",
+        "file-history/file-history.js",
         "js/newsletter/newsletter-async.js",
         "js/newsletter/mailchimp-parser.js",
         "js/libs/Dropbox-sdk.min.js",
         "js/libs/moment.js",
         "js/newsletter/svg-icons.js",
-        "js/libs/chrome-storage-promise.js",
         "link-validation/js/check-links-in-storage.js",
         "link-validation/js/link-validation.js",
         "link-validation/js/check-link-status.js",
