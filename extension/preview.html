@@ -1,93 +1,219 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8">
 		<title>Korra Preview</title>
 
-		<link type="image/x-icon" rel="shortcut icon" href="chrome-extension://cmnkhmbhjmegonnkbedgckmcfjllebhb/favicons/blank.png">
+		<style>
+			html {
+			  background: rgb(43, 43, 51);
+				box-sizing: border-box;
+			}
+			*, *:before, *:after {
+			  box-sizing: inherit;
+			}
+
+			.loading-status {
+			  position: fixed;
+			  width: 100vw; height: 100vh;
+			  left: 0; top: 0;
+				z-index:99999;
+				background: #1d1d25;
+			}
+
+			.loading-icon {
+				width:100px; height:100px;
+				position: absolute;
+				left: 0; top: 0; bottom:0; right:20px;
+				margin:auto;
+				animation: zoomIcon 1s ease-out 1 forwards;
+			}
+
+			#loading {
+				position: absolute;
+				margin:auto;
+				top:0; right:0; bottom:0; left:0;
+			}
+			#loading-content {
+			  display: block;
+			  position: absolute;
+			  left: 0; top: 0; bottom:0; right:0;
+				margin:auto;
+
+				width: 270px; height: 270px;
+				max-width:270px; max-height:270px;
+				min-width:270px; min-height:270px;
+			}
+			#loading-content:before, #loading-content:after {
+			  content: "";
+			  position: absolute;
+			}
+			#loading-content:after {
+			  left: 25px; right: 25px; top: 25px; bottom: 25px;
+			}
+			#loading-content:before {
+			  left: 10px; right: 10px; top: 10px; bottom: 10px;
+			}
+			#loading-content {
+			  animation: loader 1.25s linear infinite, blend 1s linear infinite;
+			}
+			#loading-content:before {
+			  opacity:.5;
+			  animation: loader 1.75s linear infinite, blend .75s linear infinite;
+			}
+			#loading-content:after {
+			  opacity:.2;
+			  animation: loader 1s linear infinite, blend .5s linear infinite;
+			}
+			#loading-content, #loading-content:before, #loading-content:after {
+			  border: 3px solid transparent;
+			  border-top-color: #8f15ff; border-bottom-color: #8f15ff;
+			  border-radius: 50%;
+			}
+
+			.fade-out {
+				animation: fadeOut .33s linear 1 forwards;
+			}
+			.fade-in {
+				animation: fadeIn 2s ease-out 1 forwards;
+			}
+
+			@keyframes loader {
+			  0%   { transform: rotate(0deg); }
+			  50%  { transform: rotate(180deg); }
+			  100% { transform: rotate(360deg); }
+			}
+			@keyframes blend {
+				0%   { border-top-color:#8f15ff; border-bottom-color:#8f15ff; }
+			  50%  { border-top-color:#3fd1ff; border-bottom-color:#3fd1ff; }
+			  100% { border-top-color:#8f15ff; border-bottom-color:#8f15ff; }
+			}
+			@keyframes zoomIcon {
+				0%   { transform: scale(.2, .2); opacity:0; }
+			  40%  { opacity:1; transform: scale(1.3, 1.3); }
+			  100% { opacity:1; transform: scale(1, 1); }
+			}
+			@keyframes fadeOut {
+				0%   { opacity:1; transform: scale(1, 1); }
+				40%  { opacity:.8; transform: scale(1.2, 1.2); }
+			  100% { opacity:0; transform: scale(0, 0); }
+			}
+			@keyframes fadeIn {
+				0%   { opacity:0; }
+			  100% { opacity:1; }
+			}
+		</style>
 
 		<!-- document_start -->
-			<!-- css -->
-		<link rel="stylesheet" type="text/css" href="css/newsletter/newsletter-beforeload.css" />
-		<link rel="stylesheet" type="text/css" href="css/newsletter/newsletter-styles.css" />
-		<link rel="stylesheet" type="text/css" href="css/libs/alertify.css" />
-		<link rel="stylesheet" type="text/css" href="css/alertify.medbridge.css" />
-		<link rel="stylesheet" type="text/css" href="css/libs/tingle.css" />
-
 			<!-- js -->
-		<script src="js/global.js"></script>
-		<script src="js/get-options.js"></script>
-		<script src="js/libs/chrome-storage-promise.js"></script>
-		<script src="file-history/file-history.js"></script>
-		<script src="js/newsletter/newsletter-async.js"></script>
-		<script src="js/newsletter/mailchimp-parser.js"></script>
+			<script src="js/global.js"></script>
+			<script src="js/get-options.js"></script>
+			<script src="js/libs/chrome-storage-promise.js"></script>
+			<script src="js/newsletter/newsletter-async.js"></script>
+			<script src="js/newsletter/mailchimp-parser.js"></script>
+
+			<!-- css -->
+			<link rel="stylesheet" type="text/css" href="css/newsletter/newsletter-styles.css" />
+			<link rel="stylesheet" type="text/css" href="css/libs/alertify.css" />
+			<link rel="stylesheet" type="text/css" href="css/alertify.medbridge.css" />
+			<link rel="stylesheet" type="text/css" href="css/libs/tingle.css" />
 
 		<!-- document_end-->
-		<link rel="stylesheet" type="text/css" href="css/global_styles.css" />
-		<link rel="stylesheet" type="text/css" href="css/libs/alertify.css" />
-		<!-- __codemirror -->
-		<link rel="stylesheet" type="text/css" href="js/libs/codemirror/lib/codemirror.css" />
-		<link rel="stylesheet" type="text/css" href="js/libs/codemirror/theme/monokai.css" />
-		<link rel="stylesheet" type="text/css" href="js/libs/codemirror/addon/fold/foldgutter.css" />
-		<link rel="stylesheet" type="text/css" href="js/libs/codemirror/addon/scroll/simplescrollbars.css" />
+			<link rel="stylesheet" type="text/css" href="css/global_styles.css" />
+			<link rel="stylesheet" type="text/css" href="css/libs/alertify.css" />
+			<!-- __codemirror -->
+			<link rel="stylesheet" type="text/css" href="js/libs/codemirror/lib/codemirror.css" />
+			<link rel="stylesheet" type="text/css" href="js/libs/codemirror/theme/monokai.css" />
+			<link rel="stylesheet" type="text/css" href="js/libs/codemirror/addon/fold/foldgutter.css" />
+			<link rel="stylesheet" type="text/css" href="js/libs/codemirror/addon/scroll/simplescrollbars.css" />
 
 	</head>
 	<body>
 
-		<div id="loading-wrapper">
-		  <div id="loading-text">LOADING</div>
-		  <div id="loading-content"></div>
+		<div class="loading-status">
+			<div id="loading">
+				<svg class="loading-icon" x="0px" y="0px" viewBox="0 0 334.5 309.6">
+				<style>.st0{fill:url(#SVGID_1_)}</style>
+				<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="0" y1="154.792" x2="334.5004" y2="154.792">
+					<stop  offset="0" style="stop-color:#8F15FF"/>
+					<stop  offset="0.1401" style="stop-color:#8D19FF"/>
+					<stop  offset="0.2861" style="stop-color:#8826FF"/>
+					<stop  offset="0.435" style="stop-color:#7F3BFF"/>
+					<stop  offset="0.5859" style="stop-color:#7358FF"/>
+					<stop  offset="0.7381" style="stop-color:#637EFF"/>
+					<stop  offset="0.8895" style="stop-color:#4FABFF"/>
+					<stop  offset="1" style="stop-color:#3FD1FF"/>
+				</linearGradient><path class="st0" d="M332.8,1.2c-1.5-1.3-3.6-1.6-5.4-0.8L2.9,151.2C1.1,152,0,153.8,0,155.7s1.1,3.7,2.8,4.5l91.8,45.1
+					c1.7,0.8,3.7,0.6,5.2-0.5l89.3-66.7L119,210.2c-1,1-1.5,2.4-1.4,3.9l7,90.9c0.2,2,1.5,3.7,3.4,4.4c0.5,0.2,1,0.2,1.6,0.2
+					c1.4,0,2.8-0.6,3.8-1.7l48.7-56.5l60.3,28.8c1.3,0.6,2.8,0.7,4.2,0.1c1.3-0.6,2.3-1.7,2.8-3.1l85-270.6
+					C334.9,4.6,334.3,2.5,332.8,1.2z"/></svg>
+				<div id="loading-content"></div>
+			</div>
 		</div>
 
+
+
 		<div id="main-container" class="main-container">
-			<div id="panes" class="panes"></div>
-			<div id="stages" class="stages"></div>
+			<div id="panes" class="panes">
+				<div class="pane main-pane"></div>
+			</div>
+
+			<div id="stages" class="stages">
+				<div class="stage html-stage">
+					<div class="html-toolbar"></div>
+					<div class="iframe-wrapper"></div>
+				</div>
+
+				<div class="stage code-stage" style="display: none;"></div>
+			</div>
 		</div>
 
 
 
 		<!-- document_start -->
-		<script src="js/libs/Dropbox-sdk.min.js"></script>
-		<script src="js/libs/moment.js"></script>
-		<script src="js/newsletter/svg-icons.js"></script>
-		<script src="link-validation/js/check-links-in-storage.js"></script>
-		<script src="link-validation/js/link-validation.js"></script>
-		<script src="link-validation/js/check-link-status.js"></script>
-		<script src="js/utilities/is-article-protected.js"></script>
-		<script src="js/newsletter/newsletter-functions.js"></script>
-		<script src="js/utilities/mailgun.js"></script>
-		<script src="js/libs/email-all-chars-within-ascii.umd.js"></script>
+			<script src="js/libs/Dropbox-sdk.min.js"></script>
+			<script src="js/libs/moment.js"></script>
+			<script src="js/newsletter/svg-icons.js"></script>
+			<script src="link-validation/js/check-links-in-storage.js"></script>
+			<script src="link-validation/js/link-validation.js"></script>
+			<script src="link-validation/js/check-link-status.js"></script>
+			<script src="js/utilities/is-article-protected.js"></script>
+			<script src="js/newsletter/newsletter-functions.js"></script>
+			<script src="js/utilities/mailgun.js"></script>
+			<script src="js/libs/email-all-chars-within-ascii.umd.js"></script>
 
 		<!-- document_idle -->
-		<script src="send-test/invoke-send-test.js"></script>
+			<script src="send-test/invoke-send-test.js"></script>
 
 		<!-- document_end -->
-		<!-- __codemirror -->
-		<script src="js/libs/codemirror/lib/codemirror.js"></script>
-		<script src="js/libs/codemirror/mode/css/css.js"></script>
-		<script src="js/libs/codemirror/mode/xml/xml.js"></script>
-		<script src="js/libs/codemirror/mode/javascript/javascript.js"></script>
-		<script src="js/libs/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-		<script src="js/libs/codemirror/addon/display/autorefresh.js"></script>
-		<script src="js/libs/codemirror/addon/fold/foldcode.js"></script>
-		<script src="js/libs/codemirror/addon/fold/foldgutter.js"></script>
-		<script src="js/libs/codemirror/addon/fold/brace-fold.js"></script>
-		<script src="js/libs/codemirror/addon/fold/comment-fold.js"></script>
-		<script src="js/libs/codemirror/addon/fold/indent-fold.js"></script>
-		<script src="js/libs/codemirror/addon/fold/xml-fold.js"></script>
-		<script src="js/libs/codemirror/addon/selection/active-line.js"></script>
-		<script src="js/libs/codemirror/addon/selection/mark-selection.js"></script>
-		<script src="js/libs/codemirror/addon/scroll/simplescrollbars.js"></script>
+			<!-- __codemirror -->
+			<script src="js/libs/codemirror/lib/codemirror.js"></script>
+			<script src="js/libs/codemirror/mode/css/css.js"></script>
+			<script src="js/libs/codemirror/mode/xml/xml.js"></script>
+			<script src="js/libs/codemirror/mode/javascript/javascript.js"></script>
+			<script src="js/libs/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+			<script src="js/libs/codemirror/addon/display/autorefresh.js"></script>
+			<script src="js/libs/codemirror/addon/fold/foldcode.js"></script>
+			<script src="js/libs/codemirror/addon/fold/foldgutter.js"></script>
+			<script src="js/libs/codemirror/addon/fold/brace-fold.js"></script>
+			<script src="js/libs/codemirror/addon/fold/comment-fold.js"></script>
+			<script src="js/libs/codemirror/addon/fold/indent-fold.js"></script>
+			<script src="js/libs/codemirror/addon/fold/xml-fold.js"></script>
+			<script src="js/libs/codemirror/addon/selection/active-line.js"></script>
+			<script src="js/libs/codemirror/addon/selection/mark-selection.js"></script>
+			<script src="js/libs/codemirror/addon/scroll/simplescrollbars.js"></script>
 
-		<script src="js/libs/findAndReplaceDOMText.js"></script>
-		<script src="js/libs/tingle.js"></script>
-		<script src="js/libs/interact.js"></script>
-		<script src="js/newsletter/dropbox-share.js"></script>
-		<script src="js/libs/email-remove-unused-css.umd.js"></script>
-		<script src="js/libs/string-collapse-white-space.umd.js"></script>
-		<script src="js/libs/alertify.js"></script>
-		<script src="js/discipline-labeling.js"></script>
-		<script src="js/libs/keymaster.js"></script>
-		<script src="js/newsletter/newsletter.js"></script>
+			<script src="js/libs/findAndReplaceDOMText.js"></script>
+			<script src="js/libs/tingle.js"></script>
+			<script src="js/libs/interact.js"></script>
+			<script src="js/newsletter/dropbox-share.js"></script>
+			<script src="js/libs/email-remove-unused-css.umd.js"></script>
+			<script src="js/libs/string-collapse-white-space.umd.js"></script>
+			<script src="js/libs/alertify.js"></script>
+			<script src="js/discipline-labeling.js"></script>
+			<script src="js/libs/keymaster.js"></script>
+			<script src="js/newsletter/newsletter.js"></script>
+			<script src="file-history/file-history.js"></script>
 
 	</body>
 </html>

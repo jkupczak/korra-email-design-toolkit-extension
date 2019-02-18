@@ -69,6 +69,20 @@ function getMonthAbbr(date) {
 
 }
 
+//
+// Get Date MMM Month
+//
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+const isUndefined = val => val === undefined;
+
+
+
 // https://davidwalsh.name/javascript-debounce-function
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
@@ -346,8 +360,17 @@ function formatDate(date) {
  */
 function getFilename(url) {
 
-  var filename = url.match(/.+?(\.html?)/, ""); // find everything through the first instance of .html? This removes everything after it
-  filename = filename[0].replace(/.+\//, ""); // remove everything up through the last /
+  // console.log(url);
+
+  let filename;
+
+  if (url) {
+    filename = url.match(/.+?(\.html?)/, ""); // find everything through the first instance of .html? This removes everything after it
+
+    if ( filename ) {
+      filename = filename[0].replace(/.+\//, ""); // remove everything up through the last /
+    }
+  }
 
   return filename;
 }
@@ -364,15 +387,9 @@ function getFilename(url) {
  */
 function getFilePath(url) {
 
-  var filePath;
+  url = url.replace(/(^file:\/\/|\/[^/]+$)/gi,"");
 
-  if ( environment === "extension" ) {
-    filePath = url.replace(/\[^\/]+/,"");
-  } else {
-    filepath = document.location.origin + document.location.pathname;
-  }
-
-  return filePath;
+  return url;
 }
 
 //
@@ -1148,7 +1165,6 @@ function destroyAll(el) {
  * @return {[type]}      [description]
  */
 function destroyIfExists(el) {
-  console.log(el);
   if ( elExists(el) ) {
     if ( el.target ) {
       var el = this;

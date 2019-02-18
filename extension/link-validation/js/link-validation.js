@@ -6,32 +6,32 @@ function launchLinkValidation(source, frameContentsPassed, errorBox, dummyLinkLi
 
   // Get our options from chrome.storage.async
   var getAllOptions = new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (items) => {
-          let err = chrome.runtime.lastError;
-          if (err) {
+    chrome.storage.sync.get(null, (items) => {
+      let err = chrome.runtime.lastError;
+      if (err) {
 
-            //@TODO What do I do if the call errors out?!
-            reject(err);
+        //@TODO What do I do if the call errors out?!
+        reject(err);
 
-          } else {
+      } else {
 
-            // Apply our result to a global variable so that we can use it throughout our other scripts.
-            // Maybe not the best way to handle this?
-            exOptions = items;
-            korraOptions = items;
+        // Apply our result to a global variable so that we can use it throughout our other scripts.
+        // Maybe not the best way to handle this?
+        exOptions = items;
+        korraOptions = items;
 
-            console.groupCollapsed("Options from Storage (exOptions)");
-            console.log(exOptions);
-            console.groupEnd();
+        console.groupCollapsed("Options from Storage (exOptions)");
+        console.log(exOptions);
+        console.groupEnd();
 
-            resolve(items);
+        resolve(items);
 
-            // Now that we have our options, we can run the link check
-            ///////
-            linkValidationLoop(source, frameContentsPassed, errorBox, dummyLinkList);
+        // Now that we have our options, we can run the link check
+        ///////
+        linkValidationLoop(source, frameContentsPassed, errorBox, dummyLinkList);
 
-          }
-      });
+      }
+    });
   });
 
 }
@@ -100,15 +100,15 @@ if (typeof emailDisc === 'undefined') {
 }
 
 // Inject Stylesheet
-console.log( frameContents );
-console.log( frameContents.body );
+// console.log( frameContents );
+// console.log( frameContents.body );
 
 var validationStylesheet = document.createElement('link');
 validationStylesheet.setAttribute('rel', 'stylesheet');
 validationStylesheet.setAttribute('type', 'text/css');
 validationStylesheet.setAttribute('href', chrome.extension.getURL('/link-validation/css/link-validation.css'));
 
-console.log(validationStylesheet);
+// console.log(validationStylesheet);
 
 frameContents.documentElement.appendChild(validationStylesheet);
 
@@ -147,7 +147,7 @@ frameContents.documentElement.appendChild(validationStylesheet);
   // Regardless of whether or not we end up checking the links.
   // let linkList = frameContents.querySelectorAll("a");
 
-  console.group("Links Group for Validation - Total Links Processed: " + linkList.length);
+  console.groupCollapsed("[Link Validation] Total Links Processed: " + linkList.length);
 
   // Loop through each link on the page first before we validate individually.
   var medbridgeLinkUrlsList = [];
@@ -1657,7 +1657,7 @@ function verifyLinkVisibility(linkList) {
   // 4/28/18 - Actually, keep it. We'll use it to generate the plaintext.
   // destroy(dummyIframe);
 
-  console.log("end verifyLinkVisibility");
+  // console.log("end verifyLinkVisibility");
 
 }
 

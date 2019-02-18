@@ -6,10 +6,7 @@
  */
  var saveFileHistory = function() {
 
-
-
-}
-
+};
 
 
 /**
@@ -27,7 +24,7 @@ var viewFileHistory = function() {
   fileHistoryWindow.style = "border:0;position:fixed; top:0; left:0; width:100vw; height:100vh; display:block; z-index:99999;";
   document.body.appendChild(fileHistoryWindow);
 
-}
+};
 
 
 
@@ -65,7 +62,7 @@ var buildHistoryList = function(files) {
   });
 
 
-}
+};
 
 
 
@@ -87,7 +84,7 @@ var processTags = function(el, file) {
  // dedupe allTags
  allTags = dedupe(allTags);
 
-}
+};
 
 /**
  * Remove duplicate items from an array
@@ -114,3 +111,12 @@ var dedupe = function (arr) {
 //     }
 //   ]
 // }
+
+
+////////////////////////
+////////////////////////
+////////////////////////
+
+if ( isSavedFile ) {
+  saveFileHistory(fileLocation);
+}

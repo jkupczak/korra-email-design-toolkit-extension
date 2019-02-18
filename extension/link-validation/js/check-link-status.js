@@ -51,7 +51,7 @@ function onRequest(i, linkHref, linkObj) {
 
       // We're online
       // If the DOM needs to be parsed, or if we aren't caching links, then we need to XHR right now.
-      if ( XHRisNecessary(korraOptions) === '1' ) {
+      if ( XHRisNecessary(options) === '1' ) {
 
         //TODO we need to check if we're offline...
 
@@ -147,12 +147,12 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
       // if ( response !== false ) {
 
         // then we process the response we got from cache or XHR
-        processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions);
+        processLinkStatusResponse(i, linkHref, linkObj, response, options);
 
         // Now that the response has been processed, was this link the first of other identical links?
         if ( linkInfoArray[i]['firstInstance'] === true ) {
           // if so, process these results again for all other matching links in the DOM
-          applyXHRResultsToDupeLinks(linkHref, response, korraOptions);
+          applyXHRResultsToDupeLinks(linkHref, response, options);
         } else {
           console.error("!!!! ERROR !!!! not the first instance of this link"); // technically this should never fire because the !== false above should stop it
         }
@@ -169,7 +169,7 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
 /////////////////
 /////////////////
 /////////////////
-function applyXHRResultsToDupeLinks(linkHref, response, korraOptions) {
+function applyXHRResultsToDupeLinks(linkHref, response, options) {
 
   // console.log("running applyXHRResultsToDupeLinks on links that match", linkHref);
 
@@ -179,7 +179,7 @@ function applyXHRResultsToDupeLinks(linkHref, response, korraOptions) {
 
     if ( linkInfoArray[i].url === linkHref && linkInfoArray[i].firstInstance === false ) {
 
-      processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions);
+      processLinkStatusResponse(i, linkHref, linkObj, response, options);
 
     }
 
@@ -266,7 +266,7 @@ function manualXHRLinkCheck() {
 ////////////////
 ////////////////
 ////////////////
-function processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions) {
+function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
 
   // Results
   // console.log("response [" + response.source + "]:", i, response);
@@ -299,8 +299,8 @@ function processLinkStatusResponse(i, linkHref, linkObj, response, korraOptions)
 
     // Make sure there are no overrides in place to prevent caching. Either on all links or this specific link.
     // If not, then add it to chrome.storage
-    console.log(korraOptions.cacheValidLinks, response.addToCache);
-    if ( korraOptions.cacheValidLinks === '1' && response.addToCache !== false ) {
+    console.log(options.sync.cacheValidLinks, response.addToCache);
+    if ( options.sync.cacheValidLinks === '1' && response.addToCache !== false ) {
       linkStorage.addLink(linkHref, response);
     } else {
     }
@@ -634,8 +634,10 @@ function assignErrorRows(i, linkHref, linkObj, response) {
 // Should DOM be parsed to check for #'s || OR || is caching set to off?
 // If so, XHR is necessary.
 ////////
-function XHRisNecessary(korraOptions, linkHref) {
-  if ( shouldDOMbeParsed(linkHref, korraOptions.parseDOM) === '1' || korraOptions.cacheValidLinks === '0' ) {
+function XHRisNecessary(options, linkHref) {
+  console.log(options);
+  console.log(options.sync.parseDOM);
+  if ( shouldDOMbeParsed(linkHref, options.sync.parseDOM) === '1' || options.sync.cacheValidLinks === '0' ) {
     return true;
   }
   return false;

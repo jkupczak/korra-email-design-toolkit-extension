@@ -38,15 +38,6 @@ html {
 }
 
 
-/* ********** */
-/* ********** */
-
-.alignment-guide {
-  width:1px; background:cyan; height:100%; position:fixed; top:0; bottom:0; margin:auto !important; z-index:5000;
-}
-
-
-
 
 /* ================= */
 

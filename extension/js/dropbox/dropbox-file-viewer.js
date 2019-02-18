@@ -63,7 +63,7 @@ function buildKorraBar() {
     ////////
     document.arrive(".react-file-viewer", {existing: true}, function() {
 
-      if ( getParameterByName("noredirect") !== "1" ) {
+      if ( getParameterByName("autoredirect") !== "0" ) {
         viewLocalFile("auto");
       }
 
@@ -95,7 +95,11 @@ function viewLocalFile(type) {
 
   if ( !type ) type = "";
 
-	chrome.runtime.sendMessage({message: {source: "dropbox", type: type, url: localUrl}}, function(response) {
+  if ( type === "auto" ) {
+    history.pushState(null, null, document.location.pathname + "?autoredirect=0");
+  }
+
+	chrome.runtime.sendMessage({message: {type: type, url: localUrl}}, function(response) {
 	  console.log(response.farewell);
 	});
 

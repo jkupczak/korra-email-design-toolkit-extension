@@ -132,9 +132,8 @@ iframe {
   font-weight:500;
   text-align:center;
 }
-  .main-pane .stage-preview-btn--preview { width:42%; }
-  .main-pane .stage-preview-btn--code    { width:29%; margin-left:5px; }
-  .main-pane .stage-preview-btn--text    { width:29%; margin-left:5px; }
+  .main-pane .stage-preview-btn--preview { width:50%; margin-right:3px; }
+  .main-pane .stage-preview-btn--code    { width:50%; margin-left:3px; }
 
 .main-pane .stage-preview-btn.active {
   background:#000;
@@ -1530,7 +1529,7 @@ body.split-view-on {
 
   transition: width .3s ease 0s;
 
-  width:320px;
+  width:360px;
   max-width:480px;
   min-width:320px;
 

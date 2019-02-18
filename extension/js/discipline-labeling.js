@@ -60,57 +60,61 @@ if ( onMiddleman ) {
 }
 
 // Get AB Test data
-var abTestId = ""
+var abTestId = "";
 if ( getABstatus(disciplineSearch) === "a" ) {
 	var abTestId = "(A) "
 } else if ( getABstatus(disciplineSearch) === "b" ) {
 	var abTestId = "(B) "
-};
-
-if ( !onMailchimp ) {
-
-	// getEmailTitle(fileName);
-
-	// Check for legacy labels, like Enterprise instead ENT.
-	if ( disciplineId === "ent" && /\-Enterprise\-/gi.test(fileName) ) {
-		disciplineId = "Enterprise";
-	}
-
-
-	var re = new RegExp("^.+?-" + disciplineId + "","gi");
-	// console.log(fileName);
-	// console.log(re);
-
-	newTitle = fileName.replace(re, ""); // Remove date, discipline, A/B test, sub/ns, and extension
-	// console.log(newTitle);
-
-	newTitle = newTitle.replace(/\.html?|-(ns|sub)|-(a|b)\./gi, ""); // Remove date, discipline, A/B test, sub/ns, and extension
-	// console.log(newTitle);
-
-	newTitle = newTitle.replace(/\?.+/gi, ""); // Remove querystring
-	// console.log(newTitle);
-
-	newTitle = newTitle.replace(/\-/gi, " ");	 // Remove extra hyphens
-	// console.log(newTitle);
-
-	var newFileName = fileName.replace(/\?.+/gi, "");
-
-	finalTitle = finalTitle + abTestId + newTitle + " <" + newFileName + "> (" + currTitle + ")";
-	document.title = finalTitle;
-
-} else {
-
-	var re = new RegExp("([0-9][0-9]-|-" + disciplineId + "(-|$)|-sub$|-ns$|-Physical-?$|-Atheletic-?$)","gi");
-	newTitle = disciplineSearch.replace(re, "");
-	newTitle = newTitle.replace(/-/gi, " ");
-
-	finalTitle = finalTitle + abTestId + newTitle + " " + "(" + currTitle + ")";
-	document.title = finalTitle;
-
 }
 
+		// if ( !onMailchimp ) {
+		//
+		// 	// getEmailTitle(fileName);
+		//
+		// 	// Check for legacy labels, like Enterprise instead ENT.
+		// 	if ( disciplineId === "ent" && /\-Enterprise\-/gi.test(fileName) ) {
+		// 		disciplineId = "Enterprise";
+		// 	}
+		//
+		//
+		// 	var re = new RegExp("^.+?-" + disciplineId + "","gi");
+		// 	// console.log(fileName);
+		// 	// console.log(re);
+		//
+		// 	newTitle = fileName.replace(re, ""); // Remove date, discipline, A/B test, sub/ns, and extension
+		// 	// console.log(newTitle);
+		//
+		// 	newTitle = newTitle.replace(/\.html?|-(ns|sub)|-(a|b)\./gi, ""); // Remove date, discipline, A/B test, sub/ns, and extension
+		// 	// console.log(newTitle);
+		//
+		// 	newTitle = newTitle.replace(/\?.+/gi, ""); // Remove querystring
+		// 	// console.log(newTitle);
+		//
+		// 	newTitle = newTitle.replace(/\-/gi, " ");	 // Remove extra hyphens
+		// 	// console.log(newTitle);
+		//
+		// 	var newFileName = fileName.replace(/\?.+/gi, "");
+		//
+		// 	finalTitle = finalTitle + abTestId + newTitle + " <" + newFileName + "> (" + currTitle + ")";
+		// 	document.title = finalTitle;
+		//
+		// } else {
+		//
+		// 	var re = new RegExp("([0-9][0-9]-|-" + disciplineId + "(-|$)|-sub$|-ns$|-Physical-?$|-Atheletic-?$)","gi");
+		// 	newTitle = disciplineSearch.replace(re, "");
+		// 	newTitle = newTitle.replace(/-/gi, " ");
+		//
+		// 	finalTitle = finalTitle + abTestId + newTitle + " " + "(" + currTitle + ")";
+		// 	document.title = finalTitle;
+		//
+		// }
 
 
+var setPageTitle = function(filename) {
+
+	document.title = filename + " (" + document.title + ")";
+
+};
 
 
 ////

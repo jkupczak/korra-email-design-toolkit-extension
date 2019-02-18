@@ -303,3 +303,23 @@ body:active ~ .toolkit-element-baseline-overlay {
   color: inherit;
   animation:none;
 }
+
+
+
+
+/* ********** */
+/* ********** */
+
+.alignment-guide {
+  width:1px; background:cyan; height:100%; position:fixed; top:0; bottom:0; margin:auto !important; z-index:5000;
+  cursor: col-resize;
+  transition: all .3s;
+}
+.alignment-guide:hover {
+  box-shadow: 0 0 0 4px rgb(0, 255, 255,.1);
+  transition: all 0s;
+}
+.alignment-guide:active {
+  background: #138dff;
+  box-shadow: none;
+}

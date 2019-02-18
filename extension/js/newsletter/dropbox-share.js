@@ -1,8 +1,12 @@
 ////
 ////
+//// Notes:
+//// You'll see a lot of use of decodeURIComponent() in here.
+//// Windows and Mac treat ()'s differently when they're part of a URL.
+//// Because we check the filename located in the URL against Dropbox, we need to decode a bunch of values.
 ////
 ////
-////
+
 function getDbShareLink() {
 
   t0 = performance.now();
@@ -51,20 +55,16 @@ function getDbShareLink() {
 var dropboxFolderName;
 function callDropbox(action, source) {
 
-    dbx = new Dropbox({ accessToken: korraOptions.dropboxAccessToken });
-    if ( korraOptions.dropboxAccessToken ) {
+    dbx = new Dropbox({ accessToken: options.sync.dropboxAccessToken });
+    if ( options.sync.dropboxAccessToken ) {
       // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
     } else {
-      console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + korraOptions.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
+      console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + options.sync.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
     }
 
-  console.log(dropboxFolderName);
-  console.log(korraOptionsLocal);
-  console.log(korraOptionsLocal.fullPathToDropboxFolder);
+  console.log("fullPathToDropboxFolder:", options.local.fullPathToDropboxFolder);
 
-  dropboxFolderName = korraOptionsLocal.fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"");
-
-console.log(dropboxFolderName);
+  dropboxFolderName = options.local.fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"");
 
 
   console.group("callDropbox()");
@@ -72,16 +72,18 @@ console.log(dropboxFolderName);
     console.log("dropboxFolderName:", dropboxFolderName);
   console.groupEnd();
 
-  var dropboxEscapedParentFolder = escapeRegExp(dropboxFolderName);
+  var dropboxEscapedParentFolder = escapeRegExp(decodeURIComponent(dropboxFolderName));
   var dropboxTestPattern = new RegExp("^.+?" + dropboxEscapedParentFolder, "gi");
 
-  if ( dropboxTestPattern.test(document.URL) ) {
+  if ( dropboxTestPattern.test( decodeURI(fileLocation) ) ) {
 
-    console.log("Yes! This file exists in the local DropBox folder. [" + document.URL + "]");
+    console.log("Yes! This file exists in the local DropBox folder. [" + fileLocation + "]");
 
-    var dropboxFilePath = document.URL.replace(dropboxTestPattern, "");
+    var dropboxFilePath = decodeURIComponent(fileLocation).replace(dropboxTestPattern, "");
         dropboxFilePath = dropboxFilePath.replace(/\?.+$/gi, "");
         dropboxFilePath = decodeURIComponent(dropboxFilePath); // the API does not accept encoded paths (eg %20 instead of a space)
+
+    console.log("Sending this path to Dropbox:", dropboxFilePath);
 
     //
     // Dropbox API SDK - http://dropbox.github.io/dropbox-sdk-js/#toc0__anchor
@@ -105,6 +107,7 @@ console.log(dropboxFolderName);
         if (response.links.length > 0 && response.links[0][".tag"] !== "folder") {
 
           // console.log("true: response.links.length > 0 = " + response.links.length);
+          console.log("Found a pre-existing link for sharing.");
           processDbLink(response.links[0].url, action, source);
 
         } else {
@@ -141,8 +144,8 @@ console.log(dropboxFolderName);
 
   } else {
     source.classList.remove("loading");
-    console.log("Sorry! This file is not located in the local DropBox folder. We searched the current URL (" + document.URL + ") for this pattern (" + dropboxTestPattern + ").");
-    alert("Sorry! This file is not located in the local DropBox folder. We searched the current URL (" + document.URL + ") for this pattern (" + dropboxTestPattern + ").");
+    console.log("Sorry! This file is not located in the local DropBox folder. We searched the current URL (" + decodeURIComponent(document.URL) + ") for this pattern (" + dropboxTestPattern + ").");
+    alert("Sorry! This file is not located in the local DropBox folder. We searched the current URL (" + decodeURIComponent(document.URL) + ") for this pattern (" + dropboxTestPattern + ").");
 
     console.groupEnd();
 

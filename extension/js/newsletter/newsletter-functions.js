@@ -188,11 +188,8 @@ function changeMobileSize(width) {
         var clickedSize = event.target;
         var selectedSize = event.target.dataset.mobileWidth;
 
-        if ( selectedSize !== "320" ) {
-          history.replaceState(null,null, updateQueryString("mobilewidth", selectedSize) );
-        } else {
-          history.replaceState(null,null, updateQueryString("mobilewidth", null) );
-        }
+        // @TODO
+        // Save the currently set mobilewidth to session (?) storage so that it persists after a page refresh
 
         document.querySelector(".mobile-iframe-settings .active").classList.remove("active");
         clickedSize.classList.add("active");
@@ -920,33 +917,20 @@ function updatePreflightErrorTotal(type, i) {
 
     btn.classList.toggle("active");
 
-    if ( stage === "text" ) {
-      plainTextStage.style.display = "flex";
-      codeStage.style.display = "none";
-      htmlStage.style.display = "none";
-
-      viewTextBtn.classList.add("active");
-      viewHtmlBtn.classList.remove("active");
-      viewCodeBtn.classList.remove("active");
-    }
-    else if ( stage === "code" ) {
+    if ( stage === "code" ) {
       codeStage.style.display = "flex";
-      plainTextStage.style.display = "none";
       htmlStage.style.display = "none";
 
       viewCodeBtn.classList.add("active");
-      viewTextBtn.classList.remove("active");
       viewHtmlBtn.classList.remove("active");
 
       // activateCodeStage();
     }
     else {
       htmlStage.style.display = "flex";
-      plainTextStage.style.display = "none";
       codeStage.style.display = "none";
 
       viewHtmlBtn.classList.add("active");
-      viewTextBtn.classList.remove("active");
       viewCodeBtn.classList.remove("active");
     }
 
@@ -1017,4 +1001,27 @@ var logAccessibilityWarning = function(object, id) {
   console.error(id, object);
   totalAccessibilityWarnings++;
   updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings, " Accessibility Warnings");
+};
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var fileNotFound = function() {
+
 };

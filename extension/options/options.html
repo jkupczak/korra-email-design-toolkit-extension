@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Korra: Options</title>
+	<link rel="stylesheet" type="text/css" href="/css/fonts-material-icons.css" />
+	<link rel="stylesheet" type="text/css" href="options_style.css" />
+	<link rel="stylesheet" type="text/css" href="/libs/pickr/pickr.min.css" />
+</head>
+<body>
+
+	<div class="main">
+	<div class="main-wrapper">
+		<div id="menu">
+			<div class="menu-wrapper">
+
+				<div class="menu-flex">
+					<div class="title">Settings</div>
+
+					<div class="nav">
+						<ul>
+							<li><a href="#section-general">General</a></li>
+							<li><a href="#section-views">Views</a></li>
+							<li><a href="#section-sharing">Sharing</a></li>
+							<li><a href="#section-sending-tests">Sending Tests</a></li>
+							<li><a href="#section-esp-options">ESP Options</a></li>
+							<li><a href="#section-app-integrations">App Integrations</a></li>
+							<li><a href="#section-tags">Tags</a></li>
+							<li><a href="#section-badges">Badges</a></li>
+							<li><a href="#section-link-validation">Link Validation</a></li>
+							<li><a href="#section-code-validation">Code Validation</a></li>
+							<li><a href="#section-images">Images</a></li>
+							<li><a href="#section-text-and-grammer">Text and Grammar</a></li>
+							<li><a href="#section-accessibility">Accessibility</a></li>
+							<li><a href="#section-design-tools">Design Tools</a></li>
+							<li><a href="#section-alerts">Alerts</a></li>
+							<li><a href="#section-appearance">Appearance</a></li>
+							<li><a href="#section-advanced">Advanced Settings</a></li>
+						</ul>
+					</div>
+
+					<div class="nav-footer">
+						<ul>
+							<li><div id="export-settings" class="link">Export Settings</div></li>
+							<li><div id="import-settings" class="link">Import Settings</div></li>
+							<li><div id="reset-settings" class="link">Reset Settings</div></li>
+						</ul>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<div id="content">
+			<div class="main-container">
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- General -->
+					<div id="section-general" class="parent-section">
+						<div class="parent-section-title">General</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2>Watching Files and Folders</h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+								<div class="section-description">
+									Korra will automatically enhance local HTML files for you as soon as you open them. You can adjust which kinds of files Korra enhances and which folders Korra watches for those files.
+								</div>
+
+								<div class="option-group">
+									<label>File extensions to watch</label>
+									<div class="option-desc">Control which local files Korra will process by adding or removing file extensions.</div>
+									<div class="option-desc dim">Separate values with commas. Default values: <code>.html, .htm</code></div>
+									<input class="lg" data-autosave="true" name="watchedExtensions" type="text" value=".html, .htm">
+								</div>
+
+								<div class="option-group textarea">
+									<label>Restrict watched folders</label>
+									<div class="option-desc">By default Korra will attempt to process any local files that you open in your browser regardless of where they are located. If you'd prefer that Korra only watch specific folders you can add them here. Leave this field blank to allow Korra to watch all folders.</div>
+									<div class="option-desc dim">Enter the full path to the folders you want to watch. Do not include a <code>file://</code> protocol.</div>
+									<div class="option-desc dim">Enter each path on its own line. You can use wildcards *.</div>
+									<div class="option-desc dim"><strong>Tip:</strong> On Mac your paths should begin with a forward slash <code>/</code>.</div>
+									<textarea data-autosave="true" data-save-location="local" name="watchedFolders"></textarea>
+								</div>
+
+								<div class="option-group textarea">
+									<label>Local servers to watch</label>
+									<div class="option-desc">Korra doesn't watch for files on local servers out of the box (for example: <code>http://localhost:4567/</code>). You can add them yourself by including the appropriate path below.</div>
+									<div class="option-desc dim">Enter each path on its own line. You can use wildcards *.</div>
+									<textarea data-autosave="true" data-save-location="local" name="watchedServers"></textarea>
+								</div>
+
+
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Views -->
+					<div id="section-views" class="parent-section">
+						<div class="parent-section-title">Views</div>
+						<div class="parent-section-desc">Korra has several "views" available to you when you're previewing an email. Several settings can be edited to modify the default behavior on page load. And some settings can be toggled on and off while viewing an email independently of your chosen preferences here.</div>
+
+						<!-- -->
+				    <div class="options-section">
+							<div class="section-title">
+				      	<h2>General</h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+					      <div class="option-group checkbox">
+
+									<div class="pretty p-default p-curve">
+										<input data-autosave="true" type="checkbox" name="synchronizeScrolling" id="synchronizeScrolling" value="1" checked>
+										<label for="synchronizeScrolling">Synchronize scrolling</label>
+									</div>
+
+									<div class="option-desc">Sync up the desktop and mobile views so that they are scrolled simultaneously. You can also toggle this on and off when viewing an email.</div>
+					      </div>
+				      </div>
+				    </div>
+
+						<!-- -->
+				    <div class="options-section">
+							<div class="section-title">
+				      	<h2>Desktop View</h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+					      <div class="option-group checkbox">
+
+					      </div>
+				      </div>
+				    </div>
+
+						<!-- -->
+						<div class="options-section">
+							<div class="section-title">
+								<h2>Mobile View</h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="mobileViewVisibility" id="mobileViewVisibility" value="1" checked>
+									<label for="mobileViewVisibility">
+										Show mobile view next to desktop view
+									</label>
+									<div class="option-desc">The mobile view can be toggled on and off when viewing an email. Uncheck this if you want to hide it by default.</div>
+								</div>
+
+								<div class="option-group">
+									<label for="mobileWidthDefault">Default mobile width</label>
+									<div class="option-desc">The default width in pixels that the mobile view will be displayed at when you view an email.</div>
+									<input data-autosave="true" type="text" name="mobileWidthDefault" id="mobileWidthDefault" class="xs" maxlength="3" value="360">
+								</div>
+
+								<div class="option-group">
+									<label>Quick select mobile view widths</label>
+									<div class="option-desc">The mobile view has shortcuts that instantly resize its width to one of many popular sizes. Add or remove widths here.</div>
+									<div class="option-desc dim">Separate values with commas. Default values: <code>320, 360, 375, 414, 480</code></div>
+									<input class="md" data-autosave="true" name="mobileWidth" type="text" value="320, 360, 375, 414, 480">
+								</div>
+
+					      <div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="hideMobileScrollbarY" id="hideMobileScrollbarY" value="1" checked>
+									<label for="hideMobileScrollbarY">
+										Hide vertical scrollbar
+									</label>
+									<div class="option-desc">The vertical scrollbar in mobile view is hidden by default to better immitate the look of a mobile device.</div>
+					      </div>
+
+							</div>
+						</div>
+
+						<!-- -->
+						<div class="options-section">
+							<div class="section-title">
+				      	<h2>Code View</h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+					      <div class="option-group checkbox">
+
+					      </div>
+				      </div>
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Sharing -->
+					<div id="section-sharing" class="parent-section">
+						<div class="parent-section-title">Sharing</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2>Sharing</h2>
+								<p>Enable one-click sharing with Dropbox.</p>
+							</div>
+
+							<div class="section-content">
+
+								<div class="option-group">
+								<div class="cols">
+						      <div>
+						  		    <label for="dropboxAccessToken">Dropbox API access token</label>
+						          <p>Visit <a href="https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1" target="_blank">Dropbox</a> to get an access token.</p>
+						  		    <input data-autosave="true" type="text" name="dropboxAccessToken" id="dropboxAccessToken">
+						      </div>
+
+						      <div>
+						  		    <label for="fullPathToDropboxFolder">Path to Dropbox parent folder</label>
+						  		    <input data-autosave="true" data-save-location="local" type="text" name="fullPathToDropboxFolder" id="fullPathToDropboxFolder">
+						  		    <input hidden name="dropboxFolderName" id="dropboxFolderName">
+						      </div>
+					      </div>
+					      </div>
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="autoRedirectDropboxLinkstoLocal" id="autoRedirectDropboxLinkstoLocal" value="1" checked>
+									<label for="autoRedirectDropboxLinkstoLocal">
+										Automatically redirect to local files when viewing emails on Dropbox.com
+									</label>
+									<div class="option-desc">
+										<strong>Tip:</strong> Hitting the back button after being redirected will allow you to view the email on Dropbox.
+									</div>
+								</div>
+
+							</div>
+				    </div>
+			    </div>
+
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Sending Tests -->
+					<div id="section-sending-tests" class="parent-section">
+						<div class="parent-section-title">Sending Tests</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2>Email Service Providers</h2>
+								<p>Send test emails by entering credentials for a supported service.</p>
+							</div>
+
+							<div class="section-content">
+
+								<div class="option-group select">
+									<label>Default sending service</label>
+									<div class="option-desc">Select the service that should pre-selected when sending a test email.</div>
+									<select data-autosave="true" name="emailTestService">
+										<option selected></option>
+										<option>Mailgun</option>
+										<option>Sparkpost</option>
+									</select>
+								</div>
+
+								<div class="option-group">
+									<div class="cols">
+										<div>Mailgun</div>
+							      <div>
+							  		    <label for="mailgunApiKey">API key</label>
+							          <p>Visit <a href="https://app.mailgun.com/app/account/security" target="_blank">Mailgun</a> to get your API key.</p>
+							  		    <input data-autosave="true" type="text" name="mailgunApiKey">
+							      </div>
+
+							      <div>
+							  		    <label for="mailgunDomainName">Domain name</label>
+							          <p>Visit <a href="https://app.mailgun.com/app/domains" target="_blank">Mailgun</a> to get your domain name.</p>
+							  		    <input data-autosave="true" type="text" name="mailgunDomainName">
+							      </div>
+						      </div>
+								</div>
+
+								<div class="option-group">
+									<div class="cols">
+										<div>Sparkpost</div>
+							      <div>
+							  		    <label for="sparkpostApiKey">API key</label>
+							          <p>Visit <a href="https://app.mailgun.com/app/account/security" target="_blank">Sparkpost</a> to get your API key.</p>
+							  		    <input data-autosave="true" type="text" name="sparkpostApiKey">
+							      </div>
+
+							      <div>
+							  		    <label for="sparkpostDomainName">Domain name</label>
+							          <p>Visit <a href="https://app.mailgun.com/app/domains" target="_blank">Sparkpost</a> to get your domain name.</p>
+							  		    <input data-autosave="true" type="text" name="sparkpostDomainName">
+							      </div>
+						      </div>
+					      </div>
+
+				    	</div>
+
+			    	</div>
+
+
+						<div class="options-section">
+
+							<div class="section-title">
+								<h2>Email Addresses</h2>
+								<p>Add email addresses you'd like to use when sending tests.</p>
+							</div>
+
+							<div class="section-content">
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="rememberEmailAddresses" id="rememberEmailAddresses" value="1" checked>
+									<label for="rememberEmailAddresses">
+										Remember the email addresses I enter for future use
+									</label>
+					      </div>
+
+								<div class="option-group">
+									<label>Add an email address</label>
+									<div class="option-desc">The default width in pixels that the mobile view will be displayed at when you view an email.</div>
+									<div class="confirm-input" data-autosave="false">
+										<input name="savedEmailAddresses" data-autofill="false" data-confirm="true" data-save="unique-append" id="add-email-address-input" class="md" type="text" value="james@medbridgeed.com">
+										<button id="add-email-address-confirm"><div>Add</div></button>
+									</div>
+									<div id="saved-email-addresses">
+
+
+									</div>
+								</div>
+
+
+							</div>
+				    </div>
+
+
+						<div class="options-section">
+
+							<div class="section-title">
+								<h2>Default Email Fields</h2>
+							</div>
+
+							<div class="section-content">
+
+								<div class="option-group">
+									<label>Default <code>to:</code> email</label>
+									<input data-autosave="true" class="lg" type="text" name="defaultToEmail" value="">
+								</div>
+
+								<div class="option-group">
+									<label>Default <code>reply-to:</code> email</label>
+									<input data-autosave="true" class="lg" type="text" name="defaultReplytoEmail" value="">
+								</div>
+
+								<div class="option-group textarea">
+									<label>Default subject line</label>
+									<textarea data-autosave="true" data-prevent-breaks="true" class="lg short" name="defaultSubjectLine" value=""></textarea>
+								</div>
+							</div>
+
+				    </div>
+
+			    </div>
+
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- ESP Options -->
+					<div id="section-esp-options" class="parent-section">
+						<div class="parent-section-title">ESP Options</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+							</div>
+
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Open in App -->
+					<div id="section-app-integrations" class="parent-section">
+						<div class="parent-section-title">App Integrations</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2>Open in editor</h2>
+								<p>Open the file you're viewing inside of your preferred desktop code editor.</p>
+							</div>
+
+							<div class="section-content">
+					      <div class="option-group select">
+				  		    <label for="mailgunDomainName">Desktop editor</label>
+									<div class="option-desc">When you're viewing a file saved locally, you can open it in your preferred desktop code editor. Not all editors are supported, and the ones that are may have requirements to activate like installing a package.</div>
+						  		<select name="openInEditor" data-autosave="true">
+						  			<option value=""></option>
+						  			<option value="atom">Atom</option>
+						  			<option value="sublime">Sublime Text</option>
+						  			<option value="vscode">Visual Studio Code</option>
+						  		</select>
+					      </div>
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Tags -->
+					<div id="section-tags" class="parent-section">
+						<div class="parent-section-title">Tags</div>
+						<div class="parent-section-desc">Tags allow you to setup validation rules that are specific to certain emails. For example, you could tag emails that contain a certain phrase in the filename <em>(e.g. 'sale')</em>. Then you can setup link validation rules that only run in emails that have that tag. Tag your emails based on not just their filename, but the folder path they're in, the day of the month you're previewing it on and more.</div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+								<div class="all-tags">
+									<div class="tag" style="background:#ffbe12; color:#fff;">Physical Therapy</div>
+									<div class="tag" style="background:#ff620d; color:#fff;">Athletic Training</div>
+									<div class="tag" style="background:#406d93; color:#fff;">Enterprise</div>
+								</div>
+
+								<div class="">
+									New Tag
+								</div>
+
+								<!-- -->
+					      <div id="edit-tag" class="edit-tag" data-autosave="false">
+
+										<div class="edit-tag-row">
+											<input id="tag-name" type="text" placeholder="Tag Name" value="Physical Therapy">
+										</div>
+										<div class="edit-tag-row">
+											<div class="tag-color background-color color-picker"></div>
+										</div>
+										<div class="edit-tag-row">
+											<div class="tag-color text-color color-picker"></div>
+										</div>
+
+										<div id="condition-groups" class="condition-groups">
+										<!-- Conditions Main Group -->
+										<div class="conditions-main-group">
+											<div class="condition-group">
+												<div class="group-operator">
+													<select>
+														<option value="all" selected>all</option>
+														<option value="any">any</option>
+													</select>
+													of the following conditions:
+												</div>
+												<div class="condition-rows">
+													<div class="condition-row">
+														<div class="remove-condition">-</div>
+														<div class="criteria">
+															<select class="criterion">
+																<option value="filename" selected>filename</option>
+																<option value="pathname">pathname</option>
+															</select>
+															<select class="criterion">
+																<option value="contains" selected>contains</option>
+																<option value="doesnotcontain">does not contain</option>
+															</select>
+															<input class="criterion" type="text">
+														</div>
+													</div>
+													<div class="condition-row">
+														<div class="remove-condition">-</div>
+														<div class="criteria">
+															<select class="criterion">
+																<option value="filename" selected>filename</option>
+																<option value="pathname">pathname</option>
+															</select>
+															<select class="criterion">
+																<option value="contains" selected>contains</option>
+																<option value="doesnotcontain">does not contain</option>
+															</select>
+															<input class="criterion" type="text">
+														</div>
+													</div>
+												</div>
+												<div class="add-condition">+ Add Row</div>
+											</div>
+										</div>
+
+										<!-- Conditions Sub Group -->
+										<div class="conditions-sub-group">
+
+											<div class="condition-group">
+												<div class="group-operator">
+													<select>
+														<option value="all" selected>all</option>
+														<option value="any">any</option>
+													</select>
+													of the following conditions:
+												</div>
+												<div class="condition-rows">
+													<div class="condition-row">
+														<div class="remove-condition">-</div>
+														<div class="criteria">
+															<select class="criterion">
+																<option value="filename" selected>filename</option>
+																<option value="pathname">pathname</option>
+															</select>
+															<select class="criterion">
+																<option value="contains" selected>contains</option>
+																<option value="doesnotcontain">does not contain</option>
+															</select>
+															<input class="criterion" type="text">
+														</div>
+													</div>
+													<div class="condition-row">
+														<div class="remove-condition">-</div>
+														<div class="criteria">
+															<select class="criterion">
+																<option value="filename" selected>filename</option>
+																<option value="pathname">pathname</option>
+															</select>
+															<select class="criterion">
+																<option value="contains" selected>contains</option>
+																<option value="doesnotcontain">does not contain</option>
+															</select>
+															<input class="criterion" type="text">
+														</div>
+													</div>
+												</div>
+												<div class="add-condition">+ Add Row</div>
+												<div class="remove-condition-group">- Remove Group</div>
+											</div>
+
+											<!-- Add Group -->
+											<div class="add-condition-group">+ Add Group</div>
+										</div>
+										</div>
+
+										<!-- -->
+										<div class="">
+											<div class="" data-save-tag>Save Tag</div>
+											<div class="">Delete Tag</div>
+										</div>
+
+								</div>
+
+
+
+				      </div>
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Badges -->
+					<div id="section-badges" class="parent-section">
+						<div class="parent-section-title">Badges</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+					      <div class="option-group">
+				  		    <label for="mailgunDomainName">Badges (Temp Input)</label>
+									<div class="option-desc">Pending description.</div>
+						  		<input type="text" name="badgeName" placeholder="Full Badge Name">
+									<input type="text" name="badgeText" placeholder="Badge Initial">
+									<input type="text" name="badgeTextColor" placeholder="Badge Initial Color">
+									<select name="badgeShape">
+										<option selected></option>
+										<option value="1">Circle</option>
+										<option value="2">Square</option>
+										<option value="3">Rounded Square</option>
+										<option value="4">Squircle</option>
+										<option value="5">Diamond</option>
+										<option value="6">Forward Slash</option>
+										<option value="7">Backward Slash</option>
+										<option value="8">Star</option>
+									</select>
+									<input type="text" name="badgeShapeColor" placeholder="Shape Color">
+									<select name="badgeTag">
+
+									</select>
+					      </div>
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--Link Validation -->
+					<div id="section-link-validation" class="parent-section">
+						<div class="parent-section-title">Link Validation</div>
+						<div class="parent-section-desc">Korra can check your links for you automatically against a list of default formatting rules and custom rules you create. Korra can also follow your links to check that they are loading properly and give you feedback on how to fix them.</div>
+
+						<!-- General -->
+						<div class="options-section">
+
+							<div class="section-title">
+								<h2>General</h2>
+							</div>
+
+							<div class="section-content">
+
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="autoCheckLinks" id="autoCheckLinks" value="1" checked>
+									<label for="autoCheckLinks">
+										Automatically validate links on page load
+									</label>
+									<div class="option-desc">Automatically validate all links in an email as soon as its loaded. You can manually check or re-check your links without reloading on a per-email basis from within the email you're previewing.</div>
+								</div>
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="cacheValidLinks" id="cacheValidLinks" value="1" checked>
+									<label for="cacheValidLinks">
+										Cache valid links
+									</label>
+									<div class="option-desc">If you don't want to revalidate good links over and over again, enable this setting to force Korra to only validate new links or links that failed to pass all validation rules on a previous check. Links are cached on a per-email basis. Identical links in separate emails will both be checked even if one is already cached.<br><br>You can recheck cached links at any time by clearing the cache of all links related to the email you're currently previewing from within the email preview UI. You can also clear Korra's entire cache of valid links with the button below.</div>
+									<button id="clearCache"><div>Clear all Links in cache</div></button>
+								</div>
+
+								<div class="option-group textarea">
+									<label for="blacklist">Skip links from these domains</label>
+									<div class="option-desc">Prevent Korra from checking a link by adding it to the disallow list. Enter each URL on its own line.
+										<br><em>(Example: <span>www.mysite.com</span> will stop these links from being validated: <span>www.mysite.com/index.html</span> or <span>www.mysite.com/path/index.html</span>)</em></div>
+									<textarea name="disallowLinks"></textarea>
+								</div>
+
+
+
+							</div>
+						</div>
+
+						<!-- Format Validation -->
+						<div class="options-section">
+
+							<div class="section-title">
+								<h2>Format Validation</h2>
+								<p>These settings focus on validating the formatting of your links.</p>
+							</div>
+
+							<div class="section-content">
+
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="checkMissingHrefAttr" id="checkMissingHrefAttr" value="1" checked>
+									<label for="checkMissingHrefAttr">
+										Mark links without an <code>href</code> attribute with an error message
+									</label>
+									<div class="option-desc">When enabled, if there is a link without an <code>href</code> attribute you will see an error message.</div>
+								</div>
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="checkEmptyLink" id="checkEmptyLink" value="1" checked>
+									<label for="checkEmptyLink">
+										Mark links with empty <code>href</code> attributes with an error message
+									</label>
+									<div class="option-desc">When enabled, if the link url is empty (<code>href=""</code>) you will see an error message.</div>
+								</div>
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="checkTrailingHash" id="checkTrailingHash" value="1" checked>
+									<label for="checkTrailingHash">
+										Mark links with trailing hashtags <code>#</code> with a warning message
+									</label>
+									<div class="option-desc">When enabled, if the link url ends with a '#' you will be warned.</div>
+								</div>
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="ignoreESPTags" id="ignoreESPTags" value="1">
+									<label for="ignoreESPTags">
+										Ignore ESP tags found in URLs
+									</label>
+									<div class="option-desc">Some ESP tags include characters that would normally be invalid in a link (e.g. <code>*|tag|*</code> or <code>%%variable%%</code>). Enable this to prevent Korra from potentially marking your links as invalid when it finds one.<br><em><b>Note:</b> Provide the formatting that your ESP uses in order for this to work. Enter this in the "<a href="#section-esp-options">ESP Options</a>" section.</em></div>
+								</div>
+
+
+							</div>
+						</div>
+
+						<!-- -->
+						<div class="options-section">
+
+							<div class="section-title">
+								<h2>Loading Validation</h2>
+								<p>Korra can follow your links to verify that they load properly.</p>
+							</div>
+
+							<div class="section-content">
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="checkLinksLoad" id="checkLinksLoad" value="1" checked>
+									<label for="checkLinksLoad">
+										Verify that link destinations load properly
+									</label>
+									<div class="option-desc">When enabled Korra will follow your links to verify that they load properly. If the link fails to load for some reason you'll receive an error message with the reason to help you diagnose the problem.</div>
+								</div>
+
+					      <div class="option-group select">
+				  		    <label>Method of request</label>
+									<div class="option-desc">HEAD is quicker, but sometimes doesn't reflect the true HTTP status of a page, use GET if you're getting weird results.  GET is required to be able to parse the document for an element corresponding to what is after the hashtag by ID.</div>
+									<select name="requestType">
+										<option value="GET">GET</option>
+										<option value="HEAD">HEAD</option>
+									</select>
+					      </div>
+
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="parseDOM" id="parseDOM" value="1" checked>
+									<label for="parseDOM">
+										Parse the DOM to validate the existence of matching elements for hashtags
+									</label>
+									<div class="option-desc">
+										Hashtags can link to elements on the destination page by their <code>id</code> attribute. For example, <code>&lt;a href=&quot;page2.html#elementID&quot;&gt;Link&lt;/a&gt;</code> would link to an scroll to an element with <code>id="elementID"</code> when the page has loaded. Enabling this will allow Korra to automatically check that all links with hastags have a matching element. When enabled, if the page loads but the corresponding element is not found, the link will be marked with a warning. <br>
+										<strong>Request Type: GET is required</strong>
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2>Custom Validation Rules</h2>
+								<p>Craft your own validation rules to run on each link in your email.</p>
+							</div>
+
+							<div class="section-content has-cards">
+							<!-- -->
+							<div id="custom-rules" class="options-sub-section">
+
+								<div id="custom-rules-wrapper" class="custom-rules-wrapper">
+								<div class="link-match-custom-rule expanded">
+
+
+									<div class="expanded-rule">
+										<!-- begin matching condition block -->
+										<div class="link-match-conditions">
+
+											<!-- -->
+											<div class="link-condition-title">
+												<label>Rule Title</label>
+												<div>
+													<input type="text" value="Rule #1">
+												</div>
+											</div>
+
+											<!-- -->
+											<div class="link-condition-description">
+												<label>Rule Description</label>
+												<div>
+													<input type="text">
+												</div>
+											</div>
+
+											<!-- -->
+											<div class="pre-conditions">
+												<h3><strong>Pre-Conditions</strong></h3>
+
+												<div>
+													<select>
+														<option value="all"selected>all</option>
+														<option value="any">any</option>
+													</select>
+												</div>
+
+												<div class="link-condition">
+													<select>
+														<option selected></option>
+														<option value="linkedUrl">Linked URL (including # tags)</option>
+														<option value="linkedUrlDomainOnly">Linked Domain Only</option>
+														<option value="linkedUrlPathnameOnly">Linked Pathname Only</option>
+														<option value="linkedUrlQuerystringOnly">Linked Querystring Only</option>
+														<option value="linkedUrlHashtagOnly">Linked Hashtag Only</option>
+														<option value="currentUrlFull">Current URL (including # tags)</option>
+														<option value="currentUrlDomainOnly">Current URL Domain</option>
+														<option value="currentUrlPathnameOnly">Current URL Pathname</option>
+														<option value="currentUrlFilenameOnly">Current URL Filename (for local files)</option>
+														<option value="currentUrlHashtagOnly">Current URL Hashtag</option>
+														<option value="linkId">Link ID</option>
+														<option value="linkClass">Link Class</option>
+														<option value="linkAttribute">Link Attribute</option>
+														<option value="linkedText">Linked Text</option>
+														<option value="linkedImageUrl">Linked Image URL</option>
+														<option value="linkedImageAltText">Linked Image ALT Text</option>
+													</select>
+													<select>
+														<option value="exactlyMatching">Exactly Matches</option>
+														<option value="doesNotExactlyMatch">Does Not Exactly Match</option>
+														<option value="contains" selected>Contains</option>
+														<option value="doesNotContain">Does Not Contain</option>
+														<option value="startsWith">Starts With</option>
+														<option value="doesNotStartWith">Does Not Start With</option>
+														<option value="endsWith">Ends With</option>
+														<option value="doesNotEndWith">Does Not End With</option>
+														<option value="isGreaterThan">Is Greater Than</option>
+														<option value="isLessThan">Is Less Than</option>
+														<option value="isBetween">Is Between</option>
+														<option value="isBlank">Is Blank</option>
+														<option value="isNotBlank">Is Not Blank</option>
+														<option value="matchingRegExp">Matching RegExp</option>
+													</select>
+													<input type="text">
+													<div class="add-remove-conditions">
+														<div>+</div>
+														<div>-</div>
+													</div>
+												</div>
+											</div>
+
+
+											<!-- -->
+											<div class="text-to-match">
+												<h3><strong>Text to Match</strong></h3>
+
+												<div>
+													<select>
+														<option value="all"selected>all</option>
+														<option value="any">any</option>
+													</select>
+												</div>
+
+												<select>
+													<option value="urlFull" selected>URL (including # tags)</option>
+													<option value="urlDomainOnly">Domain Only</option>
+													<option value="urlPathnameOnly">Pathname Only</option>
+													<option value="urlQuerystringOnly">Querystring Only</option>
+													<option value="urlHashtagOnly">Hashtag Only</option>
+												</select>
+
+												<select>
+													<option value="exactlyMatching">Exactly Matches</option>
+													<option value="doesNotExactlyMatch">Does Not Exactly Match</option>
+													<option value="contains" selected>Contains</option>
+													<option value="doesNotContain">Does Not Contain</option>
+													<option value="startsWith">Starts With</option>
+													<option value="doesNotStartWith">Does Not Start With</option>
+													<option value="endsWith">Ends With</option>
+													<option value="doesNotEndWith">Does Not End With</option>
+													<option value="isGreaterThan">Is Greater Than</option>
+													<option value="isLessThan">Is Less Than</option>
+													<option value="isBlank">Is Blank</option>
+													<option value="isNotBlank">Is Not Blank</option>
+													<option value="matchingRegExp">Matching RegExp</option>
+												</select>
+
+												<input type="text">
+												<div class="add-remove-matching-text">
+													<div>+</div>
+													<div>-</div>
+												</div>
+											</div>
+
+											<!-- -->
+											<div class="link-match-result">
+												<h3><strong>Result</strong></h3>
+												A successful match should be treated as
+												<select>
+													<option value="error" selected>an error</option>
+													<option value="warning">a warning</option>
+												</select>&nbsp;.
+											</div>
+
+										</div>
+										<!-- end of matching conditions -->
+									</div>
+
+								</div>
+								</div>
+
+								<button id="add-new-rule" class="btn">
+									Add New Rule
+								</button>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Code Validation -->
+					<div id="section-code-validation" class="parent-section">
+						<div class="parent-section-title">Code Validation</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+					      <div>
+
+					      </div>
+
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Images -->
+					<div id="section-images" class="parent-section">
+						<div class="parent-section-title">Images</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+					      <div>
+
+					      </div>
+
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Text and Grammer -->
+					<div id="section-text-and-grammer" class="parent-section">
+						<div class="parent-section-title">Text and Grammer</div>
+						<div class="parent-section-desc"></div>
+
+						<div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+					      <div>
+
+					      </div>
+
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Accessibility -->
+					<div id="section-accessibility" class="parent-section">
+						<div class="parent-section-title">Accessibility</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+					      <div>
+
+					      </div>
+
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Design Tools -->
+					<div id="section-design-tools" class="parent-section">
+						<div class="parent-section-title">Other Tools</div>
+						<div class="parent-section-desc"></div>
+
+						<!-- -->
+				    <div class="options-section">
+							<div class="section-title">
+				      	<h2>Baseline Overlay</h2>
+							</div>
+
+							<div class="section-content">
+					      <div>
+					      </div>
+				      </div>
+						</div>
+
+						<!-- -->
+				    <div class="options-section">
+							<div class="section-title">
+				      	<h2>Guidelines</h2>
+							</div>
+
+							<div class="section-content">
+					      <div>
+					      </div>
+				      </div>
+						</div>
+
+						<!-- -->
+				    <div class="options-section">
+							<div class="section-title">
+				      	<h2>Element Boundaries</h2>
+							</div>
+
+							<div class="section-content">
+					      <div>
+					      </div>
+				      </div>
+						</div>
+
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Alerts -->
+					<div id="section-alerts" class="parent-section">
+						<div class="parent-section-title">Alerts</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+					      <div>
+
+					      </div>
+
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Appearance -->
+					<div id="section-appearance" class="parent-section">
+						<div class="parent-section-title">Appearance</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+					      <div>
+
+					      </div>
+
+				      </div>
+
+				    </div>
+			    </div>
+
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!--//////////////////////////////////////////////////////////-->
+					<!-- Advance Settings -->
+					<div id="section-advanced" class="parent-section">
+						<div class="parent-section-title">Advanced Settings</div>
+						<div class="parent-section-desc"></div>
+
+				    <div class="options-section">
+
+							<div class="section-title">
+				      	<h2></h2>
+								<p></p>
+							</div>
+
+							<div class="section-content">
+
+									<div class="option-group checkbox">
+										<input data-autosave="true" type="checkbox" name="openPinnedOptions" id="openPinnedOptions" value="1" checked>
+										<label for="openPinnedOptions">
+											Open and pin the options page whenever the extension is reloaded
+										</label>
+									</div>
+
+				      </div>
+
+				    </div>
+			    </div>
+
+			</div>
+
+			<div class="footnote">
+				<!-- <div class="footnote-left">
+					<div id="reset-settings-to-default" class="link">Reset Settings to Default</div>
+				</div> -->
+				<div class="footnote-right">
+					Version <span id="manifest-version"></span>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="https://github.com/jkupczak/korra-email-design-toolkit-extension" target="_blank">View on GitHub</a>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	</div>
+
+	<div id="saved-notification">Saved</div>
+	<div style="visibility:hidden; opacity:0" id="dropzone" class="dropzone"></div>
+
+	<script src="options-global-functions.js"></script>
+	<script src="/libs/pickr/pickr.min.js"></script>
+	<script src="/js/libs/autosize.min.js"></script>
+	<script src="options.js"></script>
+</body>
+</html>

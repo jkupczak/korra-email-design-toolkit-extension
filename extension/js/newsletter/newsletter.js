@@ -1,7 +1,3 @@
-var view = getParameterByName("view");
-if ( view !== "1" ) {
-
-
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -176,50 +172,6 @@ if ( view !== "1" ) {
 ///////////////////////////////////////////////////////////////////////////////
 
 
-
-////////////////////
-////////////////////
-////////////////////
-///
-///    Clean the page of the original HTML and styling before restructuring it.
-///    Only do this if we're transforming a local html file that hasn't been loaded on a chrome extension page.
-///    i.e. we're at file:///
-///
-////////////////////
-////////////////////
-////////////////////
-
-if ( environment === "local" ) {
-
-  // Destroy all <style> tags.
-  let styleBlocks = document.querySelectorAll("style");
-  for (let styleBlock of styleBlocks) {
-    destroy(styleBlock);
-  }
-  let linkedStylesheets = document.querySelectorAll("[rel='stylesheet']");
-  for (let linkedStylesheet of linkedStylesheets) {
-    destroy(linkedStylesheet);
-  }
-
-  // Destroy all <body> tags.
-  let bodyEle = document.querySelectorAll("body");
-  for (let body of bodyEle) {
-    destroy(body);
-  }
-
-  // Create a new <body> tag.
-  var newBody = document.createElement("body");
-  insertAfter(newBody, document.head);
-
-}
-
-
-//////////////////////
-//////////////////////
-//////////////////////
-//////////////////////
-
-
 // ERROR CHECKING FOR ENTIRE PAGE
 document.querySelector("html").classList.add("error-status");
 document.querySelector("html").classList.toggle("errors");
@@ -280,14 +232,13 @@ if ( getParameterByName("presentation") === "1" ) {
   // mainContainer.appendChild(panes);
   var panes = document.getElementById("panes");
 
-          // Create Split View
-          // console.log("activate split mode");
-          document.body.classList.toggle("split-view-on");
+  // Create Split View
+  // console.log("activate split mode");
+  document.body.classList.toggle("split-view-on");
 
 
-  var mainPane = document.createElement("div");
-  mainPane.classList.add("pane", "main-pane");
-  panes.appendChild(mainPane);
+  // Refe
+  var mainPane = document.querySelectorAll(".pane.main-pane")[0];
 
   //////////
   ////
@@ -311,12 +262,6 @@ if ( getParameterByName("presentation") === "1" ) {
   viewCodeBtn.dataset.stage = "code";
   viewCodeBtn.innerHTML = "Code";
   stagePreviewBtns.appendChild(viewCodeBtn);
-
-  var viewTextBtn = document.createElement("div");
-  viewTextBtn.classList.add("stage-preview-btn", "stage-preview-btn--text");
-  viewTextBtn.dataset.stage = "text";
-  viewTextBtn.innerHTML = "Text";
-  stagePreviewBtns.appendChild(viewTextBtn);
 
   mainPane.appendChild(stagePreviewBtns);
 
@@ -345,10 +290,8 @@ if ( getParameterByName("presentation") === "1" ) {
   ////
   /////////
 
-  // Create the Stage
-  var htmlStage = document.createElement("div");
-  htmlStage.classList.add("stage", "html-stage");
-  stages.appendChild(htmlStage);
+  // Reference the HTML Stage
+  var htmlStage = document.querySelectorAll(".stage.html-stage")[0];
 
 
   //////////////////////
@@ -362,9 +305,7 @@ if ( getParameterByName("presentation") === "1" ) {
   //
   //////////////////////
 
-    var iframeWrapper = document.createElement("div");
-    iframeWrapper.className = "iframe-wrapper";
-    htmlStage.appendChild(iframeWrapper);
+    var iframeWrapper = document.querySelectorAll(".iframe-wrapper")[0];
 
     var desktopIframeWrapper = document.createElement("div");
     desktopIframeWrapper.className = "desktop-view-wrapper resize-container";
@@ -385,6 +326,21 @@ if ( getParameterByName("presentation") === "1" ) {
 
     var desktopResizeHtml = '<div data-resize="top-right" class="resize-handler resize-corner resize-point-top resize-point-right resize-point-top-right"></div><div data-resize="bottom-right" class="resize-handler resize-corner resize-point-right resize-point-bottom resize-point-bottom-right"></div><div data-resize="bottom-left" class="resize-handler resize-corner resize-point-bottom resize-point-left resize-point-bottom-left"></div><div data-resize="top-left" class="resize-handler resize-corner resize-point-left resize-point-top resize-point-top-left"></div><div data-resize="top" class="resize-handler resize-side resize-point-top  resize-point-top-right resize-point-top-left"></div><div data-resize="right" class="resize-handler resize-side resize-point-right resize-point-top-right  resize-point-bottom-right"></div><div data-resize="bottom" class="resize-handler resize-side resize-point-bottom resize-point-bottom-right resize-point-bottom-left"></div><div data-resize="left" class="tap-to-resize resize-handler resize-side resize-point-left resize-point-bottom-left resize-point-top-left"></div>';
     desktopIframeResizeWrapper.insertAdjacentHTML('beforeend', desktopResizeHtml);
+
+    // At this point we're ready to create the iframe and inject the code.
+    // Now is a good time to remove our loading icon from the DOM.
+
+    if ( originalHtml ) {
+      destroy( document.querySelector(".loading-status") );
+    } else {
+
+      setTimeout(function() {
+        // destroy( document.querySelector("#loading") );
+        document.querySelector("#loading").classList.add("fade-out");
+        document.querySelector(".loading-status").insertAdjacentHTML("afterbegin", '<div class="fade-in" style="padding:30px; position:absolute; flex-direction: column; top:0; left:0; right:0; bottom:0; color:#9d9db3; text-align:center; margin:auto; width:100%; height:200px; display:flex; align-items: center; justify-content: center; "><div style="font-size:160px; color:#c8c8d5; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)) drop-shadow(0 0 40px #1d87f1) drop-shadow(0 0 80px #1d87f1);">&#128562;</div><div style="padding-top:0px; font-size:36px; color:#c8c8d5;">Failed to load file.</div><div style="padding-top:20px; font-size:18px">Check that the file exists on your local harddrive.</div><div style="padding-top:10px;font-family: monospace; font-size:12px; line-height:20px"><span style="user-select:none; border-radius: 3px;background: #144e88;margin-right: 6px;padding: 2px 4px 2px 5px;color: #fff;">File</span><span style=" opacity:.4">' + filePath + '/</span><span style=" opacity:.75">' + filename + '</div>');
+      }, 1000);
+
+    }
 
     // Function to load iframe with HTML.
     loadIframe(desktopIframe, cleanedDesktopHtml, true, "desktop");
@@ -435,47 +391,39 @@ if ( getParameterByName("presentation") === "1" ) {
   ////
   /////////
 
-  // Create the Stage
-  var codeStage = document.createElement("div");
-  codeStage.classList.add("stage", "code-stage");
-  codeStage.style.display = "none";
-  stages.appendChild(codeStage);
+  // Reference the Code Stage
+  var codeStage = document.querySelectorAll(".stage.code-stage")[0];
 
-  // function activateCodeStage() {
+  var myCodeMirror = CodeMirror(codeStage, {
+    value: originalHtml,
+    mode:  "htmlmixed",
+    theme: "monokai",
+    scrollbarStyle: "overlay",
+    tabSize: 2,
+    lineNumbers: true,
+    autoRefresh: true, // https://github.com/codemirror/CodeMirror/issues/798
+    lineWrapping: true,
+    styleSelectedText: true,
+    // viewportMargin: Infinity, // This really really slows down CodeMirror when you're viewing a big file. disabled on 1/16/18
 
-    var myCodeMirror = CodeMirror(codeStage, {
-      value: originalHtml,
-      mode:  "htmlmixed",
-      theme: "monokai",
-      scrollbarStyle: "overlay",
-      tabSize: 2,
-      lineNumbers: true,
-      autoRefresh: true, // https://github.com/codemirror/CodeMirror/issues/798
-      lineWrapping: true,
-      styleSelectedText: true,
-      // viewportMargin: Infinity, // This really really slows down CodeMirror when you're viewing a big file. disabled on 1/16/18
-
-            foldGutter: {
-                rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.xml, CodeMirror.fold.brace, CodeMirror.fold.comment)
-            },
-            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-
-      styleActiveLine: true,
-      actions: {
-          toggleHtml: function() {
-              this.sendAction("toggleHtml");
+          foldGutter: {
+              rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.xml, CodeMirror.fold.brace, CodeMirror.fold.comment)
           },
-          toggleCss: function() {
-              this.sendAction("toggleCss");
-          },
-          viewCompiled: function() {
-              this.sendAction("viewCompiled");
-          }
-      }
-    });
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 
-  // }
-
+    styleActiveLine: true,
+    actions: {
+        toggleHtml: function() {
+            this.sendAction("toggleHtml");
+        },
+        toggleCss: function() {
+            this.sendAction("toggleCss");
+        },
+        viewCompiled: function() {
+            this.sendAction("viewCompiled");
+        }
+    }
+  });
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -586,7 +534,7 @@ if ( getParameterByName("presentation") === "1" ) {
     var mobileIframeSetting = document.createElement("div");
     mobileIframeSetting.className = "mobile-iframe-settings";
 
-    mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim active" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>';
+    mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim active" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>';
 
     mobileIframeSetting.addEventListener("click", changeMobileSize, false);
 
@@ -606,52 +554,16 @@ if ( getParameterByName("presentation") === "1" ) {
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
-
-///////////
-///// Determine location of the file you're currently viewing.
-///////////
-// var pageUrl = document.URL;
-// Piece the URL together to prevent using a URL that has querystring parameters.
-// var pageUrl = document.location.origin + document.location.pathname; // changed to fileLocation
-
-if ( /dropboxusercontent/gi.test(fileLocation) ) {
-  var onDropbox = true;
-} else if ( /^chrome-extension\:|file\:\/\/\//gi.test(fileLocation) && savedFile ) {
-  var isLocalFile = true;
-} else if ( /\/\/localhost\:/gi.test(fileLocation) ) {
-  var isLocalHost = true;
-  if ( /localhost\:4567/gi.test(fileLocation) ) {
-    var onMiddleman = true;
-  }
-} else if ( /mailchimp\.com\/campaigns\/preview\-content\-html\?id\=/i.test(fileLocation) ) {
-  var isMailChimpCampaign = true;
-}
-
-var isLocalCampaign;
-if ( isLocalFile || isLocalHost ) {
-  isLocalCampaign = true;
-} else {
-  isLocalCampaign = false;
-}
-
 // Check if the current file is in the local Dropbox folder by checking what was entered in the options page against the document URL.
+let inLocalDbFolder;
 
-// Removed until I can get it to work with async. :(
+let fullPathToDropboxFolderEscaped = escapeRegExp(decodeURIComponent(options.local.fullPathToDropboxFolder));
+let fullPathToDropboxFolderEscapedRegex = new RegExp(fullPathToDropboxFolderEscaped, "gi");
 
-// var re = escapeRegExp(dropboxFolderName);
-//     re = new RegExp(re,"i");
-//
-// if ( re.test(fileLocation) ) {
-//   var inLocalDbFolder = true;
-// } else {
-//   var inLocalDbFolder = false;
-// }
-
-if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(fileLocation) ) {
-  var inLocalDbFolder = true;
-  // console.error("yes!");
+if ( fullPathToDropboxFolderEscapedRegex.test(fileLocation) ) {
+  inLocalDbFolder = true;
 } else {
-  // console.error("nuh-uh");
+  inLocalDbFolder = false;
 }
 
 
@@ -659,78 +571,73 @@ if ( /Dropbox%20\(MedBridge%20\.\)/gi.test(fileLocation) ) {
 ///// Get Discipline
 ///////////
 
-if ( isLocalCampaign ) {
+if ( fileHost === "local" || fileHost === "server" ) {
 
-      ///////////
-      ///// Get the Discipline
-      ///////////
-      var emailDisc = getDisciplineId(filename);
+    ///////////
+    ///// Get the Discipline
+    ///////////
+    var emailDisc = getDisciplineId(filename);
 
-      ///////////
-      ///// Get the A/B Status.
-      ///////////
-      var abTesting = getABstatus(filename);
+    ///////////
+    ///// Get the A/B Status.
+    ///////////
+    var abTesting = getABstatus(filename);
 
-      ///////////
-      ///// Get Email Title
-      ///////////
-      var emailTitle = getEmailTitle(filename, emailDisc);
+    ///////////
+    ///// Set Email Title
+    ///////////
+    // var emailTitle = getEmailTitle(filename, emailDisc);
+    setPageTitle(filename);
 
-      ///////////
-      ///// Get Date of Email
-      ///////////
-      var emailDate = getEmailDate(filename) || new Date();
+    ///////////
+    ///// Get Date of Email
+    ///////////
+    var emailDate = getEmailDate(filename) || new Date();
 
-      ///////////
-      ///// Get Date of Email
-      ///////////
-      var dateFormatted = formatDate(emailDate);
+    ///////////
+    ///// Get Date of Email
+    ///////////
+    var dateFormatted = formatDate(emailDate);
 
-      // If no email date is found in the filename, set the emailDate variable to be today's date.
-      if ( isNaN(emailDate) == true ) { // ref - http://stackoverflow.com/a/1353710/556079
-        emailDate = new Date();
-      }
+    // If no email date is found in the filename, set the emailDate variable to be today's date.
+    if ( isNaN(emailDate) == true ) { // ref - http://stackoverflow.com/a/1353710/556079
+      emailDate = new Date();
+    }
 
-      var emailMonth = emailDate.getMonth();
-      var emailMonthAbbr = getMonthAbbr(emailDate);
+    var emailMonth = emailDate.getMonth();
+    var emailMonthAbbr = getMonthAbbr(emailDate);
 
-      ///////////
-      ///// Get the Platform
-      ///////////
+    ///////////
+    ///// Get the Platform
+    ///////////
 
-      var emailPlatform;
-      var emailPlatformName;
-      if ( /^GR\-/i.test(filename) ) {
-        emailPlatform = "gr";
-        emailPlatformName = "GetResponse";
-      } else if ( /^SG\-/i.test(filename) ) {
-        emailPlatform = "sg";
-        emailPlatformName = "SendGrid";
-      } else if ( /\/Pardot\//i.test(filePath) ) {
-        emailPlatform = "pd";
-        emailPlatformName = "Pardot";
-      } else {
-        emailPlatform = "mc";
-        emailPlatformName = "MailChimp";
-      }
+    var emailPlatform;
+    var emailPlatformName;
+    if ( /^GR\-/i.test(filename) ) {
+      emailPlatform = "gr";
+      emailPlatformName = "GetResponse";
+    } else if ( /^SG\-/i.test(filename) ) {
+      emailPlatform = "sg";
+      emailPlatformName = "SendGrid";
+    } else if ( /\/Pardot\//i.test(filePath) ) {
+      emailPlatform = "pd";
+      emailPlatformName = "Pardot";
+    } else {
+      emailPlatform = "mc";
+      emailPlatformName = "MailChimp";
+    }
 
 
-      ///////////
-      ///// Get local parent folder path
-      ///////////
+    ///////////
+    ///// Get local parent folder path
+    ///////////
 
-      if ( inLocalDbFolder ) {
+    if ( inLocalDbFolder ) {
 
-        var filenameEscaped = escapeRegExp(filename);
-        var filenameReplacePattern = new RegExp(filenameEscaped + "($|.+?)", "gi");
+      var dropboxParentFolder = options.local.fullPathToDropboxFolder.replace(/\/+$/gi, "").replace(/^.+\//gi, "");
+      console.log(dropboxParentFolder);
 
-      // TODO fix this
-
-        var localParentFolder = fileLocation.replace(/^.+Dropbox%20\(MedBridge%20\.\)\//gi, '');
-
-            localParentFolder = localParentFolder.replace(filenameReplacePattern, "");
-
-      }
+    }
 
 } else {
 
@@ -831,14 +738,12 @@ var totalTextErrors = 0;
 
 console.groupCollapsed("Global variables based on filename");
 
-  console.group("Platform");
+  console.groupCollapsed("Platform");
     console.log("emailPlatform = " + emailPlatform);
   console.groupEnd();
 
-  console.group("Location");
-    console.log("fileLocation = " + fileLocation);
+  console.groupCollapsed("Dropbox");
     console.log("inLocalDbFolder = " + inLocalDbFolder);
-    console.log("filename = " + filename);
   console.groupEnd();
 
   console.log("abTesting = " + abTesting);
@@ -850,13 +755,13 @@ console.groupCollapsed("Global variables based on filename");
   console.log("emailDisc = " + emailDisc);
   console.log("emailTitle = " + emailTitle);
 
-  console.group("Date");
+  console.groupCollapsed("Date");
     console.log("emailDate = " + emailDate);
     console.log("emailDate (month) = " + emailMonth + " | " + emailMonthAbbr);
     console.log("isRecentEmail = " + isRecentEmail);
   console.groupEnd();
 
-  console.group("Sales");
+  console.groupCollapsed("Sales");
     console.log("emailAnySale = " + emailAnySale);
     console.log("emailSale = " + emailSale);
     console.log("emailPresale = " + emailPresale);
@@ -956,11 +861,6 @@ var showdFrameWidthStatus = function (currentWidth, override, source) {
 
 // Wait till after all of our elements are created before attempting to run this function.
 
-if ( typeof getParameterByName("mobilewidth") === 'string' || getParameterByName("mobilewidth") instanceof String ) {
-  changeMobileSize(getParameterByName("mobilewidth"));
-  console.log("mobile width change");
-}
-
 if ( getParameterByName("layout") ) {
   var layout = getParameterByName("layout").match(/.{1}/g);
 
@@ -1004,7 +904,7 @@ if ( getParameterByName("layout") ) {
 ///////////////////////////////////////////////////////////
 
 
-if ( isLocalCampaign ) {
+if ( isSavedFile ) {
 
     // Create HTML for email date
     var showEmailDate = "";
@@ -1205,9 +1105,7 @@ document.body.appendChild(dropboxUrlInput);
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 
-var htmlToolBar = document.createElement("div");
-htmlToolBar.className = "html-toolbar";
-htmlStage.appendChild(htmlToolBar);
+var htmlToolBar = document.querySelectorAll(".html-toolbar")[0];
 
   //////////
   ////
@@ -1407,7 +1305,7 @@ orbsBottom.appendChild(paneToggleOrb);
 var shareOrb = document.createElement("div");
 shareOrb.className = "share-orb orb glyph";
 shareOrb.innerHTML = svgIconShare;
-if ( isLocalHost ) { shareOrb.classList.add("off"); }
+if ( fileHost !== "local" ) { shareOrb.classList.add("off"); }
 shareOrb.addEventListener("click", getDbShareLink, false);
 orbsTop.appendChild(shareOrb);
 
@@ -1651,60 +1549,6 @@ guidesOrb.addEventListener("click", toggleGuides, false);
 toolbarSectionOverlays.appendChild(guidesOrb);
 var guidesToggle = false;
 
-function toggleGuides() {
-
-  guidesToggle = !guidesToggle;
-
-  if ( guidesToggle ) {
-    history.replaceState(null,null, updateQueryString("guides", "1") );
-  } else {
-    history.replaceState(null,null, updateQueryString("guides") );
-  }
-
-  document.getElementById("guides-orb").classList.toggle("on");
-
-  if ( elExists(dFrameContents.getElementById("alignment-guides")) ) {
-    destroy(dFrameContents.getElementById("alignment-guides"));
-  } else {
-
-    var guidesStylingWrapper = dFrameContents.createElement("section");
-    guidesStylingWrapper.id = "alignment-guides";
-    guidesStylingWrapper.className = "debug alignment-guides-wrapper";
-
-      var guidesStyling1 = dFrameContents.createElement("section");
-      guidesStyling1.classList.add("alignment-guide");
-      guidesStyling1.style.left = "0";
-      guidesStyling1.style.right = "0";
-      guidesStylingWrapper.appendChild(guidesStyling1);
-
-      var guidesStyling2 = dFrameContents.createElement("section");
-      guidesStyling2.classList.add("alignment-guide");
-      guidesStyling2.style.left = "589px";
-      guidesStyling2.style.right = "0";
-      guidesStylingWrapper.appendChild(guidesStyling2);
-
-      var guidesStyling3 = dFrameContents.createElement("section");
-      guidesStyling3.classList.add("alignment-guide");
-      guidesStyling3.style.left = "619px";
-      guidesStyling3.style.right = "0";
-      guidesStylingWrapper.appendChild(guidesStyling3);
-
-      var guidesStyling4 = dFrameContents.createElement("section");
-      guidesStyling4.classList.add("alignment-guide");
-      guidesStyling4.style.left = "0";
-      guidesStyling4.style.right = "589px";
-      guidesStylingWrapper.appendChild(guidesStyling4);
-
-      var guidesStyling5 = dFrameContents.createElement("section");
-      guidesStyling5.classList.add("alignment-guide");
-      guidesStyling5.style.left = "0";
-      guidesStyling5.style.right = "619px";
-      guidesStylingWrapper.appendChild(guidesStyling5);
-
-
-    dFrameContents.getElementsByTagName("body")[0].appendChild(guidesStylingWrapper);
-  }
-}
 
 //////////
 ////
@@ -1781,33 +1625,32 @@ function toggleGuides() {
 
       var guidesStyling2 = dFrameContents.createElement("section");
       guidesStyling2.classList.add("alignment-guide");
-      guidesStyling2.style.left = "589px";
-      guidesStyling2.style.right = "0";
+      guidesStyling2.style.left = "calc(50% - 559px)";
+      guidesStyling2.style.right = "50%";
       guidesStylingWrapper.appendChild(guidesStyling2);
 
       var guidesStyling3 = dFrameContents.createElement("section");
       guidesStyling3.classList.add("alignment-guide");
-      guidesStyling3.style.left = "619px";
-      guidesStyling3.style.right = "0";
+      guidesStyling3.style.left = "calc(50% - 619px)";
+      guidesStyling3.style.right = "50%";
       guidesStylingWrapper.appendChild(guidesStyling3);
 
       var guidesStyling4 = dFrameContents.createElement("section");
       guidesStyling4.classList.add("alignment-guide");
-      guidesStyling4.style.left = "0";
-      guidesStyling4.style.right = "589px";
+      guidesStyling4.style.left = "50%";
+      guidesStyling4.style.right = "calc(50% - 559px)";
       guidesStylingWrapper.appendChild(guidesStyling4);
 
       var guidesStyling5 = dFrameContents.createElement("section");
       guidesStyling5.classList.add("alignment-guide");
-      guidesStyling5.style.left = "0";
-      guidesStyling5.style.right = "619px";
+      guidesStyling5.style.left = "50%";
+      guidesStyling5.style.right = "calc(50% - 619px)";
       guidesStylingWrapper.appendChild(guidesStyling5);
 
 
     dFrameContents.getElementsByTagName("body")[0].appendChild(guidesStylingWrapper);
   }
 }
-
 
 
 //////////
@@ -1818,7 +1661,7 @@ function toggleGuides() {
 
 var powerOrb = document.createElement("a");
 powerOrb.className = "power-orb orb glyph";
-powerOrb.href = document.URL + "?view=1";
+powerOrb.href = fileLocation + "?korra=0";
 orbsBottom.appendChild(powerOrb);
 
 //////////
@@ -2321,95 +2164,6 @@ var toggleImgDims = function() {
 
 
 
-//////////
-////
-////  Create Plain-Text Generator Orb
-////
-/////////
-
-// var plainTextOrb = document.createElement("div");
-// plainTextOrb.className = "plain-text-orb orb glyph";
-// plainTextOrb.addEventListener("click", plainText, false);
-// orbsBottom.appendChild(plainTextOrb);
-
-var plainTextStage = document.createElement("div");
-    plainTextStage.classList.add("stage", "plain-text-stage");
-    stages.appendChild(plainTextStage);
-
-var plainTextWrapper = document.createElement("div");
-    plainTextWrapper.classList.add("plain-text-wrapper");
-    plainTextWrapper.contentEditable = true;
-    plainTextStage.appendChild(plainTextWrapper);
-
-
-  // Steps
-  ///////////
-  // iterate through all dom nodes
-  // Ignore text that is invisible, set to display: none, or has 0 opacity. (preheader should fall under this)
-  // setup defaults for linebreaks on common block level elements
-  // iterate to look for <a> and get the URLS
-  //
-
-  // - https://github.com/werk85/node-html-to-text
-  // - https://github.com/EDMdesigner/textversionjs
-
-function generateTextFromDOM(domObject) {
-  // pending...
-}
-
-
-function textNodesUnder(el){
-  var n, a=[], walk=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null,false);
-  while(n=walk.nextNode()) a.push(n);
-  return a;
-}
-
-var pt;
-var nodeCount = 0;
-
-dummyFrameContents.querySelectorAll('*').forEach(function(node) {
-
-  // console.log(node.tagName);
-
-  if ( node.tagName !== "STYLE" ) {
-    pt += node.innerText;
-  } else {
-    nodeCount++;
-  }
-
-});
-
-var allTextNodes = textNodesUnder(dummyFrameContents);
-
-allTextNodes.forEach(function(node) {
-
-  // console.log(node);
-
-  // if ( node.tagName !== "STYLE" ) {
-  //   pt += node.innerText;
-  // } else {
-  //   nodeCount++;
-  // }
-
-});
-
-plainTextWrapper.innerHTML = pt;
-
-// String for export/test sends
-plainTextVersion = pt;
-
-
-
-
-function processModuleText(moduleType) {
-
-  // if () {
-  //
-  // }
-
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2868,7 +2622,6 @@ if ( !navigator.onLine ) {
 var textWarningsQaBar = document.createElement("div");
 textWarningsQaBar.id = "qa-text-warnings";
 textWarningsQaBar.className = "qa-text-warnings";
-// appendQaBar(textWarningsQaBar);
 
 
 /////////
@@ -3113,12 +2866,14 @@ try {
   emailAllCharsWithinAscii(originalHtml);
 }
 catch(error) {
+  console.groupCollapsed("[Special Characters] emailAllCharsWithinAscii plugin");
   console.error(error);
   console.error(error.toString());
   console.error(escapeXml(error.toString()));
   console.error(error.toString().replace(/&/gi,"@"));
   var err = error.toString().replace(/^Error\:.+?: /i, "");
   errorLog("error", err);
+  console.groupEnd();
   // expected output: SyntaxError: unterminated string literal
   // Note - error messages will vary depending on browser
 }
@@ -3131,7 +2886,7 @@ catch(error) {
 
 (function(){
 
-  console.group("[Accessibility: role='presentation']");
+  console.groupCollapsed("[Accessibility: role='presentation']");
 
   let tables = dFrameContents.querySelectorAll("table");
   for (let table of tables) {
@@ -3153,7 +2908,7 @@ catch(error) {
 
 (function(){
 
-  console.group("[Accessibility: alt='']");
+  console.groupCollapsed("[Accessibility: alt='']");
 
   let images = dFrameContents.querySelectorAll("img");
   for (let image of images) {
@@ -3216,7 +2971,7 @@ else if ( totalAccessibilityWarnings === 0 ) {
 
 (function(){
 
-  console.group("[Bug Check] Outlook: Lack of Padding Support");
+  console.groupCollapsed("[Bug Check] Outlook: Lack of Padding Support");
 
   for (let el of dummyFrameContents.querySelectorAll("p, div")) {
 
@@ -3249,7 +3004,7 @@ else if ( totalAccessibilityWarnings === 0 ) {
 
 (function(){
 
-  console.group("[Bug Check] Outlook: <a> tags cannot link <table> elements");
+  console.groupCollapsed("[Bug Check] Outlook: <a> tags cannot link <table> elements");
 
   let els = dFrameContents.querySelectorAll("a table");
   for (let el of els) {
@@ -3274,7 +3029,7 @@ else if ( totalAccessibilityWarnings === 0 ) {
   // queries stripped out so that there's no question whether it will be relevant in Outlook.
   // If this test runs while a mobile based media query is active, it could skew results
 
-  console.group("[Bug Check] Outlook: <td> Vertical Padding");
+  console.groupCollapsed("[Bug Check] Outlook: <td> Vertical Padding");
   console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
 
   var firstTdTop, firstTdBottom;
@@ -3291,7 +3046,7 @@ else if ( totalAccessibilityWarnings === 0 ) {
       // Loop through all <td>'s in this table row.
       for (var i = 0; i < tableRow.cells.length; i++) {
 
-        // console.group();
+        // console.groupCollapsed();
         //
         // console.log(tableRow.cells[i]);
         // console.log("table cell " + i + " of " + tableRow.cells.length);
@@ -3347,7 +3102,7 @@ else if ( totalAccessibilityWarnings === 0 ) {
 
 (function(){
 
-  console.group("[Bug Check] Outlook: !important parsing");
+  console.groupCollapsed("[Bug Check] Outlook: !important parsing");
   console.info("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31");
 
   var firstTdTop, firstTdBottom;
@@ -4692,10 +4447,3 @@ ro.observe(desktopIframe);
 
 ///////
 document.querySelector("html").classList.toggle("errors");
-
-
-
-// }
-} else {
-  document.documentElement.classList.add("plain-view");
-}

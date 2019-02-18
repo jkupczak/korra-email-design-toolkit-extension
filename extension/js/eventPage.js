@@ -1,4 +1,45 @@
-console.info("Korra " + chrome.runtime.getManifest().version);
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+
+// Function to process requests for files on dropbox.com
+var openFromDropbox = function(details) {
+  console.log("navigated to dropbox file");
+  console.log(details);
+
+  var newUrl = details.url;
+  if ( /\?dl=1/i.test(newUrl) ) {
+    newUrl = newUrl.replace(/\?dl=1/,"?dl=0");
+  }
+  else if ( /\?dl=0/i.test(newUrl) ) {
+    // do nothing
+  }
+  else {
+    newUrl = "https://www.dropbox.com/s/" + newUrl.replace(/^.+?\/s\//i,"");
+  }
+
+  return { redirectUrl: newUrl };
+
+}
+
+// Function to process requests for files on the local harddrive
+var openFromLocalURL = function(details) {
+  console.log("navigated to local file");
+  console.log(details);
+
+  return { redirectUrl: chrome.extension.getURL('preview.html?open=') + details.url };
+}
+
+// Function to process requests for file on local servers
+var openFromLocalServer = function(details) {
+  console.log("navigated to local server");
+  console.log(details);
+
+  chrome.tabs.executeScript(details.tabId, {
+    file: '/js/localhost.js'
+  });
+}
+
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -8,26 +49,125 @@ console.info("Korra " + chrome.runtime.getManifest().version);
 // Log all data from chrome.storage.sync
 // http://stackoverflow.com/a/27432365/556079
 
-options = {};
+let options = {};
+var getOptions = function() {
 
-// Get Sync
-chrome.storage.sync.get(function(result) {
-  options.sync = result;
-  // Open Options Pinned?
-  if ( result.openPinnedOptions === "1" ) {
-    openOptionsTab({pinned: true, active: false});
-  }
-  console.log(options);
+  // Get Sync
+  chrome.storage.sync.get(function(result) {
+    options.sync = result;
+    console.log(options);
 
-});
+    // // Open Options Pinned?
+    // if ( result.openPinnedOptions === "1" ) {
+    //   openOptionsTab({pinned: true, active: false});
+    // }
 
-// Get Local
-chrome.storage.local.get(function(result) {
-  options.local = result;
+  });
 
-  console.log(options);
-});
+  // Get Local
+  chrome.storage.local.get(function(result) {
+    options.local = result;
+    console.log(options);
 
+    // Remove any existing webRequest listeners
+    chrome.webRequest.onBeforeRequest.removeListener(openFromDropbox);
+    chrome.webRequest.onBeforeRequest.removeListener(openFromLocalURL);
+    chrome.webRequest.onCompleted.removeListener(openFromLocalServer);
+
+          // @todo
+          // Figure out ASYNC. These webRequests are reliant on data in the options.
+          // So I can't use them until we've asynchronously retrieved options from storage.
+          // I'd prefer it if we didn't have to stick it all inside this block
+          //
+          // Redirect Links using webRequest blocking.
+          // https://developer.chrome.com/extensions/webRequest
+
+          // Watching Dropbox.com
+          chrome.webRequest.onBeforeRequest.addListener( openFromDropbox,
+            {
+              urls: ["*://*.dropbox.com/s/*/*?dl=1", "*://*.dropboxusercontent.com/s/*"]
+            },
+            ['blocking']
+          );
+
+          // Convert watchedExtensions to an array using split
+          const watchedExtensions = options.sync.watchedExtensions.split(",");
+          console.log("watchedExtensions", watchedExtensions);
+
+          let folderWatchList = [];
+          if ( !isUndefined(options.local.watchedFolders) && options.local.watchedFolders.length > 0 ) {
+
+            // Convert watchedExtensions to an array using split
+            const watchedFolders = options.local.watchedFolders.split("\n");
+            console.log("watchedFolders", watchedFolders);
+
+            watchedFolders.forEach(function (path, index) {
+
+              if ( path.length > 0 ) {
+                watchedExtensions.forEach(function (extension, index) {
+                  folderWatchList.push( "file://" + path.trim().replace(/\/+$/,"") + "/*" + extension.trim() );
+                });
+              }
+
+            });
+
+          // watchedFolders was blank or undefined, so we will watch ALL paths
+          } else {
+
+            watchedExtensions.forEach(function (extension, index) {
+              folderWatchList.push( "file://*" + extension.trim() );
+            });
+
+          }
+          console.log("folderWatchList", folderWatchList);
+
+          // Watching for local files
+          ///////////////////////////
+          chrome.webRequest.onBeforeRequest.addListener( openFromLocalURL,
+            {
+              urls: folderWatchList, // won't match local files with a querystring at the end.
+              types: ['main_frame']
+            },
+            ['blocking']
+          );
+
+
+          // Watching for local servers
+          /////////////////////////////
+          // Convert watchedServers to an array using split
+
+          if ( !isUndefined(options.sync.watchedServers) ) {
+
+            const watchedServers = options.sync.watchedServers.split("\n");
+            console.log("watchedServers", watchedServers);
+
+            let serverWatchList = [];
+            watchedServers.forEach(function (server, index) {
+
+              if ( server.length > 0 ) {
+                watchedExtensions.forEach(function (extension, index) {
+                  serverWatchList.push( server.trim().replace(/\/+$/,"") + "/*" + extension.trim() );
+                });
+              }
+
+            });
+            console.log("serverWatchList", serverWatchList);
+
+            // onBeforeRequest is too early, the DOM isn't ready
+            chrome.webRequest.onCompleted.addListener( openFromLocalServer,
+              {
+                urls: serverWatchList,
+                types: ['main_frame'] // prevents this from running on requests from iframes
+              },
+              ['blocking']
+            );
+
+          }
+
+
+  });
+};
+getOptions();
 
 
 
@@ -65,40 +205,40 @@ var openOptionsTab = function(options) {
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
-
-//this is a global var and to be added to any timestamp in ms
-var dateCurrent= new Date(),
-    correction = dateCurrent.getTimezoneOffset()*60*1000;
-
-
-//now when calling history.search I'm calculating that correction in
-//eg. for yestrday
-
-var dN = Date.now(),
-d1 = dN%86400000,
-b = correction + dN - d1,
-a = b - 86400000;
-
-chrome.history.search({
-  text:       'file\:\/\/\/',
-  startTime:  a,
-  endTime:    b,
-  maxResults: 100000
-}, items => console.log(items));
-
-
-chrome.history.search({
-    text: ".html",
-    startTime: 0,
-    maxResults: 0
-}, items => console.log(items));
-
-
-function historyItems() {
-
-  console.log("historyItems()");
-
-}
+    //
+    // //this is a global var and to be added to any timestamp in ms
+    // var dateCurrent= new Date(),
+    //     correction = dateCurrent.getTimezoneOffset()*60*1000;
+    //
+    //
+    // //now when calling history.search I'm calculating that correction in
+    // //eg. for yestrday
+    //
+    // var dN = Date.now(),
+    // d1 = dN%86400000,
+    // b = correction + dN - d1,
+    // a = b - 86400000;
+    //
+    // chrome.history.search({
+    //   text:       'file\:\/\/\/',
+    //   startTime:  a,
+    //   endTime:    b,
+    //   maxResults: 100000
+    // }, items => console.log(items));
+    //
+    //
+    // chrome.history.search({
+    //     text: ".html",
+    //     startTime: 0,
+    //     maxResults: 0
+    // }, items => console.log(items));
+    //
+    //
+    // function historyItems() {
+    //
+    //   console.log("historyItems()");
+    //
+    // }
 
 
 // !!!!!!!!!!!!!
@@ -141,56 +281,11 @@ function historyItems() {
 // When I click the Korra icon the extension reloads. After its done reloading this code runs and refreshes my active tab.
 // This was added to make development of the extension quicker.
 // Instead of opening the Extensions settings tab I can reload the extension without ever leaving the page I'm looking at.
-chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  chrome.tabs.reload(tabs[0].id);
-});
+// chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+//   chrome.tabs.reload(tabs[0].id);
+// });
 
 
-//
-// Redirect Links using webRequest blocking.
-//
-// https://developer.chrome.com/extensions/webRequest
-chrome.webRequest.onBeforeRequest.addListener(
-    function(details) {
-      console.log("chrome.webRequest.onBeforeRequest");
-      console.log(details);
-      // return {cancel: true};
-
-      var newUrl = details.url;
-      if ( /\?dl=1/i.test(newUrl) ) {
-        newUrl = newUrl.replace(/\?dl=1/,"?dl=0");
-      }
-      else if ( /\?dl=0/i.test(newUrl) ) {
-        // do nothing
-      }
-      else {
-        newUrl = "https://www.dropbox.com/s/" + newUrl.replace(/^.+?\/s\//i,"");
-      }
-
-      return { redirectUrl: newUrl /*Redirection URL*/ };
-      // return {cancel: details.url.indexOf("://www.evil.com/") != -1};
-    },
-    {
-      urls: ["*://*.dropbox.com/s/*/*?dl=1", "*://*.dropboxusercontent.com/s/*"]
-      // urls: ["*://*.medbridgeeducation.com/*"]
-    },
-    ["blocking"]
-);
-
-
-
-chrome.webRequest.onBeforeRequest.addListener(
-  function(details) {
-    console.log("chrome.webRequest.onBeforeRequest");
-    console.log(details);
-
-    return { redirectUrl: chrome.extension.getURL('preview.html?file=') + details.url };
-  },
-  {
-    urls: ["file://*"]
-  },
-  ["blocking"]
-);
 
 // Views on Dropbox
 // https://www.dropbox.com/s/sp7b14k2ejj1r3e/18-04-10-Other-John-Snyder-Avascular-Necrosis-ns-a.html?dl=0
@@ -211,9 +306,9 @@ chrome.webRequest.onBeforeRequest.addListener(
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 
-chrome.tabs.create({
-  url: 'preview.html'
-}, callback);
+// chrome.tabs.create({
+//   url: 'preview.html'
+// }, callback);
 
 function callback(data) {
   console.log(data);
@@ -325,16 +420,10 @@ function handleInstalled(details) {
   // If this is a new install...
   if ( details.reason == 'install') {
 
-    // Set default options to storage.sync
+    // Set default options to storage
+    // @TODO I need to check for this value before setting the default options.
+    // If its true, we want to set the sync options with data from storage rather than using defaults
     setDefaultOptions();
-
-    // mark this extension as having just been installed
-    chrome.storage.sync.set({
-      'newInstalled': true
-    });
-
-    // Set default options to storage.local
-    chrome.storage.local.set({ 'protectedarticles': "" });
 
     // Show start page to provide instructions
     showStartPage();
@@ -361,14 +450,17 @@ function setDefaultOptions(reset) {
   // set the default options
   chrome.storage.sync.set({
     // General
+    'watchedExtensions': '.html, .htm',
+    'watchedFolders': '',
 
     // Views
     'synchronizeScrolling': '1',
     'mobileViewVisibility': '1',
-    'mobileWidthDefault': '320',
-    'mobileWidth': ['320', '360', '375', '414', '480'],
+    'mobileWidthDefault': '360',
+    'mobileWidth': '320, 360, 375, 414, 480',
 
     // Sharing
+    'autoRedirectDropboxLinkstoLocal': '1',
 
     // Sending Tests
 
@@ -380,6 +472,7 @@ function setDefaultOptions(reset) {
     'cacheValidLinks': '1',
     'autoCheckLinks': '1',
     'checkNoFollowLinks': '1',
+    'parseDOM': '1',
 
     // Code Validation
 
@@ -396,6 +489,10 @@ function setDefaultOptions(reset) {
     // install status
     'newInstalled': true
   });
+
+  chrome.storage.local.set({
+    'protectedarticles': ""
+  });
 }
 
 
@@ -404,20 +501,20 @@ function checkForFileAccessOption() {
 
 	chrome.extension.isAllowedFileSchemeAccess(function (answer) {
 
-    console.log("chrome.extension.isAllowedFileSchemeAccess", answer);
-    console.log("localStorage.fileAccessOff", localStorage.fileAccessOff);
+    // console.log("chrome.extension.isAllowedFileSchemeAccess", answer);
+    // console.log("localStorage.fileAccessOff", localStorage.fileAccessOff);
 
 			if (answer) {
-        console.log("a", localStorage.fileAccessOff);
+        // console.log("a", localStorage.fileAccessOff);
 					if (localStorage.fileAccessOff) {
 							localStorage.removeItem('fileAccessOff');
 							showStartPage(2);
               console.log(localStorage["b", 'fileAccessOff']);
 					}
-          console.log("c", localStorage.fileAccessOff);
+          // console.log("c", localStorage.fileAccessOff);
 			} else {
 				localStorage.fileAccessOff = true;
-        console.log("d", localStorage.fileAccessOff);
+        // console.log("d", localStorage.fileAccessOff);
 			}
 	});
 
@@ -511,8 +608,8 @@ chrome.runtime.onMessage.addListener(
     // Output to the console the message we received.
     ////
     console.group('sendMessage received');
-    	console.log(request);
-    	console.log(sender);
+    	console.log("request", request);
+    	console.log("sender", sender);
       console.log("tabId:", sender.tab.id, sender.tab ?
                   "Message received from a content script: " + sender.tab.url :
                   "from the extension");
@@ -608,7 +705,7 @@ chrome.runtime.onMessage.addListener(
     // This code receives the message and loads the URL.
     // sender.tab.id is used to open the URL in the same tab that sent the message.
     // without that, the following code would open the URL in the currently active tab instead.
-    if ( request.message.source === "dropbox" ) {
+    if ( /dropbox\.com/gi.test(sender.tab.url) ) {
 
       initDropboxRedirect(request, sender);
 
@@ -1066,15 +1163,18 @@ chrome.runtime.onInstalled.addListener(function() {
 
 var initDropboxRedirect = function(request, sender) {
 
+    console.log( options );
+    console.log( request.message.type, options.sync.autoRedirectDropboxLinkstoLocal );
+
     // Only open the link if auto redirect is set to on.
-    if ( request.message.type === "auto" && options.sync.autoRedirectDropboxLinkstoLocal === "0" ) return;
+    if ( request.message.type === "auto" && (options.sync.autoRedirectDropboxLinkstoLocal === "0" || isUndefined(options.sync.autoRedirectDropboxLinkstoLocal)) ) return;
 
     console.log(options.local.fullPathToDropboxFolder);
 
-    var localUrl = "file:///" + options.local.fullPathToDropboxFolder + "/" + request.message.url;
+    var localUrl = chrome.extension.getURL('preview.html?open=') + "file://" + options.local.fullPathToDropboxFolder + "/" + request.message.url;
 
 		chrome.tabs.update(sender.tab.id, {
 		    url: localUrl
 		});
 
-}
+};

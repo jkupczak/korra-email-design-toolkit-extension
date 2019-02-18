@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra for Email: Design & QA Automation",
-  "version": "3.9.0",
+  "version": "3.9.200",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 
@@ -30,7 +30,8 @@
     "link-validation/*",
     "icons/*",
     "korra/*",
-    "startpage/index.html"
+    "startpage/index.html",
+    "*"
   ],
   "permissions": [
     "webRequest",
@@ -59,6 +60,7 @@
     "scripts": [
       "js/libs/chrome-storage-promise.js",
       "js/get-options.js",
+      "js/global.js",
       "js/eventPage.js"
     ],
     "persistent": true
@@ -67,139 +69,42 @@
 
 
   "options_ui": {
-    "page": "options.html",
+    "page": "/options/options.html",
     "open_in_tab": true
   },
 
 
 
   "content_scripts": [
+
+
     {
       "matches": ["*://*/*", "file:///*"],
       "js": ["send-test/invoke-send-test.js"],
       "run_at": "document_start"
     },
-    {
-      "matches": ["*://*/korra/*"],
-      "js": ["js/global.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],
-      "exclude_matches": ["file:///*?view=1*", "file:///var/folders/*", "http://localhost:4567/__middleman/*"],
 
-      "css": [
-        "css/newsletter/newsletter-beforeload.css",
-        "css/newsletter/newsletter-styles.css",
-        "css/libs/alertify.css",
-        "css/alertify.medbridge.css",
-        "css/libs/tingle.css"
-      ],
 
+
+
+    {
+      "matches": ["*://*.dropbox.com/s/*", "*://*.dropbox.com/work/*", "*://*.dropbox.com/home/*"],
       "js": [
         "js/global.js",
         "js/get-options.js",
+        "js/libs/arrive.js",
         "js/libs/chrome-storage-promise.js",
-        "file-history/file-history.js",
-        "js/newsletter/newsletter-async.js",
-        "js/newsletter/mailchimp-parser.js",
         "js/libs/Dropbox-sdk.min.js",
-        "js/libs/moment.js",
-        "js/newsletter/svg-icons.js",
-        "link-validation/js/check-links-in-storage.js",
-        "link-validation/js/link-validation.js",
-        "link-validation/js/check-link-status.js",
-        "js/utilities/is-article-protected.js",
-        "js/newsletter/newsletter-functions.js",
-        "js/utilities/mailgun.js",
-        "js/libs/email-all-chars-within-ascii.umd.js"
+        "js/libs/alertify.js",
+        "js/dropbox/dropbox-file-viewer.js"
       ],
-
+      "css": [
+        "css/libs/alertify.css",
+        "css/alertify.medbridge.css"
+      ],
       "run_at": "document_start"
     },
-    {
-      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],
-      "exclude_matches": ["file:///*?view=1*", "file:///var/folders/*", "http://localhost:4567/__middleman/*"],
 
-      "css": [
-        "js/libs/codemirror/lib/codemirror.css",
-        "js/libs/codemirror/theme/monokai.css",
-        "js/libs/codemirror/addon/fold/foldgutter.css",
-        "js/libs/codemirror/addon/scroll/simplescrollbars.css"
-      ],
-
-      "js": [
-        "js/libs/codemirror/lib/codemirror.js",
-        "js/libs/codemirror/mode/css/css.js",
-        "js/libs/codemirror/mode/xml/xml.js",
-        "js/libs/codemirror/mode/javascript/javascript.js",
-        "js/libs/codemirror/mode/htmlmixed/htmlmixed.js",
-        "js/libs/codemirror/addon/display/autorefresh.js",
-        "js/libs/codemirror/addon/fold/foldcode.js",
-        "js/libs/codemirror/addon/fold/foldgutter.js",
-        "js/libs/codemirror/addon/fold/brace-fold.js",
-        "js/libs/codemirror/addon/fold/comment-fold.js",
-        "js/libs/codemirror/addon/fold/indent-fold.js",
-        "js/libs/codemirror/addon/fold/xml-fold.js",
-        "js/libs/codemirror/addon/selection/active-line.js",
-        "js/libs/codemirror/addon/selection/mark-selection.js",
-        "js/libs/codemirror/addon/scroll/simplescrollbars.js"
-      ],
-
-      "run_at": "document_end"
-    },
-    {
-      "matches": ["file:///*.htm*", "file:///*.html*", "http://localhost:4567/*.htm*", "http://localhost:3000/*.htm*"],
-      "exclude_matches": ["file:///*?view=1*", "file:///var/folders/*", "http://localhost:4567/__middleman/*"],
-
-      "css": [
-        "css/global_styles.css",
-        "css/libs/alertify.css"
-      ],
-
-      "js": [
-        "js/libs/findAndReplaceDOMText.js",
-        "js/libs/tingle.js",
-        "js/libs/interact.js",
-        "js/newsletter/dropbox-share.js",
-        "js/libs/email-remove-unused-css.umd.js",
-        "js/libs/string-collapse-white-space.umd.js",
-        "js/libs/alertify.js",
-        "js/discipline-labeling.js",
-        "js/libs/keymaster.js",
-        "js/newsletter/newsletter.js"
-      ],
-
-      "run_at": "document_end"
-    },
-
-
-
-    {
-      "matches": ["http://localhost:4567/*"],
-      "css": ["css/middleman_styles.css"],
-      "js": ["js/middleman.js"]
-    },
-
-
-
-                    {
-                      "matches": ["*://*.dropbox.com/s/*", "*://*.dropbox.com/work/*", "*://*.dropbox.com/home/*"],
-                      "js": [
-                        "js/global.js",
-                        "js/get-options.js",
-                        "js/libs/arrive.js",
-                        "js/libs/chrome-storage-promise.js",
-                        "js/libs/Dropbox-sdk.min.js",
-                        "js/libs/alertify.js",
-                        "js/dropbox/dropbox-file-viewer.js"
-                      ],
-                      "css": [
-                        "css/libs/alertify.css",
-                        "css/alertify.medbridge.css"
-                      ],
-                      "run_at": "document_start"
-                    },
 
 
 
@@ -212,20 +117,21 @@
 
 
 
-                    {
-                      "matches": ["*://*.mailchimp.com/*"],
-                      "js": [
-                        "js/libs/moment.js",
-                        "js/libs/chrome-storage-promise.js",
-                        "link-validation/js/check-links-in-storage.js",
-                        "link-validation/js/link-validation.js",
-                        "link-validation/js/check-link-status.js"
-                      ]
-                    },
-                    {
-                      "matches": ["*://*.mailchimp.com/campaigns/wizard/html-paste*"],
-                      "js": ["js/mailchimp-link-check.js"]
-                    }
+
+    {
+      "matches": ["*://*.mailchimp.com/*"],
+      "js": [
+        "js/libs/moment.js",
+        "js/libs/chrome-storage-promise.js",
+        "link-validation/js/check-links-in-storage.js",
+        "link-validation/js/link-validation.js",
+        "link-validation/js/check-link-status.js"
+      ]
+    },
+    {
+      "matches": ["*://*.mailchimp.com/campaigns/wizard/html-paste*"],
+      "js": ["js/mailchimp-link-check.js"]
+    }
 
 
   ]

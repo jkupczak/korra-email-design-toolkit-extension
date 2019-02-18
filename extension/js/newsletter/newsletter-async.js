@@ -1,53 +1,139 @@
+"use strict";
+
+/////
+///// Get options from storage
+/////
+
+let options = {};
+var getAllOptions = new Promise((resolve, reject) => {
+
+  console.time('storage.sync');
+  chrome.storage.sync.get(null, (items) => {
+
+    let err = chrome.runtime.lastError;
+    if (err) {
+
+      //@TODO What do I do if the call errors out?!
+      reject(err);
+
+    } else {
+
+      // Apply our result to a global variable so that we can use it throughout our other scripts.
+      // Maybe not the best way to handle this?
+      options.sync = items;
+
+      console.groupCollapsed("Options from chrome.storage.sync");
+      console.timeEnd('storage.sync');
+      console.log(options.sync);
+      console.groupEnd();
+
+
+      // Created this function to take the items we got from the async call
+      // and apply them to variables for easy use in other scripts.
+      // I don't actually think this is necessary. Shouldn't I just call the items object?
+      // Like...
+      // exOptions = items;
+      // And then later...
+      // exOptions.optionName // returns the option I want.
+      // They are afterall all already named within the object!
+      // @TODO
+      resolveOptions(items);
+      resolve(items);
+    }
+  });
+
+  console.time('storage.local');
+  chrome.storage.local.get(null, (items) => {
+
+    let err = chrome.runtime.lastError;
+    if (err) {
+
+      //@TODO What do I do if the call errors out?!
+      reject(err);
+
+    } else {
+
+      // Apply our result to a global variable so that we can use it throughout our other scripts.
+      // Maybe not the best way to handle this?
+      options.local = items;
+
+      console.groupCollapsed("Options from chrome.storage.local");
+      console.timeEnd('storage.local');
+      console.log(options.local);
+      console.groupEnd();
+
+      resolveOptions(items);
+      resolve(items);
+    }
+  });
+
+});
+
 ///////
 ///////
 // Where are we?
 ///////
 ///////
 
-var environment, fileLocation, savedFile, labelsAvailable;
+let fileLocation, fileLocationWithoutProtocol, filename, filePath, isSavedFile, labelsAvailable;
 
-// We're viewing a locally saved file through the file: protocol.
-if ( document.location.protocol !== "chrome-extension:" ) {
-  environment = "local";
-  fileLocation = document.URL;
-  savedFile = true;
+fileLocation = getParameterByName("open");
+
+if ( /^(https?|file):\/\//i.test(fileLocation) ) {
+  fileLocationWithoutProtocol = fileLocation.replace(/^(https?|file)\:\/\//i,"");
+
+  isSavedFile = true;
   labelsAvailable = true;
 
-// We're viewing code through the chrome-extension: protocol.
+  filename = getFilename(fileLocation);
+  filePath = getFilePath(fileLocation);
+}
+
+else { // this is unsaved code
+
+  isSavedFile = false;
+  labelsAvailable = false;
+
+}
+
+
+///////////
+///// Name the location of the file.
+///// Is it a file on the local harddrive? = "local"
+///// Is it unsaved code located in extension storage? = "korra"
+///// Is on being from a locally hosted server? = "server"
+///////////
+
+let fileHost;
+if ( /^file\:\/\//i.test(fileLocation) ) {
+  fileHost = "local";
+
+// @TODO - This should pull from user submitted paths.
+} else if ( /^https?\:\/\//i.test(fileLocation) ) {
+  fileHost = "server";
+
 } else {
-  environment  = "extension";
-  fileLocation = getParameterByName("file");
-  // The code is not saved as a file, it's saved to chrome.storage.local.
-  if ( !fileLocation ) {
-    fileLocation = getParameterByName("unsaved-file");
-    savedFile = false;
-    labelsAvailable = false;
-  // The code is saved as a local file.
-  } else {
-    savedFile = true;
-    labelsAvailable = true;
-  }
+  fileHost = "korra";
 }
 
-if ( savedFile ) {
-  var filename = getFilename(fileLocation);
-  var filePath = getFilePath(fileLocation);
-}
+console.groupCollapsed("[location]");
+  console.log("fileLocation:", fileLocation);
+  console.log("fileLocationWithoutProtocol:", fileLocationWithoutProtocol);
+  console.log("filePath:", filePath);
+  console.log("filename:", filename);
+  console.log("isSavedFile:", isSavedFile);
+  console.log("labelsAvailable:", labelsAvailable);
+  console.log("fileHost:", fileHost);
+console.groupEnd();
 
-
-///////
-///////
-
-
-var view = getParameterByName("view");
-if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
-  // console.log(document.URL);
+////////////////////////////
+////////////////////////////
+////////////////////////////
 
 
 // This requests the original files HTML using the extensions access to the filesystem.
 // By default this request is asynchronous.
 // If we want to make it synchronous, just change true to false in the xhr.open statement.
-// It remains to be seen if async will cause me any issues with page rendering. But nothing so far!
 
 // Resources:
 // https://stackoverflow.com/q/11452758/556079
@@ -55,39 +141,11 @@ if ( view !== "1" && !/\/var\/folders\//gi.test(document.URL) ) {
 // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
 
 
-// MailChimp doesn't have the HTML loaded right away. So we HAVE to XHR for it. This is not currently implemented.
-
-// var xhrA = new XMLHttpRequest();
-// xhrA.open("GET", "https://pages.litmus.com/webmail/31032/494395994/cd7225862ccaeed9432230a0dc260788d20e752ee3c3ea1ab27ae37c2345749a", true);
-// xhrA.onload = function(e) {
-//   // processCode(xhr.response);
-//   console.log(xhrA.response);
-// };
-// xhrA.onerror = function () {
-//   console.error("** An error occurred during the transaction");
-// };
-// xhrA.send();
-
-
-
-//////
-//////
-// This is the call for the local HTML I was using. I've promisified this further down now so that I can use promise.all to wait for this to be return and also wait for the options to show up.
-  // var xhr = new XMLHttpRequest();
-  // xhr.open("GET", document.URL, true);
-  // xhr.onload = function(e) {
-  //   processCode(xhr.response);
-  // };
-  // xhr.onerror = function () {
-  //   console.error("** An error occurred during the transaction");
-  // };
-  // xhr.send();
-
-
 ////////////////////////////////////
 ////////////////////////////////////
 ////////////////////////////////////
 
+let originalHtml, cleanedOriginalHtml, cleanedDesktopHtml, cleanedMobileHtml, conditionalsExist;
 
 var processCode = function (code) {
 
@@ -168,22 +226,6 @@ var processCode = function (code) {
   var mFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-mFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">';
   cleanedMobileHtml += mFrameCssString;
 
-
-  //////////////
-  //
-  //   ALL
-  //
-  //////////////
-
-  // Add allFrames.js to both views
-  var allFramesScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/allFrames.js') + '"></script>';
-  // cleanedDesktopHtml += allFramesScript;
-  // cleanedMobileHtml += allFramesScript;
-
-
-  // Now that we've got the HTML from our async call AND we've processed it...
-  // buildPage();
-
 };
 
 
@@ -194,8 +236,10 @@ var processCode = function (code) {
 
 var getHtml = new Promise(function(resolve, reject) {
 
-  if ( !savedFile ) {
+  // Check if its code saved in storage
+  if ( !isSavedFile ) {
 
+    console.info("Doing a GET request for code saved in storage.\n", fileLocation);
     chrome.storage.promise.local.get(fileLocation).then(function(items) {
       // resolved
       console.log(items); // => {'foo': 'bar'}
@@ -206,32 +250,39 @@ var getHtml = new Promise(function(resolve, reject) {
       console.log(error);
     });
 
+  // It's not code saved in storage, it's a local file.
   } else {
 
+    console.info("Doing a GET request for a local file.\n", fileLocation);
     var xhr = new XMLHttpRequest();
     xhr.open("GET", fileLocation, false); // true = async, false = sync
 
     // When xhring a local file, the response.status is 0
     xhr.onload = function (e) {
-      // if (this.status === 0) {
 
-      processCode(this.response);
-      resolve(this.response);
+      if (this.response.length > 0) {
 
-      // } else {
-      //   reject({
-      //     status: this.status,
-      //     statusText: xhr.statusText
-      //   });
-      // }
+        processCode(this.response);
+        resolve(this.response);
+
+      } else {
+
+        reject({
+          status: this.status,
+          statusText: xhr.statusText
+        });
+      }
     };
+
     xhr.onerror = function () {
+
       console.error("error");
       reject({
         status: this.status,
         statusText: xhr.statusText
       });
     };
+
     xhr.send();
 
   }
@@ -251,8 +302,6 @@ Promise.all([getAllOptions, getHtml]).then(function(values) {
     // @@IDEA: Wait until the user clicks the button to assign an href.
     setTimeout(function(){
 
-        destroyIfExists( document.querySelector("#loading-wrapper") );
-
         var editorPath = "";
 
         // if ( typeof exOptions.openInEditor !== 'undefined' ) {
@@ -262,12 +311,20 @@ Promise.all([getAllOptions, getHtml]).then(function(values) {
           openInEditorLink.innerHTML = "Open in Editor";
           stagePreviewBtns.insertAdjacentElement('afterend',openInEditorLink);
 
-          if ( exOptions.openInEditor === "atom" ) {
+          if ( options.sync.openInEditor === "atom" ) {
              editorPath = 'atom://open?url=';
-          } else if ( exOptions.openInEditor === "sublime" ) {
+             openInEditorLink.href = editorPath + fileLocation;
+
+          } else if ( options.sync.openInEditor === "sublime" ) {
             editorPath = 'subl://open?url=';
+            openInEditorLink.href = editorPath + fileLocation;
+
+          } else if ( options.sync.openInEditor === "vscode" ) {
+            editorPath = 'vscode://file/';
+            openInEditorLink.href = editorPath + fileLocation.replace(/^file:\/\//i,"");
+
           }
-          openInEditorLink.href = editorPath + fileLocation;
+
 
         // }
 
@@ -306,87 +363,6 @@ Promise.all([getAllOptions, getHtml]).then(function(values) {
 // }, function(error) {
 //   console.error("Could not retrieve Dropbox folder name from chrome.storage.sync. items.dropboxFolderName is " + items.dpLocalParentFolder);
 // });
-
-/////
-/////
-/////
-
-var isinss = false;
-// Get all options
-if ( isinss ) {
-// First check sessionStorage. We'll store options here after the first load to make subsequent loads faster.
-
-  // TODO
-  var getAllOptions = "options!";
-  resolveOptions("options!");
-
-} else {
-// Not in synchronous sessionStorage, do an async call to chrome.storage.sync
-
-  var getAllOptions = new Promise((resolve, reject) => {
-      chrome.storage.sync.get(null, (items) => {
-          let err = chrome.runtime.lastError;
-          if (err) {
-
-            //@TODO What do I do if the call errors out?!
-            reject(err);
-
-          } else {
-
-            // Apply our result to a global variable so that we can use it throughout our other scripts.
-            // Maybe not the best way to handle this?
-            exOptions = items;
-            korraOptions = items;
-
-            console.groupCollapsed("Options from Storage (exOptions)");
-            console.log(exOptions);
-            console.groupEnd();
-
-
-            // Created this function to take the items we got from the async call
-            // and apply them to variables for easy use in other scripts.
-            // I don't actually think this is necessary. Shouldn't I just call the items object?
-            // Like...
-            // exOptions = items;
-            // And then later...
-            // exOptions.optionName // returns the option I want.
-            // They are afterall all already named within the object!
-            // @TODO
-            resolveOptions(items);
-
-
-            resolve(items);
-          }
-      });
-
-      chrome.storage.local.get(null, (items) => {
-          let err = chrome.runtime.lastError;
-          if (err) {
-
-            //@TODO What do I do if the call errors out?!
-            reject(err);
-
-          } else {
-
-            // Apply our result to a global variable so that we can use it throughout our other scripts.
-            // Maybe not the best way to handle this?
-            exOptionsLocal = items;
-            korraOptionsLocal = items;
-
-            console.groupCollapsed("Options from Storage (exOptions)");
-            console.log(exOptions);
-            console.groupEnd();
-
-            resolveOptions(items);
-
-            resolve(items);
-          }
-      });
-  });
-
-}
-
-
 
 function resolveOptions(items) {
 
@@ -441,25 +417,3 @@ var p6 = seqLoopReduce("10 iterations: <br />", 15).then(function (result) {
     // console.log(result);
     // console.log("<br />");
 });
-
-
-
-
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
-///////////////////////////////
-///////////////////////////////
-///////////////////////////////
-///////////////////////////////
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
-
-if ( savedFile ) {
-  saveFileHistory(fileLocation);
-}
-
-
-
-} else {
-  document.documentElement.classList.add("plain-view");
-} // END TEST
