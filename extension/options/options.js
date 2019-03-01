@@ -1,4 +1,39 @@
+////////////////
+////////////////
+//
+////////////////
+////////////////
 autosize(document.querySelectorAll('textarea'));
+
+
+////////////////
+////////////////
+//
+////////////////
+////////////////
+
+var loadingFinished = function() {
+
+  console.log("function called loadingFinished()");
+
+  setTimeout(function() {
+    document.querySelector("#loading").classList.add("zoom-out");
+  }, 650);
+
+  setTimeout(function() {
+    document.body.style.overflow = "";
+    document.querySelector(".loading-status").remove();
+  }, 1000);
+
+  console.log("loading finished");
+};
+
+
+////////////////
+////////////////
+//
+////////////////
+////////////////
 
 document.addEventListener("keydown", function(e) {
   if ( e.srcElement.type === "textarea" && e.srcElement.dataset.preventBreaks === "true" ) {
@@ -21,6 +56,7 @@ document.addEventListener("keydown", function(e) {
 
 var applyOptions = function (options) {
   console.log("loading options from storage and applying to page");
+
   // Begin looping through each key/value pair
   Object.keys(options).forEach(function (key) {
 
@@ -106,7 +142,7 @@ var applyOptions = function (options) {
             }
 
             else {
-              console.warn("this is NOT an array", key, options[key])
+              console.warn("this is NOT an array", key, options[key]);
             }
 
           }
@@ -171,12 +207,11 @@ var loadOptions = function() {
     console.warn("options successfully loaded from storage.local", localOptions);
     options.local = localOptions;
     applyOptions(localOptions);
+    loadingFinished();
   });
 
 };
-
 loadOptions();
-
 
 
 /////////////////////////////////
@@ -790,11 +825,60 @@ function ruleFunctions(e) {
         savedValue = field.value.trim();
       }
 
+      savedValueObject = [];
+      savedValueObject.push(
+        {
+          "action": "replace", "key": field.name, "value": savedValue, "location": saveLocation
+        }
+      );
+
+
+      //////////////////
+      // Save again if we want an encoded version
+      if ( field.dataset.encodePath ) {
+
+        let savedValueEncoded = savedValue;
+
+        // Only convert the original value to an array if its not empty
+        if ( savedValueEncoded.length > 0 ) {
+
+            // Convert \ to / if we are on Windows
+            if ( /win/gi.test(navigator.platform) ) {
+              savedValueEncoded = savedValueEncoded.replace(/\\/gmi,"/");
+            }
+
+            // if the value is multiline...
+            if ( field.dataset.array === "multiline" ) {
+              savedValueEncoded = savedValueEncoded.split("\n");
+
+              savedValueEncoded.forEach(function (line, index) {
+                // clean up the path by removing all leading and trailing whitespace and forward slashes
+                // then tack on the * wildcard and the file extensions
+                line = line.trim().replace(/(^\/+|\/+$)/,"");
+                // Decode then encode the values
+                savedValueEncoded[index] = encodeURI(decodeURI(line));
+              });
+
+            } else {
+              // its only a single line.
+              // trim white space and \ /'s
+              savedValueEncoded = encodeURI(decodeURI(savedValueEncoded.trim().replace(/(^\/+|\/+$)/,"")))
+            }
+
+        }
+
+        savedValueObject.push(
+          {
+            "action": "replace", "key": field.dataset.encodePath, "value": savedValueEncoded, "location": saveLocation
+          }
+        );
+      }
+
+
       // Set value to storage
       // TODO: This doesn't report back if the save was unsuccessful.
-      saveToStorage("replace", field.name, savedValue, saveLocation);
-      console.log("value saved:", savedValue);
-
+      saveToStorage(savedValueObject);
+      console.log("value(s) saved:", savedValueObject);
 
       saveSuccessful();
 
@@ -848,27 +932,29 @@ function ruleFunctions(e) {
   //
   ///////////////////////
 
-  var saveToStorage = function(action, key, value, location) {
+  var saveToStorage = function(data) {
 
-    console.log("saveToStorage | ", "action:", action, "| key:", key, "| value:", value, "| location:", location);
+    console.log("saveToStorage", data);
 
     // Open a connection to the background page
     var bkg = chrome.runtime.getBackgroundPage(function(bkg) {
 
-      if ( action === "replace" ) {
-        bkg.setItem(key, value, location);
+      for (let item of data) {
+        bkg.setItem(item.key, item.value, item.location);
       }
-      else if ( action === "add" ) {
 
-      }
+      // if ( action === "replace" ) {
+      //   bkg.setItem(key, value, location);
+      // }
+      // else if ( action === "add" ) {
+      //
+      // }
 
       // Now that a new value has been saved to storage,
       // reload the options in the background page so that they're available.
       bkg.getOptions();
 
     });
-
-
 
   };
 

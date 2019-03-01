@@ -14,7 +14,6 @@
 ////////////////////
 ////////////////////
 
-
 ////
 ////// Global Functions
 ////
@@ -1930,4 +1929,62 @@ function findPos(object, currentDocument) {
   var objectPosFromLeft = object.getBoundingClientRect().left + currentDocument.documentElement.scrollLeft;
 
   return [objectPosFromTop, objectPosFromLeft];
+}
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var allowFileAccess = function() {
+  chrome.tabs.create({ url: 'chrome://extensions/?id=' + chrome.runtime.id, active: true });
+};
+
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var displayErrorMsg = function(reason) {
+
+  let emoji, title, reasonText, tip;
+
+  if (reason === "missing") {
+    emoji = "&#128562;";
+    title = "Couldn't find the file you requested.";
+    reasonText = "Check that the file exists on your local harddrive.";
+    tip = "<div style='padding-top:10px;font-family: monospace; font-size:12px; line-height:20px'><span style='user-select:none; border-radius: 3px;background: #144e88;margin-right: 6px;padding: 2px 4px 2px 5px;color: #fff;'>File</span><span style=' opacity:.4'>" + filePath + "/</span><span style='opacity:.75'>" + filename + "</span></div>";
+    document.title = "Error: Couldn't find the file you requested.";
+  }
+  else if (reason === "fileaccess") {
+    emoji = "&#129296;";
+    title = "Access to this file was blocked.";
+    reasonText = "Verify that you've given Korra access to file URLs in the <a href='#' style='color:#c1c1e2' id='extension-details-page'>extension details page</a>.";
+    tip = "";
+    document.title = "Error: Access to this file was blocked.";
+
+  }
+  else {
+
+  }
+
+  // and then, use this to trigger the error:
+  // throw new FatalError("Something went badly wrong!");
+
+  setTimeout(function() {
+    document.querySelector("#loading").classList.add("fade-out");
+    document.querySelector(".loading-status").insertAdjacentHTML("afterbegin", '<div class="fade-in" style="padding:30px; position:absolute; flex-direction: column; top:0; left:0; right:0; bottom:0; color:#9d9db3; text-align:center; margin:auto; width:100%; height:200px; display:flex; align-items: center; justify-content: center; "><div style="font-size:160px; color:#c8c8d5; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)) drop-shadow(0 0 40px #1d87f1) drop-shadow(0 0 80px #1d87f1);">' + emoji + '</div><div style="padding-top:0px; font-size:36px; color:#c8c8d5;">' + title + '</div><div style="padding-top:20px; font-size:18px">' + reasonText + '</div>' + tip);
+
+    document.querySelector("link[type='image/x-icon']").href = chrome.extension.getURL("/favicons/undefined.png");
+
+    // Add javascript to open the options menu if they need to turn on file access
+    if (reason === "fileaccess") {
+      document.getElementById("extension-details-page").addEventListener("click", allowFileAccess, false);
+    }
+
+  }, 1000);
+
 }

@@ -324,7 +324,7 @@ if ( getParameterByName("presentation") === "1" ) {
     desktopIframeParent.appendChild(desktopIframe);
     desktopIframeResizeWrapper.appendChild(desktopIframeParent);
 
-    var desktopResizeHtml = '<div data-resize="top-right" class="resize-handler resize-corner resize-point-top resize-point-right resize-point-top-right"></div><div data-resize="bottom-right" class="resize-handler resize-corner resize-point-right resize-point-bottom resize-point-bottom-right"></div><div data-resize="bottom-left" class="resize-handler resize-corner resize-point-bottom resize-point-left resize-point-bottom-left"></div><div data-resize="top-left" class="resize-handler resize-corner resize-point-left resize-point-top resize-point-top-left"></div><div data-resize="top" class="resize-handler resize-side resize-point-top  resize-point-top-right resize-point-top-left"></div><div data-resize="right" class="resize-handler resize-side resize-point-right resize-point-top-right  resize-point-bottom-right"></div><div data-resize="bottom" class="resize-handler resize-side resize-point-bottom resize-point-bottom-right resize-point-bottom-left"></div><div data-resize="left" class="tap-to-resize resize-handler resize-side resize-point-left resize-point-bottom-left resize-point-top-left"></div>';
+    var desktopResizeHtml = '<div data-resize="top-right" class="resize-handler resize-corner resize-point-top resize-point-right resize-point-top-right"></div><div data-resize="bottom-right" class="resize-handler resize-corner resize-point-right resize-point-bottom resize-point-bottom-right"></div><div data-resize="bottom-left" class="resize-handler resize-corner resize-point-bottom resize-point-left resize-point-bottom-left"></div><div data-resize="top-left" class="resize-handler resize-corner resize-point-left resize-point-top resize-point-top-left"></div><div data-resize="top" class="resize-handler resize-side resize-point-top  resize-point-top-right resize-point-top-left"></div><div data-resize="right" class="resize-handler resize-side resize-point-right resize-point-top-right resize-point-bottom-right"></div><div data-resize="bottom" class="resize-handler resize-side resize-point-bottom resize-point-bottom-right resize-point-bottom-left"></div><div data-resize="left" class="tap-to-resize resize-handler resize-side resize-point-left resize-point-bottom-left resize-point-top-left"></div>';
     desktopIframeResizeWrapper.insertAdjacentHTML('beforeend', desktopResizeHtml);
 
     // At this point we're ready to create the iframe and inject the code.
@@ -332,13 +332,9 @@ if ( getParameterByName("presentation") === "1" ) {
 
     if ( originalHtml ) {
       destroy( document.querySelector(".loading-status") );
+
     } else {
 
-      setTimeout(function() {
-        // destroy( document.querySelector("#loading") );
-        document.querySelector("#loading").classList.add("fade-out");
-        document.querySelector(".loading-status").insertAdjacentHTML("afterbegin", '<div class="fade-in" style="padding:30px; position:absolute; flex-direction: column; top:0; left:0; right:0; bottom:0; color:#9d9db3; text-align:center; margin:auto; width:100%; height:200px; display:flex; align-items: center; justify-content: center; "><div style="font-size:160px; color:#c8c8d5; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)) drop-shadow(0 0 40px #1d87f1) drop-shadow(0 0 80px #1d87f1);">&#128562;</div><div style="padding-top:0px; font-size:36px; color:#c8c8d5;">Failed to load file.</div><div style="padding-top:20px; font-size:18px">Check that the file exists on your local harddrive.</div><div style="padding-top:10px;font-family: monospace; font-size:12px; line-height:20px"><span style="user-select:none; border-radius: 3px;background: #144e88;margin-right: 6px;padding: 2px 4px 2px 5px;color: #fff;">File</span><span style=" opacity:.4">' + filePath + '/</span><span style=" opacity:.75">' + filename + '</div>');
-      }, 1000);
 
     }
 
@@ -492,6 +488,7 @@ if ( getParameterByName("presentation") === "1" ) {
 
     var mobileDeviceWrapper = document.createElement("div");
     mobileDeviceWrapper.className = "mobile-device-view";
+    mobileDeviceWrapper.style = "width:320px";
     mobileIframeWrapper.appendChild(mobileDeviceWrapper);
 
     var mobileIframeParent = document.createElement("div");
@@ -534,7 +531,7 @@ if ( getParameterByName("presentation") === "1" ) {
     var mobileIframeSetting = document.createElement("div");
     mobileIframeSetting.className = "mobile-iframe-settings";
 
-    mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim active" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>';
+    mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim active" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>';
 
     mobileIframeSetting.addEventListener("click", changeMobileSize, false);
 

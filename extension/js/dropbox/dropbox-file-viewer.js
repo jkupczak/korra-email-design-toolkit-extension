@@ -1,3 +1,5 @@
+console.log("\\start of dropbox-file-viewer.js");
+
 ///////////////////////////////
 //*** /////////////////////////
 //*** //// "View with Korra"
@@ -14,34 +16,33 @@
 // Without it all we have is the filename and the beginning path to the local Dropbox folder.
 ////////
 ////////
-document.arrive("iframe.previewhtml", function() {
+document.arrive("iframe.previewhtml[src*='//dl-web.dropbox.com/']", function() {
 
   console.log("iframe.previewhtml arrived");
 
-  // Get the Dropbox Parent Folder
-  ////////
-  ////////
-  // if we've already grabbed the fullPathToDropboxFolder from storage, then all we need to do is create the link bar.
-  if ( typeof fullPathToDropboxFolder !== 'undefined' ) {
+            // // Get the Dropbox Parent Folder
+            // ////////
+            // ////////
+            // // if we've already grabbed the fullPathToDropboxFolder from storage, then all we need to do is create the link bar.
+            // if ( typeof fullPathToDropboxFolder !== 'undefined' ) {
 
     // Build the HTML for the link
     buildKorraBar();
 
-  } else {
-
-    // we haven't grabbed fullPathToDropboxFolder from storage yet, lets do that.
-
-    chrome.storage.promise.sync.get('fullPathToDropboxFolder').then(function(items) {
-      console.log("retrieved fullPathToDropboxFolder from chrome.storage.sync");
-      fullPathToDropboxFolder = items.fullPathToDropboxFolder;
-      // Build the HTML for the link
-      buildKorraBar();
-
-    }, function(error) {
-      console.error("Could not retrieve item from chrome.storage.sync.");
-    });
-
-  }
+            // } else {
+            //
+            //   // we haven't grabbed fullPathToDropboxFolder from storage yet, lets do that.
+            //   chrome.storage.promise.sync.get('fullPathToDropboxFolder').then(function(items) {
+            //     console.log("retrieved fullPathToDropboxFolder from chrome.storage.sync");
+            //     fullPathToDropboxFolder = items.fullPathToDropboxFolder;
+            //     // Build the HTML for the link
+            //     buildKorraBar();
+            //
+            //   }, function(error) {
+            //     console.error("Could not retrieve item from chrome.storage.sync.");
+            //   });
+            //
+            // }
 
 });
 
@@ -99,8 +100,12 @@ function viewLocalFile(type) {
     history.pushState(null, null, document.location.pathname + "?autoredirect=0");
   }
 
+  console.log({type: type, url: localUrl});
+
 	chrome.runtime.sendMessage({message: {type: type, url: localUrl}}, function(response) {
 	  console.log(response.farewell);
 	});
 
 }
+
+console.log("/end of dropbox-file-viewer.js");

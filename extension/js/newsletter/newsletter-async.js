@@ -267,23 +267,34 @@ var getHtml = new Promise(function(resolve, reject) {
 
       } else {
 
+        displayErrorMsg("missing");
+
         reject({
           status: this.status,
-          statusText: xhr.statusText
+          statusText: xhr.statusText,
         });
       }
     };
 
     xhr.onerror = function () {
 
-      console.error("error");
       reject({
         status: this.status,
-        statusText: xhr.statusText
+        statusText: xhr.statusText,
       });
     };
 
-    xhr.send();
+
+    try {
+      xhr.send();
+    }
+    catch(error) {
+
+      displayErrorMsg("fileaccess");
+      console.error(error);
+
+    }
+
 
   }
 

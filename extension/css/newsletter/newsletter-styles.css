@@ -1529,9 +1529,9 @@ body.split-view-on {
 
   transition: width .3s ease 0s;
 
-  width:360px;
+  /* width:360px;
   max-width:480px;
-  min-width:320px;
+  min-width:320px; */
 
   /*min-width:320px;
   max-width:480px;*/
@@ -1552,7 +1552,7 @@ body.split-view-on {
 
 .mobile-iframe-settings {
   display:flex;
-  min-width:320px;
+  /* min-width:320px; */
 
   /* background:rgba(255,255,255,0.05); */
   background: #36363d;

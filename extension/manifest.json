@@ -3,7 +3,7 @@
   "manifest_version": 2,
 
   "name": "Korra for Email: Design & QA Automation",
-  "version": "3.9.200",
+  "version": "3.9.300",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 
@@ -14,7 +14,7 @@
   "browser_action": {
     "default_icon": "icons/icon-192.png",
     "default_title": "Korra",
-    "default_popup": "popup.html"
+    "default_popup": "popup/popup.html"
   },
 
 
@@ -47,11 +47,9 @@
     "clipboardRead",
     "http://*/*",
     "https://*/*",
-    "*://*/*",
-    "*://*.google.com/*",
+    "file://*",
     "notifications",
-    "alarms",
-    "file:///*"
+    "alarms"
   ],
 
 
@@ -61,7 +59,7 @@
       "js/libs/chrome-storage-promise.js",
       "js/get-options.js",
       "js/global.js",
-      "js/eventPage.js"
+      "background/eventPage.js"
     ],
     "persistent": true
   },
@@ -69,7 +67,7 @@
 
 
   "options_ui": {
-    "page": "/options/options.html",
+    "page": "options/options.html",
     "open_in_tab": true
   },
 
@@ -79,12 +77,16 @@
 
 
     {
-      "matches": ["*://*/*", "file:///*"],
+      "matches": ["*://*/*"],
       "js": ["send-test/invoke-send-test.js"],
       "run_at": "document_start"
     },
 
-
+    {
+      "matches": ["*://*/*?korra=hijack"],
+      "js": ["js/localserver.js"],
+      "run_at": "document_start"
+    },
 
 
     {
