@@ -1426,7 +1426,10 @@ function validateLinks(linkObj, i) {
         if ( !/#/gi.test(linkHref) ) {
           createLinkErrorRow(linkObj, "Missing discipline in the hashtag.");
         } else {
-          if ( (emailDisc === "pt" || emailDisc === "other") && !/#\/?physical-therapy/gi.test(linkHref) ) {
+          if ( (emailDisc === "pt" ) && !/#\/?physical-therapy/gi.test(linkHref) ) {
+            createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
+          }
+          if ( (emailDisc === "other" ) && /#\/?(athletic-training|occupational-therapy|speech-language-pathology|nursing)/gi.test(linkHref) ) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
           if ( emailDisc === "at" && !/#\/?athletic-training/gi.test(linkHref) ) {

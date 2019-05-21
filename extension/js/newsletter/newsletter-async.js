@@ -77,7 +77,8 @@ var getAllOptions = new Promise((resolve, reject) => {
 
 let fileLocation, fileLocationWithoutProtocol, filename, filePath, isSavedFile, labelsAvailable;
 
-fileLocation = getParameterByName("open");
+// decode the URL located in the `open` parameter before we use it
+fileLocation = decodeURIComponent(getParameterByName("open"));
 
 if ( /^(https?|file):\/\//i.test(fileLocation) ) {
   fileLocationWithoutProtocol = fileLocation.replace(/^(https?|file)\:\/\//i,"");

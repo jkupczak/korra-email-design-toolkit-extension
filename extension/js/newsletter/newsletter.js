@@ -293,6 +293,18 @@ if ( getParameterByName("presentation") === "1" ) {
   // Reference the HTML Stage
   var htmlStage = document.querySelectorAll(".stage.html-stage")[0];
 
+  //////////////////////
+  //
+  //  Frames
+  //
+  //     -
+  //
+  //
+  //
+  //
+  //////////////////////
+
+  var frames = {};
 
   //////////////////////
   //
@@ -344,6 +356,8 @@ if ( getParameterByName("presentation") === "1" ) {
 
     // Apply the desktop iframes document object to a variable
     var dFrameContents = desktopIframe.contentDocument;
+    frames.desktop = desktopIframe;
+
     var dFrameBody = dFrameContents.body;
     var dFrameHTMLEle = dFrameContents.documentElement;
 
@@ -507,6 +521,8 @@ if ( getParameterByName("presentation") === "1" ) {
 
     // Apply the mobile iframes document object to a variable
     var mFrameContents = mobileIframe.contentDocument;
+    frames.mobile = mobileIframe;
+
     var mFrameBody = mFrameContents.body;
 
     // Quick <style> Injection
@@ -531,7 +547,7 @@ if ( getParameterByName("presentation") === "1" ) {
     var mobileIframeSetting = document.createElement("div");
     mobileIframeSetting.className = "mobile-iframe-settings";
 
-    mobileIframeSetting.innerHTML = '<div id="mobile-320" class="mobile-dim active" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>';
+    mobileIframeSetting.innerHTML = '<div id="mobile-280" class="mobile-dim" data-mobile-width="280">280</div><div id="mobile-320" class="mobile-dim active" data-mobile-width="320">320</div><div id="mobile-360" class="mobile-dim" data-mobile-width="360">360</div><div id="mobile-375" class="mobile-dim" data-mobile-width="375">375</div><div id="mobile-414" class="mobile-dim" data-mobile-width="414">414</div><div id="mobile-480" class="mobile-dim" data-mobile-width="480">480</div>';
 
     mobileIframeSetting.addEventListener("click", changeMobileSize, false);
 
@@ -3393,7 +3409,7 @@ var highlightTextErrors = function (stage) {
   //// Physical Therapy - PT
   ////
   //////////
-  if ( emailDisc === "pt" || emailDisc === "other" ) {
+  if ( emailDisc === "pt" ) {
 
     // case sensitive
     findAndReplaceDOMText(stage, {
@@ -3404,6 +3420,25 @@ var highlightTextErrors = function (stage) {
     // case (IN)sensitive
     findAndReplaceDOMText(stage, {
       find: /(BOC\-Approved|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist)))/gi,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
+
+  //////////
+  ////
+  //// Other
+  ////
+  //////////
+  } else if ( emailDisc === "other" ) {
+
+    // case sensitive
+    findAndReplaceDOMText(stage, {
+      find: /\b(ASHA|AOTA)\b/g,
+      wrap: 'span', wrapClass: "text-highlight"
+    });
+
+    // case (IN)sensitive
+    findAndReplaceDOMText(stage, {
+      find: /(BOC\-Approved|Athletic Train(er|ing)|(Physical|Occupational) (Courses?|Therap(y|ist)))/gi,
       wrap: 'span', wrapClass: "text-highlight"
     });
 
@@ -4127,8 +4162,6 @@ var syncScroll = function (targetFrame, iFrameObj) {
 window.addEventListener('visibilitychange', activatePreflightNotifier, true);
 
 var activatePreflightNotifier = function () {
-
-  // console.log("activatePreflightNotifier initiated");
 
   setTimeout(function() {
 

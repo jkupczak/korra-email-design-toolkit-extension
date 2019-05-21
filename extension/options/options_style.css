@@ -440,6 +440,18 @@ input[type="text"].xs, textarea.xs {
   width:100%;
   max-width:60px;
 }
+input[type="text"].xxs, textarea.xxs {
+  width:100%;
+  max-width:30px;
+}
+
+input[type="text"].inline {
+  margin:0 3px;
+}
+input[type="text"].center-text {
+  padding:0 1px;
+  text-align:center;
+}
 
 .confirm-input {
   display:flex;

@@ -103,13 +103,13 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
         // Is it already in chrome.storage?
         // If yes...
         if ( Object.getOwnPropertyNames(link).length > 0 ) {
-          if ( (200 <= link[linkHref]['status'] && link[linkHref]['status'] < 400) ) {
+          if ( (200 <= link[linkHref].status && link[linkHref].status < 400) ) {
             response.source      = "cache";
-            response.status      = link[linkHref]['status'];
-            response.statusText  = link[linkHref]['statusText'];
-            response.responseURL = link[linkHref]['responseURL'];
-            response.isRedirect  = link[linkHref]['isRedirect'];
-            response.timestamp   = link[linkHref]['timestamp'];
+            response.status      = link[linkHref].status;
+            response.statusText  = link[linkHref].statusText;
+            response.responseURL = link[linkHref].responseURL;
+            response.isRedirect  = link[linkHref].isRedirect;
+            response.timestamp   = link[linkHref].timestamp;
           }
         }
         // // Not in cache (yet). If this is a duplicate link it might show up in the cache soon.
@@ -150,7 +150,7 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
         processLinkStatusResponse(i, linkHref, linkObj, response, options);
 
         // Now that the response has been processed, was this link the first of other identical links?
-        if ( linkInfoArray[i]['firstInstance'] === true ) {
+        if ( linkInfoArray[i].firstInstance === true ) {
           // if so, process these results again for all other matching links in the DOM
           applyXHRResultsToDupeLinks(linkHref, response, options);
         } else {
@@ -299,8 +299,8 @@ function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
 
     // Make sure there are no overrides in place to prevent caching. Either on all links or this specific link.
     // If not, then add it to chrome.storage
-    console.log(options.sync.cacheValidLinks, response.addToCache);
-    if ( options.sync.cacheValidLinks === '1' && response.addToCache !== false ) {
+    console.log(options.sync.cacheLinksThatLoadProperly, response.addToCache);
+    if ( options.sync.cacheLinksThatLoadProperly === '1' && response.addToCache !== false ) {
       linkStorage.addLink(linkHref, response);
     } else {
     }
@@ -377,9 +377,10 @@ function createLinkStatusRow(i, linkObj, response) {
     console.error("missed");
   }
 
+  var source, sourceTime;
   // If the source is the cache
   if ( response.source == "cache" ) {
-    var source = "Cached";
+    source = "Cached";
 
     // Determine time since check/cache
     var cacheTimeString = moment().diff(moment(response.timestamp), 'days');
@@ -392,19 +393,19 @@ function createLinkStatusRow(i, linkObj, response) {
       cacheTimeString = cacheTimeString + " days ago";
     }
 
-    var sourceTime = "<korra-div id='last-checked'>" + cacheTimeString + "</korra-div>";
+    sourceTime = "<korra-div id='last-checked'>" + cacheTimeString + "</korra-div>";
 
   } else if ( response.source == "offline" ) {
-    var source = "Status";
-    var sourceTime = " not checked";
+    source = "Status";
+    sourceTime = " not checked";
   } else {
-    var source = "Checked";
-    var sourceTime = " just now";
+    source = "Checked";
+    sourceTime = " just now";
   }
 
   var statusCode = "";
   if ( response.status !== 0 && response.status !== "0" && response.status !== null ) {
-    var statusCode = "<sup>(<span id='status-code'>" + response.status + "</span>)</sup>";
+    statusCode = "<sup>(<span id='status-code'>" + response.status + "</span>)</sup>";
   }
 
   // Destroy the status container if it already exists.
@@ -443,7 +444,7 @@ function checkResponseURL(i, linkObj, response) {
 
   // Is this the homepage?
   ////////////////////////
-  if ( /Online CEUs for PT, OT, SLP, AT \| Continuing Education \| MedBridge/i.test(response.document) && /Choose your discipline to view courses\:/i.test(response.document) ) {
+  if ( /Online CEUs for PT, OT, SLP, AT \| Continuing Education \| MedBridge/i.test(response.document) && /Choose your discipline to view courses:/i.test(response.document) ) {
     response.isHomepage = true;
   } else {
     response.isHomepage = false;
@@ -457,6 +458,7 @@ function checkResponseURL(i, linkObj, response) {
   if ( linkInfoArray[i].isMedBridgeBrandLink && !linkInfoArray[i].hasTrackingLinkback && linkObj.pathname !== "/" && response.isHomepage ) {
 
     createLinkErrorRow(linkObj, "MedBridge URL does not exist.");
+    response.addToCache = false;
 
   }
 
@@ -625,7 +627,7 @@ function assignErrorRows(i, linkHref, linkObj, response) {
   }
 
   // Apply to link object data
-  linkInfoArray[i]['status'] = { "key": keyValue, "statusCode": response.status, "statusText": response.statusText, "redirected": response.isRedirect, "source": response.source, "responseURL": response.responseURL, "isHomepage": response.isHomepage, "foo": "bar" }
+  linkInfoArray[i].status = { "key": keyValue, "statusCode": response.status, "statusText": response.statusText, "redirected": response.isRedirect, "source": response.source, "responseURL": response.responseURL, "isHomepage": response.isHomepage, "foo": "bar" };
 }
 
 
@@ -637,7 +639,7 @@ function assignErrorRows(i, linkHref, linkObj, response) {
 function XHRisNecessary(options, linkHref) {
   console.log(options);
   console.log(options.sync.parseDOM);
-  if ( shouldDOMbeParsed(linkHref, options.sync.parseDOM) === '1' || options.sync.cacheValidLinks === '0' ) {
+  if ( shouldDOMbeParsed(linkHref, options.sync.parseDOM) === '1' || options.sync.cacheLinksThatLoadProperly === '0' ) {
     return true;
   }
   return false;

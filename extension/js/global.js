@@ -1186,6 +1186,18 @@ function createCopyBtn(node, stringToCopy) {
   node.classList.add("jk-hover-pointer", "jk-copy-btn");
 }
 
+/**
+ * round
+ * Rounds a number to a specified amount of digits.
+ * Use Math.round() and template literals to round the number to the specified number of digits. Omit the second argument, decimals to round to an integer.
+ * https://github.com/30-seconds/30-seconds-of-code#round
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[string]}      [description]
+ */
+const round = (n, decimals = 0) => Number(`${Math.round(`${n}e${decimals}`)}e-${decimals}`);
+
+
 // Copy to Clipboard Function
 ////
 // How it Works:

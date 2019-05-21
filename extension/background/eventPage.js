@@ -1,107 +1,22 @@
-console.log("beginning of eventPage.js");
+// @TODO - What if the user doesn't sync their storage? Do I need to code for that?
+// @TODO -
+// @TODO -
+// @TODO -
+// @TODO -
+// @TODO -
+// @TODO -
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 //
 //
-//    Startup
+//    Getting Options
 //
 //
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
-
-// Listen for installation at runtime
-chrome.runtime.onInstalled.addListener(handleInstalled);
-
-// When onInstalled is detected, do this.
-function handleInstalled(details) {
-
-  // If this is a new install...
-  if ( details.reason == 'install') {
-
-    // Set default options to storage
-    // @TODO I need to check for this value before setting the default options.
-    // If its true, we want to set the sync options with data from storage rather than using defaults
-    setDefaultOptions();
-
-    // Show start page to provide instructions
-    // showStartPage();
-
-  }
-}
-
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-//
-//
-//    Functions
-//
-//
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-
-// Function to process requests for files on dropbox.com
-///////////
-var openFromDropbox = function(details) {
-  console.log("navigated to dropbox file");
-  console.log(details);
-
-  var newUrl = details.url;
-  if ( /\?dl=1/i.test(newUrl) ) {
-    newUrl = newUrl.replace(/\?dl=1/,"?dl=0");
-  }
-  else if ( /\?dl=0/i.test(newUrl) ) {
-    // do nothing
-  }
-  else {
-    newUrl = "https://www.dropbox.com/s/" + newUrl.replace(/^.+?\/s\//i,"");
-  }
-
-  return { redirectUrl: newUrl };
-
-};
-
-// Function to process requests for files on the local harddrive
-///////////
-var openFromLocalURL = function(details) {
-  console.log("navigated to a local file");
-  console.log(details.url);
-
-  return { redirectUrl: chrome.extension.getURL('preview.html?open=') + details.url };
-};
-
-// Function to process requests for file on local servers
-///////////
-var openFromLocalServer = function(details) {
-
-    console.log("navigated to a local server");
-    console.log(details.url);
-
-    return { redirectUrl: details.url + "?korra=hijack" };
-
-    // chrome.tabs.executeScript(details.tabId, {
-    //     file: "/js/localserver.js"
-    //   },
-    //   function(results) {
-    //     console.log(results);
-    // });
-
-};
-
-var logAllRequests = function(details) {
-
-  console.log("<all_urls>", details.url, details);
-
-};
-
-
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
 
 
 // Log all data from chrome.storage.sync
@@ -284,6 +199,107 @@ var getOptions = function() {
   });
 };
 getOptions();
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//
+//    Startup
+//
+//
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+// Listen for installation at runtime
+chrome.runtime.onInstalled.addListener(handleInstalled);
+
+// When onInstalled is detected, do this.
+function handleInstalled(details) {
+
+  // If this is a new install...
+  if ( details.reason == 'install' || options.sync.defaultSyncOptionsLoaded !== 'true' ) {
+
+    // Set default options to storage
+    // @TODO I need to check for this value before setting the default options.
+    // If its true, we want to set the sync options with data from storage rather than using defaults
+    setDefaultOptions();
+
+    // Show start page to provide instructions
+    // showStartPage();
+
+  }
+}
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//
+//    Functions
+//
+//
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+// Function to process requests for files on dropbox.com
+///////////
+var openFromDropbox = function(details) {
+  console.log("navigated to dropbox file");
+  console.log(details);
+
+  var newUrl = details.url;
+  if ( /\?dl=1/i.test(newUrl) ) {
+    newUrl = newUrl.replace(/\?dl=1/,"?dl=0");
+  }
+  else if ( /\?dl=0/i.test(newUrl) ) {
+    // do nothing
+  }
+  else {
+    newUrl = "https://www.dropbox.com/s/" + newUrl.replace(/^.+?\/s\//i,"");
+  }
+
+  return { redirectUrl: newUrl };
+
+};
+
+// Function to process requests for files on the local harddrive
+///////////
+var openFromLocalURL = function(details) {
+  console.log("  > navigated to a local file, redirecting to extension page preview.html");
+  console.log("  > local URL visited:", details.url);
+  console.log("  > redirecting to:", chrome.extension.getURL('preview.html?open='));
+  console.log("  > `open` value:", encodeURIComponent(details.url));
+
+  // encode the filename, encodeURIComponent will encode everything except for ~!*()'
+  return { redirectUrl: chrome.extension.getURL('preview.html?open=') + encodeURIComponent(details.url) };
+};
+
+// Function to process requests for file on local servers
+// In order to keep the functionality of the local server, Korra handles these requests differently.
+// Instead of redirecting the whole page, Korra injects an iframe and loads the extension page inside that.
+// This keeps the user on their local server page so that things like auto-reload continue to work
+// This is done by adding ?korra=hijack to the end of the server URL on every page refresh
+// Korra see the querystring on page load and gets to work
+///////////
+var openFromLocalServer = function(details) {
+
+    console.log("  > navigated to a local server");
+    console.log("  > ", details.url);
+
+    // @TODO need to take into consideration that the server URL might already have a querystring,
+    // in which case this needs to change to "&="
+    return { redirectUrl: details.url + "?korra=hijack" };
+};
+
+var logAllRequests = function(details) {
+
+  console.log("___");
+  console.log("tracking requests made to <all_urls>, new request:", details.url, details);
+
+};
 
 
 
@@ -538,6 +554,9 @@ function setDefaultOptions(reset) {
 
   // set the default options
   chrome.storage.sync.set({
+    // Sync Saved
+    'defaultSyncOptionsLoaded': 'true',
+
     // General
     'watchedExtensions': '.html, .htm',
     'watchedFolders': '',
@@ -558,10 +577,17 @@ function setDefaultOptions(reset) {
     // Variables
 
     // Link Validation
-    'cacheValidLinks': '1',
-    'autoCheckLinks': '1',
-    'checkNoFollowLinks': '1',
-    'parseDOM': '1',
+
+        // General
+        'autoCheckLinks': '1',
+        'checkNoFollowLinks': '1',
+
+        // Format Validation
+
+        // Loading Validation
+        'cacheValidLinks': '1',
+        'parseDOM': '1',
+        'clearCacheAfterXDays': '1',
 
     // Code Validation
 

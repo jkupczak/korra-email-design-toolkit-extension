@@ -148,6 +148,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ///////////////
 ///////////////
+//
+// Send a Test Email from Pasted Code
+//
+///////////////
 ///////////////
 document.getElementById("sent-test").addEventListener("click", function() {
 
@@ -157,6 +161,80 @@ document.getElementById("sent-test").addEventListener("click", function() {
 
 
 ///////////////
+///////////////
+//
+// Open Local File
+//
+///////////////
+///////////////
+document.getElementById("open-local-file").addEventListener("click", function() {
+
+  openLocalFile( document.getElementById("local-file-url").value );
+
+}, false);
+
+var openLocalFile = function(url) {
+  console.log(url);
+
+  var bkg = chrome.runtime.getBackgroundPage(function(bkg){
+
+    chrome.tabs.create({
+      url: 'preview.html?open=' + encodeURIComponent(url)
+    }, callback);
+
+    function callback(data) {
+      console.log(data);
+    }
+
+  });
+
+};
+
+///////////////
+///////////////
+//
+// Open Current Tab in Korra
+//
+///////////////
+///////////////
+document.getElementById("open-current-tab").addEventListener("click", function() {
+
+  openCurrentTab();
+
+}, false);
+
+var openCurrentTab = function() {
+
+  var query = { active: true, currentWindow: true };
+  function callback(tabs) {
+    var currentTab = tabs[0]; // there will be only one in this array
+    console.log(currentTab); // also has properties like currentTab.id
+
+    var bkg = chrome.runtime.getBackgroundPage(function(bkg){
+
+      // chrome.tabs.create({
+      //   url: 'preview.html?open=' + encodeURIComponent(currentTab.url)
+      // }, callback);
+      chrome.tabs.update({
+        url: 'preview.html?open=' + encodeURIComponent(currentTab.url)
+      }, callback);
+
+      function callback(data) {
+        console.log(data);
+      }
+
+    });
+
+  }
+  chrome.tabs.query(query, callback);
+
+}
+
+///////////////
+///////////////
+//
+// Open Preview from Pasted Code
+//
 ///////////////
 ///////////////
 document.getElementById("preview-email").addEventListener("click", function() {

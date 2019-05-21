@@ -744,20 +744,19 @@
 
 
 								<div class="option-group checkbox">
-									<input data-autosave="true" type="checkbox" name="autoCheckLinks" id="autoCheckLinks" value="1" checked>
-									<label for="autoCheckLinks">
-										Automatically validate links on page load
+									<input data-autosave="true" type="checkbox" name="autoCheckLinkFormatting" id="autoCheckLinkFormatting" value="1" checked>
+									<label for="autoCheckLinkFormatting">
+										Automatically validate link formatting
 									</label>
-									<div class="option-desc">Automatically validate all links in an email as soon as its loaded. You can manually check or re-check your links without reloading on a per-email basis from within the email you're previewing.</div>
+									<div class="option-desc">Automatically validate the formatting of all links in an email as soon as you open it. If you disable this you can still manually check or re-check your links without reloading on a per-email basis from within the email you're previewing.</div>
 								</div>
 
 								<div class="option-group checkbox">
-									<input data-autosave="true" type="checkbox" name="cacheValidLinks" id="cacheValidLinks" value="1" checked>
-									<label for="cacheValidLinks">
-										Cache valid links
+									<input data-autosave="true" type="checkbox" name="autoCheckLinksLoad" id="autoCheckLinksLoad" value="1" checked>
+									<label for="autoCheckLinksLoad">
+										Automatically validate that links load properly
 									</label>
-									<div class="option-desc">If you don't want to revalidate good links over and over again, enable this setting to force Korra to only validate new links or links that failed to pass all validation rules on a previous check. Links are cached on a per-email basis. Identical links in separate emails will both be checked even if one is already cached.<br><br>You can recheck cached links at any time by clearing the cache of all links related to the email you're currently previewing from within the email preview UI. You can also clear Korra's entire cache of valid links with the button below.</div>
-									<button id="clearCache"><div>Clear all links in cache</div></button>
+									<div class="option-desc">Automatically validate that all links load properly in an email as soon as you open it. If you disable this you can still manually check or re-check your links without reloading on a per-email basis from within the email you're previewing.</div>
 								</div>
 
 								<div class="option-group textarea">
@@ -856,6 +855,25 @@
 										Hashtags can link to elements on the destination page by their <code>id</code> attribute. For example, <code>&lt;a href=&quot;page2.html#elementID&quot;&gt;Link&lt;/a&gt;</code> would link to an scroll to an element with <code>id="elementID"</code> when the page has loaded. Enabling this will allow Korra to automatically check that all links with hastags have a matching element. When enabled, if the page loads but the corresponding element is not found, the link will be marked with a warning. <br>
 										<strong>Request Type: GET is required</strong>
 									</div>
+								</div>
+
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="cacheLinksThatLoadProperly" id="cacheLinksThatLoadProperly" value="1" checked>
+									<label for="cacheLinksThatLoadProperly">
+										Cache links that load properly
+									</label>
+									<div class="option-desc">
+										<p>If you don't want to open links in the background over and over again, enable this setting to force Korra to only load new links or links that failed to load on a previous check. Links are cached on a per-email basis. Identical links in separate emails will both be checked even if one is already cached.</p>
+									</div>
+
+									Automatically clear links from cache after <input type="text" data-autosave="true" name="clearCacheAfterXDays" class="xxs inline center-text" value="1"> day(s).
+
+									<div class="option-desc">
+										<p>You can recheck cached links at any time by clearing the cache of all links related to the email you're currently previewing from within the email preview UI. You can also clear Korra's entire cache of valid links with the button below.</p>
+									</div>
+
+									<button id="clearCache"><div>Clear all links in cache</div></button>
 								</div>
 
 							</div>

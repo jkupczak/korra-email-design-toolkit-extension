@@ -21,10 +21,10 @@
  * @return {[type]}      [description]
  */
 function sendEmail(html, text) {
-  console.log(exOptions.mailgunApiKey);
+  console.log(options.sync.mailgunApiKey);
   // console.log(mailgunApiKey);
 
-  var emailTo      = "Korra via Mailgun <postmaster@" + exOptions.mailgunDomainName + ">";
+  var emailTo      = "Korra via Mailgun <postmaster@" + options.sync.mailgunDomainName + ">";
   var emailFrom    = "james@medbridgeed.com";
   var emailSubject = "Hello from Korra & Mailgun";
 
@@ -57,7 +57,7 @@ function sendEmail(html, text) {
     }
   });
 
-  xhr.open("POST", "https://api:" + exOptions.mailgunApiKey + "@api.mailgun.net/v3/" + exOptions.mailgunDomainName + "/messages");
+  xhr.open("POST", "https://api:" + options.sync.mailgunApiKey + "@api.mailgun.net/v3/" + options.sync.mailgunDomainName + "/messages");
   xhr.setRequestHeader("cache-control", "no-cache");
   xhr.setRequestHeader("postman-token", "0a3ad9d5-22b5-6308-d6e7-59f66360fa26");
 

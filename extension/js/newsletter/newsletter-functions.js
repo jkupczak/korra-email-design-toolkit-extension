@@ -526,26 +526,27 @@ function createImgInfoArray(imgList) {
   // Later on when the page is finished loading another function will run that will get that data.
   // Code taken from: https://blog.crimx.com/2017/03/09/get-all-images-in-dom-including-background-en/
 
-              // const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i
-              // Array.from(
-              //   Array.from(dFrameContents.querySelectorAll('*'))
-              //     .reduce((collection, node) => {
-              //       // https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle
-              //       let prop = window.getComputedStyle(node, null)
-              //         .getPropertyValue('background-image')
-              //       // match `url(...)`
-              //       let match = srcChecker.exec(prop)
-              //       if (match) {
-              //         // collection.add(match[1])
-              //         var singleBkgImgInfoArray = {}; // object that we will use to hold data about this specific image
-              //         singleBkgImgInfoArray['object'] = node; //img object
-              //         singleBkgImgInfoArray['url'] = match[1]; //img url
-              //         singleBkgImgInfoArray['presentation'] = "background-img"; //kind (background-image)
-              //         imgInfoArray.push(singleBkgImgInfoArray); // add it to the master img array
-              //       }
-              //       return collection
-              //     }, new Set())
-              // );
+  const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
+
+  Array.from(
+    Array.from(dFrameContents.querySelectorAll('*'))
+      .reduce((collection, node) => {
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle
+        let prop = window.getComputedStyle(node, null)
+          .getPropertyValue('background-image');
+        // match `url(...)`
+        let match = srcChecker.exec(prop);
+        if (match) {
+          // collection.add(match[1])
+          var singleBkgImgInfoArray = {}; // object that we will use to hold data about this specific image
+          singleBkgImgInfoArray.object = node; //img object
+          singleBkgImgInfoArray.url = match[1]; //img url
+          singleBkgImgInfoArray.presentation = "background-img"; //kind (background-image)
+          imgInfoArray.push(singleBkgImgInfoArray); // add it to the master img array
+        }
+        return collection;
+      }, new Set())
+  );
 
   // We're done creating our image array. More data will be added later once the page is finished loading.
   // For now lets log it since it's been created successfully.
@@ -602,7 +603,7 @@ function getImgSizes(imgInfoArray) {
 
   }
 
-  // While we're fetching <img> image data, lets load the background images into the DOM so that we can height their width and height.
+  // While we're fetching <img> image data, lets load the background images into the DOM so that we can get their width and height.
   // I don't think I need to wait for page load to be doing this, but I experienced trouble adding this earlier.
   // Try again at a later date I guess.
   var j = 0;
@@ -1003,6 +1004,64 @@ var logAccessibilityWarning = function(object, id) {
   updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings, " Accessibility Warnings");
 };
 
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+
+const obscureCodeFromString = function(string) {
+
+  let imgUrls   = [];
+  let bgImgUrls = [];
+  let linkUrls  = [];
+
+
+
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+
+const obscureCodeFromDOM = function(string) {
+
+  let imgUrls   = [];
+  let bgImgUrls = [];
+  let linkUrls  = [];
+
+
+
+}
+
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -1023,5 +1082,447 @@ var logAccessibilityWarning = function(object, id) {
  * @return {[type]}      [description]
  */
 var fileNotFound = function() {
+
+};
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+///// Get background image URLS
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+// https://blog.crimx.com/2017/03/09/get-all-images-in-dom-including-background-en/
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+
+function loadImg (src, timeout = 500) {
+  var imgPromise = new Promise((resolve, reject) => {
+    let img = new Image();
+    img.onload = () => {
+      resolve({
+        src: src,
+        width: img.naturalWidth,
+        height: img.naturalHeight
+      });
+    };
+    img.onerror = reject;
+    img.src = src;
+  });
+  var timer = new Promise((resolve, reject) => {
+    setTimeout(reject, timeout);
+  });
+  return Promise.race([imgPromise, timer]);
+}
+
+function loadImgAll (imgList, timeout = 500) {
+  return new Promise((resolve, reject) => {
+    Promise.all(
+      imgList
+        .map(src => loadImg(src, timeout))
+        .map(p => p.catch(e => false))
+    ).then(results => resolve(results.filter(r => r)));
+  });
+}
+
+// loadImgAll(getBgImgs(dFrameContents)).then(imgs => console.log(imgs));
+
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+///// Get background image URLS
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+
+ function getBgImgs (doc) {
+  const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
+  return Array.from(
+    Array.from(doc.querySelectorAll('*'))
+      .reduce((collection, node) => {
+        let prop = window.getComputedStyle(node, null)
+          .getPropertyValue('background-image');
+        // match `url(...)`
+        let match = srcChecker.exec(prop);
+        if (match) {
+          collection.add(match[1]);
+        }
+        return collection;
+      }, new Set())
+  );
+}
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+///// Create Placeholder Images
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[object]} options [description]
+ * @return {[type]}      [description]
+ */
+
+var createPlaceholderImage = function(object, color, showDims) {
+
+  let newImgUrl = "https://via.placeholder.com/" + object.width + "x" + object.height + "/" + color;
+
+  // toggle showing the image dims
+  if ( showDims) {
+    newImgUrl = newImgUrl + "?text=%20";
+  }
+
+  return newImgUrl;
+
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+///// Convert Colors
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[object]} options [description]
+ * @return {[type]}      [description]
+ */
+
+/////
+function hexToHsl(hex) {
+
+  return rgbToHsl(hexToRgb(hex));
+
+}
+
+/////
+function hexToRgb(hex) {
+  var r = parseInt(hex.substr(1,2), 16); // Grab the hex representation of red (chars 1-2) and convert to decimal (base 10).
+  var g = parseInt(hex.substr(3,2), 16);
+  var b = parseInt(hex.substr(5,2), 16);
+
+  return [r, g, b];
+}
+
+/////
+function rgbToHsl(r, g, b){
+   r /= 255, g /= 255, b /= 255;
+   var max = Math.max(r, g, b), min = Math.min(r, g, b);
+   var h, s, l = (max + min) / 2;
+
+   if(max == min){
+       h = s = 0; // achromatic
+   }else{
+       var d = max - min;
+       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+       switch(max){
+           case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+           case g: h = (b - r) / d + 2; break;
+           case b: h = (r - g) / d + 4; break;
+       }
+       h /= 6;
+   }
+
+   return [h, s, l];
+}
+
+/////
+function rgbToHex(r, g, b) {
+    return ((1 << 24) + (parseInt(r) << 16) + (parseInt(g) << 8) + parseInt(b)).toString(16).slice(1);
+}
+
+/////
+function hslToHex(h, s, l) {
+ h /= 360;
+ s /= 100;
+ l /= 100;
+ let r, g, b;
+ if (s === 0) {
+   r = g = b = l; // achromatic
+ } else {
+   const hue2rgb = (p, q, t) => {
+     if (t < 0) t += 1;
+     if (t > 1) t -= 1;
+     if (t < 1 / 6) return p + (q - p) * 6 * t;
+     if (t < 1 / 2) return q;
+     if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+     return p;
+   };
+   const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+   const p = 2 * l - q;
+   r = hue2rgb(p, q, h + 1 / 3);
+   g = hue2rgb(p, q, h);
+   b = hue2rgb(p, q, h - 1 / 3);
+ }
+ const toHex = x => {
+   const hex = Math.round(x * 255).toString(16);
+   return hex.length === 1 ? '0' + hex : hex;
+ };
+ return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+/**
+ * Converts an HSL color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+ * Assumes h, s, and l are contained in the set [0, 1] and
+ * returns r, g, and b in the set [0, 255].
+ *
+ * @param   {number}  h       The hue
+ * @param   {number}  s       The saturation
+ * @param   {number}  l       The lightness
+ * @return  {Array}           The RGB representation
+ */
+function hslToRgb(h, s, l){
+  var r, g, b;
+
+  if(s == 0){
+      r = g = b = l; // achromatic
+  } else {
+      var hue2rgb = function hue2rgb(p, q, t){
+          if(t < 0) t += 1;
+          if(t > 1) t -= 1;
+          if(t < 1/6) return p + (q - p) * 6 * t;
+          if(t < 1/2) return q;
+          if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+      }
+
+      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      var p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+  }
+
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
+/**
+ * https://www.sitepoint.com/javascript-generate-lighter-darker-color/
+ * -
+ * In essence, the first three lines clean the string and expand 3-digit hex codes to a full 6-digit representation.
+ * The loop extracts the red, green and blue values in turn, converts them to decimal, applies the luminosity factor,
+ * and converts them back to hexadecimal.
+ * -
+ * ColorLuminance accepts two parameters:
+ *  - hex - a hex color value such as "#abc" or "#123456" (the hash is optional)
+ *  - lum - the luminosity factor, i.e. -0.1 is 10% darker, 0.2 is 20% lighter, etc.
+ */
+
+function ColorLuminance(color, lum) {
+
+  // if it's an object, its rgb. convert it to a hex
+  let hex;
+  if ( typeof color === 'object' && color !== null ) {
+    hex = ((1 << 24) + (color[0] << 16) + (color[1] << 8) + color[2]).toString(16).slice(1);
+  } else {
+    hex = color;
+  }
+
+	// validate hex string
+	hex = String(hex).replace(/[^0-9a-f]/gi, '');
+	if (hex.length < 6) {
+		hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+	}
+	lum = lum || 0;
+
+	// convert to decimal and change luminosity
+	var adjustedHex = "", c, i;
+	for (i = 0; i < 3; i++) {
+		c = parseInt(hex.substr(i*2,2), 16);
+		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+		adjustedHex += ("00"+c).substr(c.length);
+	}
+
+	return adjustedHex;
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+///// Replace images with placeholders
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[object]} options [description]
+ * @return {[type]}      [description]
+ */
+var swapInPlaceholderImages = function(options) {
+
+	// Default settings
+	var defaults = {
+		targets: frames,
+
+    inheritImgColor: true, // inherit pulls from the background color of the image if declared
+    imgColor: 'CCCCCC', // hex code with no hash, 'randomize', [CCCCCC, 'randomize', 0.1] (randomize the colors up and down 10%)
+
+    inheritBgColor: true, // inherit pulls from the background color of the element if declared
+    bgColor: 'bebebe', // no hash
+
+    randomizeColorRange: -0.1, // false or decimal (randomly selects a brightness within that range up or down)
+
+    imgDims: 'natural', // computed or natural
+    showDims: false // true or false
+	};
+	// Merged settings
+	var settings = Object.assign({}, defaults, options);
+
+
+  // function to check if rgba is transparent
+  let isTransparent = function(rgba) {
+
+    if ( rgba[3] === "0" ) {
+      return true;
+    }
+
+    return false;
+
+  }
+
+
+
+  ////
+  let convertRgbaToObject = function(rgba) {
+
+    return rgba.replace(/[^0-9,]/gi,"").split(",");
+
+  }
+
+
+
+  // function to generate a color
+  let getColor = function(img) {
+
+    // use the fallback color
+    let color = settings.imgColor;
+
+    // do we need to bother checking for the images background color?
+    // if yes, find it and change the color we just set
+    if ( settings.inheritImgColor ) {
+      let computedColor = window.getComputedStyle(img, null).getPropertyValue('background-color');
+
+      // chrome returns computed colors as rgb or rgba. turn this into an object we can use
+      let rgbaObject = convertRgbaToObject(computedColor);
+      console.log(rgbaObject);
+
+      // if the image has a color and it's not 0 opacity, use it
+      if ( computedColor !== "rgba(0, 0, 0, 0)" && computedColor !== "transparent" && !isTransparent(rgbaObject) ) {
+
+        console.log("!", color);
+        console.log("!", rgbaObject[0], rgbaObject[1], rgbaObject[2]);
+        color = rgbToHex(rgbaObject[0], rgbaObject[1], rgbaObject[2]);
+        console.log("!", color);
+      }
+
+      // couldn't find a solid image color, we're safe to apply a random luminance if we want
+      else {
+
+        if ( settings.randomizeColorRange ) {
+          color = ColorLuminance(color, settings.randomizeColorRange);
+        }
+
+      }
+    }
+
+
+    console.log( color );
+
+    return color;
+
+  }
+
+  // function for getting the image dims
+  let getSize = function(img, type) {
+
+    let dims = {};
+
+    if ( type === 'natural' ) {
+      dims.width =  img.naturalWidth;
+      dims.height = img.naturalHeight;
+    }
+
+    // use computed style if it was requested or if naturalWidth came back as 0
+    if ( dims.width === 0 || type === 'computed' ) {
+      let imgStyles = window.getComputedStyle(img);
+      dims.width =  round( parseInt(imgStyles.getPropertyValue("width").replace(/[A-Za-z]/g,""))  );
+      dims.height = round( parseInt(imgStyles.getPropertyValue("height").replace(/[A-Za-z]/g,"")) );
+    }
+
+    return dims;
+
+  };
+
+
+  // Loop through all target frames
+  Object.keys(settings.targets).forEach(function (item) {
+
+    // images first
+    let imgs = settings.targets[item].contentDocument.querySelectorAll("img");
+    imgs.forEach(function (img, index) {
+
+      // get the image dims
+      let dims = getSize(img, settings.imgDims);
+
+      // get the color
+      let color = getColor(img);
+
+      // create image url
+      let newImgUrl = createPlaceholderImage(dims, color, showDims);
+
+      // set new url
+      img.src = newImgUrl;
+
+    });
+
+    // background images second
+    let bgImgs = getBgImgs(settings.targets[item].contentDocument);
+    console.log(bgImgs);
+
+  });
+
 
 };
