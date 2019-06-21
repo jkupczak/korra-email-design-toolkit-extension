@@ -316,30 +316,26 @@ Promise.all([getAllOptions, getHtml]).then(function(values) {
 
         var editorPath = "";
 
-        // if ( typeof exOptions.openInEditor !== 'undefined' ) {
-
           var openInEditorLink = document.createElement("a");
           openInEditorLink.classList.add("main-pane-extra-btn", "open-in-editor-btn");
-          openInEditorLink.innerHTML = "Open in Editor";
           stagePreviewBtns.insertAdjacentElement('afterend',openInEditorLink);
 
           if ( options.sync.openInEditor === "atom" ) {
-             editorPath = 'atom://open?url=';
-             openInEditorLink.href = editorPath + fileLocation;
+            openInEditorLink.innerHTML = "Open in Atom";
+            editorPath = 'atom://open?url=';
+            openInEditorLink.href = editorPath + fileLocation;
 
           } else if ( options.sync.openInEditor === "sublime" ) {
+            openInEditorLink.innerHTML = "Open in Sublime Text";
             editorPath = 'subl://open?url=';
             openInEditorLink.href = editorPath + fileLocation;
 
           } else if ( options.sync.openInEditor === "vscode" ) {
+            openInEditorLink.innerHTML = "Open in VS Code";
             editorPath = 'vscode://file/';
             openInEditorLink.href = editorPath + fileLocation.replace(/^file:\/\//i,"");
 
           }
-
-
-        // }
-
 
     }, 1000);
 

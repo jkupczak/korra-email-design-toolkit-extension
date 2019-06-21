@@ -333,6 +333,8 @@ if ( getParameterByName("presentation") === "1" ) {
     var desktopIframe = document.createElement("iframe");
     desktopIframe.className = "iframe-desktop-view";
     desktopIframe.id = "desktop-view";
+    desktopIframe.sandbox = "allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox";
+    desktopIframe.src = "about:blank";
     desktopIframeParent.appendChild(desktopIframe);
     desktopIframeResizeWrapper.appendChild(desktopIframeParent);
 
@@ -360,6 +362,9 @@ if ( getParameterByName("presentation") === "1" ) {
 
     var dFrameBody = dFrameContents.body;
     var dFrameHTMLEle = dFrameContents.documentElement;
+
+    // Activate spellcheck in dFrame by turning designmode on
+    activateSpellcheck(dFrameContents);
 
     // Get all images
     let imgList = dFrameContents.images; // better?
@@ -511,6 +516,8 @@ if ( getParameterByName("presentation") === "1" ) {
     var mobileIframe = document.createElement("iframe");
     mobileIframe.className = "iframe-mobile-view";
     mobileIframe.id = "mobile-view";
+    mobileIframe.sandbox = "allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox";
+    mobileIframe.src = "about:blank";
     mobileIframeParent.appendChild(mobileIframe);
     mobileDeviceWrapper.appendChild(mobileIframeParent);
 
@@ -524,6 +531,9 @@ if ( getParameterByName("presentation") === "1" ) {
     frames.mobile = mobileIframe;
 
     var mFrameBody = mFrameContents.body;
+
+    // Activate spellcheck by turning designmode on
+    activateSpellcheck(mFrameContents);
 
     // Quick <style> Injection
     //
@@ -1814,12 +1824,18 @@ var editToggle = false;
 
 function editEmail() {
   editToggle = !editToggle;
-  var editDesktop = dFrameContents.getElementsByTagName('html')[0].contentEditable = editToggle;
-  var editMobile  = mFrameContents.getElementsByTagName('html')[0].contentEditable = editToggle;
+
+  toggleDesignMode(dFrameContents);
+  toggleDesignMode(mFrameContents);
+
+  // var editDesktop = dFrameContents.getElementsByTagName('html')[0].contentEditable = editToggle;
+  // var editMobile  = mFrameContents.getElementsByTagName('html')[0].contentEditable = editToggle;
+
   desktopIframeWrapper.classList.toggle("editing");
   mobileIframeParent.classList.toggle("editing");
   document.getElementById("edit-orb").classList.toggle("on");
-  dFrameBody.focus();
+  // dFrameBody.focus();
+  
 }
 
 

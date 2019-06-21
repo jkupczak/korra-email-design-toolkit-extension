@@ -1056,6 +1056,12 @@ function validateLinks(linkObj, i) {
 
     ////-----------------------------////
     ////
+    if ( /google\.com\/url\?/gi.test(linkHref) ) {
+      createLinkErrorRow(linkObj, "This looks like a Google redirect.");
+    }
+
+    ////-----------------------------////
+    ////
     if ( linkNeedsPromoCode ) {
 
       // Links to MedBridge in -ns emails need to use a marketing URL
@@ -1256,7 +1262,7 @@ function validateLinks(linkObj, i) {
     if ( singleLinkInfoArray.contentLinked === 'mixed' || singleLinkInfoArray.contentLinked === 'text' ) {
 
       // Request a Demo
-      if ( ( /(Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref) ) || (!/(Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
+      if ( ( /(Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(linkObj.textContent) && !/#request\-a\-demo/i.test(linkHref) ) || (!/(form|schedule time|(Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)/gi.test(linkObj.textContent) && /#request\-a\-demo/i.test(linkHref)) ) {
         createLinkErrorRow(linkObj, "Text and URL are inconsistent (Demo Request related).");
       }
       // Request EMR Integration

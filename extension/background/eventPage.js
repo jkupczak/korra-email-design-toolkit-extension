@@ -315,7 +315,7 @@ var logAllRequests = function(details) {
 var openOptionsTab = function(options) {
 
   var defaults = {
-		url: chrome.extension.getURL('options.html')
+		url: chrome.extension.getURL('/options/options.html')
 	};
 
   if ( options.shortcut ) {

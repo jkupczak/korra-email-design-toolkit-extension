@@ -38,8 +38,8 @@
 
 .CodeMirror-overlayscroll-horizontal div, .CodeMirror-overlayscroll-vertical div {
   position: absolute;
-  background: #bcd;
-  border-radius: 3px;
+  background: #6e7f90; /* MODDED */
+  /* border-radius: 4px; */ /* MODDED */
 }
 
 .CodeMirror-overlayscroll-horizontal, .CodeMirror-overlayscroll-vertical {
@@ -49,7 +49,7 @@
 
 .CodeMirror-overlayscroll-horizontal {
   bottom: 0; left: 0;
-  height: 6px;
+  height: 8px; /* MODDED */
 }
 .CodeMirror-overlayscroll-horizontal div {
   bottom: 0;
@@ -58,7 +58,7 @@
 
 .CodeMirror-overlayscroll-vertical {
   right: 0; top: 0;
-  width: 6px;
+  width: 8px; /* MODDED */
 }
 .CodeMirror-overlayscroll-vertical div {
   right: 0;
