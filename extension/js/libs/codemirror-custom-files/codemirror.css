@@ -1,0 +1,31 @@
+.CodeMirror-dialog.CodeMirror-dialog-top {
+  background: #5a3e94;
+  border-radius:6px;
+  top: 15px;
+  right: 30px;
+  left: auto;
+  box-shadow: 0 3px 3px 0px rgba(0,0,0,0.2), 0 0 10px 0 rgba(0,0,0,0.1);
+  border:0;
+  padding:0;
+}
+
+.CodeMirror-search-field {
+  color:#fff;
+  font-family: Roboto, sans-serif !important;
+  width:300px;
+  font-size:16px;
+  padding: 20px;
+  line-height:20px;
+}
+
+/* default tag matching background color does not match our Korra theme */
+.CodeMirror-matchingtag {
+  background: rgb(199, 207, 233, .22);
+}
+
+/* trailing space addon does not come with built-in CSS. It only adds a class. So here's our style for it. */
+.cm-trailingspace {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUXCToH00Y1UgAAACFJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==);
+  background-position: bottom left;
+  background-repeat: repeat-x;
+}

@@ -164,6 +164,7 @@ function KeyPress(e) {
 
 var activateSpellcheck = function(frame) {
 
+  console.log("activating spellcheck");
   frame.designMode = 'on';
   frame.body.focus();
   setTimeout(function(){
@@ -463,7 +464,11 @@ function createImgInfoArray(imgList) {
 
       var i = 0;
 
+      console.log(imgList);
+      console.log(imgInfoArray);
       for (let img of imgList) {
+
+        console.log(imgInfoArray[i]);
 
         // Check if image is broken
         if ( img.naturalWidth === 0 && img.naturalHeight === 0 ) {
@@ -777,20 +782,6 @@ function loadIframe(iframe, html, base, name) {
   iframe.contentWindow.document.write(html);
   iframe.contentWindow.document.close();
 
-  // Add <base>
-  // Forces all links within the iFrame to open in their own separate tabs.
-  // <base target="_blank" />
-
-  if ( name ) {
-    iframe.contentDocument.documentElement.classList.add("toolkit-frame-" + name);
-  }
-
-  if ( base ) {
-    var linkTarget = document.createElement("base");
-    linkTarget.target = "_blank";
-    iframe.contentDocument.head.append(linkTarget);
-  }
-
 }
 
 
@@ -850,7 +841,7 @@ var errorLog = function(type, string) {
 
   console.log(string);
   console.log(escapeXml(string));
-  errorLogRows.insertAdjacentHTML("beforeend", "<div class='error-log-row log-type-" + type + "'>" + escapeXml(string) + "");
+  // errorLogRows.insertAdjacentHTML("beforeend", "<div class='error-log-row log-type-" + type + "'>" + escapeXml(string) + "");
 
 };
 
@@ -970,6 +961,11 @@ function updatePreflightErrorTotal(type, i) {
       viewCodeBtn.classList.add("active");
       viewHtmlBtn.classList.remove("active");
 
+      // toggle tracking of visibility
+      visibleStages.code = true;
+      visibleStages.desktop = false;
+      visibleStages.mobile = false;
+
       // activateCodeStage();
     }
     else {
@@ -978,6 +974,11 @@ function updatePreflightErrorTotal(type, i) {
 
       viewHtmlBtn.classList.add("active");
       viewCodeBtn.classList.remove("active");
+
+      // toggle tracking of visibility
+      visibleStages.code = false;
+      visibleStages.desktop = true;
+      visibleStages.mobile = true;
     }
 
 
@@ -1020,7 +1021,7 @@ var logCodeBug = function(object, client, errorText, type) {
   console.error("Coding Bug:", client, errorText, object);
   errorLog("warning", errorText );
   totalCodingBugs++;
-  updateQaBar(codingBugsQaBar, totalCodingBugs, " Bugs Found");
+  // updateQaBar(codingBugsQaBar, totalCodingBugs, " Bugs Found");
 };
 
 
@@ -1251,6 +1252,70 @@ var createPlaceholderImage = function(object, color, showDims) {
   return newImgUrl;
 
 }
+
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+///// Handle Escapes
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[object]} options [description]
+ * @return {[type]}      [description]
+ */
+
+var handleEscape = function() {
+
+  // if (  ) {
+  //
+  // }
+
+};
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+///// Toggle Info Layer
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * [someFunction description]
+ * @param  {[object]} options [description]
+ * @return {[type]}      [description]
+ */
+
+var toggleInfoLayer = function(intent) {
+
+  console.log("toggling info layer");
+
+  if (!intent) {
+    document.getElementById("info-overlay").style.display = document.getElementById("info-overlay").style.display === 'none' ? '' : 'none';
+    console.log("toggled");
+  }
+  else if ( intent === "hide" ) {
+    document.getElementById("info-overlay").style.display = 'none';
+    console.log("hidden");
+  }
+  else {
+    document.getElementById("info-overlay").style.display = '';
+    console.log("revealed");
+  }
+
+};
 
 ///////////////////////////////////////
 ///////////////////////////////////////

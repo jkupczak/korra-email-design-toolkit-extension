@@ -70,7 +70,20 @@ var getOptions = function() {
               types: ['main_frame']
             }
           );
-          console.log("initiated webRequest listener for EVERYTHING");
+          console.log("initiated webRequest listener for EVERYTHING in main_frame");
+
+          //  === DEPRECATED
+          //  === Briefly used to overwrite requests for images at relative URLs.
+          // webRequest Listener
+          ///////////////////////////
+              // chrome.webRequest.onBeforeRequest.addListener( imageRequests,
+              //   {
+              //     urls: [chrome.extension.getURL('*')],
+              //     types: ['image']
+              //     },
+              //     ['blocking']
+              // );
+              // console.log("initiated webRequest listener for images,", [chrome.extension.getURL('*')]);
 
           /////////////////////////
           //
@@ -297,9 +310,55 @@ var openFromLocalServer = function(details) {
 var logAllRequests = function(details) {
 
   console.log("___");
-  console.log("tracking requests made to <all_urls>, new request:", details.url, details);
+  console.log("tracking requests made to <all_urls> in the main_frame, new request:", details.url, details);
 
 };
+
+//  === DEPRECATED
+//  === Briefly used to overwrite requests for images at relative URLs.
+////////
+//
+//  This function helps us support relative image URLs.
+//
+//  By default relative image URLs don't work in Korra because we load the users HTML in an iframe with the src "about:blank".
+//  We need to do this so that we can freely modify the code as we see fit.
+//  The downside is that since the src is not a valid address, the origin of the iframe is "chrome-extension://...."
+//  Relative images will use this origin instead of the file system path.
+//  The solution we came up with was to block image requests in the background and then rewrite the URL.
+//  This method does not support relative images links that use ../../ to go up the folder structure.
+//  This function relies on a webRequest event listener.
+//  ---
+//  This function only fires on webrequests where the URL requested is the Extension protocol + the unique ID.
+//  ---
+//  See this issue on Github:
+//  https://github.com/jkupczak/korra-email-design-toolkit-extension/issues/94
+//
+
+    // var imageRequests = function(details) {
+    //
+    //   var newUrl;
+    //
+    //   console.log( details.tabId );
+    //   console.log( tabInfo[details.tabId] );
+    //
+    //   // Determine if this came from an iframe inside of the Korra extension page.
+    //   if ( details.parentFrameId === 0 ) {
+    //
+    //     console.log("___");
+    //     console.log("tracking requests made to <all_urls> for images, new request:", details.url, details);
+    //
+    //     newUrl = "file://" + tabInfo[details.tabId].filePath + "/" + details.url.replace(/chrome\-extension\:\/\/.*?\//i, "");
+    //
+    //   }
+    //
+    //   // If it didn't, then this is just Korra requesting its own images. We don't need to change the URL.
+    //   else {
+    //     newUrl = details.url;
+    //   }
+    //
+    //   return { redirectUrl: newUrl };
+    //
+    // };
 
 
 
@@ -720,6 +779,16 @@ function showStartPage() {
 /////////////////////////////////////////////////
 
 
+// Variables
+var tabInfo = {};
+var saveTabInfo = function(tabId, data) {
+
+  tabInfo[tabId] = data;
+
+  console.log(tabInfo);
+
+};
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
@@ -742,6 +811,11 @@ chrome.runtime.onMessage.addListener(
     ////
     if (request.cmd === "shutdown") {
       sendResponse({farewell: "goodbye"});
+    }
+
+    ////
+    if (request.type === "tabInfo") {
+      saveTabInfo(sender.tab.id, request.data);
     }
 
     ////////////////////

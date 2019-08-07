@@ -3,7 +3,8 @@
   "manifest_version": 2,
 
   "name": "Korra for Email: Design & QA Automation",
-  "version": "3.9.400",
+  "short_name": "Korra Email QA",
+  "version": "3.9.450",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 

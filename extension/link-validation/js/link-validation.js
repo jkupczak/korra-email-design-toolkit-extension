@@ -1535,7 +1535,8 @@ function validateLinks(linkObj, i) {
 
     ////
     // Do not link to medbridgeed.com. Use the full medbridgeeducation.com URL.
-    if ( /(\:\/\/|\.)medbridgeed\.com/gi.test(linkHref) ) {
+    // Unless it starts with enterprise\.
+    if ( /(\:\/\/|\.)medbridgeed\.com/gi.test(linkHref) && !/\:\/\/enterprise\.medbridgeed\.com/gi.test(linkHref) ) {
       createLinkErrorRow(linkObj, "Use medbridgeeducation.com");
     }
 

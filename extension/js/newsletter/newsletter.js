@@ -246,6 +246,12 @@ if ( getParameterByName("presentation") === "1" ) {
   ////
   /////////
 
+  // object that remembers what stages are currently visible.
+  var visibleStages = {
+    'code': false,
+    'desktop': true,
+    'mobile': true
+  }
 
   var stagePreviewBtns = document.createElement("div");
   stagePreviewBtns.classList.add("stage-preview-btns");
@@ -333,8 +339,9 @@ if ( getParameterByName("presentation") === "1" ) {
     var desktopIframe = document.createElement("iframe");
     desktopIframe.className = "iframe-desktop-view";
     desktopIframe.id = "desktop-view";
-    desktopIframe.sandbox = "allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox";
+    desktopIframe.sandbox = "allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-modals allow-pointer-lock allow-top-navigation";
     desktopIframe.src = "about:blank";
+
     desktopIframeParent.appendChild(desktopIframe);
     desktopIframeResizeWrapper.appendChild(desktopIframeParent);
 
@@ -416,15 +423,22 @@ if ( getParameterByName("presentation") === "1" ) {
     scrollbarStyle: "overlay",
     tabSize: 2,
     lineNumbers: true,
+    showTrailingSpace: true,
+
     autoRefresh: true, // https://github.com/codemirror/CodeMirror/issues/798
     lineWrapping: true,
     styleSelectedText: true,
+
+    lint: true,
+    matchTags: { bothTags: true },
+
+
     // viewportMargin: Infinity, // This really really slows down CodeMirror when you're viewing a big file. disabled on 1/16/18
 
           foldGutter: {
               rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.xml, CodeMirror.fold.brace, CodeMirror.fold.comment)
           },
-          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 
     styleActiveLine: true,
     actions: {
@@ -439,6 +453,9 @@ if ( getParameterByName("presentation") === "1" ) {
         }
     }
   });
+
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -591,10 +608,10 @@ if ( fullPathToDropboxFolderEscapedRegex.test(fileLocation) ) {
 
 
 ///////////
-///// Get Discipline
+///// Get Information from Filename
 ///////////
 
-if ( fileHost === "local" || fileHost === "server" ) {
+if ( fileHost === "local" || fileHost === "localserver" ) {
 
     ///////////
     ///// Get the Discipline
@@ -1835,7 +1852,7 @@ function editEmail() {
   mobileIframeParent.classList.toggle("editing");
   document.getElementById("edit-orb").classList.toggle("on");
   // dFrameBody.focus();
-  
+
 }
 
 
@@ -2217,6 +2234,14 @@ var appendQaBar = function(newBar) {
 
 // After a test has concluded, run this function to update the icon that shows the status.
 var applyQaResults = function(qaBar, status, msg) {
+
+  if ( status === 0 ) {
+    status = "success";
+  }
+  else if ( status > 0 ) {
+    status = "error";
+  }
+
   qaBar.classList.add("finished", status);
   if ( status === "success" ) {
     qaBar.querySelector(".qa-icon").innerHTML = svgIconCheck;
@@ -2371,15 +2396,28 @@ appendQaBar(linksQaBar);
 
 //////////
 ////
+////  QA Bar: HTML Linting Errors
+////
+/////////
+
+var htmlhintQaBar = document.createElement("div");
+htmlhintQaBar.id = "qa-htmlhint-warnings";
+htmlhintQaBar.className = "qa-htmlhint-warnings";
+htmlhintQaBar.dataset.errors = "0";
+appendQaBar(htmlhintQaBar);
+
+
+//////////
+////
 ////  QA Bar: Coding Bugs
 ////
 /////////
 
-var codingBugsQaBar = document.createElement("div");
-codingBugsQaBar.id = "qa-coding-bugs";
-codingBugsQaBar.className = "qa-coding-bugs";
-codingBugsQaBar.dataset.errors = "0";
-appendQaBar(codingBugsQaBar);
+// var codingBugsQaBar = document.createElement("div");
+// codingBugsQaBar.id = "qa-coding-bugs";
+// codingBugsQaBar.className = "qa-coding-bugs";
+// codingBugsQaBar.dataset.errors = "0";
+// appendQaBar(codingBugsQaBar);
 
 
 
@@ -2422,17 +2460,17 @@ appendQaBar(accessibilityWarningsQaBar);
 // Some link checking relies on this.
 // Append a value of -sub, -ns, or ??? (tbd) to the filename to find out the audience.
 
-var audienceQaBar = document.createElement("div");
-audienceQaBar.id = "qa-audience";
-audienceQaBar.className = "qa-audience";
-appendQaBar(audienceQaBar);
-
-if ( emailSubType ) {
-  applyQaResults(audienceQaBar, "success", "Audience Value Found");
-} else {
-  applyQaResults(audienceQaBar, "error", "Audience Value Missing");
-}
-
+// var audienceQaBar = document.createElement("div");
+// audienceQaBar.id = "qa-audience";
+// audienceQaBar.className = "qa-audience";
+// appendQaBar(audienceQaBar);
+//
+// if ( emailSubType ) {
+//   applyQaResults(audienceQaBar, "success", "Audience Value Found");
+// } else {
+//   applyQaResults(audienceQaBar, "error", "Audience Value Missing");
+// }
+//
 
 
 //////////
@@ -2616,6 +2654,208 @@ if ( !navigator.onLine ) {
 }
 
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+////
+////
+////    HTML/CSS BUG CHECK
+////
+////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+////////////
+////////////
+////////////
+//
+//
+    totalCodingBugs = 0;
+    totalCodingWarnings = 0;
+//
+//
+////////////
+////////////
+////////////
+
+// Outlook Bug
+// No padding on <a>, <p>, or <div>
+// Documentation:
+
+
+(function(){
+
+  console.groupCollapsed("[Bug Check] Outlook: Lack of Padding Support");
+
+  for (let el of dummyFrameContents.querySelectorAll("p, div")) {
+
+    if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
+
+      logCodeBug(el, "outlook-bug", "no-padding-support");
+
+    }
+
+  }
+
+  for (let el of dummyFrameContents.querySelectorAll("a")) {
+
+    if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
+
+      logCodeBug(el, "outlook-bug", "no-padding-support", "warning");
+
+    }
+
+  }
+  console.groupEnd();
+
+
+})();
+
+
+// Outlook Bug
+// <a> cannot link <table> elements
+// Documentation:
+
+(function(){
+
+  console.groupCollapsed("[Bug Check] Outlook: <a> tags cannot link <table> elements");
+
+  let els = dFrameContents.querySelectorAll("a table");
+  for (let el of els) {
+
+    logCodeBug(el, "outlook-bug", "<table>s cannot be linked with <a> tags in Outlook");
+
+  }
+
+  console.groupEnd();
+
+})();
+
+
+
+// Outlook Bug
+// <td> vertical padding
+// Documentation:
+
+(function(){
+
+  // Consider running this test on a version of the email that has @media
+  // queries stripped out so that there's no question whether it will be relevant in Outlook.
+  // If this test runs while a mobile based media query is active, it could skew results
+
+  console.groupCollapsed("[Bug Check] Outlook: <td> Vertical Padding");
+  console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
+
+  var firstTdTop, firstTdBottom;
+
+  //
+  let tableRows = dFrameContents.querySelectorAll("tr");
+  for (let tableRow of tableRows) {
+    console.log("row begin");
+    // Check how many table cells are in this row. We only want to address rows with 2 or more.
+    if ( tableRow.cells.length >= 2 ) {
+
+      // console.log(tableRow);
+
+      // Loop through all <td>'s in this table row.
+      for (var i = 0; i < tableRow.cells.length; i++) {
+
+        // console.groupCollapsed();
+        //
+        // console.log(tableRow.cells[i]);
+        // console.log("table cell " + i + " of " + tableRow.cells.length);
+        // console.log("innerText length: " + tableRow.cells[i].innerText.trim().length, "innerText content: '" + tableRow.cells[i].innerText.trim() + "'");
+        // console.log("innerHTML length: " + tableRow.cells[i].innerHTML.trim().length, "innerHTML content: '" + tableRow.cells[i].innerHTML.trim() + "'");
+        // console.log("textContent length: " + tableRow.cells[i].textContent.trim().length, "textContent content: '" + tableRow.cells[i].textContent.trim() + "'");
+        //
+        // console.groupEnd();
+
+        // We need to ignore cells that are empty.
+        // An empty table cell doesn't care if it gets different vertical padding.
+        // So although this is still bugged, no one will ever know.
+
+        // console.log("Begin check: " + i);
+        if ( !isElementEmpty(tableRow.cells[i]) ) {
+        // console.groupEnd();
+
+          console.log( i );
+          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] );
+          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] );
+          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] );
+
+          // Log the top and bottom padding of our first <td>
+          if ( i === 0 ) {
+            firstTdTop = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top");
+            firstTdBottom = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom");
+            console.log(firstTdTop, firstTdBottom);
+          }
+          // if this isn't the first <td>, check its top and bottom padding against the first <td>
+          // Throw an error if they don't match.
+          else if ( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") !== firstTdTop || window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") !== firstTdBottom ) {
+            // Error
+            logCodeBug(tableRow.cells[i], "outlook", "vertical-cell-padding");
+            console.log( firstTdTop, firstTdBottom, "|", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") );
+          }
+
+        }
+
+      }
+
+    }
+  }
+
+  console.groupEnd();
+
+})();
+
+
+
+// Outlook Bug
+// !important inline css parsing
+// Documentation:
+
+(function(){
+
+  console.groupCollapsed("[Bug Check] Outlook: !important parsing");
+  console.info("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31");
+
+  var firstTdTop, firstTdBottom;
+
+  //
+  let els = dFrameContents.querySelectorAll("*[style]");
+  for (let el of els) {
+
+    for (var i = 0; i < el.style.length; i++) {
+
+      if ( el.style.getPropertyPriority(el.style[i]) === "important" ) {
+        // console.log( el.style[i] );
+        logCodeBug(el, "outlook", "important-parsing on " + el.style[i]);
+      }
+
+    }
+
+  }
+
+  console.groupEnd();
+
+})();
+
+
+
+
+
+// Report on total bugs to the QA Bar.
+// Combine HTML and CSS Linting errors with custom Korra errors.
+var combinedErrors = myCodeMirror.state.lint.marked.length + totalCodingBugs;
+applyQaResults(htmlhintQaBar, combinedErrors, combinedErrors + " Code Errors Detected");
+
+
+
 //////////
 ////////////////
 ///////////////////////
@@ -2653,15 +2893,16 @@ textWarningsQaBar.id = "qa-text-warnings";
 textWarningsQaBar.className = "qa-text-warnings";
 
 
-/////////
-//// Temporary pane for show errors.
-/////////
-var errorLogWrapper = document.createElement("div");
-errorLogWrapper.className = "error-log-wrapper";
-var errorLogRows = document.createElement("div");
-errorLogRows.id = "error-log-rows";
-errorLogWrapper.appendChild(errorLogRows);
-qaResults.appendChild(errorLogWrapper);
+// /////////
+// //// Temporary pane for show errors.
+// /////////
+// var errorLogWrapper = document.createElement("div");
+// errorLogWrapper.className = "error-log-wrapper";
+// var errorLogRows = document.createElement("div");
+// errorLogRows.id = "error-log-rows";
+// errorLogWrapper.appendChild(errorLogRows);
+// qaResults.appendChild(errorLogWrapper);
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2901,7 +3142,7 @@ catch(error) {
   console.error(escapeXml(error.toString()));
   console.error(error.toString().replace(/&/gi,"@"));
   var err = error.toString().replace(/^Error\:.+?: /i, "");
-  errorLog("error", err);
+  // errorLog("error", err);
   console.groupEnd();
   // expected output: SyntaxError: unterminated string literal
   // Note - error messages will vary depending on browser
@@ -2915,14 +3156,20 @@ catch(error) {
 
 (function(){
 
+  // @TODO
+  // Error if no role is present
+  // Warning if the role is not presentation or article
   console.groupCollapsed("[Accessibility: role='presentation']");
 
   let tables = dFrameContents.querySelectorAll("table");
   for (let table of tables) {
-    if ( table.getAttribute("role") !== "presentation" ) {
-      logAccessibilityWarning(table, 'Missing role="presentation" attribute.');
-    } else {
-
+    if ( table.hasAttribute("role") ) {
+      if ( table.getAttribute("role").length < 1 ) {
+        logAccessibilityWarning(table, 'Missing role attribute.');
+      }
+    }
+    else {
+      logAccessibilityWarning(table, 'Missing role attribute.');
     }
   }
 
@@ -2964,209 +3211,6 @@ else if ( totalAccessibilityWarnings === 0 ) {
 }
 
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-////
-////
-////    HTML/CSS BUG CHECK
-////
-////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-////////////
-////////////
-////////////
-//
-//
-    totalCodingBugs = 0;
-    totalCodingWarnings = 0;
-//
-//
-////////////
-////////////
-////////////
-
-// Outlook Bug
-// No padding on <a>, <p>, or <div>
-// Documentation:
-
-
-(function(){
-
-  console.groupCollapsed("[Bug Check] Outlook: Lack of Padding Support");
-
-  for (let el of dummyFrameContents.querySelectorAll("p, div")) {
-
-    if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
-
-      logCodeBug(el, "outlook-bug", "no-padding-support");
-
-    }
-
-  }
-
-  for (let el of dummyFrameContents.querySelectorAll("a")) {
-
-    if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
-
-      logCodeBug(el, "outlook-bug", "no-padding-support", "warning");
-
-    }
-
-  }
-  console.groupEnd();
-
-
-})();
-
-
-// Outlook Bug
-// <a> cannot link <table> elements
-// Documentation:
-
-(function(){
-
-  console.groupCollapsed("[Bug Check] Outlook: <a> tags cannot link <table> elements");
-
-  let els = dFrameContents.querySelectorAll("a table");
-  for (let el of els) {
-
-    logCodeBug(el, "outlook-bug", "<table>s cannot be linked with <a> tags in Outlook");
-
-  }
-
-  console.groupEnd();
-
-})();
-
-
-
-// Outlook Bug
-// <td> vertical padding
-// Documentation:
-
-(function(){
-
-  // Consider running this test on a version of the email that has @media
-  // queries stripped out so that there's no question whether it will be relevant in Outlook.
-  // If this test runs while a mobile based media query is active, it could skew results
-
-  console.groupCollapsed("[Bug Check] Outlook: <td> Vertical Padding");
-  console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
-
-  var firstTdTop, firstTdBottom;
-
-  //
-  let tableRows = dFrameContents.querySelectorAll("tr");
-  for (let tableRow of tableRows) {
-    console.log("row begin");
-    // Check how many table cells are in this row. We only want to address rows with 2 or more.
-    if ( tableRow.cells.length >= 2 ) {
-
-      // console.log(tableRow);
-
-      // Loop through all <td>'s in this table row.
-      for (var i = 0; i < tableRow.cells.length; i++) {
-
-        // console.groupCollapsed();
-        //
-        // console.log(tableRow.cells[i]);
-        // console.log("table cell " + i + " of " + tableRow.cells.length);
-        // console.log("innerText length: " + tableRow.cells[i].innerText.trim().length, "innerText content: '" + tableRow.cells[i].innerText.trim() + "'");
-        // console.log("innerHTML length: " + tableRow.cells[i].innerHTML.trim().length, "innerHTML content: '" + tableRow.cells[i].innerHTML.trim() + "'");
-        // console.log("textContent length: " + tableRow.cells[i].textContent.trim().length, "textContent content: '" + tableRow.cells[i].textContent.trim() + "'");
-        //
-        // console.groupEnd();
-
-        // We need to ignore cells that are empty.
-        // An empty table cell doesn't care if it gets different vertical padding.
-        // So although this is still bugged, no one will ever know.
-
-        // console.log("Begin check: " + i);
-        if ( !isElementEmpty(tableRow.cells[i]) ) {
-        // console.groupEnd();
-
-          console.log( i );
-          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] );
-          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] );
-          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] );
-
-          // Log the top and bottom padding of our first <td>
-          if ( i === 0 ) {
-            firstTdTop = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top");
-            firstTdBottom = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom");
-            console.log(firstTdTop, firstTdBottom);
-          }
-          // if this isn't the first <td>, check its top and bottom padding against the first <td>
-          // Throw an error if they don't match.
-          else if ( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") !== firstTdTop || window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") !== firstTdBottom ) {
-            // Error
-            logCodeBug(tableRow.cells[i], "outlook", "vertical-cell-padding");
-            console.log( firstTdTop, firstTdBottom, "|", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") );
-          }
-
-        }
-
-      }
-
-    }
-  }
-
-  console.groupEnd();
-
-})();
-
-
-
-// Outlook Bug
-// !important inline css parsing
-// Documentation:
-
-(function(){
-
-  console.groupCollapsed("[Bug Check] Outlook: !important parsing");
-  console.info("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31");
-
-  var firstTdTop, firstTdBottom;
-
-  //
-  let els = dFrameContents.querySelectorAll("*[style]");
-  for (let el of els) {
-
-    for (var i = 0; i < el.style.length; i++) {
-
-      if ( el.style.getPropertyPriority(el.style[i]) === "important" ) {
-        // console.log( el.style[i] );
-        logCodeBug(el, "outlook", "important-parsing on " + el.style[i]);
-      }
-
-    }
-
-  }
-
-  console.groupEnd();
-
-})();
-
-
-/////////
-/////////
-// Finished...
-/////////
-/////////
-if ( totalCodingBugs > 0 ) {
-  applyQaResults(codingBugsQaBar, "error");
-}
-else if ( totalCodingBugs === 0 ) {
-  applyQaResults(codingBugsQaBar, "success", "No Coding Bugs Found");
-}
 
 
 
@@ -3263,511 +3307,21 @@ function countCitations() {
   // console.log( "Asterisks", asters);
 }
 
-var highlightTextErrors = function (stage) {
 
-  // This function allows findAndReplaceDOMText to exclude matches. This functionality is not built-in to the script so we need this function.
-  // Visit this closed issue on GitHub for more info: https://github.com/padolsey/findAndReplaceDOMText/issues/64
-  var globalRegexWithFilter = function (regex, filterFn) {
-    if (!regex.global) {
-      throw new Error('Regex must be global');
-    }
-    function exec(text) {
-      var result = regex.exec(text);
-      if (result && !filterFn(result[0])) {
-        return exec(text);
-      }
-      return result;
-    }
-    return {
-      global: true,
-      exec: exec
-    };
-  };
-
-  //
-  // SPAM TRIGGER WORD
-  //
-  // Click|Click below|Click here|Click to remove|
-  findAndReplaceDOMText(stage, {
-    find: /((‘|')?Hidden(’|')? assets|100% free|100% Satisfied|4U|\$\$\$|\bAd\b|Accept credit cards|Acceptance|Act Now!?|Act now!? Don(’|')?t hesitate\!?|Additional income|Addresses on CD|All natural|All new|Amazing stuff|Apply now|Apply Online|As seen on|Auto email removal|Avoid bankruptcy|Bargain|Be amazed|Be your own boss|Beneficiary|Beverage|Big bucks|Bill 1618|Billing address|Brand new pager|Bulk email|Buy direct|Buying judgements|Buying judgments|Cable converter|Call free|Call now|Calling creditors|Can(’|')?t live without|Cancel at any time|Cannot be combined with any other offer|Cards accepted|Cash bonus|Casino|Celebrity|Cell phone cancer scam|Cents on the dollar|Check or money order|Claims|Claims not to be selling anything|Claims to be in accordance with some spam law|Claims to be legal|Clearance|Collect child support|Compare rates|Compete for your business|Confidentially on all orders|Consolidate debt and credit|Consolidate your debt|Copy accurately|Copy DVDs|Credit bureaus|Credit card offers|Cures baldness|Dig up dirt on friends|Direct email|Direct marketing|Do it today|Don(’|')?t delete|Don(’|')?t hesitate|Double your|Double your income|Drastically reduced|Earn \$|Earn extra cash|Earn per week|Easy terms|Eliminate bad credit|Eliminate debt|Email harvest|Email marketing|Expect to earn|Explode your business|Extra income|F r e e|Fantastic deal|Fast cash|Fast Viagra delivery|Financial freedom|Financially independent|For instant access|For just \$|For just \$[0-9]+?|Free access|Free cell phone|Free consultation|Free consultation|Free DVD|Free gift|Free grant money|Free hosting|Free info|Free installation|Free Instant|Free investment|Free leads|Free membership|Free money|Free offer|Free preview|Free priority mail|Free quote|Free sample|Free trial|Free website|Full refund|Get it now|Get out of debt|Get paid|Gift certificate|Give it away|Giving away|Great offer|Have you been turned down\??|Hidden assets|Hidden charges|Home based|Home employment|Homebased business|Human growth hormone|If only it were that easy|Important information regarding|In accordance with laws|Income from home|Increase sales|Increase traffic|Increase your sales|Incredible deal|Info you requested|Information you requested|Insurance|Internet market|Internet marketing|Investment decision|It(’|')?s effective|It(’|')?s effective|Join millions|Join millions of Americans|Laser printer|Life Insurance|Loans|Long distance phone offer|Lose weight|Lose weight spam|Lower interest rate|Lower interest rates|Lower monthly payment|Lower your mortgage rate|Lowest insurance rates|Luxury car|Mail in order form|Make \$|Make money|Marketing solutions|Mass email|Meet singles|Member stuff|Message contains|Message contains disclaimer|Miracle|MLM|Money back|Money making|Month trial offer|More Internet Traffic|Mortgage|Mortgage rates|Multi\-?level marketing|New customers only|New domain extensions|Nigerian|No age restrictions|No catch|No claim forms|No cost|No credit check|No disappointment|No experience|No fees|No gimmick|No hidden|No inventory|No investment|No medical exams|No questions asked|No selling|No strings attached|Not intended|Notspam|Now only|Off shore|Offer expires|Once in lifetime|One hundred percent free|One hundred percent guaranteed|One time|One time mailing|Online biz opportunity|Online degree|Online marketing|Online pharmacy|Opt in|Order now|Order shipped by|Order status|Order today|Orders shipped by|Outstanding values|Pennies a day|Potential earnings|Pre-approved|Print form signature|Print out and fax|Priority mail|Produced and sent out|Promise you|Pure Profits|Real thing|Refinance home|Refinanced home|Removal instructions|Removes wrinkles|Reserves the right|Reverses aging|Risk free|S 1618|Safeguard notice|Satisfaction guaranteed|Save \$|Save big money|Save up to|Score with babes|Search engine listings|Search engines|Section 301|See for yourself|Sent in compliance|Serious cash|Serious only|Shopping spree|Sign up free today|Social security number|Stainless steel|Stock alert|Stock disclaimer statement|Stock pick|Stop snoring|Strong buy|Stuff on sale|Subject to cash|Subject to credit|Supplies are limited|Take action now|Talks about hidden charges|Talks about prizes|Tells you it(’|')?s an ad|The best rates|The following form|They keep your money \– no refund|They(’|')?re just giving it away|This isn(’|')?t (junk|spam|last|a scam)?|Time limited|Trial|Undisclosed recipient|University diplomas|Unsecured (credit|debt)|Unsolicited|US dollars|Vacation|Vacation offers|Valium|Viagra|Viagra and other drugs|Vicodin|Visit our website|Wants credit card|Warranty|We hate spam|We honor all|Web traffic|Weekend getaway|Weight loss|What are you waiting for\??|While supplies last|While you sleep|Who really wins\??|Why pay more\??|Wife|Will not believe your eyes|Work at home|Work from home|Xanax|You are a winner!?|You have been selected|You(’|')?re a Winner!?|Your income)/gi,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-  ///////////////////////////////////////////
-  ////                                   ////
-  ////    CONDITIONALS HIGHLIGHTING      ////
-  ////                                   ////
-  ///////////////////////////////////////////
-
-  if ( emailPlatform === "mc" ) {
-    // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
-    findAndReplaceDOMText(stage, {
-      find: /\*\|((IF|END|ELSEIF|INTERESTED):.+?|ELSE:)\|\*/gi,
-      wrap: 'span', wrapClass: "text-highlight esp-conditional"
-    });
-  }
-
-
-  /////////////////////////////////
-  ////                         ////
-  ////    PLATFORM CHECKS      ////
-  ////                         ////
-  /////////////////////////////////
-
-  if ( emailPlatform === "gr" ) {
-    // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
-    findAndReplaceDOMText(stage, {
-      find: /(\*\|.+?\|\*|\[[^\[\]]+?\][^\]])/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-  }
-
-  if ( emailPlatform === "mc" ) {
-    // Do not use [[getresponse]] merge tags with a MailChimp email.
-    findAndReplaceDOMText(stage, {
-      find: /\[\[?.+?\]\]?/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-  }
-
-  if ( emailPlatform === "sg" ) {
-    // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
-    findAndReplaceDOMText(stage, {
-      find: /(\*\|.+?\|\*|\[\[.+?\]\])/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-  }
-
-
-
-  /////////////////////////////////
-  ////                         ////
-  ////    DISCIPLINE CHECKS    ////
-  ////                         ////
-  /////////////////////////////////
-
-
-  // Promo Codes
-    if ( emailDisc !== "pt" ) {
-      findAndReplaceDOMText(stage, {
-        find: /(Promo Code.+?\b[A-Za-z0-9]+?PT\b)/gi,
-        wrap: 'span', wrapClass: "text-highlight"
-      });
-    }
-    if ( emailDisc !== "at" ) {
-      findAndReplaceDOMText(stage, {
-        find: /(Promo Code.+?\b[A-Za-z0-9]+?AT\b)/gi,
-        wrap: 'span', wrapClass: "text-highlight"
-      });
-    }
-    if ( emailDisc !== "ot" ) {
-      findAndReplaceDOMText(stage, {
-        find: /(Promo Code.+?\b[A-Za-z0-9]+?OT\b)/gi,
-        wrap: 'span',
-        wrapClass: "text-highlight"
-      });
-    }
-    if ( emailDisc !== "slp" ) {
-      findAndReplaceDOMText(stage, {
-        find: /(Promo Code.+?\b[A-Za-z0-9]+?SLP\b)/gi,
-        wrap: 'span', wrapClass: "text-highlight"
-      });
-    }
-    if ( emailDisc === "other" ) {
-      findAndReplaceDOMText(stage, {
-        find: /(Promo Code.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi,
-        wrap: 'span', wrapClass: "text-highlight"
-      });
-    }
-
-
-  //////////
-  ////
-  //// Pricing
-  ////
-  //////////
-  if ( emailDisc === "pt" || emailDisc === "other" || emailDisc === "ot" || emailDisc === "at" ) {
-
-    findAndReplaceDOMText(stage, {
-      find: /((only )?\$95|(only )?\$145)/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  }
-
-  if ( emailDisc === "slp" ) {
-
-    findAndReplaceDOMText(stage, {
-      find: /((only )?\$200|(only )?\$250)/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  }
-
-  if ( emailDisc === "lmt" || emailDisc === "ent" ) {
-
-    findAndReplaceDOMText(stage, {
-      find: /\$95|\$145|\$200|\$250/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  }
-
-
-
-  //////////
-  ////
-  //// Physical Therapy - PT
-  ////
-  //////////
-  if ( emailDisc === "pt" ) {
-
-    // case sensitive
-    findAndReplaceDOMText(stage, {
-      find: /\b(ASHA|AOTA)\b/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-    // case (IN)sensitive
-    findAndReplaceDOMText(stage, {
-      find: /(BOC\-Approved|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist)))/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  //////////
-  ////
-  //// Other
-  ////
-  //////////
-  } else if ( emailDisc === "other" ) {
-
-    // case sensitive
-    findAndReplaceDOMText(stage, {
-      find: /\b(ASHA|AOTA)\b/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-    // case (IN)sensitive
-    findAndReplaceDOMText(stage, {
-      find: /(BOC\-Approved|Athletic Train(er|ing)|(Physical|Occupational) (Courses?|Therap(y|ist)))/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  //////////
-  ////
-  //// Athletic Training - AT
-  ////
-  //////////
-  } else if ( emailDisc === "at" ) {
-
-    // case sensitive
-    findAndReplaceDOMText(stage, {
-      find: /\b(ASHA|AOTA)\b/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-    // case (IN)sensitive
-    findAndReplaceDOMText(stage, {
-      find: /((only )?\$95|(only )?\$145|Physical (Courses?|Therap(y|ist))|Occupational (Courses?|Therap(y|ist)))/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  //////////
-  ////
-  //// Occupational Therapy - OT
-  ////
-  //////////
-  } else if ( emailDisc === "ot" ) {
-
-    // case sensitive
-    findAndReplaceDOMText(stage, {
-      find: /\b(ASHA)\b/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-    // case (IN)sensitive
-    findAndReplaceDOMText(stage, {
-      find: /(BOC\-Approved|Physical (Courses?|Therap(y|ist))|Athletic Train(er|ing))/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  //////////
-  ////
-  //// Speech Language Pathology - SLP
-  ////
-  //////////
-  } else if ( emailDisc === "slp" ) {
-
-    findAndReplaceDOMText(stage, {
-      find: /\b(AOTA|APTA)\b/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-    // case-insensitive
-    findAndReplaceDOMText(stage, {
-      find: /(BOC\-Approved|Physical Therap(y|ist)|Athletic Train(er|ing)|Occupational (Courses?|Therap(y|ist))|patient outcomes?|clinician)/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  //////////
-  ////
-  //// Nursing - NR
-  ////
-  //////////
-  } else if ( emailDisc === "nr" ) {
-
-    // case sensitive
-    findAndReplaceDOMText(stage, {
-      find: /\b(ASHA|AOTA)\b/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-    // case (IN)sensitive
-    findAndReplaceDOMText(stage, {
-      find: /(BOC\-Approved|Athletic Train(er|ing)|(Physical|Occupational) (Courses?|Therap(y|ist)))/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-
-  //////////
-  ////
-  //// Massage
-  ////
-  //////////
-  } else if ( emailDisc === "lmt" ) {
-
-    findAndReplaceDOMText(stage, {
-      find: /\b(ASHA|AOTA)\b/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-    // case-insensitive
-    findAndReplaceDOMText(stage, {
-      find: /(BOC\-Approved|Physical Therap(y|ist)|CCC\-SLP|patient engagement tool)/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  //////////
-  ////
-  //// Enterprise
-  ////
-  //////////
-  } else if ( emailDisc === "ent" ) {
-    // Enterprise
-
-    ///
-
-  }
-
-  //
-  // ALL
-  //
-
-  // NOTES ABOUT TEXT WARNINGS ---
-  ////////////////////////////////
-
-  // 17-11-06 - Subscribers don't win a free subscription, they win a subscription extension and vice versa for non-subscribers.
-  // 17-06-14 - Decided to stop saying "Unlimited CEUs" and instead say "Unlimited Access to CEUs" or "Unlimited CEU Access". We don't literally have unlimited CEUs, but we can provide unlimited ACCESS. Thanks ASHA! -_-
-    // - 10/30/17 Update: Per ASHA, "Unlimited Access to CEUs" is still not right. We have to say "Unlimited Access to CE Courses". This only applies to SLP.
-  // 17-09-05 - Justin does not like "From the Blog" or even referring to our blog site as a blog at all.
-  // 18-04-24 - Never 'Continued' Education. Only 'Continuing' Education.
-  // 18-08-28 - ASHA
-     // MedBridge is an ASHA Approved Provider and MedBridge offers courses registered for ASHA CEUs. It is incorrect to say that MedBridge offers ASHA-approved or ASHA-accredited courses because we do not approve or accredit content we only approve or accredit providers. Unlimited CEU courses is misleading – there is a limit to what you can offer
-
-  ////////////////////////////////
-  ////////////////////////////////
-
-  // All Disciplines and Audiences
-  // Case (IN)sensitive
-
-    findAndReplaceDOMText(stage, {
-      find: /CRRN[^\®]|(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited)|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-    // Continuing Education, not Continued Education
-    // Speech-Language needa a hyphen
-    findAndReplaceDOMText(stage, {
-      find: /(continued education|speech language)/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-    // Link Arrows → Arrows need to be immediately preceded by a non-breaking space to ensure it doesn't get dropped to the next line
-    findAndReplaceDOMText(stage, {
-      find: /(?:(?!\u00a0).{1}|^.{0,0})(\u2192)(?!\u00a0)/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-    // CE Courses, not CEU Courses
-    findAndReplaceDOMText(stage, {
-      find: /\bCEU Course/gi,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-  // All Disciplines and Audiences
-  // Case Sensitive
-  ////
-
-    findAndReplaceDOMText(stage, {
-      find: /\b[Mm]edbridge( |\.|\!|\?|,)/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-    findAndReplaceDOMText(stage, {
-      find: /\bCross-Track\b/g,
-      wrap: 'span', wrapClass: "text-highlight"
-    });
-
-
-//
-// NUMBERS - MISSING COMMAS
-// Ignore numbers that start with 0, the end of phone numbers (-####), common years (1990-1999, 2001-2040), MedBridge address (1633, 98109)
-//
-  findAndReplaceDOMText(stage, {
-  	find: globalRegexWithFilter(/[^-–:#]\b[1-9]\d\d\d\b/g, function(theMatch) {
-    	return !/(98109|1633|199[0-9]|20[0-4][0-9])/g.test(theMatch);
-    }),
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-
-
-//
-// PRODUCT CAPITALIZATION
-//
-findAndReplaceDOMText(stage, {
-  find: /MedBridge ((?:patient [Ee]|Patient e)ngagement|Prep\-program|prep\-[Pp]rogram)/g,
-  wrap: 'span', wrapClass: "text-highlight"
-});
-
-//
-// Prep Program
-//
-findAndReplaceDOMText(stage, {
-  find: /\b(MedBridge|[A-Z]CS) prep [Pp]rogram\b/g,
-  wrap: 'span', wrapClass: "text-highlight"
-});
-
-findAndReplaceDOMText(stage, {
-  find: /\bprep\-programs?\b/gi,
-  wrap: 'span', wrapClass: "text-highlight"
-});
-
-//
-// Subscriber
-//
-if ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
-  findAndReplaceDOMText(stage, {
-    find: /(win a free subscription|First Chapter Free|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|\bin a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-}
-
-//
-// Non-Subscribers
-//
-if ( emailSubType === "ns" ) {
-  findAndReplaceDOMText(stage, {
-    find: /(Start Now|Refer(\-| )a(\-| )Friend|in(?:cluded with)? your (?:(?:MedBridge )?s|annual (?:MedBridge )?s)ubscription)/gi,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-}
-
-//
-// outsideOrg
-//
-if ( outsideOrg ) {
-
-  findAndReplaceDOMText(stage, {
-    find: /additional cost|Refer(\-| )a(\-| )Friend/gi,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-
-  findAndReplaceDOMText(stage, {
-    find: /Enterprise/g,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-
-}
-
-//
-// emailAnySale
-//
-if ( (emailSubType === "ns" || emailSubType === "sub") && !emailAnySale ) {
-  findAndReplaceDOMText(stage, {
-    find: /(only )?\$(200|95|145|250)( |!|\.)/gi,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-}
-
-//
-// Sale Verbiage
-//
-
-if ( emailAnySale && emailDisc !== "lmt" ) {
-  findAndReplaceDOMText(stage, {
-    find: /50%/gi,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-}
-// Massage Pricing
-if ( emailAnySale && emailDisc === "lmt" ) {
-  findAndReplaceDOMText(stage, {
-    find: /40%/gi,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-}
-
-
-//
-// Grammar
-//
-findAndReplaceDOMText(stage, {
-  find: /evidence based EBP/gi,
-  wrap: 'span', wrapClass: "text-highlight"
-});
-
-findAndReplaceDOMText(stage, {
-  find: /evidence\-based EBP/gi,
-  wrap: 'span', wrapClass: "text-highlight"
-});
-
-
-
-if ( outsideOrg ) {
-
-  findAndReplaceDOMText(stage, {
-    find: /(request a demo|part of an? (group|organization)|sign(\-| )up|\bsubscribe\b)/gi,
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-
-}
-
-
-if ( emailDisc === "slp" ) {
-
-  findAndReplaceDOMText(stage, {
-    find: /CEU Sale|Unlimited (Access to )?(CE'?s|CEU'?s)/gi,
-    // Must say CE Courses
-    wrap: 'span', wrapClass: "text-highlight"
-  });
-
-}
-
-
-// Check for words that would typically be linked by stupid Gmail. Like "tomorrow" linking to the calendar.
-findAndReplaceDOMText(stage, {
-  find: /tomorrow|noon/gi,
-  wrap: 'span', wrapClass: "text-highlight gmail-fix", forceContext: true
-});
-
-
-
-};
-// end function
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////// == Text Check == ///////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 // Run a check on all text in the email
 highlightTextErrors(dFrameBody);
 highlightTextErrors(mFrameBody);
 highlightTextErrors(preheaderTextPreview);
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3920,11 +3474,19 @@ if ( getParameterByName("guides") === "1" ) {
 
 var currentKey = '';
 
+document.addEventListener('keydown', function(e) {
+  currentKey = e;
+  processShortcut(e);
+  // console.log(e);
+  // console.log(myCodeMirror.state.focused);
+});
+document.addEventListener('keyup', function(e) { currentKey = ''; });
+
 // Desktop Frame
 dFrameContents.addEventListener('keydown', function(e) {
   currentKey = e;
   processShortcut(e);
-  // console.log(e);
+  console.log(e);
 });
 dFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 
@@ -3932,7 +3494,7 @@ dFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 mFrameContents.addEventListener('keydown', function(e) {
   currentKey = e;
   processShortcut(e);
-  // console.log(e);
+  console.log(e);
 });
 mFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 
@@ -3951,6 +3513,54 @@ mFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 //////////////
 
 var processShortcut = function (e) {
+
+  // console.log("running processShortcut()");
+
+  // Handle Escape
+  if ( e.keyCode == 27 ) {
+    handleEscape();
+  }
+
+  // Find Text Shortcut
+  // Prevent default Chrome Find function if...
+  // Code Editor is visible (AND)
+  // Code Editor is not focused
+  if ( (e.ctrlKey || e.metaKey ) && e.keyCode == 70 ) {
+
+    // if search is invoked and codemirror is not in focus, show the codemirror search box
+    if ( visibleStages.code && ( document.activeElement.tagName !== "INPUT" && document.activeElement.className !== "CodeMirror-search-field" ) ) {
+
+      e.preventDefault();
+      myCodeMirror.execCommand("find");
+      console.log("non-standard shortcut fired");
+
+    }
+    // if search is invoked but we're already in the search box, do nothing
+    else if ( visibleStages.code && ( document.activeElement.tagName === "INPUT" && document.activeElement.className === "CodeMirror-search-field" ) ) {
+      e.preventDefault();
+      console.log("no shortcut fired");
+    }
+    // otherwise, do nothing special
+    else {
+      console.log("standard shortcut fired");
+    }
+
+  }
+
+
+  // Show Info Layer across all tabs
+  if ( (e.ctrlKey || e.metaKey ) && e.shiftKey && e.keyCode == 49 ) {
+    e.preventDefault();
+    sendShortcutToAll("infolayer");
+    return;
+  }
+
+  // Show Info Layer
+  if ( (e.ctrlKey || e.metaKey ) && e.keyCode == 49 ) {
+    e.preventDefault();
+    toggleInfoLayer();
+  }
+
 
   // Print Desktop
   if ( (e.ctrlKey || e.metaKey) && e.keyCode == 80 ) {
@@ -3980,6 +3590,21 @@ var processShortcut = function (e) {
 
 // Keymaster.js
 ///////////////
+
+// Handle Escape
+key('escape', function() {
+  console.log(this);
+  console.log(event);
+  console.log(event.target);
+  handleEscape();
+});
+
+// Show Info Layer
+// This wasn't working when Code view was active/focused. So I'm instead going to rely on vanilla javascript for this action instead of keymaster.js (7/9/19)
+// key('ctrl+1, ⌘+1', function() {
+//   document.getElementById("info-overlay").style.display = document.getElementById("info-overlay").style.display === 'none' ? '' : 'none';
+//   return false;
+// });
 
 // Print the desktop view only.
 key('ctrl+p, ⌘+p', function() {
@@ -4417,6 +4042,38 @@ window.dragMoveListener = dragMoveListener;
   // See: https://github.com/inopinatus/sublime_url
 
 // }
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// Nav Bar
+
+//// Use this data to populate the nav bar
+document.getElementById("file-url").innerHTML = '<span class="url-div">/</span><span>' + fileParentFolder + '</span><span class="url-div">/</span><span>' + filename + '</span>';
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+// INFO LAYER
+
+/////////////////////
+
+var infoLayer = document.getElementById("info-overlay");
+
+document.querySelectorAll("#file-name .data")[0].insertAdjacentHTML('beforeend', filename);
+document.querySelectorAll("#file-parent-folder .data")[0].insertAdjacentHTML('beforeend', fileParentFolder);
+document.querySelectorAll("#file-path .data")[0].insertAdjacentHTML('beforeend', filePath);
 
 
 

@@ -75,7 +75,7 @@ var getAllOptions = new Promise((resolve, reject) => {
 ///////
 ///////
 
-let fileLocation, fileLocationWithoutProtocol, filename, filePath, isSavedFile, labelsAvailable;
+let fileLocation, fileLocationWithoutProtocol, filename, fileParentFolder, filePath, isSavedFile, labelsAvailable;
 
 // decode the URL located in the `open` parameter before we use it
 fileLocation = decodeURIComponent(getParameterByName("open"));
@@ -87,7 +87,14 @@ if ( /^(https?|file):\/\//i.test(fileLocation) ) {
   labelsAvailable = true;
 
   filename = getFilename(fileLocation);
+  fileParentFolder = getFileParentFolder(fileLocation);
   filePath = getFilePath(fileLocation);
+
+  // Send the filePath to the background for use in potential webRequest blocking.
+  chrome.runtime.sendMessage({type: "tabInfo", data: {filePath: filePath}}, function(response) {
+    // console.log(response.farewell);
+  });
+
 }
 
 else { // this is unsaved code
@@ -110,8 +117,12 @@ if ( /^file\:\/\//i.test(fileLocation) ) {
   fileHost = "local";
 
 // @TODO - This should pull from user submitted paths.
+} else if ( /^https?\:\/\/localhost\:/i.test(fileLocation) ) {
+  fileHost = "localserver";
+
+// @TODO - This should pull from user submitted paths.
 } else if ( /^https?\:\/\//i.test(fileLocation) ) {
-  fileHost = "server";
+  fileHost = "externalserver";
 
 } else {
   fileHost = "korra";
@@ -152,8 +163,49 @@ var processCode = function (code) {
 
   originalHtml = code;
   cleanedOriginalHtml = code;
+
+  // Check for relative resource URLs
+  ////////////////////////////////////
+  // cleanedOriginalHtml = updateRelativeResources(cleanedOriginalHtml);
+
+  // Add the <base> tag to both views
+  var baseTag;
+
+  // Add an href if we detect at least one src="" using a URL with an invalid scheme
+  var imgSrcs = cleanedOriginalHtml.match(/( |[A-Za-z0-9])src=('|")?\s*?.{8}/gmi);
+  if ( imgSrcs ) {
+    imgSrcs.forEach(function (imgSrc, index) {
+
+      if ( !/(http(s)?|ftp|file):\/\//i.test(imgSrc) ) {
+        baseTag = '<base target="_blank" href="file://' + filePath + '/">';
+      }
+      else {
+        baseTag = '<base target="_blank">';
+      }
+
+    });
+  }
+  else {
+    baseTag = '<base target="_blank">';
+  }
+
+
+  // Add it before the end of the <head> tag if it exists.
+  if ( /<\/head>/gmi.test(cleanedOriginalHtml) ) {
+    cleanedOriginalHtml = cleanedOriginalHtml.replace(/<\/head>/gmi, baseTag + "</head>");
+  }
+  // Else add it before the beginning of the first <body> tag.
+  else {
+    cleanedOriginalHtml = cleanedOriginalHtml.replace(/<body/mi, "<head>" + baseTag + "</head><body");
+  }
+  // Else we don't add it at all.
+
+
+  //
+  ////////////////////////////////////
   cleanedDesktopHtml = cleanedOriginalHtml;
   cleanedMobileHtml = cleanedOriginalHtml;
+
 
   // Check for conditional statements.
   ////////////////////////////////////
@@ -178,18 +230,28 @@ var processCode = function (code) {
 // To do this we have to just append a string to the code we got above from the xhr.
 // [TO-DO]: Consider removing this and just adding it after the iframe renders if there's no downside.
 
-  // // Remove all <script> tags. HTML emails cannot have them. We don't design them in there, but if you're viewing this page with Middleman then there will be some injected <script> tags that can cause us issues. These <script> tags allow Middleman to reload the page when changes to the file are made. We don't need them in our dFrame or mFrameContents potentially mucking things up.
-  // // Also removes <object> tags. Which is also injected by Middleman (and MM sometimes tries to remove it itself and fails)
-  // // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+
+  // Considered deprecated because we changed the way we load in code.
+
+      // // Remove all <script> tags. HTML emails cannot have them. We don't design them in there, but if you're viewing this page with Middleman then there will be some injected <script> tags that can cause us issues. These <script> tags allow Middleman to reload the page when changes to the file are made. We don't need them in our dFrame or mFrameContents potentially mucking things up.
+      // // Also removes <object> tags. Which is also injected by Middleman (and MM sometimes tries to remove it itself and fails)
+      // // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+      //
+      // cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+      // cleanedDesktopHtml  = cleanedDesktopHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+      // cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+
+  //////////////
   //
-  cleanedOriginalHtml = cleanedOriginalHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-  cleanedDesktopHtml  = cleanedDesktopHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
-  cleanedMobileHtml   = cleanedMobileHtml.replace(/<(object|script)\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/(object|script)>/gi, "");
+  //   BOTH VIEWS
+  //
+  //////////////
 
   // Add allFrames.css to both views
   var allFramesCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-allFrames.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">';
   cleanedDesktopHtml += allFramesCssString;
   cleanedMobileHtml += allFramesCssString;
+
 
   //////////////
   //

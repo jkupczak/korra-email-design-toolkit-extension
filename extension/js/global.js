@@ -392,6 +392,23 @@ function getFilePath(url) {
 }
 
 //
+// Get Filepath
+//
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+function getFileParentFolder(url) {
+
+  url = url.replace(/(^file:\/\/|\/[^/]+$)/gi,"").replace(/^.+\//i,"");
+
+  return url;
+}
+
+//
 // Process filename to find email date
 // Filenames should use YY-MM-DD.
 // YYYY can be used as well, but will be ignored. No harm!
