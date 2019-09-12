@@ -178,6 +178,25 @@ document.querySelector("html").classList.toggle("errors");
 //
 
 
+
+//////////////////////
+//
+//  Nav Buttons
+//
+//     -
+//
+//
+//
+//
+//////////////////////
+
+///////////
+// Power Button / Turn Off
+///////////
+
+document.getElementById("turn-off").href = fileLocation + "?korra=0";
+
+
 ///////////
 ///////////
 ///////////
@@ -251,7 +270,7 @@ if ( getParameterByName("presentation") === "1" ) {
     'code': false,
     'desktop': true,
     'mobile': true
-  }
+  };
 
   var stagePreviewBtns = document.createElement("div");
   stagePreviewBtns.classList.add("stage-preview-btns");
@@ -371,7 +390,7 @@ if ( getParameterByName("presentation") === "1" ) {
     var dFrameHTMLEle = dFrameContents.documentElement;
 
     // Activate spellcheck in dFrame by turning designmode on
-    activateSpellcheck(dFrameContents);
+    // activateSpellcheck(dFrameContents);
 
     // Get all images
     let imgList = dFrameContents.images; // better?
@@ -471,6 +490,8 @@ if ( getParameterByName("presentation") === "1" ) {
     ////
     //////
     // Grab all of the TEXT in the document before we start manipulating the HTML
+    console.log( dFrameBody );
+    console.log( dFrameBody.textContent );
     var preheader = cleanPlainTxt(dFrameBody.textContent); // http://stackoverflow.com/a/19032002/556079
 
 
@@ -550,7 +571,7 @@ if ( getParameterByName("presentation") === "1" ) {
     var mFrameBody = mFrameContents.body;
 
     // Activate spellcheck by turning designmode on
-    activateSpellcheck(mFrameContents);
+    // activateSpellcheck(mFrameContents);
 
     // Quick <style> Injection
     //
@@ -1342,12 +1363,9 @@ orbsBottom.appendChild(paneToggleOrb);
 ////
 /////////
 
-var shareOrb = document.createElement("div");
-shareOrb.className = "share-orb orb glyph";
-shareOrb.innerHTML = svgIconShare;
+var shareOrb = document.getElementById("share");
 if ( fileHost !== "local" ) { shareOrb.classList.add("off"); }
 shareOrb.addEventListener("click", getDbShareLink, false);
-orbsTop.appendChild(shareOrb);
 
 
 
@@ -1692,17 +1710,6 @@ function toggleGuides() {
   }
 }
 
-
-//////////
-////
-////   Create Power Orb (turn off JavaScript)
-////
-/////////
-
-var powerOrb = document.createElement("a");
-powerOrb.className = "power-orb orb glyph";
-powerOrb.href = fileLocation + "?korra=0";
-orbsBottom.appendChild(powerOrb);
 
 //////////
 ////
@@ -4054,7 +4061,19 @@ window.dragMoveListener = dragMoveListener;
 // Nav Bar
 
 //// Use this data to populate the nav bar
-document.getElementById("file-url").innerHTML = '<span class="url-div">/</span><span>' + fileParentFolder + '</span><span class="url-div">/</span><span>' + filename + '</span>';
+
+if ( fileHost === "externalserver" ) {
+
+  document.getElementById("file-url").innerHTML = '<span>' + fileLocation + '</span>';
+
+}
+else {
+
+  document.getElementById("file-url").innerHTML = '<span class="url-div soft">/</span><span class="soft">' + fileParentFolder + '</span><span class="url-div">/</span><span>' + filename + '</span>';
+
+}
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

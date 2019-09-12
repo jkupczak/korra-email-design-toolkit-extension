@@ -162,16 +162,16 @@ function KeyPress(e) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-var activateSpellcheck = function(frame) {
-
-  console.log("activating spellcheck");
-  frame.designMode = 'on';
-  frame.body.focus();
-  setTimeout(function(){
-    frame.designMode = 'off';
-  }, 500);
-
-};
+// var activateSpellcheck = function(frame) {
+//
+//   console.log("activating spellcheck");
+//   frame.designMode = 'on';
+//   frame.body.focus();
+//   setTimeout(function(){
+//     frame.designMode = 'off';
+//   }, 500);
+//
+// };
 
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -1540,7 +1540,7 @@ var swapInPlaceholderImages = function(options) {
 
     return rgba.replace(/[^0-9,]/gi,"").split(",");
 
-  }
+  };
 
 
 

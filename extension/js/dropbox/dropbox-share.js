@@ -180,13 +180,18 @@ function processDbLink(shareableLink, action, source) {
 
   if ( shareableLink.length > 0 ) {
 
-    if( !/dl\.dropboxusercontent/gi.test(shareableLink) ) {
-      shareableLink = shareableLink.replace(/www\./i, "dl.");
-      shareableLink = shareableLink.replace(/dropbox\.com/i, "dropboxusercontent.com");
-      shareableLink = shareableLink.replace(/\?dl=0/i, "");
-    } else {
+    // DEPRECATED
+    // Members of Marketing are tired of having to download the file everytime.
+    // At a glance it looks like it's not needed anymore while logged in because the HTML file is viewable instead of just showing the HTML code.
+    //
+    // if( !/dl\.dropboxusercontent/gi.test(shareableLink) ) {
+    //   shareableLink = shareableLink.replace(/www\./i, "dl.");
+    //   shareableLink = shareableLink.replace(/dropbox\.com/i, "dropboxusercontent.com");
+    //   shareableLink = shareableLink.replace(/\?dl=0/i, "");
+    // } else {
       shareableLink = getPathFromUrl(shareableLink);
-    }
+    // }
+
 
     if ( action === "copy" ) {
 

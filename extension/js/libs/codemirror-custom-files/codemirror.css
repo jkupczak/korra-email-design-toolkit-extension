@@ -20,7 +20,7 @@
 
 /* default tag matching background color does not match our Korra theme */
 .CodeMirror-matchingtag {
-  background: rgb(199, 207, 233, .22);
+  background: rgb(199, 207, 233, .15);
 }
 
 /* trailing space addon does not come with built-in CSS. It only adds a class. So here's our style for it. */
@@ -28,4 +28,14 @@
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUXCToH00Y1UgAAACFJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==);
   background-position: bottom left;
   background-repeat: repeat-x;
+}
+
+/* Nicer font stack */
+.CodeMirror {
+  font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  line-height:18px;
+}
+
+.CodeMirror-activeline-background {
+  background: rgba(255,255,255,0.03) !important;
 }

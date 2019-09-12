@@ -1990,8 +1990,8 @@ var displayErrorMsg = function(reason) {
   }
   else if (reason === "fileaccess") {
     emoji = "&#129296;";
-    title = "Access to this file was blocked.";
-    reasonText = "Verify that you've given Korra access to file URLs in the <a href='#' style='color:#c1c1e2' id='extension-details-page'>extension details page</a>.";
+    title = "Access to this file was blocked or the file is missing.";
+    reasonText = "Verify that you've given Korra access to file URLs in the <a href='#' style='color:#c1c1e2' id='extension-details-page'>extension details page</a>.<br>Also check that the file exists on your local harddrive.";
     tip = "";
     document.title = "Error: Access to this file was blocked.";
 
@@ -2005,7 +2005,7 @@ var displayErrorMsg = function(reason) {
 
   setTimeout(function() {
     document.querySelector("#loading").classList.add("fade-out");
-    document.querySelector(".loading-status").insertAdjacentHTML("afterbegin", '<div class="fade-in" style="padding:30px; position:absolute; flex-direction: column; top:0; left:0; right:0; bottom:0; color:#9d9db3; text-align:center; margin:auto; width:100%; height:200px; display:flex; align-items: center; justify-content: center; "><div style="font-size:160px; color:#c8c8d5; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)) drop-shadow(0 0 40px #1d87f1) drop-shadow(0 0 80px #1d87f1);">' + emoji + '</div><div style="padding-top:0px; font-size:36px; color:#c8c8d5;">' + title + '</div><div style="padding-top:20px; font-size:18px">' + reasonText + '</div>' + tip);
+    document.querySelector(".loading-status").insertAdjacentHTML("afterbegin", '<div class="fade-in" style="padding:30px; position:absolute; flex-direction: column; top:0; left:0; right:0; bottom:0; color:#9d9db3; text-align:center; margin:auto; width:100%; height:200px; display:flex; align-items: center; justify-content: center; "><div style="font-size:160px; color:#c8c8d5; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)) drop-shadow(0 0 40px #1d87f1) drop-shadow(0 0 80px #1d87f1);">' + emoji + '</div><div style="padding-top:0px; font-size:36px; color:#c8c8d5;">' + title + '</div><div style="padding-top:20px; font-size:18px; line-height:1.5;">' + reasonText + '</div>' + tip);
 
     document.querySelector("link[type='image/x-icon']").href = chrome.extension.getURL("/favicons/undefined.png");
 

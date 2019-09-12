@@ -75,7 +75,7 @@ var getAllOptions = new Promise((resolve, reject) => {
 ///////
 ///////
 
-let fileLocation, fileLocationWithoutProtocol, filename, fileParentFolder, filePath, isSavedFile, labelsAvailable;
+let fileLocation, encodedFileLocation, fileLocationWithoutProtocol, filename, fileParentFolder, filePath, isSavedFile, labelsAvailable;
 
 // decode the URL located in the `open` parameter before we use it
 fileLocation = decodeURIComponent(getParameterByName("open"));
@@ -89,6 +89,17 @@ if ( /^(https?|file):\/\//i.test(fileLocation) ) {
   filename = getFilename(fileLocation);
   fileParentFolder = getFileParentFolder(fileLocation);
   filePath = getFilePath(fileLocation);
+
+  // There are some characters in a file URL that prevent us from loading it.
+  // At this point `fileLocation` has been decoded after having been previously part of the url params.
+  // The only special characters in here should be literal.
+  // So we're going to encode any instances of the % sign.
+  // Once that is done we're then going to encode any instances of the '?' character.
+  // Otherwise, I believe Chrome thinks the '?' represents the beginning of a param? Unsure.
+  // Fact is that we can't load a file that that includes those characters without encoding them first.
+  // As of 8/29/19 this is working and I'm not aware of any filenames that we can't open
+  encodedFileLocation = fileLocation.replace(/%/gi, "%25");
+  encodedFileLocation = encodedFileLocation.replace(/\?/gi, "%3F");
 
   // Send the filePath to the background for use in potential webRequest blocking.
   chrome.runtime.sendMessage({type: "tabInfo", data: {filePath: filePath}}, function(response) {
@@ -176,8 +187,14 @@ var processCode = function (code) {
   if ( imgSrcs ) {
     imgSrcs.forEach(function (imgSrc, index) {
 
+      // Build the href we want to use
+      var baseHref = filePath;
+      if ( fileHost !== "externalserver" ) {
+        baseHref = "file://" + filePath;
+      }
+
       if ( !/(http(s)?|ftp|file):\/\//i.test(imgSrc) ) {
-        baseTag = '<base target="_blank" href="file://' + filePath + '/">';
+        baseTag = '<base target="_blank" href="' + baseHref + '/">';
       }
       else {
         baseTag = '<base target="_blank">';
@@ -316,9 +333,11 @@ var getHtml = new Promise(function(resolve, reject) {
   // It's not code saved in storage, it's a local file.
   } else {
 
-    console.info("Doing a GET request for a local file.\n", fileLocation);
+    console.info("Doing a GET request for a local file.\n", encodedFileLocation);
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", fileLocation, false); // true = async, false = sync
+
+    // The encoded
+    xhr.open("GET", encodedFileLocation, false); // true = async, false = sync
 
     // When xhring a local file, the response.status is 0
     xhr.onload = function (e) {
@@ -352,10 +371,11 @@ var getHtml = new Promise(function(resolve, reject) {
       xhr.send();
     }
     catch(error) {
-
       displayErrorMsg("fileaccess");
       console.error(error);
-
+      console.error(error.name);
+      console.error(error.message);
+      console.error(error.stack);
     }
 
 
@@ -402,55 +422,6 @@ Promise.all([getAllOptions, getHtml]).then(function(values) {
     }, 1000);
 
 });
-
-
-///////////////////////////////////
-///////////////////////////////////
-///////////////////////////////////
-///////////////////////////////////
-// Modify these to pull ALL options instead.
-
-// TODO
-// Use https://stackoverflow.com/a/33813793/556079
-// To wrap the options async call and the HTML async call above into one promise.
-// It will allow us to wait for both of them to finish before rendering the test of the page
-// Once that works, use the same code to wrap all of our XHR link checks together so that we know when they are all done.
-
-
-// Dropbox Access Token
-// var dbx;
-// chrome.storage.promise.sync.get('dropboxAccessToken').then(function(items) {
-//   dbx = new Dropbox({ accessToken: items.dropboxAccessToken });
-//   console.log("dropboxAccessToken: ", items.dropboxAccessToken);
-// }, function(error) {
-//   console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + items.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
-// });
-//
-// // Dropbox Parent Folder
-// chrome.storage.promise.sync.get('dropboxFolderName').then(function(items) {
-//   dropboxFolderName = items.dropboxFolderName;
-//   console.log("dropboxFolderName: ", dropboxFolderName);
-// }, function(error) {
-//   console.error("Could not retrieve Dropbox folder name from chrome.storage.sync. items.dropboxFolderName is " + items.dpLocalParentFolder);
-// });
-
-function resolveOptions(items) {
-
-  // [OPTION]: Dropbox Folder Name
-  // if (items.fullPathToDropboxFolder) {
-    // dropboxFolderName = items.fullPathToDropboxFolder.replace(/(^.+\/|\/$)/gi,"");
-
-    // [OPTION]: Dropbox Access Token
-                // dbx = new Dropbox({ accessToken: items.dropboxAccessToken });
-                // if ( items.dropboxAccessToken ) {
-                //   // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
-                // } else {
-                //   console.error("Could not retrieve Dropbox access token from chrome.storage.sync. items.dropboxAccessToken is " + items.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
-                // }
-  // }
-
-}
-
 
 
 ////

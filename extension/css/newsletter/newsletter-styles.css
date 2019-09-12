@@ -69,11 +69,10 @@ iframe {
 }
 
 .main-container .nav {
-  min-height:55px;
-  height:55px;
-  max-height:55px;
+  min-height:50px;
+  height:50px;
+  max-height:50px;
   background: #5e31b1;
-  /* background: #3b3b42; */
 }
 
 .main-container .body {
@@ -92,34 +91,83 @@ iframe {
 }
 .nav .logo {
   width:30px;
+  min-width: 30px;
   height: auto;
   opacity:.4;
   margin-left:16px;
 }
 
 .nav .file-url {
-  height:40px;
-  border-radius:40px;
-  /* width:500px; */
+  height:34px;
+  line-height:34px;
+
+  border-radius:34px;
   background-color: rgba(0,0,0,0.2);
-  line-height:40px;
+
+  /* display: flex; overflo ellipsis does not work with this*/
+  /* align-items: center; */
 
   color:#fff;
   font-size:14px;
   letter-spacing:0.5px;
-  font-weight:bold;
-  margin-left:16px;
+  margin-left:14px;
   padding:0 20px 0 20px;
+
+  overflow: hidden;
+  padding-right: 24px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
+
 .nav .file-url span {
   display: inline-block;
   margin-right:4px;
 }
     .nav .file-url span:last-child { margin-right:0; }
-    .nav .file-url span:nth-child(1),
-    .nav .file-url span:nth-child(2) {
+
+    .nav .file-url .soft {
       color: rgba(255,255,255,0.4);
     }
+
+/*****/
+.nav .nav-options {
+  margin-left: auto;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+  .nav .nav-btn {
+    width:28px;
+    height:28px;
+    margin-left:15px;
+    cursor:pointer;
+    opacity: .5;
+  }
+  .nav .nav-btn:hover {
+    opacity: 1;
+  }
+
+  /* Share */
+  .nav .nav-action-share .icon:before { content:"\76"; }
+  .nav .nav-action-share svg { fill:#ffffff; width:28px; height:28px; }
+
+  /* Turn Off */
+  .nav .nav-action-turn-off {
+    border-radius:100%;
+    font-size:16px;
+    box-shadow: rgba(255, 255, 255, 1) 0px 0px 0px 2px inset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+    .nav .nav-action-turn-off:before  {
+      color:#fff;
+      content:"\49";
+    }
+
+  /* */
+  .nav-btn.loading > * { display:none; }
 
 /* 2 Main Columns */
 /* Panes */
@@ -431,7 +479,6 @@ iframe {
 }
 
 .header-bar .main-menu .nav-plain-text .icon:before { content:"\75"; }
-.header-bar .main-menu .nav-share .icon:before      { content:"\76"; }
 .header-bar .main-menu .nav-dropbox .icon:before    { content:"\4e"; font-size:22px; padding-right:6px; }
 .header-bar .main-menu .nav-settings .icon:before   { content:"\4f"; font-size:26px; padding-right:3px; }
 
@@ -603,11 +650,13 @@ html.powered-up, html.powered-up body {
 .orbs-bottom .orb { margin-top:8px; }
 .orbs-top .orb { margin-bottom:8px; }
 
-.orb:hover { color:#fff; transform:scale(1.1, 1.1); transition:none; -webkit-transform-style: preserve-3d; }
-.orb:active { color:#fff; transform: scale(1, 1); -webkit-transform-style: preserve-3d; }
+.orb:hover { opacity:1; }
+/* .orb:hover { color:#fff; transform:scale(1.1, 1.1); transition:none; -webkit-transform-style: preserve-3d; } */
+/* .orb:active { color:#fff; transform: scale(1, 1); -webkit-transform-style: preserve-3d; } */
 .orb:before { display:block; width:100%; height:100%; font-weight:normal; text-decoration:none; }
 .orb:hover:before { color:#fff; }
-.orb.glyph { font-family: "medbridge-chrome-extension"; }
+.glyph { font-family: "medbridge-chrome-extension"; text-decoration: none; }
+
 
 /* .orb.on { transform:scale(1.3, 1.3); } */
 /* .orb.on { animation: OrbPulse .3s ease infinite; } */
@@ -664,7 +713,7 @@ html.powered-up, html.powered-up body {
   }
 }
 
-.orb.loading:hover {
+.orb.loading:hover, .orb.loading:hover * {
   pointer-events: none;
   cursor:default;
 }
@@ -687,14 +736,7 @@ html.powered-up, html.powered-up body {
 /* Top Orbs */
 /****/
 
-.power-orb { order:1; font-size:18px; box-shadow: rgba(255, 255, 255, .4) 0px 0px 0px 2px inset; }
-.power-orb:before { content:"\49"; }
 
-
-
-.share-orb { order:4; }
-/* .share-orb.on, .share-orb:hover { background:#77C159; } */
-.share-orb svg { fill:#6b6c6e; width:32px; height:32px; }
 
 
 

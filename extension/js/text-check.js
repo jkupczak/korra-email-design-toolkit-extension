@@ -244,19 +244,23 @@ var highlightTextErrors = function (stage) {
     findText({
       find: /CRRN[^\®]|(continuing education|from the )?blog|Unlimited CEUs(\.|!)|(asha( |\-)(approved|accredited)|at no extra cost|get your ceu|ceu's|\/?[A-Za-z]+>)/gi
     });
-    // Continuing Education, not Continued Education
 
-    // Speech-Language needa a hyphen
+    // Long-Term Care, not Long Term Care
+    findText({
+      find: /(Long Term Care)/gi
+    });
+
+    // Continuing Education, not Continued Education
     findText({
       find: /(continued education|speech language)/gi
     });
 
-        // Link Arrows → Arrows need to be immediately preceded by a non-breaking space to ensure it doesn't get dropped to the next line
+    // Link Arrows → Arrows need to be immediately preceded by a non-breaking space to ensure it doesn't get dropped to the next line
     findText({
       find: /(?:(?!\u00a0).{1}|^.{0,0})(\u2192)(?!\u00a0)/gi
     });
 
-        // CE Courses, not CEU Courses
+    // CE Courses, not CEU Courses
     findText({
       find: /\bCEU Course/gi
     });

@@ -645,30 +645,35 @@ function validateLinks(linkObj, i) {
     singleLinkInfoArray.type = "mailto"; //mailto link
     singleLinkInfoArray.checkStatus = false;
 
-  // merge tags
+  //merge tags
+  } else if ( /^\[.+?\]$/.test(linkHref) ) {
+    singleLinkInfoArray.espMergeTag = "sendgrid";
+    singleLinkInfoArray.type = "merge tag";
+    singleLinkInfoArray.checkStatus = false;
+
   } else if ( /^\*\|.+?\|\*$/.test(linkHref) ) {
     singleLinkInfoArray.espMergeTag = "mailchimp";
-    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.checkStatus = false;
 
   } else if ( /^\[\[.+?\]\]$/.test(linkHref) ) {
     singleLinkInfoArray.espMergeTag = "getresponse";
-    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.checkStatus = false;
 
-  } else if ( /^\[.+?\]$/.test(linkHref) ) {
-    singleLinkInfoArray.espMergeTag = "sendgrid";
-    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+  } else if ( /^\%.+?\%$/.test(linkHref) ) {
+    singleLinkInfoArray.espMergeTag = "activecampaign";
+    singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.checkStatus = false;
 
   } else if ( /^#.+?#$/.test(linkHref) ) {
     singleLinkInfoArray.espMergeTag = "on24";
-    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.checkStatus = false;
 
-  } else if ( /^\%\%.+?\%\%$/.test(linkHref) ) {
+  } else if ( /^({{|\%\%).+?(\%\%$|}})/.test(linkHref) ) {
     singleLinkInfoArray.espMergeTag = "pardot";
-    singleLinkInfoArray.type = "merge tag"; //merge tag (mailchimp, sendgrid, getresponse)
+    singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.checkStatus = false;
 
   // http
@@ -1151,10 +1156,14 @@ function validateLinks(linkObj, i) {
     // Get the img child first.
     if ( elementExists(linkObj.getElementsByTagName('img')[0]) ) {
       linkedImg = linkObj.getElementsByTagName('img')[0];
-    }
 
-    if ( linkObj.style.color === '' && (linkObj.textContent !== '' || linkedImg.alt !== '' ) ) {
+
+    if ( linkObj.style.color === '' ) {
+
+      if ( (linkedImg && linkObj.textContent !== '') || linkObj.textContent !== '' )
       createLinkErrorRow(linkObj, "Missing color in style attribute.");
+      }
+
     }
 
     // @TODO: Not seeing this bug. Disabled until I see it again.
