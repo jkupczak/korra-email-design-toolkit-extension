@@ -724,7 +724,7 @@ function getDisciplineId(string) {
   else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "ot";     }
   else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { disciplineId = "slp";    }
   else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { disciplineId = "other";  }
-  else if ( /-NR(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "nr";    }
+  else if ( /-RN(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "rn";    }
   else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { disciplineId = "lmt";    }
 
   else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "pt";     }
@@ -772,7 +772,7 @@ function getDisciplineName(id) {
   else if (id === "lmt") {
     return "Massage"
   }
-  else if (id === "nr") {
+  else if (id === "rn") {
     return "Nursing"
   }
   else if (id === "ent") {

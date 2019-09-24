@@ -639,6 +639,7 @@ function setDefaultOptions(reset) {
 
         // General
         'autoCheckLinks': '1',
+        'checkTargetAttribute': '1',
         'checkNoFollowLinks': '1',
 
         // Format Validation

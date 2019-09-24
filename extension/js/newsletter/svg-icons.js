@@ -77,8 +77,8 @@
 
 
 
-  // NR NS
-  var svgNRns = '<svg class="icon-nr-sub" viewBox="0 0 300 300"><circle style="fill:#C377E0" cx="150" cy="150" r="150"/><path style="fill:#FFFFFF" d="M222.2 236.4h-41.4l-61.2-107.5v107.5H77.8V63.6h41.7l61.1 107.5V63.6h41.5V236.4z"/></svg>';
+  // RN NS
+  var svgRNns = '<svg class="icon-rn-sub" viewBox="0 0 300 300"><circle style="fill:#C377E0" cx="150" cy="150" r="150"/><path style="fill:#FFFFFF" d="M222.2 236.4h-41.4l-61.2-107.5v107.5H77.8V63.6h41.7l61.1 107.5V63.6h41.5V236.4z"/></svg>';
 
-  // NR SUB
-  var svgNRsub = '<svg class="icon-nr-sub" viewBox="0 0 300 300"><path style="fill:#C377E0" d="M299.2 134.2C291.8 64 236 8.2 165.8 0.8L165 0H0v165l0.8 0.8C8.2 236 64 291.8 134.2 299.2l0.8 0.8h165V135L299.2 134.2z"/><path style="fill:#FFFFFF" d="M222.2 236.4h-41.4l-61.2-107.5v107.5H77.8V63.6h41.7l61.1 107.5V63.6h41.5V236.4z"/></svg>';
+  // RN SUB
+  var svgRNsub = '<svg class="icon-rn-sub" viewBox="0 0 300 300"><path style="fill:#C377E0" d="M299.2 134.2C291.8 64 236 8.2 165.8 0.8L165 0H0v165l0.8 0.8C8.2 236 64 291.8 134.2 299.2l0.8 0.8h165V135L299.2 134.2z"/><path style="fill:#FFFFFF" d="M222.2 236.4h-41.4l-61.2-107.5v107.5H77.8V63.6h41.7l61.1 107.5V63.6h41.5V236.4z"/></svg>';

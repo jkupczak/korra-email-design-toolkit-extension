@@ -914,8 +914,11 @@ function validateLinks(linkObj, i) {
     ////-----------------------------////
     ////
     // Link do NOT need a target attribute.
-    if ( linkObj.hasAttribute("target") ) {
-      createLinkErrorRow(linkObj, "Target attribute not needed.");
+
+    if ( options.sync.checkTargetAttribute === "1" ) {
+      if ( linkObj.hasAttribute("target") ) {
+        createLinkErrorRow(linkObj, "Target attribute not needed.");
+      }
     }
 
     ////-----------------------------////
@@ -1028,6 +1031,10 @@ function validateLinks(linkObj, i) {
       if ( /\?[^#]+\?.+\=/.test(linkHref) ) {
         createLinkErrorRow(linkObj, "Replace the ? with an & in the querystring.");
       }
+
+      ///////////
+      // @TODO - Add exclusions for merge tags
+      ///////////
 
       // Add characters you want to ignore twice. Like *, |, and '.
       if ( !/\?([\@\%\.\w-]+(=[\!\'\*\|\:\+\@\%\.\/\w-]*)?(&[\@\%\.\w-]+(=[\'\*\|\+\@\%\.\/\w-]*)?)*)?$/.test(linkHrefNoHash) ) {
@@ -1456,7 +1463,7 @@ function validateLinks(linkObj, i) {
           if ( emailDisc === "slp" && !/#\/?speech-language-pathology/gi.test(linkHref) ) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
-          if ( emailDisc === "nr" && !/#\/?nursing/gi.test(linkHref) ) {
+          if ( emailDisc === "rn" && !/#\/?nursing/gi.test(linkHref) ) {
             createLinkErrorRow(linkObj, "Wrong discipline in the hashtag.");
           }
         }

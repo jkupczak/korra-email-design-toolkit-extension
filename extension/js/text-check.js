@@ -186,10 +186,10 @@ var highlightTextErrors = function (stage) {
 
   //////////
   ////
-  //// Nursing - NR
+  //// Nursing - RN
   ////
   //////////
-  } else if ( emailDisc === "nr" ) {
+} else if ( emailDisc === "rn" ) {
 
     // case sensitive
     findText({find: /\b(ASHA|AOTA)\b/g });

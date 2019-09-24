@@ -1041,12 +1041,12 @@ if ( isSavedFile ) {
           } else {
             iconCode = svgOTHERns;
           }
-      // NR
-      } else if ( emailDisc === "nr" ) {
+      // RN
+    } else if ( emailDisc === "rn" ) {
           if ( emailSubType === "sub" ) {
-            iconCode = svgNRsub;
+            iconCode = svgRNsub;
           } else {
-            iconCode = svgNRns;
+            iconCode = svgRNns;
           }
       // ENT
       } else if ( emailDisc === "ent" ) {

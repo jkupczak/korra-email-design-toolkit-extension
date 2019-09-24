@@ -759,6 +759,15 @@
 									<div class="option-desc">Automatically validate that all links load properly in an email as soon as you open it. If you disable this you can still manually check or re-check your links without reloading on a per-email basis from within the email you're previewing.</div>
 								</div>
 
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="checkTargetAttribute" id="checkTargetAttribute" value="1" checked>
+									<label for="checkTargetAttribute">
+										Mark links with a <code>target</code> attribute with an error message
+									</label>
+									<div class="option-desc">When enabled, if the link has a <code>target</code> attribute you will see an error message.</div>
+									<div class="option-desc default-values">Default: On</div>
+								</div>
+
 								<div class="option-group textarea">
 									<label for="blacklist">Skip links from these domains</label>
 									<div class="option-desc">Prevent Korra from checking a link by adding it to the disallow list. Enter each URL on its own line.
@@ -775,7 +784,7 @@
 						<div class="options-section">
 
 							<div class="section-title">
-								<h2>Format Validation</h2>
+								<h2>URL Format Validation</h2>
 								<p>These settings focus on validating the formatting of your links.</p>
 							</div>
 
