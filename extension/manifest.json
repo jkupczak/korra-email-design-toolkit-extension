@@ -4,7 +4,7 @@
 
   "name": "Korra for Email: Design & QA Automation",
   "short_name": "Korra Email QA",
-  "version": "3.9.454",
+  "version": "3.9.460",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 
@@ -130,10 +130,6 @@
         "link-validation/js/link-validation.js",
         "link-validation/js/check-link-status.js"
       ]
-    },
-    {
-      "matches": ["*://*.mailchimp.com/campaigns/wizard/html-paste*"],
-      "js": ["js/mailchimp-link-check.js"]
     }
 
 

@@ -1050,63 +1050,6 @@ var logAccessibilityWarning = function(object, id) {
   updateQaBar(accessibilityWarningsQaBar, totalAccessibilityWarnings, " Accessibility Warnings");
 };
 
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
-/////
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-
-/**
- * [someFunction description]
- * @param  {[type]} arg1 [description]
- * @param  {[type]} arg2 [description]
- * @return {[type]}      [description]
- */
-
-const obscureCodeFromString = function(string) {
-
-  let imgUrls   = [];
-  let bgImgUrls = [];
-  let linkUrls  = [];
-
-
-
-}
-
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
-/////
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-
-/**
- * [someFunction description]
- * @param  {[type]} arg1 [description]
- * @param  {[type]} arg2 [description]
- * @return {[type]}      [description]
- */
-
-const obscureCodeFromDOM = function(string) {
-
-  let imgUrls   = [];
-  let bgImgUrls = [];
-  let linkUrls  = [];
-
-
-
-}
 
 
 ///////////////////////////////////////
@@ -1222,36 +1165,7 @@ function loadImgAll (imgList, timeout = 500) {
 }
 
 
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
-///// Create Placeholder Images
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
 
-/**
- * [someFunction description]
- * @param  {[object]} options [description]
- * @return {[type]}      [description]
- */
-
-var createPlaceholderImage = function(object, color, showDims) {
-
-  let newImgUrl = "https://via.placeholder.com/" + object.width + "x" + object.height + "/" + color;
-
-  // toggle showing the image dims
-  if ( showDims) {
-    newImgUrl = newImgUrl + "?text=%20";
-  }
-
-  return newImgUrl;
-
-}
 
 
 ///////////////////////////////////////
@@ -1317,322 +1231,47 @@ var toggleInfoLayer = function(intent) {
 
 };
 
+
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
 /////
 /////
-///// Convert Colors
+///// Toggle Link Markers
 /////
 /////
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-/**
- * [someFunction description]
- * @param  {[object]} options [description]
- * @return {[type]}      [description]
- */
+var linkMarkersToggle;
+var toggleLinkMarkers = function (source) {
 
-/////
-function hexToHsl(hex) {
+  console.log("Running: toggleLinkMarkers() with source of", source);
 
-  return rgbToHsl(hexToRgb(hex));
-
-}
-
-/////
-function hexToRgb(hex) {
-  var r = parseInt(hex.substr(1,2), 16); // Grab the hex representation of red (chars 1-2) and convert to decimal (base 10).
-  var g = parseInt(hex.substr(3,2), 16);
-  var b = parseInt(hex.substr(5,2), 16);
-
-  return [r, g, b];
-}
-
-/////
-function rgbToHsl(r, g, b){
-   r /= 255, g /= 255, b /= 255;
-   var max = Math.max(r, g, b), min = Math.min(r, g, b);
-   var h, s, l = (max + min) / 2;
-
-   if(max == min){
-       h = s = 0; // achromatic
-   }else{
-       var d = max - min;
-       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-       switch(max){
-           case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-           case g: h = (b - r) / d + 2; break;
-           case b: h = (r - g) / d + 4; break;
-       }
-       h /= 6;
-   }
-
-   return [h, s, l];
-}
-
-/////
-function rgbToHex(r, g, b) {
-    return ((1 << 24) + (parseInt(r) << 16) + (parseInt(g) << 8) + parseInt(b)).toString(16).slice(1);
-}
-
-/////
-function hslToHex(h, s, l) {
- h /= 360;
- s /= 100;
- l /= 100;
- let r, g, b;
- if (s === 0) {
-   r = g = b = l; // achromatic
- } else {
-   const hue2rgb = (p, q, t) => {
-     if (t < 0) t += 1;
-     if (t > 1) t -= 1;
-     if (t < 1 / 6) return p + (q - p) * 6 * t;
-     if (t < 1 / 2) return q;
-     if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-     return p;
-   };
-   const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-   const p = 2 * l - q;
-   r = hue2rgb(p, q, h + 1 / 3);
-   g = hue2rgb(p, q, h);
-   b = hue2rgb(p, q, h - 1 / 3);
- }
- const toHex = x => {
-   const hex = Math.round(x * 255).toString(16);
-   return hex.length === 1 ? '0' + hex : hex;
- };
- return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
-/**
- * Converts an HSL color value to RGB. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes h, s, and l are contained in the set [0, 1] and
- * returns r, g, and b in the set [0, 255].
- *
- * @param   {number}  h       The hue
- * @param   {number}  s       The saturation
- * @param   {number}  l       The lightness
- * @return  {Array}           The RGB representation
- */
-function hslToRgb(h, s, l){
-  var r, g, b;
-
-  if(s == 0){
-      r = g = b = l; // achromatic
-  } else {
-      var hue2rgb = function hue2rgb(p, q, t){
-          if(t < 0) t += 1;
-          if(t > 1) t -= 1;
-          if(t < 1/6) return p + (q - p) * 6 * t;
-          if(t < 1/2) return q;
-          if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-          return p;
-      }
-
-      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      var p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1/3);
-      g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1/3);
+  if ( source === "command" ) {
+    dFrameContents.getElementById("link-markers").classList.toggle("show-all");
   }
 
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
-
-/**
- * https://www.sitepoint.com/javascript-generate-lighter-darker-color/
- * -
- * In essence, the first three lines clean the string and expand 3-digit hex codes to a full 6-digit representation.
- * The loop extracts the red, green and blue values in turn, converts them to decimal, applies the luminosity factor,
- * and converts them back to hexadecimal.
- * -
- * ColorLuminance accepts two parameters:
- *  - hex - a hex color value such as "#abc" or "#123456" (the hash is optional)
- *  - lum - the luminosity factor, i.e. -0.1 is 10% darker, 0.2 is 20% lighter, etc.
- */
-
-function ColorLuminance(color, lum) {
-
-  // if it's an object, its rgb. convert it to a hex
-  let hex;
-  if ( typeof color === 'object' && color !== null ) {
-    hex = ((1 << 24) + (color[0] << 16) + (color[1] << 8) + color[2]).toString(16).slice(1);
-  } else {
-    hex = color;
-  }
-
-	// validate hex string
-	hex = String(hex).replace(/[^0-9a-f]/gi, '');
-	if (hex.length < 6) {
-		hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-	}
-	lum = lum || 0;
-
-	// convert to decimal and change luminosity
-	var adjustedHex = "", c, i;
-	for (i = 0; i < 3; i++) {
-		c = parseInt(hex.substr(i*2,2), 16);
-		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
-		adjustedHex += ("00"+c).substr(c.length);
-	}
-
-	return adjustedHex;
-}
-
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
-///// Replace images with placeholders
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-
-/**
- * [someFunction description]
- * @param  {[object]} options [description]
- * @return {[type]}      [description]
- */
-var swapInPlaceholderImages = function(options) {
-
-	// Default settings
-	var defaults = {
-		targets: frames,
-
-    inheritImgColor: true, // inherit pulls from the background color of the image if declared
-    imgColor: 'CCCCCC', // hex code with no hash, 'randomize', [CCCCCC, 'randomize', 0.1] (randomize the colors up and down 10%)
-
-    inheritBgColor: true, // inherit pulls from the background color of the element if declared
-    bgColor: 'bebebe', // no hash
-
-    randomizeColorRange: -0.1, // false or decimal (randomly selects a brightness within that range up or down)
-
-    imgDims: 'natural', // computed or natural
-    showDims: false // true or false
-	};
-	// Merged settings
-	var settings = Object.assign({}, defaults, options);
+  else {
 
 
-  // function to check if rgba is transparent
-  let isTransparent = function(rgba) {
-
-    if ( rgba[3] === "0" ) {
-      return true;
+    if ( this.nodeType !== 1 ) {
+      dFrameContents.getElementById("link-markers").classList.add("on-page-load");
+    } else if ( dFrameContents.querySelector(".on-page-load") ) {
+      dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
+    } else {
+      dFrameContents.getElementById("link-markers").classList.toggle("hidden");
     }
 
-    return false;
+    linkMarkersToggle = !linkMarkersToggle;
+
+    if ( linkMarkersToggle ) {
+      history.replaceState(null,null, updateQueryString("links", "0") );
+    } else {
+      history.replaceState(null,null, updateQueryString("links") );
+    }
 
   }
-
-
-
-  ////
-  let convertRgbaToObject = function(rgba) {
-
-    return rgba.replace(/[^0-9,]/gi,"").split(",");
-
-  };
-
-
-
-  // function to generate a color
-  let getColor = function(img) {
-
-    // use the fallback color
-    let color = settings.imgColor;
-
-    // do we need to bother checking for the images background color?
-    // if yes, find it and change the color we just set
-    if ( settings.inheritImgColor ) {
-      let computedColor = window.getComputedStyle(img, null).getPropertyValue('background-color');
-
-      // chrome returns computed colors as rgb or rgba. turn this into an object we can use
-      let rgbaObject = convertRgbaToObject(computedColor);
-      console.log(rgbaObject);
-
-      // if the image has a color and it's not 0 opacity, use it
-      if ( computedColor !== "rgba(0, 0, 0, 0)" && computedColor !== "transparent" && !isTransparent(rgbaObject) ) {
-
-        console.log("!", color);
-        console.log("!", rgbaObject[0], rgbaObject[1], rgbaObject[2]);
-        color = rgbToHex(rgbaObject[0], rgbaObject[1], rgbaObject[2]);
-        console.log("!", color);
-      }
-
-      // couldn't find a solid image color, we're safe to apply a random luminance if we want
-      else {
-
-        if ( settings.randomizeColorRange ) {
-          color = ColorLuminance(color, settings.randomizeColorRange);
-        }
-
-      }
-    }
-
-
-    console.log( color );
-
-    return color;
-
-  }
-
-  // function for getting the image dims
-  let getSize = function(img, type) {
-
-    let dims = {};
-
-    if ( type === 'natural' ) {
-      dims.width =  img.naturalWidth;
-      dims.height = img.naturalHeight;
-    }
-
-    // use computed style if it was requested or if naturalWidth came back as 0
-    if ( dims.width === 0 || type === 'computed' ) {
-      let imgStyles = window.getComputedStyle(img);
-      dims.width =  round( parseInt(imgStyles.getPropertyValue("width").replace(/[A-Za-z]/g,""))  );
-      dims.height = round( parseInt(imgStyles.getPropertyValue("height").replace(/[A-Za-z]/g,"")) );
-    }
-
-    return dims;
-
-  };
-
-
-  // Loop through all target frames
-  Object.keys(settings.targets).forEach(function (item) {
-
-    // images first
-    let imgs = settings.targets[item].contentDocument.querySelectorAll("img");
-    imgs.forEach(function (img, index) {
-
-      // get the image dims
-      let dims = getSize(img, settings.imgDims);
-
-      // get the color
-      let color = getColor(img);
-
-      // create image url
-      let newImgUrl = createPlaceholderImage(dims, color, showDims);
-
-      // set new url
-      img.src = newImgUrl;
-
-    });
-
-    // background images second
-    let bgImgs = getBgImgs(settings.targets[item].contentDocument);
-    console.log(bgImgs);
-
-  });
-
 
 };

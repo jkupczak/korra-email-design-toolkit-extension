@@ -171,7 +171,7 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
 /////////////////
 function applyXHRResultsToDupeLinks(linkHref, response, options) {
 
-  // console.log("running applyXHRResultsToDupeLinks on links that match", linkHref);
+  console.log("running: applyXHRResultsToDupeLinks() on links that match =>", linkHref);
 
   // Start a new loop through all links in the DOM
   var i = 0;
@@ -515,6 +515,8 @@ var linkCheckTimeout = 30000;
 
 function checkURL(i, linkHref, linkObj) {
 
+  console.log("running: checkURL()");
+
   totalXHRs++;
 
   var response = {source:null,status:null,statusText:null,responseURL:null,document:null,isRedirect:null,redirectOK:true,articleProtected:null};
@@ -545,7 +547,7 @@ function checkURL(i, linkHref, linkObj) {
           response.responseURL = xhr.responseURL;
 
           // Redirects eventually return 200, here we compare the response URL with the requested to detect redirects
-          if ( xhr.responseURL == linkHref.split('#')[0] ) {
+          if ( xhr.responseURL == linkObj.urlInDOMMergeTagSafe.split('#')[0] ) {
             response.isRedirect = false;
           }
           // This link was redirected.
@@ -566,7 +568,7 @@ function checkURL(i, linkHref, linkObj) {
 
     try {
       // xhr.open(getOption("checkType"), url, true);
-      xhr.open("GET", linkHref, true);
+      xhr.open("GET", linkObj.urlInDOMMergeTagSafe, true);
       xhr.send();
     }
     catch(e){
@@ -637,8 +639,8 @@ function assignErrorRows(i, linkHref, linkObj, response) {
 // If so, XHR is necessary.
 ////////
 function XHRisNecessary(options, linkHref) {
-  console.log(options);
-  console.log(options.sync.parseDOM);
+  // console.log(options);
+  // console.log(options.sync.parseDOM);
   if ( shouldDOMbeParsed(linkHref, options.sync.parseDOM) === '1' || options.sync.cacheLinksThatLoadProperly === '0' ) {
     return true;
   }

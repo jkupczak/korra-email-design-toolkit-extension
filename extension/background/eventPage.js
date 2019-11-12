@@ -643,7 +643,8 @@ function setDefaultOptions(reset) {
         'checkNoFollowLinks': '1',
 
         // Format Validation
-
+        'ignoreESPTags': '1',
+        
         // Loading Validation
         'cacheValidLinks': '1',
         'parseDOM': '1',

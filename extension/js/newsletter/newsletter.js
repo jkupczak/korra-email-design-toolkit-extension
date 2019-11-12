@@ -490,8 +490,8 @@ if ( getParameterByName("presentation") === "1" ) {
     ////
     //////
     // Grab all of the TEXT in the document before we start manipulating the HTML
-    console.log( dFrameBody );
-    console.log( dFrameBody.textContent );
+    // console.log( dFrameBody );
+    // console.log( dFrameBody.textContent );
     var preheader = cleanPlainTxt(dFrameBody.textContent); // http://stackoverflow.com/a/19032002/556079
 
 
@@ -1735,20 +1735,6 @@ ajaxOrb.className = "ajax-orb orb glyph icomoon icomoon-spinner4";
 ajaxOrb.id = "ajax-orb";
 ajaxOrb.addEventListener("click", manualXHRLinkCheck, false);
 orbsBottom.appendChild(ajaxOrb);
-
-
-//////////
-////
-////   Custom Orb
-////
-/////////
-
-var customOrb = document.createElement("div");
-customOrb.className = "custom-orb orb glyph";
-customOrb.id = "custom-orb";
-customOrb.addEventListener("click", sendEmail, false);
-// orbsBottom.appendChild(customOrb); // OFF for now
-var presentationToggle = false;
 
 
 
@@ -3376,25 +3362,7 @@ if ( getParameterByName("helpers") === "0" ) {
 }
 
 
-var toggleLinkMarkers = function () {
 
-  if ( this.nodeType !== 1 ) {
-    dFrameContents.getElementById("link-markers").classList.add("on-page-load");
-  } else if ( dFrameContents.querySelector(".on-page-load") ) {
-    dFrameContents.getElementById("link-markers").classList.remove("on-page-load");
-  } else {
-    dFrameContents.getElementById("link-markers").classList.toggle("hidden");
-  }
-
-  linkMarkersToggle = !linkMarkersToggle;
-
-  if ( linkMarkersToggle ) {
-    history.replaceState(null,null, updateQueryString("links", "0") );
-  } else {
-    history.replaceState(null,null, updateQueryString("links") );
-  }
-
-};
 
 
 window.onload = function () {
@@ -3493,7 +3461,7 @@ document.addEventListener('keyup', function(e) { currentKey = ''; });
 dFrameContents.addEventListener('keydown', function(e) {
   currentKey = e;
   processShortcut(e);
-  console.log(e);
+  // console.log(e);
 });
 dFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 
@@ -3501,7 +3469,7 @@ dFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 mFrameContents.addEventListener('keydown', function(e) {
   currentKey = e;
   processShortcut(e);
-  console.log(e);
+  // console.log(e);
 });
 mFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 
@@ -3515,6 +3483,9 @@ mFrameContents.addEventListener('keyup', function(e) { currentKey = ''; });
 ////////////////////
 ////////////////////
 ////////////////////
+
+// Get keycodes
+// https://css-tricks.com/snippets/javascript/javascript-keycodes/
 
 // Old Fashion because keymaster.js can't read keystrokes from iframes
 //////////////
@@ -3566,6 +3537,12 @@ var processShortcut = function (e) {
   if ( (e.ctrlKey || e.metaKey ) && e.keyCode == 49 ) {
     e.preventDefault();
     toggleInfoLayer();
+  }
+
+  // Show Link Markers
+  if ( (e.ctrlKey || e.metaKey ) && e.keyCode == 50 ) {
+    e.preventDefault();
+    toggleLinkMarkers("command");
   }
 
 

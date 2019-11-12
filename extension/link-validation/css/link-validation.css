@@ -120,6 +120,10 @@ korra-div, korra-link-data, korra-link-marker, korra-link-validation {
   display:none;
 }
 
+#link-markers.show-all .link-marker {
+  display:block;
+}
+
 .link-marker.error.pinned {
 
 }

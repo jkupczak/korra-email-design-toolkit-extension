@@ -20,39 +20,45 @@
  * @param  {[type]} arg2 [description]
  * @return {[type]}      [description]
  */
-function sendEmail(html, text) {
+function sendEmail(sendOptions) {
   console.log(options.sync.mailgunApiKey);
-  // console.log(mailgunApiKey);
 
-  var emailTo      = "Korra via Mailgun <postmaster@" + options.sync.mailgunDomainName + ">";
-  var emailFrom    = "james@medbridgeed.com";
-  var emailSubject = "Hello from Korra & Mailgun";
+	// Default settings
+	var defaults = {
+    from:         "Korra via Mailgun <postmaster@" + options.sync.mailgunDomainName + ">",
+    to:           "james@medbridgeed.com",
+    subject:      "Hello from Korra & Mailgun (" + new Date() + ")",
+    description:  "",
+    html:         originalHtml,
+    text:         ""
+	};
+  // Merged settings
+	var settings = Object.assign({}, defaults, sendOptions);
 
+  // log the final settings to the console
+  console.log(settings);
+
+  // Data object
   var data = new FormData();
-  data.append("from", emailTo);
-  data.append("to", emailFrom);
-  data.append("subject", emailSubject);
+  data.append("from", settings.from);
+  data.append("to",   settings.to);
+  data.append("subject", settings.subject);
 
   var sendHtml = true;
   if ( sendHtml ) {
-    if ( !html ) {
-      html = cleanedOriginalHtml;
-    }
-    data.append("html", html);
+    data.append("html", settings.html);
   } else {
-
-    if ( !text ) {
-      text = plainTextVersion;
-    }
-    data.append("text", text);
+    data.append("text", settings.text);
   }
+
+  console.log(data);
 
   var xhr = new XMLHttpRequest();
   xhr.withCredentials = true;
 
   xhr.addEventListener("readystatechange", function () {
     if (this.readyState === 4) {
-      console.log("to:", emailTo, "from:", emailFrom, "subject:", emailSubject);
+      console.log(this);
       console.log(this.responseText);
     }
   });

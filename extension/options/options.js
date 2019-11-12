@@ -210,6 +210,14 @@ var loadOptions = function() {
     loadingFinished();
   });
 
+
+  // Resolve Discrepencies
+  // ############ @TODO ############
+  // It's possible for the saved options to be erased.
+  // If this happens, there will be a discrepency with the options page because
+  // many options have a default setting coded into the HTML.
+  // I need to write some code to account for this.
+
 };
 loadOptions();
 
@@ -817,12 +825,29 @@ function ruleFunctions(e) {
 
       else if ( field.type === 'text' || field.type === 'number' || field.type === 'select-one' || field.type === 'textarea' ) {
 
-        // Clean up fullPathToDropboxFolder
-        // if ( field.name === "fullPathToDropboxFolder" ) {
-        //   field.value = field.value.trim().replace(/(^\/+|\/+$)/gi,"");
-        // }
+        if ( field.dataset.group === 'true' ) {
 
-        savedValue = field.value.trim();
+          if ( field.dataset.type === 'keyvalue' ) {
+
+            savedValue = {};
+            let fieldGroup = document.getElementsByName(field.name);
+            for (let field of fieldGroup) {
+              if ( field.dataset.order === 'key' ) {
+                savedValue.key = field.value;
+              }
+              else {
+                savedValue.value = field.value;
+              }
+            }
+
+          }
+
+        }
+        else {
+
+          savedValue = field.value.trim();
+
+        }
       }
 
       savedValueObject = [];

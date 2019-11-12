@@ -5,6 +5,7 @@
 /////
 
 let options = {};
+let o = {};
 var getAllOptions = new Promise((resolve, reject) => {
 
   console.time('storage.sync');
@@ -21,6 +22,7 @@ var getAllOptions = new Promise((resolve, reject) => {
       // Apply our result to a global variable so that we can use it throughout our other scripts.
       // Maybe not the best way to handle this?
       options.sync = items;
+      o.sync = items;
 
       console.groupCollapsed("Options from chrome.storage.sync");
       console.timeEnd('storage.sync');
@@ -37,7 +39,7 @@ var getAllOptions = new Promise((resolve, reject) => {
       // exOptions.optionName // returns the option I want.
       // They are afterall all already named within the object!
       // @TODO
-      resolveOptions(items);
+      // resolveOptions(items);
       resolve(items);
     }
   });
@@ -56,13 +58,14 @@ var getAllOptions = new Promise((resolve, reject) => {
       // Apply our result to a global variable so that we can use it throughout our other scripts.
       // Maybe not the best way to handle this?
       options.local = items;
+      o.local = items;
 
       console.groupCollapsed("Options from chrome.storage.local");
       console.timeEnd('storage.local');
       console.log(options.local);
       console.groupEnd();
 
-      resolveOptions(items);
+      // resolveOptions(items);
       resolve(items);
     }
   });

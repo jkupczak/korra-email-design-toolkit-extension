@@ -68,12 +68,6 @@ iframe {
   left:0;
 }
 
-.main-container .nav {
-  min-height:50px;
-  height:50px;
-  max-height:50px;
-  background: #5e31b1;
-}
 
 .main-container .body {
   height: 100%;
@@ -86,8 +80,16 @@ iframe {
 
 /* Nav */
 .nav {
+  min-height:50px;
+  height:50px;
+  max-height:50px;
+  background: rgba(255,255,255,0.05);
+
   display: flex;
   align-items: center;
+  box-shadow: 0px 0px 0 1px;
+  z-index: 9999;
+
 }
 .nav .logo {
   width:30px;
@@ -102,7 +104,7 @@ iframe {
   line-height:34px;
 
   border-radius:34px;
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0,0,0,0.3);
 
   /* display: flex; overflo ellipsis does not work with this*/
   /* align-items: center; */
@@ -2373,8 +2375,23 @@ html.error-status.errors:before {
   top:0; left:0;
   background: rgb(35, 35, 40, .96);
 
-  padding:100px;
+  padding:80px 100px 0 100px;
   color:#d1d6de;
+}
+
+#info-overlay .columns {
+  display: flex;
+  height: 100%;
+}
+
+#info-overlay .file-info {
+  padding-right:30px;
+  border-right:1px solid rgba(255,255,255,0.25);
+  width:75%;
+}
+#info-overlay .shortcuts-legend {
+  padding-left:30px;
+  width:25%;
 }
 
 #info-overlay .label {
@@ -2391,9 +2408,10 @@ html.error-status.errors:before {
   display: inline-block;
 }
 
-#info-overlay .title {
+#info-overlay .title.row {
   font-family: Roboto-Light;
   font-size:26px;
+  margin-bottom:30px;
 }
 
 #info-overlay .section {
@@ -2408,4 +2426,19 @@ html.error-status.errors:before {
 
 #info-overlay .accessible {
   letter-spacing:1px;
+}
+
+.shortcuts-legend .shortcut {
+  margin-bottom:10px;
+  display: flex;
+  align-items:center;
+}
+
+.shortcuts-legend .keys {
+  font-family: monospace;
+  border-radius:3px;
+  background: #4d78da;
+  width: fit-content;
+  padding:2px 4px;
+  margin-right:10px;
 }
