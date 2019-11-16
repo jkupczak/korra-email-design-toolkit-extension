@@ -78,34 +78,36 @@ var getAllOptions = new Promise((resolve, reject) => {
 ///////
 ///////
 
-let fileLocation, encodedFileLocation, fileLocationWithoutProtocol, filename, fileParentFolder, filePath, isSavedFile, labelsAvailable;
+let isSavedFile, labelsAvailable;
+
+let email = {};
 
 // decode the URL located in the `open` parameter before we use it
-fileLocation = decodeURIComponent(getParameterByName("open"));
+email.fileLocation = decodeURIComponent(getParameterByName("open"));
 
-if ( /^(https?|file):\/\//i.test(fileLocation) ) {
-  fileLocationWithoutProtocol = fileLocation.replace(/^(https?|file)\:\/\//i,"");
+if ( /^(https?|file):\/\//i.test(email.fileLocation) ) {
+  email.fileLocationWithoutProtocol = email.fileLocation.replace(/^(https?|file)\:\/\//i,"");
 
   isSavedFile = true;
   labelsAvailable = true;
 
-  filename = getFilename(fileLocation);
-  fileParentFolder = getFileParentFolder(fileLocation);
-  filePath = getFilePath(fileLocation);
+  email.filename = getFilename(email.fileLocation);
+  email.fileParentFolder = getFileParentFolder(email.fileLocation);
+  email.filePath = getFilePath(email.fileLocation);
 
   // There are some characters in a file URL that prevent us from loading it.
-  // At this point `fileLocation` has been decoded after having been previously part of the url params.
+  // At this point `email.fileLocation` has been decoded after having been previously part of the url params.
   // The only special characters in here should be literal.
   // So we're going to encode any instances of the % sign.
   // Once that is done we're then going to encode any instances of the '?' character.
   // Otherwise, I believe Chrome thinks the '?' represents the beginning of a param? Unsure.
   // Fact is that we can't load a file that that includes those characters without encoding them first.
   // As of 8/29/19 this is working and I'm not aware of any filenames that we can't open
-  encodedFileLocation = fileLocation.replace(/%/gi, "%25");
-  encodedFileLocation = encodedFileLocation.replace(/\?/gi, "%3F");
+  email.encodedFileLocation = email.fileLocation.replace(/%/gi, "%25");
+  email.encodedFileLocation = email.encodedFileLocation.replace(/\?/gi, "%3F");
 
   // Send the filePath to the background for use in potential webRequest blocking.
-  chrome.runtime.sendMessage({type: "tabInfo", data: {filePath: filePath}}, function(response) {
+  chrome.runtime.sendMessage({type: "tabInfo", data: {filePath: email.filePath}}, function(response) {
     // console.log(response.farewell);
   });
 
@@ -126,30 +128,29 @@ else { // this is unsaved code
 ///// Is on being from a locally hosted server? = "server"
 ///////////
 
-let fileHost;
-if ( /^file\:\/\//i.test(fileLocation) ) {
-  fileHost = "local";
+if ( /^file\:\/\//i.test(email.fileLocation) ) {
+  email.fileHost = "local";
 
 // @TODO - This should pull from user submitted paths.
-} else if ( /^https?\:\/\/localhost\:/i.test(fileLocation) ) {
-  fileHost = "localserver";
+} else if ( /^https?\:\/\/localhost\:/i.test(email.fileLocation) ) {
+  email.fileHost = "localserver";
 
 // @TODO - This should pull from user submitted paths.
-} else if ( /^https?\:\/\//i.test(fileLocation) ) {
-  fileHost = "externalserver";
+} else if ( /^https?\:\/\//i.test(email.fileLocation) ) {
+  email.fileHost = "externalserver";
 
 } else {
-  fileHost = "korra";
+  email.fileHost = "korra";
 }
 
 console.groupCollapsed("[location]");
-  console.log("fileLocation:", fileLocation);
-  console.log("fileLocationWithoutProtocol:", fileLocationWithoutProtocol);
-  console.log("filePath:", filePath);
-  console.log("filename:", filename);
+  console.log("email.fileLocation:", email.fileLocation);
+  console.log("email.fileLocationWithoutProtocol:", email.fileLocationWithoutProtocol);
+  console.log("email.filePath:", email.filePath);
+  console.log("email.filename:", email.filename);
   console.log("isSavedFile:", isSavedFile);
   console.log("labelsAvailable:", labelsAvailable);
-  console.log("fileHost:", fileHost);
+  console.log("email.fileHost:", email.fileHost);
 console.groupEnd();
 
 ////////////////////////////
@@ -191,9 +192,9 @@ var processCode = function (code) {
     imgSrcs.forEach(function (imgSrc, index) {
 
       // Build the href we want to use
-      var baseHref = filePath;
-      if ( fileHost !== "externalserver" ) {
-        baseHref = "file://" + filePath;
+      var baseHref = email.filePath;
+      if ( email.fileHost !== "externalserver" ) {
+        baseHref = "file://" + email.filePath;
       }
 
       if ( !/(http(s)?|ftp|file):\/\//i.test(imgSrc) ) {
@@ -322,12 +323,12 @@ var getHtml = new Promise(function(resolve, reject) {
   // Check if its code saved in storage
   if ( !isSavedFile ) {
 
-    console.info("Doing a GET request for code saved in storage.\n", fileLocation);
-    chrome.storage.promise.local.get(fileLocation).then(function(items) {
+    console.info("Doing a GET request for code saved in storage.\n", email.fileLocation);
+    chrome.storage.promise.local.get(email.fileLocation).then(function(items) {
       // resolved
       console.log(items); // => {'foo': 'bar'}
-      processCode(items[fileLocation]);
-      resolve(items[fileLocation]);
+      processCode(items[email.fileLocation]);
+      resolve(items[email.fileLocation]);
     }, function(error) {
       // rejected
       console.log(error);
@@ -336,11 +337,11 @@ var getHtml = new Promise(function(resolve, reject) {
   // It's not code saved in storage, it's a local file.
   } else {
 
-    console.info("Doing a GET request for a local file.\n", encodedFileLocation);
+    console.info("Doing a GET request for a local file.\n", email.encodedFileLocation);
     var xhr = new XMLHttpRequest();
 
     // The encoded
-    xhr.open("GET", encodedFileLocation, false); // true = async, false = sync
+    xhr.open("GET", email.encodedFileLocation, false); // true = async, false = sync
 
     // When xhring a local file, the response.status is 0
     xhr.onload = function (e) {
@@ -408,17 +409,17 @@ Promise.all([getAllOptions, getHtml]).then(function(values) {
           if ( options.sync.openInEditor === "atom" ) {
             openInEditorLink.innerHTML = "Open in Atom";
             editorPath = 'atom://open?url=';
-            openInEditorLink.href = editorPath + fileLocation;
+            openInEditorLink.href = editorPath + email.fileLocation;
 
           } else if ( options.sync.openInEditor === "sublime" ) {
             openInEditorLink.innerHTML = "Open in Sublime Text";
             editorPath = 'subl://open?url=';
-            openInEditorLink.href = editorPath + fileLocation;
+            openInEditorLink.href = editorPath + email.fileLocation;
 
           } else if ( options.sync.openInEditor === "vscode" ) {
             openInEditorLink.innerHTML = "Open in VS Code";
             editorPath = 'vscode://file/';
-            openInEditorLink.href = editorPath + fileLocation.replace(/^file:\/\//i,"");
+            openInEditorLink.href = editorPath + email.fileLocation.replace(/^file:\/\//i,"");
 
           }
 

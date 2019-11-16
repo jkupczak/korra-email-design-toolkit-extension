@@ -82,22 +82,22 @@ linkListUniqueURLs.push("https://www.google.com");
 // TODO
 // Temporary Variables
 /////////////
-if ( typeof emailSubType === 'undefined' ) {
-  // In the absence of a emailsubtype, use "ns"
-  emailSubType = "ns";
-}
-if (typeof outsideOrg === 'undefined') {
-  outsideOrg = false;
-}
-if (typeof emailPlatform === 'undefined') {
-  emailPlatform = "mc";
-}
-if (typeof emailOrgName === 'undefined') {
-  emailOrgName = "";
-}
-if (typeof emailDisc === 'undefined') {
-  emailDisc = undefined;
-}
+    // if ( typeof email.subscription === 'undefined' ) {
+    //   // In the absence of a email.subscription, use "ns"
+    //   email.subscription = "ns";
+    // }
+    // if (typeof email.outsideOrg === 'undefined') {
+    //   email.outsideOrg = false;
+    // }
+    // if (typeof email.esp === 'undefined') {
+    //   email.esp = "ac";
+    // }
+    // if (typeof email.organization === 'undefined') {
+    //   email.organization = "";
+    // }
+    // if (typeof email.audience === 'undefined') {
+    //   email.audience = undefined;
+    // }
 
 // Inject Stylesheet
 // console.log( frameContents );
@@ -166,7 +166,7 @@ frameContents.documentElement.appendChild(validationStylesheet);
   // This is important for marketing tracking urls, utm_source, and utm_campaign
   //////////////////
 
-  if ( emailSubType === "ns" ) {
+  if ( email.subscription === "ns" ) {
     // tracking url
     commonTrkUrl = mostCommonString("tracking", medbridgeLinkUrlsList);
     if ( commonTrkUrl ) {
@@ -774,16 +774,16 @@ function validateLinks(l, i) {
   else if ( singleLinkInfoArray.type === "merge tag" ) {
 
     // Links in an email for the GetResponse Platform
-    if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(l.urlInDOM) ) { // Look for MailChimp and SendGrid merge tags.
-      createLinkErrorRow(l, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+    if ( email.esp === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(l.urlInDOM) ) { // Look for MailChimp and SendGrid merge tags.
+      createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
     }
     // Links in an email for the MailChimp Platform
-    else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(l.urlInDOM) ) { // Look for SendGrid and GR merge tags.
-      createLinkErrorRow(l, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+    else if ( email.esp === "mc" && /^\[\[?.+\]\]?/gi.test(l.urlInDOM) ) { // Look for SendGrid and GR merge tags.
+      createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
     }
     // Links in an email for the SendGrid Platform
-    else if ( emailPlatform === "sg" && /(^\[\[.+\]\]|\*\|.+?\|\*|\*\%7C.+?%7C\*)/gi.test(l.urlInDOM) ) { // Look for MailChimp and GR merge tags.
-      createLinkErrorRow(l, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+    else if ( email.esp === "sg" && /(^\[\[.+\]\]|\*\|.+?\|\*|\*\%7C.+?%7C\*)/gi.test(l.urlInDOM) ) { // Look for MailChimp and GR merge tags.
+      createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
     }
 
     // QUICK FIX: The mailchimp merge tag *|...|* doesn't play well with Twitter during our ajax request. We need to escape the pipes | in order to get a working URL.
@@ -865,7 +865,7 @@ function validateLinks(l, i) {
 
     // Needs Google Tracking (utm_content
     linkNeedsGoogleTracking = false;
-    if ( singleLinkInfoArray.isMedBridgeEdLink && !outsideOrg && emailPlatform === "mc" ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && !email.outsideOrg && email.esp === "mc" ) {
       linkNeedsGoogleTracking = true;
     } else {
       linkNeedsGoogleTracking = false;
@@ -874,7 +874,7 @@ function validateLinks(l, i) {
 
     ////
     var linkNeedsPromoCode;
-    if ( (emailSubType === "ns" && !outsideOrg && emailPlatform !== "pd" && emailDisc !== "ent" ) && singleLinkInfoArray.isMedBridgeBrandLink ) {
+    if ( (email.subscription === "ns" && !email.outsideOrg && email.esp !== "pd" && email.audience !== "ent" ) && singleLinkInfoArray.isMedBridgeBrandLink ) {
       linkNeedsPromoCode = true;
     } else {
       linkNeedsPromoCode = false;
@@ -924,7 +924,7 @@ function validateLinks(l, i) {
 
     // Marketing URL's
     // trk = mc, grtrk = getresponse
-    if ( emailPlatform === "gr" && linkNeedsPromoCode && !/\.com\/grtrk\-/i.test(l.urlInDOMMergeTagSafe) ) { // Look for MailChimp and SendGrid merge tags.
+    if ( email.esp === "gr" && linkNeedsPromoCode && !/\.com\/grtrk\-/i.test(l.urlInDOMMergeTagSafe) ) { // Look for MailChimp and SendGrid merge tags.
       createLinkErrorRow(l, "Wrong tracking url for this email platform, use grtrk-.");
     }
 
@@ -934,12 +934,12 @@ function validateLinks(l, i) {
     ////// This is different than earlier where detected links that were JUST merge tags. Like [[email]] and *|UNSUB|*
 
       // Wrong merge tags in a Link for the GetResponse Platform
-      if ( emailPlatform === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(l.urlInDOMMergeTagSafe) ) { // Look for MailChimp and SendGrid merge tags.
-        createLinkErrorRow(l, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+      if ( email.esp === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(l.urlInDOMMergeTagSafe) ) { // Look for MailChimp and SendGrid merge tags.
+        createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
       }
       // Wrong merge tags in a Link for the MailChimp Platform
-      else if ( emailPlatform === "mc" && /^\[\[?.+\]\]?/gi.test(l.urlInDOMMergeTagSafe) ) { // Look for SendGrid and GR merge tags.
-        createLinkErrorRow(l, "Wrong merge tag for this platform (" + emailPlatformName + ").");
+      else if ( email.esp === "mc" && /^\[\[?.+\]\]?/gi.test(l.urlInDOMMergeTagSafe) ) { // Look for SendGrid and GR merge tags.
+        createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
       }
 
     ///////////////////////
@@ -991,7 +991,7 @@ function validateLinks(l, i) {
 
     ////-----------------------------////
     ////
-    // DON'T USE UTM - outsideOrg and off domain urls should not have utms
+    // DON'T USE UTM - email.outsideOrg and off domain urls should not have utms
     if ( /utm_content/gi.test(l.urlInDOMMergeTagSafe) && !singleLinkInfoArray.isMedBridgeEdLink ) {
       createLinkErrorRow(l, "Remove <code>utm_content</code> parameter in non-MedBridge links.");
     }
@@ -1009,14 +1009,14 @@ function validateLinks(l, i) {
     // eg. If most links say trk-sep-17-davenport, but this one says trk-sep-17-walter, throw an error.
     // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common occurence.
 
-    if ( emailSubType === "ns" && singleLinkInfoArray.isMarketingUrl && linkNeedsPromoCode ) {
+    if ( email.subscription === "ns" && singleLinkInfoArray.isMarketingUrl && linkNeedsPromoCode ) {
       // Ignore if the links pathname ends in -student
       if ( !commonTrkUrlRegex.test(l.urlInDOMMergeTagSafe) && !/\-student\/?$/gi.test(l.pathname) ) {
         createLinkErrorRow(l, "Tracking URL is missing or inconsistent, " + commonTrkUrl + " is most common. - " + l.urlInDOMMergeTagSafe);
       }
     }
 
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && emailPlatform !== "gr" ) {
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && email.esp !== "gr" ) {
       if ( commonUtmSource ) {
         if ( !commonUtmSourceRegex.test(l.urlInDOMMergeTagSafe) ) {
           createLinkErrorRow(l, "<code>utm_source</code> is missing or inconsistent, " + commonUtmSource + " is most common.");
@@ -1031,17 +1031,17 @@ function validateLinks(l, i) {
 
     ////
     // Check for whitelabeling versus www
-    if ( outsideOrg && singleLinkInfoArray.isMedBridgeEdLink ) {
+    if ( email.outsideOrg && singleLinkInfoArray.isMedBridgeEdLink ) {
 
       if ( /https?:\/\/(www\.)?med/.test(l.urlInDOMMergeTagSafe) ) {
         createLinkErrorRow(l, "Missing whitelabeling.");
       }
-      else if ( ( emailOrgName === "hs" && !/\/(encompasshealth|healthsouth)\./i.test(l.urlInDOMMergeTagSafe)) || (emailOrgName === "dr" && !/\/drayerpt\./i.test(l.urlInDOMMergeTagSafe)) || (emailOrgName === "fox" && !/\/foxrehab\./i.test(l.urlInDOMMergeTagSafe)) ) {
+      else if ( ( email.organization === "hs" && !/\/(encompasshealth|healthsouth)\./i.test(l.urlInDOMMergeTagSafe)) || (email.organization === "dr" && !/\/drayerpt\./i.test(l.urlInDOMMergeTagSafe)) || (email.organization === "fox" && !/\/foxrehab\./i.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Incorrect whitelabeling.");
       }
 
     }
-    if ( !outsideOrg && singleLinkInfoArray.isMedBridgeEdLink && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(l.urlInDOMMergeTagSafe) ) {
+    if ( !email.outsideOrg && singleLinkInfoArray.isMedBridgeEdLink && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(l.urlInDOMMergeTagSafe) ) {
       createLinkErrorRow(l, "Remove whitelabeling.");
     }
 
@@ -1097,8 +1097,25 @@ function validateLinks(l, i) {
           }
 
     // Leftover & or ? from a removed querystring
-    if ( /(\?|&)$/g.test(l.urlInDOMMergeTagSafe) ) {
+    // TEMPORARILY MODIFIED -
+    // In Q4 2019 we started needing to end course links with trailing ?.
+    // Something about the combination of AC and the new marketing site made this necessary
+    // AC tracking is removing the #discipline at the end of links
+    // We currently have to make this link:
+       // https://www.medbridgeeducation.com/courses?utm_content=mod1#/discipline
+    // Look like this:
+       // https://www.medbridgeeducation.com/courses?utm_content=mod1#/discipline?
+    // When this is fixed, we can remove the second criteria
+              // if ( /(\?|&)$/g.test(l.urlInDOMMergeTagSafe) ) {
+              //   createLinkErrorRow(l, "Remove the trailing ? or &.");
+              // }
+
+    if ( /(\?|&)$/g.test(l.urlInDOMMergeTagSafe) && email.division === "enterprise" ) {
       createLinkErrorRow(l, "Remove the trailing ? or &.");
+    }
+
+    if ( !/(\?|&)$/g.test(l.urlInDOMMergeTagSafe) && /#/g.test(l.urlInDOMMergeTagSafe) && email.division !== "enterprise" ) {
+      createLinkErrorRow(l, "Add a trailing ? after your hashtag to be compatible with ActiveCampaign");      
     }
 
 
@@ -1137,14 +1154,14 @@ function validateLinks(l, i) {
         createLinkErrorRow(l, "Investigate consecutive forward slashes.");
       }
 
-      // console.log("emailDate.getMonth(); " + emailDate.getMonth());
+      // console.log("email.date.getMonth(); " + email.date.getMonth());
 
       // Check the date in a tracking URL if the email's filename has a date in it to match against
       if ( labelsAvailable ) {
-        if ( emailDate.getMonth() ) {
-          var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + emailMonthAbbr + "\\-", "gi");
+        if ( email.date.getMonth() ) {
+          var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + email.monthName + "\\-", "gi");
           if ( !monthPattern.test(l.urlInDOMMergeTagSafe) ) {
-            createLinkErrorRow(l, "Link should include '-" + emailMonthAbbr + "-' to match month in filename.");
+            createLinkErrorRow(l, "Link should include '-" + email.monthName + "-' to match month in filename.");
           }
         }
       }
@@ -1159,11 +1176,11 @@ function validateLinks(l, i) {
 
     // console.error("0");
     //
-    // console.log("emailSubType: " + emailSubType);
-    // console.log("outsideOrg: " + outsideOrg);
+    // console.log("email.subscription: " + email.subscription);
+    // console.log("email.outsideOrg: " + email.outsideOrg);
     // console.log("singleLinkInfoArray.isMedBridgeBrandLink: " + singleLinkInfoArray.isMedBridgeBrandLink);
 
-    if ( linkNeedsGoogleTracking && emailPlatform !== "gr" ) {
+    if ( linkNeedsGoogleTracking && email.esp !== "gr" ) {
 
       var moduleNumber = l.closest("[data-module-count]");
 
@@ -1218,20 +1235,20 @@ function validateLinks(l, i) {
 
 
     ////
-    // Check for old fashioned marketing URLS in sub, ent, or outsideOrg
-    if ( (outsideOrg || emailSubType === "sub" || emailDisc === "ent" ) && (singleLinkInfoArray.isMedBridgeBrandLink && /\.com\/(gr|mc)?trk\-/gi.test(l.urlInDOMMergeTagSafe) || /after_affiliate_url/gi.test(l.urlInDOMMergeTagSafe)) ) {
+    // Check for old fashioned marketing URLS in sub, ent, or email.outsideOrg
+    if ( (email.outsideOrg || email.subscription === "sub" || email.audience === "ent" ) && (singleLinkInfoArray.isMedBridgeBrandLink && /\.com\/(gr|mc)?trk\-/gi.test(l.urlInDOMMergeTagSafe) || /after_affiliate_url/gi.test(l.urlInDOMMergeTagSafe)) ) {
       createLinkErrorRow(l, "Do not use a Marketing URL.");
     }
 
     ////
     // Check for medium=email in Sale and Presale emails
-    if ( (emailSubType === "sub" || !emailAnySale) && /[\?&]medium=email/gi.test(l.urlInDOMMergeTagSafe) ) {
+    if ( (email.subscription === "sub" || !emailAnySale) && /[\?&]medium=email/gi.test(l.urlInDOMMergeTagSafe) ) {
 
       createLinkErrorRow(l, "Remove <code>medium=email</code>.");
 
     }
 
-    else if ( emailSubType === "ns" && !outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink && ( singleLinkInfoArray.isArticle || /\-article/gi.test(l.urlInDOMMergeTagSafe) ) ) {
+    else if ( email.subscription === "ns" && !email.outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink && ( singleLinkInfoArray.isArticle || /\-article/gi.test(l.urlInDOMMergeTagSafe) ) ) {
 
       if ( emailAnySale && !/medium=email/gi.test(l.urlInDOMMergeTagSafe)) { // Any sale email
         createLinkErrorRow(l, "Add <code>medium=email</code>.");
@@ -1243,7 +1260,7 @@ function validateLinks(l, i) {
     //
     // Check ns emails
     //
-    if ( singleLinkInfoArray.isMedBridgeEdLink && emailSubType === "ns" ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && email.subscription === "ns" ) {
 
       // Webinars
       if ( /\.com\/webinars(\?|\/|#|$)[^d]/gi.test(l.urlInDOMMergeTagSafe) ) {
@@ -1255,7 +1272,7 @@ function validateLinks(l, i) {
     //
     // Check sub emails
     //
-    if ( singleLinkInfoArray.isMedBridgeEdLink && (emailSubType === "sub" || outsideOrg) ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && (email.subscription === "sub" || email.outsideOrg) ) {
 
       //
       if ( /\.com\/continuing-education(\?|\/|#|$)/gi.test(l.urlInDOMMergeTagSafe) ) {
@@ -1286,13 +1303,13 @@ function validateLinks(l, i) {
 
     ////
     // Check for broken article links in sub
-    if ( singleLinkInfoArray.isMedBridgeEdLink && emailSubType === "sub" && /p=\d\d\d/gi.test(l.urlInDOMMergeTagSafe) && !/\.com\/blog(\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && email.subscription === "sub" && /p=\d\d\d/gi.test(l.urlInDOMMergeTagSafe) && !/\.com\/blog(\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
       createLinkErrorRow(l, "Article link is broken.");
     }
 
     ////
     // Check all links in non-subscriber emails for sub=yes, never use it in ns.
-    if ( emailSubType === "ns" && /sub=yes/gi.test(l.urlInDOMMergeTagSafe) ) {
+    if ( email.subscription === "ns" && /sub=yes/gi.test(l.urlInDOMMergeTagSafe) ) {
       createLinkErrorRow(l, "Remove <code>sub=yes</code>.");
     }
 
@@ -1315,7 +1332,7 @@ function validateLinks(l, i) {
     if ( singleLinkInfoArray.contentLinked === 'mixed' || singleLinkInfoArray.contentLinked === 'text' ) {
 
       // Request a Demo
-      if ( ( /(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(l.textContent) && !/#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe) ) || (!/(form|schedule time|(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)/gi.test(l.textContent) && /#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe)) ) {
+      if ( ( /(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(l.textContent) && !/#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe) ) || (!/(form|schedule (some )?time|(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)/gi.test(l.textContent) && /#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Text and URL are inconsistent (Demo Request related).");
       }
       // Request EMR Integration
@@ -1325,7 +1342,7 @@ function validateLinks(l, i) {
 
     }
 
-    if ( emailOrgName !== "hs" ) {
+    if ( email.organization !== "hs" ) {
       if ( /\barticle\b/gi.test(l.textContent) && !singleLinkInfoArray.isArticle ) {
         createLinkErrorRow(l, "Text references an article but the URL does not go to one.");
       }
@@ -1342,17 +1359,17 @@ function validateLinks(l, i) {
     ////
     // Enterprise
     // Deprecated - Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
-    // if ( singleLinkInfoArray.isMedBridgeBrandLink && emailSubType === "sub" && emailDisc === "ent" && /request\-a\-demo/gi.test(l.urlInDOMMergeTagSafe) ) {
+    // if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "sub" && email.audience === "ent" && /request\-a\-demo/gi.test(l.urlInDOMMergeTagSafe) ) {
     //   createLinkErrorRow(l, "no demo requests in enterprise sub");
     // }
 
     //// Using after_signin_url on Subscriber links
     ///////////////////////////////////////////////
-    // outsideOrg and subs should not link to home-exercise-program.
+    // email.outsideOrg and subs should not link to home-exercise-program.
     // Use sign-in/?after_signin_url=patient_care/programs/create
 
-    // Check that this is a sub or outsideorg email
-    if ( outsideOrg || emailSubType === "sub") {
+    // Check that this is a sub or email.outsideOrg email
+    if ( email.outsideOrg || email.subscription === "sub") {
 
       // // // Courses
       // if ( /\.com\/courses\/details\//gi.test(l.urlInDOMMergeTagSafe) ) {
@@ -1378,7 +1395,7 @@ function validateLinks(l, i) {
       }
 
       // TODO: TEMPORARY UNTIL DEV FIXES A BUG
-      if ( /after_signin_url=/gi.test(l.urlInDOMMergeTagSafe) && !outsideOrg && !/(patient_care\/programs\/create|webinars\/details\/|patient\-education\-library\/condition)/gi.test(l.urlInDOMMergeTagSafe) && !/refer/gi.test(l.urlInDOMMergeTagSafe) ) {
+      if ( /after_signin_url=/gi.test(l.urlInDOMMergeTagSafe) && !email.outsideOrg && !/(patient_care\/programs\/create|webinars\/details\/|patient\-education\-library\/condition)/gi.test(l.urlInDOMMergeTagSafe) && !/refer/gi.test(l.urlInDOMMergeTagSafe) ) {
         createLinkErrorRow(l, "Don't use <code>after_signin_url</code> (temporary).");
       }
 
@@ -1389,7 +1406,7 @@ function validateLinks(l, i) {
       }
     }
 
-    if ( (!outsideOrg && emailSubType !== "sub") && /patient_care\/programs\/create/gi.test(l.urlInDOMMergeTagSafe) ) {
+    if ( (!email.outsideOrg && email.subscription !== "sub") && /patient_care\/programs\/create/gi.test(l.urlInDOMMergeTagSafe) ) {
       createLinkErrorRow(l, "use <code>home-exercise-program</code>");
     }
 
@@ -1398,61 +1415,84 @@ function validateLinks(l, i) {
     ////
     // Tracking URL - Discipline Check
 
-    if ( emailDisc !== "multi" && emailDisc !== "ent" && emailDisc !== null && emailSubType === "ns" && singleLinkInfoArray.isMedBridgeBrandLink && !/\/courses\/details\//g.test(l.urlInDOMMergeTagSafe) && singleLinkInfoArray.isMarketingUrl ) {
+    if ( email.audience !== "multi" && email.audience !== "ent" && email.audience !== null && email.subscription === "ns" && singleLinkInfoArray.isMedBridgeBrandLink && !/\/courses\/details\//g.test(l.urlInDOMMergeTagSafe) && singleLinkInfoArray.isMarketingUrl ) {
 
-      if ( emailDisc === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
+      if ( email.audience === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
         createLinkErrorRow(l, "Missing/wrong discipline.");
       }
-      if ( emailDisc === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
+      if ( email.audience === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
         createLinkErrorRow(l, "Missing/wrong discipline.");
       }
-      if ( emailDisc === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
+      if ( email.audience === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
         createLinkErrorRow(l, "Missing/wrong discipline.");
       }
-      if ( emailDisc === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
+      if ( email.audience === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
         createLinkErrorRow(l, "Missing/wrong discipline.");
       }
-      if ( emailDisc === "other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
+      if ( email.audience === "ind-other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
         createLinkErrorRow(l, "Missing/wrong discipline.");
       }
     }
 
     // Homepage - Discipline Check
     // Checking NS and SUB.
-    if ( emailDisc !== "multi" && emailDisc !== "all" && emailDisc !== null && emailDisc !== undefined && !outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink ) {
+    if ( email.audience !== "multi" && email.audience !== "all" && email.audience !== null && email.audience !== undefined && !email.outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink ) {
 
-      if ( (emailDisc !== "pt" && emailDisc !== "other") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/physical-therapy\/?(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
+      if ( (email.audience !== "pt" && email.audience !== "ind-other") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/physical-therapy\/?(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Wrong homepage.");
       }
-      if ( (emailDisc !== "other" && emailDisc !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
+      if ( (email.audience !== "ind-other" && email.audience !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Wrong homepage.");
       }
-      if ( emailDisc !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/athletic-training\/?(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
+      if ( email.audience !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/athletic-training\/?(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Wrong homepage.");
       }
-      if ( emailDisc !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/occupational-therapy\/?(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
+      if ( email.audience !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/occupational-therapy\/?(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Wrong homepage.");
       }
-      if ( emailDisc !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/speech-language-pathology\/?(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
+      if ( email.audience !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(l.urlInDOMMergeTagSafe) || /\.com\/speech-language-pathology\/?(\?|$)/gi.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Wrong homepage.");
       }
     }
+
+    // Enterprise Setting Pages
+      // Home Care
+      if ( email.audience !== "hc" && /medbridgeed(ucation)?\.com\/enterprise\/home-care-and-hospice/gi.test(l.urlInDOMMergeTagSafe) ) {
+        createLinkErrorRow(l, "Wrong homepage.");
+      }
+      // Hospital
+      if ( email.audience !== "hosp" && /medbridgeed(ucation)?\.com\/enterprise\/hospitals-health-care-systems/gi.test(l.urlInDOMMergeTagSafe) ) {
+        createLinkErrorRow(l, "Wrong homepage.");
+      }
+      // Long-Term Care
+      if ( email.audience !== "ltc" && /medbridgeed(ucation)?\.com\/enterprise\/skilled-nursing-and-long-term-care/gi.test(l.urlInDOMMergeTagSafe) ) {
+        createLinkErrorRow(l, "Wrong homepage.");
+      }
+      // Private Practice
+      if ( email.audience !== "pp" && /medbridgeed(ucation)?\.com\/enterprise\/private-practice/gi.test(l.urlInDOMMergeTagSafe) ) {
+        createLinkErrorRow(l, "Wrong homepage.");
+      }
+      // Other/Unknown
+      if ( (email.audience !== "ent-other" && email.audience !== "all" ) && /medbridgeed(ucation)?\.com\/enterprise($|\/$|\/?\?)/gi.test(l.urlInDOMMergeTagSafe) ) {
+        createLinkErrorRow(l, "Wrong homepage.");
+      }
+
 
     // Discipline Check - Blog
     // Checking NS and SUB.
-    if ( /blog\/discipline\/pt/gi.test(l.urlInDOMMergeTagSafe) && (emailDisc !== "pt" && emailDisc !== "other") ) {
+    if ( /blog\/discipline\/pt/gi.test(l.urlInDOMMergeTagSafe) && (email.audience !== "pt" && email.audience !== "ind-other") ) {
       createLinkErrorRow(l, "Wrong discipline.");
     }
-    else if ( /blog\/discipline\/at/gi.test(l.urlInDOMMergeTagSafe) && emailDisc !== "at" ) {
+    else if ( /blog\/discipline\/at/gi.test(l.urlInDOMMergeTagSafe) && email.audience !== "at" ) {
       createLinkErrorRow(l, "Wrong discipline.");
     }
-    else if ( /blog\/discipline\/ot/gi.test(l.urlInDOMMergeTagSafe) && emailDisc !== "ot" ) {
+    else if ( /blog\/discipline\/ot/gi.test(l.urlInDOMMergeTagSafe) && email.audience !== "ot" ) {
       createLinkErrorRow(l, "Wrong discipline.");
     }
-    else if ( /blog\/discipline\/slp/gi.test(l.urlInDOMMergeTagSafe) && emailDisc !== "slp" ) {
+    else if ( /blog\/discipline\/slp/gi.test(l.urlInDOMMergeTagSafe) && email.audience !== "slp" ) {
       createLinkErrorRow(l, "Wrong discipline.");
     }
-    else if ( /blog\/discipline\/(at|ot|slp)/gi.test(l.urlInDOMMergeTagSafe) && emailDisc === "other" ) {
+    else if ( /blog\/discipline\/(at|ot|slp)/gi.test(l.urlInDOMMergeTagSafe) && email.audience === "ind-other" ) {
       createLinkErrorRow(l, "Wrong discipline.");
     }
 
@@ -1472,7 +1512,7 @@ function validateLinks(l, i) {
 
       // If the email has a discipline, the link to the courses page needs one too.
       // Check the discipline of the email against the hashtag that's being used for links meant to go to the courses page
-      if ( emailDisc === "enterprise" || emailDisc === "ent" || emailDisc === "multi" || emailDisc === "all" || emailDisc === null || emailDisc === undefined ) {
+      if ( email.audience === "enterprise" || email.audience === "ent" || email.audience === "multi" || email.audience === "all" || email.audience === null || email.audience === undefined ) {
 
         // Removed on 9/25/18
         // I was editing a Pardot campaign that had no discipline set. But we were linking to the #nursing category of the courses page.
@@ -1485,22 +1525,22 @@ function validateLinks(l, i) {
         if ( !/#/gi.test(l.urlInDOMMergeTagSafe) ) {
           createLinkErrorRow(l, "Missing discipline in the hashtag.");
         } else {
-          if ( (emailDisc === "pt" ) && !/#\/?physical-therapy/gi.test(l.urlInDOMMergeTagSafe) ) {
+          if ( (email.audience === "pt" ) && !/#\/?physical-therapy/gi.test(l.urlInDOMMergeTagSafe) ) {
             createLinkErrorRow(l, "Wrong discipline in the hashtag.");
           }
-          if ( (emailDisc === "other" ) && /#\/?(athletic-training|occupational-therapy|speech-language-pathology|nursing)/gi.test(l.urlInDOMMergeTagSafe) ) {
+          if ( (email.audience === "ind-other" ) && /#\/?(athletic-training|occupational-therapy|speech-language-pathology|nursing)/gi.test(l.urlInDOMMergeTagSafe) ) {
             createLinkErrorRow(l, "Wrong discipline in the hashtag.");
           }
-          if ( emailDisc === "at" && !/#\/?athletic-training/gi.test(l.urlInDOMMergeTagSafe) ) {
+          if ( email.audience === "at" && !/#\/?athletic-training/gi.test(l.urlInDOMMergeTagSafe) ) {
             createLinkErrorRow(l, "Wrong discipline in the hashtag.");
           }
-          if ( emailDisc === "ot" && !/#\/?occupational-therapy/gi.test(l.urlInDOMMergeTagSafe) ) {
+          if ( email.audience === "ot" && !/#\/?occupational-therapy/gi.test(l.urlInDOMMergeTagSafe) ) {
             createLinkErrorRow(l, "Wrong discipline in the hashtag.");
           }
-          if ( emailDisc === "slp" && !/#\/?speech-language-pathology/gi.test(l.urlInDOMMergeTagSafe) ) {
+          if ( email.audience === "slp" && !/#\/?speech-language-pathology/gi.test(l.urlInDOMMergeTagSafe) ) {
             createLinkErrorRow(l, "Wrong discipline in the hashtag.");
           }
-          if ( emailDisc === "rn" && !/#\/?nursing/gi.test(l.urlInDOMMergeTagSafe) ) {
+          if ( email.audience === "rn" && !/#\/?nursing/gi.test(l.urlInDOMMergeTagSafe) ) {
             createLinkErrorRow(l, "Wrong discipline in the hashtag.");
           }
         }
@@ -1511,22 +1551,22 @@ function validateLinks(l, i) {
     // Patient Engagement Landing Page
     // Discipline Check
     // [NS]
-    if ( emailSubType === "ns" ) {
-      if ( /h\/patient-engagement-for-physical-therapists/gi.test(l.urlInDOMMergeTagSafe) && (emailDisc !== "pt" && emailDisc !== "other") ) {
+    if ( email.subscription === "ns" ) {
+      if ( /h\/patient-engagement-for-physical-therapists/gi.test(l.urlInDOMMergeTagSafe) && (email.audience !== "pt" && email.audience !== "ind-other") ) {
         createLinkErrorRow(l, "Wrong landing page for this discipline.");
       }
-      else if ( /h\/patient-engagement-for-athletic-trainers/gi.test(l.urlInDOMMergeTagSafe) && emailDisc !== "at" ) {
+      else if ( /h\/patient-engagement-for-athletic-trainers/gi.test(l.urlInDOMMergeTagSafe) && email.audience !== "at" ) {
         createLinkErrorRow(l, "Wrong landing page for this discipline.");
       }
-      else if ( /h\/patient-engagement-for-occupational-therapists/gi.test(l.urlInDOMMergeTagSafe) && emailDisc !== "ot" ) {
+      else if ( /h\/patient-engagement-for-occupational-therapists/gi.test(l.urlInDOMMergeTagSafe) && email.audience !== "ot" ) {
         createLinkErrorRow(l, "Wrong landing page for this discipline.");
       }
-      else if ( /h\/patient-engagement-for-speech-language-pathology/gi.test(l.urlInDOMMergeTagSafe) && emailDisc !== "slp" ) {
+      else if ( /h\/patient-engagement-for-speech-language-pathology/gi.test(l.urlInDOMMergeTagSafe) && email.audience !== "slp" ) {
         createLinkErrorRow(l, "Wrong landing page for this discipline.");
       }
     }
     // [SUB]
-    if ( /h\/patient-engagement-for-(physical-therapists|athletic-trainers|occupational-therapists|speech-language-pathology)/gi.test(l.urlInDOMMergeTagSafe) && emailSubType === "sub" ) {
+    if ( /h\/patient-engagement-for-(physical-therapists|athletic-trainers|occupational-therapists|speech-language-pathology)/gi.test(l.urlInDOMMergeTagSafe) && email.subscription === "sub" ) {
       // createLinkErrorRow(l, "Wrong landing page for subscribers. Use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
       createLinkErrorRow(l, "Wrong landing page for subscribers. Use <code>patient_care/programs/create</code>");
     }
@@ -1534,36 +1574,36 @@ function validateLinks(l, i) {
 
     // Pricing
     // SUB
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && emailSubType === "sub" && /\.com\/(cart|pricing)/gi.test(l.urlInDOMMergeTagSafe) ) {
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "sub" && /\.com\/(cart|pricing)/gi.test(l.urlInDOMMergeTagSafe) ) {
       createLinkErrorRow(l, "Don't link to the pricing or cart pages in subscriber emails.");
     }
     // NS -
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && emailSubType === "ns" ) {
+    if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "ns" ) {
 
       // Pricing Page - Discipline Check
       if ( /pricing/gi.test(l.urlInDOMMergeTagSafe) ) {
         // PT
-        if ( emailDisc === "pt" && !/pricing\/pt/gi.test(l.urlInDOMMergeTagSafe) ) {
+        if ( email.audience === "pt" && !/pricing\/pt/gi.test(l.urlInDOMMergeTagSafe) ) {
           createLinkErrorRow(l, "Link to pricing/pt.");
         }
         // AT
-        else if ( emailDisc === "at" && !/pricing\/at/gi.test(l.urlInDOMMergeTagSafe) ) {
+        else if ( email.audience === "at" && !/pricing\/at/gi.test(l.urlInDOMMergeTagSafe) ) {
           createLinkErrorRow(l, "Link to pricing/at.");
         }
         // OT
-        else if ( emailDisc === "ot" && !/pricing\/ot/gi.test(l.urlInDOMMergeTagSafe) ) {
+        else if ( email.audience === "ot" && !/pricing\/ot/gi.test(l.urlInDOMMergeTagSafe) ) {
           createLinkErrorRow(l, "Link to pricing/ot.");
         }
         // SLP
-        else if ( emailDisc === "slp" && !/pricing\/slp/gi.test(l.urlInDOMMergeTagSafe) ) {
+        else if ( email.audience === "slp" && !/pricing\/slp/gi.test(l.urlInDOMMergeTagSafe) ) {
           createLinkErrorRow(l, "Link to pricing/slp.");
         }
         // Other
-        else if ( emailDisc === "other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(l.urlInDOMMergeTagSafe) ) {
+        else if ( email.audience === "ind-other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(l.urlInDOMMergeTagSafe) ) {
           createLinkErrorRow(l, "Link to pricing/other.");
         }
         // No Discipline
-        else if ( !emailDisc && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(l.urlInDOMMergeTagSafe) ) {
+        else if ( !email.audience && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(l.urlInDOMMergeTagSafe) ) {
           createLinkErrorRow(l, "Link to standard pricing page.");
         }
 
@@ -1581,7 +1621,7 @@ function validateLinks(l, i) {
 
 
     // Check for unecessary discipline hastags. Should only be used when linking to courses page
-    if ( /#\/?(speech-language-pathology|physical-therapy|nursing|athletic-training|occupational-therapy)/gi.test(l.urlInDOMMergeTagSafe) && ( !/(_url=courses|\/courses)(#|\/|\?|&|$)/gi.test(l.urlInDOMMergeTagSafe) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(l.urlInDOMMergeTagSafe) ) ) {
+    if ( /#\/?(speech-language-pathology|physical-therapy|nursing|athletic-training|occupational-therapy)/gi.test(l.urlInDOMMergeTagSafe) && ( !/(_url=courses|\/courses|\/course-catalog)(#|\/|\?|&|$)/gi.test(l.urlInDOMMergeTagSafe) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(l.urlInDOMMergeTagSafe) ) ) {
       createLinkErrorRow(l, "Unecessary hashtag.");
     }
 
@@ -1594,15 +1634,15 @@ function validateLinks(l, i) {
     }
 
     ////
-    // NO //support. in outsideOrg
-    if ( /\/support\./gi.test(l.urlInDOMMergeTagSafe) && outsideOrg ) {
-      createLinkErrorRow(l, "://support. not allowed in outsideOrg, use mailto:support@medbridgeed.com");
+    // NO //support. in email.outsideOrg
+    if ( /\/support\./gi.test(l.urlInDOMMergeTagSafe) && email.outsideOrg ) {
+      createLinkErrorRow(l, "://support. not allowed in email.outsideOrg, use mailto:support@medbridgeed.com");
     }
 
     ////
-    // Do not advertise Enterprise products to outsideOrg
-    if ( /enterprise/gi.test(l.urlInDOMMergeTagSafe) && outsideOrg ) {
-      createLinkErrorRow(l, "do not advertise enterprise to outsideOrg");
+    // Do not advertise Enterprise products to email.outsideOrg
+    if ( /enterprise/gi.test(l.urlInDOMMergeTagSafe) && email.outsideOrg ) {
+      createLinkErrorRow(l, "do not advertise enterprise to email.outsideOrg");
     }
 
   ///////

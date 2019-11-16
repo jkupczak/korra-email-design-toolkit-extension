@@ -642,9 +642,13 @@ function setDefaultOptions(reset) {
         'checkTargetAttribute': '1',
         'checkNoFollowLinks': '1',
 
-        // Format Validation
-        'ignoreESPTags': '1',
-        
+        // URL Format Validation
+        'checkMissingHrefAttr': '1',
+        'checkEmptyLink': '1',
+        'checkTrailingHash': '1',
+        'checkTrailingSlash': '0',
+        'ignoreESPTags': '0',
+
         // Loading Validation
         'cacheValidLinks': '1',
         'parseDOM': '1',

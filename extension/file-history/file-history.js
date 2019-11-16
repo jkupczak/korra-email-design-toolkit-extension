@@ -118,5 +118,5 @@ var dedupe = function (arr) {
 ////////////////////////
 
 if ( isSavedFile ) {
-  saveFileHistory(fileLocation);
+  saveFileHistory(email.fileLocation);
 }

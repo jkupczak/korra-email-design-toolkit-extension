@@ -375,7 +375,7 @@ function getFilename(url) {
 }
 
 //
-// Get Filepath
+// Get email.filePath
 //
 
 /**
@@ -392,7 +392,7 @@ function getFilePath(url) {
 }
 
 //
-// Get Filepath
+// Get email.filePath
 //
 
 /**
@@ -714,88 +714,55 @@ function getOrgId(string) {
  * @param  {[type]} arg2 [description]
  * @return {[type]}      [description]
  */
-function getDisciplineId(string) {
+function getEmailAudience() {
 
-  var trimmedString = string.trim();
-  var disciplineId = "";
+  var trimmedString = email.filename.trim();
 
-       if ( /-PT(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "pt";     }
-  else if ( /-AT(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "at";     }
-  else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "ot";     }
-  else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )              { disciplineId = "slp";    }
-  else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) )      { disciplineId = "other";  }
-  else if ( /-RN(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "rn";    }
-  else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )             { disciplineId = "lmt";    }
+  if ( /Pardot/gi.test(email.fileLocation) ) {
+    email.division = "enterprise";
 
-  else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )               { disciplineId = "pt";     }
-  // else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )                 { disciplineId = "fox";    }
-  else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )             { disciplineId = undefined;     }
-  else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )               { disciplineId = "multi";  }
-  else if ( /(^PD_|-(ENT|Enterprise|MFB)(\s|-|\.|$))/gi.test(trimmedString) ) { disciplineId = "ent";}
+    if      ( /Setting=(Home-Care|HC)/gi.test(trimmedString) )        { email.audience = "hc"; email.audienceName = "Home Care" }
+    else if ( /Setting=(Hospitals?|Hosp)/gi.test(trimmedString) )     { email.audience = "hosp"; email.audienceName = "Hospital" }
+    else if ( /Setting=(LTC|Long-Term-Care)/gi.test(trimmedString) )  { email.audience = "ltc"; email.audienceName = "Long-Term Care" }
+    else if ( /Setting=(PP|Private-Practice)/gi.test(trimmedString) ) { email.audience = "pp"; email.audienceName = "Private Practice" }
+    else if ( /Setting=(Other|Unknown)/gi.test(trimmedString) )       { email.audience = "ent-other"; email.audienceName = "Other" }
 
-  else if ( /-(Physical)(\s|-|\.|$)/gi.test(trimmedString) )       { disciplineId = "pt";     }
-  else if ( /-Athletic(\s|-|\.|$)/gi.test(trimmedString) )         { disciplineId = "at";     }
-  else if ( /-All(\-|\.|$)/gi.test(trimmedString) )                { disciplineId = "multi";    }
+    else {
+      email.audience = "all";
+      email.audienceName = "All Settings";
+    }
+  }
 
-  else { disciplineId = undefined }
-
-  return disciplineId;
-
-}
-
-//
-// Process string to find disciplineId
-//
-
-/**
- * [someFunction description]
- * @param  {[type]} arg1 [description]
- * @param  {[type]} arg2 [description]
- * @return {[type]}      [description]
- */
-function getDisciplineName(id) {
-  if (id === "pt") {
-    return "Physical Therapy"
-  }
-  else if (id === "at") {
-    return "Athletic Training"
-  }
-  else if (id === "ot") {
-    return "Occupational Therapy"
-  }
-  else if (id === "slp") {
-    return "Speech Pathology"
-  }
-  else if (id === "other") {
-    return "Other"
-  }
-  else if (id === "lmt") {
-    return "Massage"
-  }
-  else if (id === "rn") {
-    return "Nursing"
-  }
-  else if (id === "ent") {
-    return "Enterprise"
-  }
-  else if (id === "dr") {
-    return "Drayer"
-  }
-  else if (id === "fox") {
-    return "Fox Rehab"
-  }
-  else if (id === "hs" || id === "eh") {
-    return "HealthSouth"
-  }
-  else if (id === "multi") {
-    return "Multi-Discipline"
-  }
-  else if (id === "all") {
-    return "All Disciplines"
-  }
   else {
-    return "Unknown"
+    email.division = "individual";
+
+         if ( /-PT(\s|-|\.|$)/gi.test(trimmedString) )          { email.audience = "pt"; email.audienceName = "Physical Therapy" }
+    else if ( /-AT(\s|-|\.|$)/gi.test(trimmedString) )          { email.audience = "at"; email.audienceName = "Athletic Training" }
+    else if ( /-OT(\s|-|\.|$)/gi.test(trimmedString) )          { email.audience = "ot"; email.audienceName = "Occupational Therapy" }
+    else if ( /-SLP(\s|-|\.|$)/gi.test(trimmedString) )         { email.audience = "slp"; email.audienceName = "Speech Pathology" }
+    else if ( /-(Other|PTO)(\s|-|\.|$)/gi.test(trimmedString) ) { email.audience = "ind-other"; email.audienceName = "Other" }
+    else if ( /-RN(\s|-|\.|$)/gi.test(trimmedString) )          { email.audience = "rn"; email.audienceName = "Nursing" }
+    else if ( /-L?MT(\s|-|\.|$)/gi.test(trimmedString) )        { email.audience = "lmt"; email.audienceName = "Massage" }
+
+    else if ( /-DR(\s|-|\.|$)/gi.test(trimmedString) )          { email.audience = "pt"; email.audienceName = "Physical Therapy" }
+  // else if ( /-Fox(-|\.|$)/gi.test(trimmedString) )           { email.audience = "fox"; }
+    else if ( /-(EH|HS)(-|\.|$)/gi.test(trimmedString) )        { email.audience = undefined; email.audienceName = "" }
+    else if ( /-Multi(-|\.|$)/gi.test(trimmedString) )          { email.audience = "multi"; email.audienceName = "Multi-Discipline" }
+
+    else if ( /-(Physical)(\s|-|\.|$)/gi.test(trimmedString) )  { email.audience = "pt"; email.audienceName = "Physical Therapy" }
+    else if ( /-Athletic(\s|-|\.|$)/gi.test(trimmedString) )    { email.audience = "at"; email.audienceName = "Athletic Training" }
+    else if ( /-All(\-|\.|$)/gi.test(trimmedString) )           { email.audience = "multi"; email.audienceName = "Multi-Discipline" }
+
+    // Enterprise
+    /////////////
+    else if ( /(^PD_|-(ENT|Enterprise|MFB)(\s|-|\.|$))/gi.test(trimmedString) ) { email.audience = "ent"; email.audienceName = "Enterprise" }
+
+    else {
+      email.audience = "all";
+      email.audienceName = "All Disciplines";
+    }
   }
+
 }
 
 
@@ -1985,7 +1952,7 @@ var displayErrorMsg = function(reason) {
     emoji = "&#128562;";
     title = "Couldn't find the file you requested.";
     reasonText = "Check that the file exists on your local harddrive.";
-    tip = "<div style='padding-top:10px;font-family: monospace; font-size:12px; line-height:20px'><span style='user-select:none; border-radius: 3px;background: #144e88;margin-right: 6px;padding: 2px 4px 2px 5px;color: #fff;'>File</span><span style=' opacity:.4'>" + filePath + "/</span><span style='opacity:.75'>" + filename + "</span></div>";
+    tip = "<div style='padding-top:10px;font-family: monospace; font-size:12px; line-height:20px'><span style='user-select:none; border-radius: 3px;background: #144e88;margin-right: 6px;padding: 2px 4px 2px 5px;color: #fff;'>File</span><span style=' opacity:.4'>" + email.filePath + "/</span><span style='opacity:.75'>" + filename + "</span></div>";
     document.title = "Error: Couldn't find the file you requested.";
   }
   else if (reason === "fileaccess") {

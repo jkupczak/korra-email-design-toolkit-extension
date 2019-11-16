@@ -28,8 +28,7 @@ if ( /dropbox(.+)?\.com\/(s|home|content_link)/gi.test(pageUrl) ) {
 // Discipline Identifier
 //
 if ( /(^(chrome\-extension|file)|localhost\:)/i.test(pageUrl) ) {
-	var fileName = getFilename(pageUrl);
-	var disciplineSearch = filename;
+	var disciplineSearch = email.filename;
 } else if ( !onMailchimp ) {
 
 } else {
@@ -39,7 +38,7 @@ if ( /(^(chrome\-extension|file)|localhost\:)/i.test(pageUrl) ) {
 }
 
 if ( disciplineSearch ) {
-	var disciplineId = getDisciplineId(disciplineSearch) || "";
+	var disciplineId = getEmailAudience(disciplineSearch) || "";
 }
 
 // console.log(disciplineId);
@@ -67,47 +66,6 @@ if ( getABstatus(disciplineSearch) === "a" ) {
 	var abTestId = "(B) "
 }
 
-		// if ( !onMailchimp ) {
-		//
-		// 	// getEmailTitle(fileName);
-		//
-		// 	// Check for legacy labels, like Enterprise instead ENT.
-		// 	if ( disciplineId === "ent" && /\-Enterprise\-/gi.test(fileName) ) {
-		// 		disciplineId = "Enterprise";
-		// 	}
-		//
-		//
-		// 	var re = new RegExp("^.+?-" + disciplineId + "","gi");
-		// 	// console.log(fileName);
-		// 	// console.log(re);
-		//
-		// 	newTitle = fileName.replace(re, ""); // Remove date, discipline, A/B test, sub/ns, and extension
-		// 	// console.log(newTitle);
-		//
-		// 	newTitle = newTitle.replace(/\.html?|-(ns|sub)|-(a|b)\./gi, ""); // Remove date, discipline, A/B test, sub/ns, and extension
-		// 	// console.log(newTitle);
-		//
-		// 	newTitle = newTitle.replace(/\?.+/gi, ""); // Remove querystring
-		// 	// console.log(newTitle);
-		//
-		// 	newTitle = newTitle.replace(/\-/gi, " ");	 // Remove extra hyphens
-		// 	// console.log(newTitle);
-		//
-		// 	var newFileName = fileName.replace(/\?.+/gi, "");
-		//
-		// 	finalTitle = finalTitle + abTestId + newTitle + " <" + newFileName + "> (" + currTitle + ")";
-		// 	document.title = finalTitle;
-		//
-		// } else {
-		//
-		// 	var re = new RegExp("([0-9][0-9]-|-" + disciplineId + "(-|$)|-sub$|-ns$|-Physical-?$|-Atheletic-?$)","gi");
-		// 	newTitle = disciplineSearch.replace(re, "");
-		// 	newTitle = newTitle.replace(/-/gi, " ");
-		//
-		// 	finalTitle = finalTitle + abTestId + newTitle + " " + "(" + currTitle + ")";
-		// 	document.title = finalTitle;
-		//
-		// }
 
 
 var setPageTitle = function(filename) {
@@ -122,7 +80,7 @@ var setPageTitle = function(filename) {
 ////
 //// Change the default page favicon to something that more easily identifies the category of the email.
 ////
-var favicon = disciplineId;
+var favicon = email.audience;
 var animatedFavicon
 
 //Sub check
@@ -139,28 +97,24 @@ if ( favicon === "" || /^\-/.test(favicon) ) {
 	favicon = "unknown"
 }
 
-//Mailchimp check
-if ( !onMailchimp ) {
 
-	var faviconWrapper = document.getElementsByTagName('head')[0]
-	var faviconLink = document.querySelector("link[rel*='icon']") || document.createElement('link');
-	faviconLink.type = 'image/x-icon';
-	faviconLink.rel = 'shortcut icon';
-	faviconLink.href = chrome.extension.getURL("favicons/" + favicon + ".png");
+var faviconWrapper = document.getElementsByTagName('head')[0]
+var faviconLink = document.querySelector("link[rel*='icon']") || document.createElement('link');
+faviconLink.type = 'image/x-icon';
+faviconLink.rel = 'shortcut icon';
+faviconLink.href = chrome.extension.getURL("favicons/" + favicon + ".png");
 
-	// For some reason, this tag affects the loading/use of fonts (specifically Roboto), SOMETIMES. Adding it to the DOM and then moving it a second time fixes this. I do not know why.
-	faviconWrapper.insertBefore(faviconLink, faviconWrapper.firstChild); // Add it to the <head> tag.
-	faviconWrapper.appendChild(faviconLink); // Move it around inside the <head> to fix font issues with the page.
+// For some reason, this tag affects the loading/use of fonts (specifically Roboto), SOMETIMES. Adding it to the DOM and then moving it a second time fixes this. I do not know why.
+faviconWrapper.insertBefore(faviconLink, faviconWrapper.firstChild); // Add it to the <head> tag.
+faviconWrapper.appendChild(faviconLink); // Move it around inside the <head> to fix font issues with the page.
 
-	if ( animatedFavicon ) {
-		setInterval(function() {
+if ( animatedFavicon ) {
+	setInterval(function() {
 
-			if ( /\-inverse/.test(faviconLink.href) ) {
-				faviconLink.href = chrome.extension.getURL("favicons/" + favicon + ".png");
-			} else {
-				faviconLink.href = chrome.extension.getURL("favicons/" + favicon + "-inverse" + ".png");
-			}
-		}, 500);
-	}
-
+		if ( /\-inverse/.test(faviconLink.href) ) {
+			faviconLink.href = chrome.extension.getURL("favicons/" + favicon + ".png");
+		} else {
+			faviconLink.href = chrome.extension.getURL("favicons/" + favicon + "-inverse" + ".png");
+		}
+	}, 500);
 }

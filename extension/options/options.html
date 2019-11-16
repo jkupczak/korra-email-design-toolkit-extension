@@ -832,12 +832,60 @@
 								</div>
 
 								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="checkTrailingSlash" id="checkTrailingSlash" value="0">
+									<label for="checkTrailingSlash">
+										Mark links that are missing a trailing slash <code>/</code> with a warning message
+									</label>
+									<div class="option-desc">When enabled, if the pathname portion of your link is missing a trailing '/' you will be warned.</div>
+								</div>
+
+								<div class="option-group checkbox">
 									<input data-autosave="true" type="checkbox" name="ignoreESPTags" id="ignoreESPTags" value="1" checked>
 									<label for="ignoreESPTags">
 										Ignore ESP tags found in URLs
 									</label>
 									<div class="option-desc">Some ESP tags include characters that would normally be invalid in a link (e.g. <code>*|tag|*</code> or <code>%%variable%%</code>). Enable this to prevent Korra from potentially marking your links as invalid when it finds one.<br><em><b>Note:</b> Provide the formatting that your ESP uses in order for this to work. Enter this in the "<a href="#section-esp-options">ESP Options</a>" section.</em></div>
 								</div>
+
+					      <div>
+				  		    <label>Google Analytics <code>utm_</code> Parameters</label>
+									<div class="option-desc">When enabled, Korra will warn you if your link is missing that value in the querystring.</div>
+
+									<div class="indent">
+										<div class="option-group checkbox">
+											<div>
+												<input data-autosave="true" type="checkbox" name="checkUtmCampaign" id="checkUtmCampaign" value="0">
+												<label for="checkUtmCampaign">
+													<code>utm_campaign</code>
+												</label>
+											</div>
+											<div>
+												<input data-autosave="true" type="checkbox" name="checkUtmSource" id="checkUtmSource" value="0">
+												<label for="checkUtmSource">
+													<code>utm_source</code>
+												</label>
+											</div>
+											<div>
+												<input data-autosave="true" type="checkbox" name="checkUtmContent" id="checkUtmContent" value="0">
+												<label for="checkUtmContent">
+													<code>utm_content</code>
+												</label>
+											</div>
+											<div>
+												<input data-autosave="true" type="checkbox" name="checkUtmMedium" id="checkUtmMedium" value="0">
+												<label for="checkUtmMedium">
+													<code>utm_medium</code>
+												</label>
+											</div>
+											<div>
+												<input data-autosave="true" type="checkbox" name="checkUtmTerm" id="checkUtmTerm" value="0">
+												<label for="checkUtmTerm">
+													<code>utm_term</code>
+												</label>
+											</div>
+										</div>
+									</div>
+					      </div>
 
 
 							</div>

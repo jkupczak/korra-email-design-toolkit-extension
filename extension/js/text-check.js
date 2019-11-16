@@ -53,7 +53,7 @@ var highlightTextErrors = function (stage) {
   ////                                   ////
   ///////////////////////////////////////////
 
-  if ( emailPlatform === "mc" ) {
+  if ( email.esp === "mc" ) {
     // Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
     findText({find: /\*\|((IF|END|ELSEIF|INTERESTED):.+?|ELSE:)\|\*/gi, wrapClass: "esp-conditional"});
   }
@@ -65,15 +65,15 @@ var highlightTextErrors = function (stage) {
   ////                         ////
   /////////////////////////////////
 
-  if ( emailPlatform === "gr" ) {
+  if ( email.esp === "gr" ) {
     findText({find: /(\*\|.+?\|\*|\[[^\[\]]+?\][^\]])/gi });
   }
 
-  if ( emailPlatform === "gr" ) {
+  if ( email.esp === "gr" ) {
     findText({find: /(\*\|.+?\|\*|\[[^\[\]]+?\][^\]])/gi });
   }
 
-  if ( emailPlatform === "sg" ) {
+  if ( email.esp === "sg" ) {
     findText({find: /(\*\|.+?\|\*|\[\[.+?\]\])/gi });// Do not use *|MAILCHIMP|* merge tags with a GetResponse email.
   }
 
@@ -85,19 +85,19 @@ var highlightTextErrors = function (stage) {
   /////////////////////////////////
 
   // Promo Codes
-    if ( emailDisc !== "pt" ) {
+    if ( email.audience !== "pt" ) {
       findText({find: /(Promo Code.+?\b[A-Za-z0-9]+?PT\b)/gi });
     }
-    if ( emailDisc !== "at" ) {
+    if ( email.audience !== "at" ) {
       findText({find: /(Promo Code.+?\b[A-Za-z0-9]+?AT\b)/gi });
     }
-    if ( emailDisc !== "ot" ) {
+    if ( email.audience !== "ot" ) {
       findText({find: /(Promo Code.+?\b[A-Za-z0-9]+?OT\b)/gi });
     }
-    if ( emailDisc !== "slp" ) {
+    if ( email.audience !== "slp" ) {
       findText({find: /(Promo Code.+?\b[A-Za-z0-9]+?SLP\b)/gi });
     }
-    if ( emailDisc === "other" ) {
+    if ( email.audience === "other" ) {
       findText({find: /(Promo Code.+?\b[A-Za-z0-9]+?(PT|AT|OT|SLP)\b)/gi });
     }
 
@@ -106,15 +106,15 @@ var highlightTextErrors = function (stage) {
   //// Pricing
   ////
   //////////
-  if ( emailDisc === "pt" || emailDisc === "other" || emailDisc === "ot" || emailDisc === "at" ) {
+  if ( email.audience === "pt" || email.audience === "other" || email.audience === "ot" || email.audience === "at" ) {
     findText({find: /((only )?\$95|(only )?\$145)/gi });
   }
 
-  if ( emailDisc === "slp" ) {
+  if ( email.audience === "slp" ) {
     findText({find: /((only )?\$200|(only )?\$250)/gi });
   }
 
-  if ( emailDisc === "lmt" || emailDisc === "ent" ) {
+  if ( email.audience === "lmt" || email.audience === "ent" ) {
     findText({find: /\$95|\$145|\$200|\$250/gi });
   }
 
@@ -123,7 +123,7 @@ var highlightTextErrors = function (stage) {
   //// Physical Therapy - PT
   ////
   //////////
-  if ( emailDisc === "pt" ) {
+  if ( email.audience === "pt" ) {
 
     // case sensitive
     findText({find: /\b(ASHA|AOTA)\b/g });
@@ -137,7 +137,7 @@ var highlightTextErrors = function (stage) {
   ////
   //////////
 
-  } else if ( emailDisc === "other" ) {
+  } else if ( email.audience === "other" ) {
 
     // case sensitive
     findText({find: /\b(ASHA|AOTA)\b/g });
@@ -151,7 +151,7 @@ var highlightTextErrors = function (stage) {
   ////
   //////////
 
-  } else if ( emailDisc === "at" ) {
+  } else if ( email.audience === "at" ) {
 
     // case sensitive
     findText({find: /\b(ASHA|AOTA)\b/g });
@@ -164,7 +164,7 @@ var highlightTextErrors = function (stage) {
   //// Occupational Therapy - OT
   ////
   //////////
-  } else if ( emailDisc === "ot" ) {
+  } else if ( email.audience === "ot" ) {
 
     // case sensitive
     findText({find: /\b(ASHA)\b/g });
@@ -177,7 +177,7 @@ var highlightTextErrors = function (stage) {
   //// Speech Language Pathology - SLP
   ////
   //////////
-  } else if ( emailDisc === "slp" ) {
+  } else if ( email.audience === "slp" ) {
 
     findText({find: /\b(AOTA|APTA)\b/g });
 
@@ -189,7 +189,7 @@ var highlightTextErrors = function (stage) {
   //// Nursing - RN
   ////
   //////////
-} else if ( emailDisc === "rn" ) {
+} else if ( email.audience === "rn" ) {
 
     // case sensitive
     findText({find: /\b(ASHA|AOTA)\b/g });
@@ -202,7 +202,7 @@ var highlightTextErrors = function (stage) {
   //// Massage
   ////
   //////////
-  } else if ( emailDisc === "lmt" ) {
+  } else if ( email.audience === "lmt" ) {
 
     findText({find: /\b(ASHA|AOTA)\b/g });
 
@@ -214,7 +214,7 @@ var highlightTextErrors = function (stage) {
   //// Enterprise
   ////
   //////////
-  } else if ( emailDisc === "ent" ) {
+  } else if ( email.audience === "ent" ) {
     // Enterprise
 
   }
@@ -316,7 +316,7 @@ var highlightTextErrors = function (stage) {
   // Subscriber
   //
   if
-       ( emailSubType === "sub" ) { // Removed && emailDisc !== "ent"
+       ( email.subscription === "sub" ) { // Removed && email.audience !== "ent"
     findText({
       find: /(win a free subscription|First Chapter Free|Start for Free|\bSubscribe\b|(?:in the (?:annual )?|in the annual MedBridge )subscription|\bin a(?:n annual|(?:n annual MedBridge)?) subscription|with a(?:n annual|(?:n annual MedBridge)?) subscription)/gi
     });
@@ -326,16 +326,16 @@ var highlightTextErrors = function (stage) {
   // Non-Subscribers
   //
   if
-       ( emailSubType === "ns" ) {
+       ( email.subscription === "ns" ) {
     findText({
       find: /(Start Now|Refer(\-| )a(\-| )Friend|in(?:cluded with)? your (?:(?:MedBridge )?s|annual (?:MedBridge )?s)ubscription)/gi
     });
   }
 
   //
-  // outsideOrg
+  // email.outsideOrg
   //
-  if ( outsideOrg ) {
+  if ( email.outsideOrg ) {
 
 
     findText({
@@ -353,7 +353,7 @@ var highlightTextErrors = function (stage) {
   // emailAnySale
   //
   if
-       ( (emailSubType === "ns" || emailSubType === "sub") && !emailAnySale ) {
+       ( (email.subscription === "ns" || email.subscription === "sub") && !emailAnySale ) {
     findText({
       find: /(only )?\$(200|95|145|250)( |!|\.)/gi
     });
@@ -363,13 +363,13 @@ var highlightTextErrors = function (stage) {
   // Sale Verbiage
   //
 
-  if ( emailAnySale && emailDisc !== "lmt" ) {
+  if ( emailAnySale && email.audience !== "lmt" ) {
     findText({
       find: /50%/gi
     });
   }
   // Massage Pricing
-  if ( emailAnySale && emailDisc === "lmt" ) {
+  if ( emailAnySale && email.audience === "lmt" ) {
     findText({
       find: /40%/gi
     });
@@ -391,14 +391,14 @@ var highlightTextErrors = function (stage) {
 
 
 
-  if ( outsideOrg ) {
+  if ( email.outsideOrg ) {
     findText({
       find: /(request a demo|part of an? (group|organization)|sign(\-| )up|\bsubscribe\b)/gi
     });
   }
 
 
-  if ( emailDisc === "slp" ) {
+  if ( email.audience === "slp" ) {
     findText({
       find: /CEU Sale|Unlimited (Access to )?(CE'?s|CEU'?s)/gi
       // Must say CE Course

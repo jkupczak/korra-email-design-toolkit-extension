@@ -1015,3 +1015,11 @@ div.dropzone
   box-shadow: 0 0 0 2px #e6eaf2;
   margin: 12px 12px 0 0;
 }
+
+
+/**********************/
+/**********************/
+/**********************/
+.indent {
+  padding-left:20px;
+}

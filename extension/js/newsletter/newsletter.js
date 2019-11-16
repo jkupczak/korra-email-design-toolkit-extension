@@ -194,7 +194,7 @@ document.querySelector("html").classList.toggle("errors");
 // Power Button / Turn Off
 ///////////
 
-document.getElementById("turn-off").href = fileLocation + "?korra=0";
+document.getElementById("turn-off").href = email.fileLocation + "?korra=0";
 
 
 ///////////
@@ -621,7 +621,7 @@ let inLocalDbFolder;
 let fullPathToDropboxFolderEscaped = escapeRegExp(decodeURIComponent(options.local.fullPathToDropboxFolder));
 let fullPathToDropboxFolderEscapedRegex = new RegExp(fullPathToDropboxFolderEscaped, "gi");
 
-if ( fullPathToDropboxFolderEscapedRegex.test(fileLocation) ) {
+if ( fullPathToDropboxFolderEscapedRegex.test(email.fileLocation) ) {
   inLocalDbFolder = true;
 } else {
   inLocalDbFolder = false;
@@ -632,60 +632,55 @@ if ( fullPathToDropboxFolderEscapedRegex.test(fileLocation) ) {
 ///// Get Information from Filename
 ///////////
 
-if ( fileHost === "local" || fileHost === "localserver" ) {
+if ( email.fileHost === "local" || email.fileHost === "localserver" ) {
 
     ///////////
     ///// Get the Discipline
     ///////////
-    var emailDisc = getDisciplineId(filename);
+    getEmailAudience();
 
     ///////////
     ///// Get the A/B Status.
     ///////////
-    var abTesting = getABstatus(filename);
+    var abTesting = getABstatus(email.filename);
 
     ///////////
     ///// Set Email Title
     ///////////
-    // var emailTitle = getEmailTitle(filename, emailDisc);
-    setPageTitle(filename);
+    // var emailTitle = getEmailTitle(filename, email.audience);
+    setPageTitle(email.filename);
 
     ///////////
     ///// Get Date of Email
     ///////////
-    var emailDate = getEmailDate(filename) || new Date();
+    email.date = getEmailDate(email.filename) || new Date();
 
     ///////////
     ///// Get Date of Email
     ///////////
-    var dateFormatted = formatDate(emailDate);
+    var dateFormatted = formatDate(email.date);
 
-    // If no email date is found in the filename, set the emailDate variable to be today's date.
-    if ( isNaN(emailDate) == true ) { // ref - http://stackoverflow.com/a/1353710/556079
-      emailDate = new Date();
+    // If no email date is found in the email.filename, set the email.date variable to be today's date.
+    if ( isNaN(email.date) == true ) { // ref - http://stackoverflow.com/a/1353710/556079
+      email.date = new Date();
     }
 
-    var emailMonth = emailDate.getMonth();
-    var emailMonthAbbr = getMonthAbbr(emailDate);
+    email.month = email.date.getMonth();
+    email.monthName = getMonthAbbr(email.date);
 
     ///////////
     ///// Get the Platform
     ///////////
 
-    var emailPlatform;
-    var emailPlatformName;
-    if ( /^GR\-/i.test(filename) ) {
-      emailPlatform = "gr";
-      emailPlatformName = "GetResponse";
-    } else if ( /^SG\-/i.test(filename) ) {
-      emailPlatform = "sg";
-      emailPlatformName = "SendGrid";
-    } else if ( /\/Pardot\//i.test(filePath) ) {
-      emailPlatform = "pd";
-      emailPlatformName = "Pardot";
+    if ( /^GR\-/i.test(email.filename) ) {
+      email.esp = "gr";
+      email.espName = "GetResponse";
+    } else if ( /\/Pardot\//i.test(email.filePath) ) {
+      email.esp = "pd";
+      email.espName = "Pardot";
     } else {
-      emailPlatform = "mc";
-      emailPlatformName = "MailChimp";
+      email.esp = "ac";
+      email.espName = "ActiveCampaign";
     }
 
 
@@ -702,11 +697,11 @@ if ( fileHost === "local" || fileHost === "localserver" ) {
 
 } else {
 
-    var emailDisc = "unknown";
+    // email.audience = "unknown";
 
-    var emailDate = null;
-    var emailMonth = null;
-    var emailMonthAbbr = null;
+    email.date = null;
+    email.month = null;
+    email.monthName = null;
     var dateFormatted = null;
 
     var emailTitle = null;
@@ -718,38 +713,40 @@ if ( fileHost === "local" || fileHost === "localserver" ) {
 ///////////
 ///// Apply class based on discipline
 ///////////
-document.body.classList.add("disc-" + emailDisc);
+document.body.classList.add("disc-" + email.audience);
 
 
 ///////////
 ///// Determine type of email - Non-Subscriber versus Subscriber, fox, hs, etc.
 ///////////
 
-var emailSubType;
-var emailOrgName;
-var emailSubTypeName;
+if ( /\-Fox\-/gi.test(email.fileLocation) ) {
+  email.subscription = "sub";
+  email.organization = "fox";
+  email.subscriptionName = "Subscribers";
+}
+if ( /\-(EH|HS)\-/gi.test(email.fileLocation) ) {
+  email.subscription = "sub";
+  email.organization = "hs";
+  email.subscriptionName = "Subscribers";
+}
+if ( /\-DR\-/gi.test(email.fileLocation) ) {
+  email.subscription = "sub";
+  email.organization = "dr";
+  email.subscriptionName = "Subscribers";
+}
 
-if ( /(_|\-)ns( +|(%20)+)?[_\.\-\(]/gi.test(fileLocation) ) {
-  emailSubType = "ns";
-  emailSubTypeName = "Non-Subscribers";
-} else if ( /(_|\-)sub( +|(%20)+)?[_\.\-\(]/gi.test(fileLocation) ) {
-  emailSubType = "sub";
-  emailSubTypeName = "Subscribers";
+if ( /(_|\-|=)ns( +|(%20)+)?[_\.\-\(]/gi.test(email.fileLocation) ) {
+  email.subscription = "ns";
+  email.subscriptionName = "Non-Subscribers";
 }
-if ( /\-Fox\-/gi.test(fileLocation) ) {
-  emailSubType = "sub";
-  emailOrgName = "fox";
-  emailSubTypeName = "Subscribers";
+else if ( /(_|\-|=)sub( +|(%20)+)?[_\.\-\(]/gi.test(email.fileLocation) ) {
+  email.subscription = "sub";
+  email.subscriptionName = "Subscribers";
 }
-if ( /\-(EH|HS)\-/gi.test(fileLocation) ) {
-  emailSubType = "sub";
-  emailOrgName = "hs";
-  emailSubTypeName = "Subscribers";
-}
-if ( /\-DR\-/gi.test(fileLocation) ) {
-  emailSubType = "sub";
-  emailOrgName = "dr";
-  emailSubTypeName = "Subscribers";
+else {
+  email.subscription = "all";
+  email.subscriptionName = "All Subscriptions";
 }
 
 ///////////
@@ -757,9 +754,12 @@ if ( /\-DR\-/gi.test(fileLocation) ) {
 ///// Healthsouth, Drayer PT, Fox Rehab
 ///////////
 
-var outsideOrg = false;
-if ( /\-(EH|HS|DR|Fox)\-/gi.test(fileLocation) ) {
-  outsideOrg = true;
+if ( email.organization ) {
+  email.outsideOrg = true;
+}
+else {
+  email.outsideOrg = false;
+  email.organization = "medbridge";
 }
 
 
@@ -772,10 +772,10 @@ var emailAnySale = false;
 var emailSale = false;
 var emailPresale = false;
 
-if ( /\-Sale\-/gi.test(fileLocation) ) {
+if ( /\-Sale\-/gi.test(email.fileLocation) ) {
   emailSale = true;
   emailAnySale = true;
-} else if ( /\-Presale\-/gi.test(fileLocation) ) {
+} else if ( /\-Presale\-/gi.test(email.fileLocation) ) {
   emailPresale = true;
   emailAnySale = true;
 }
@@ -784,7 +784,7 @@ if ( /\-Sale\-/gi.test(fileLocation) ) {
 ///////////
 ///// Is this a recent email?
 ///////////
-var isRecentEmail = isRecentEmail(emailDate);
+var isRecentEmail = isRecentEmail(email.date);
 
 
 ///////////
@@ -797,10 +797,10 @@ var totalTextErrors = 0;
 ///// Show all of our important variables in the log
 ///////////
 
-console.groupCollapsed("Global variables based on filename");
+console.groupCollapsed("Global variables based on email.filename");
 
   console.groupCollapsed("Platform");
-    console.log("emailPlatform = " + emailPlatform);
+    console.log("email.esp = " + email.esp);
   console.groupEnd();
 
   console.groupCollapsed("Dropbox");
@@ -809,16 +809,16 @@ console.groupCollapsed("Global variables based on filename");
 
   console.log("abTesting = " + abTesting);
 
-  console.log("emailSubType = " + emailSubType);
-  console.log("emailSubTypeName = " + emailSubTypeName);
-  console.log("outsideOrg = " + outsideOrg);
+  console.log("email.subscription = " + email.subscription);
+  console.log("email.subscriptionName = " + email.subscriptionName);
+  console.log("email.outsideOrg = " + email.outsideOrg);
 
-  console.log("emailDisc = " + emailDisc);
+  console.log("email.audience = " + email.audience);
   console.log("emailTitle = " + emailTitle);
 
   console.groupCollapsed("Date");
-    console.log("emailDate = " + emailDate);
-    console.log("emailDate (month) = " + emailMonth + " | " + emailMonthAbbr);
+    console.log("email.date = " + email.date);
+    console.log("email.date (month) = " + email.month + " | " + email.monthName);
     console.log("isRecentEmail = " + isRecentEmail);
   console.groupEnd();
 
@@ -969,7 +969,7 @@ if ( isSavedFile ) {
 
     // Create HTML for email date
     var showEmailDate = "";
-    if ( isNaN(emailDate) == false ) { // ref - http://stackoverflow.com/a/1353710/556079
+    if ( isNaN(email.date) == false ) { // ref - http://stackoverflow.com/a/1353710/556079
       showEmailDate = '<div class="title-small"><span>' + dateFormatted + '</span></div>';
     }
     // var pageTitle = document.createElement("div");
@@ -980,11 +980,11 @@ if ( isSavedFile ) {
     var abTitleIcon = "";
     if ( abTesting === "a" || abTesting === "b" ) {
       if ( abTesting === "a" ) {
-        var abUrl = fileLocation.replace(/\-a\./gi, "-b.");
+        var abUrl = email.fileLocation.replace(/\-a\./gi, "-b.");
         var abTestingUpper = "A";
         var abTestingOpposite = "B";
       } else {
-        var abUrl = fileLocation.replace(/\-b\./gi, "-a.");
+        var abUrl = email.fileLocation.replace(/\-b\./gi, "-a.");
         var abTestingUpper = "B";
         var abTestingOpposite = "A";
       }
@@ -994,10 +994,10 @@ if ( isSavedFile ) {
 
     // Create HTML for Header Icon based on Discipline
     var headerIcon = "";
-    if ( emailDisc ) {
+    if ( email.audience ) {
 
       var iconSuffix = "";
-      if ( emailSubType === "sub" ) {
+      if ( email.subscription === "sub" ) {
         var iconSuffix = "-sub";
       }
 
@@ -1007,68 +1007,68 @@ if ( isSavedFile ) {
       var iconCode;
 
       // PT
-      if ( emailDisc === "pt" ) {
-          if ( emailSubType === "sub" ) {
+      if ( email.audience === "pt" ) {
+          if ( email.subscription === "sub" ) {
             iconCode = svgPTsub;
           } else {
             iconCode = svgPTns;
           }
       // AT
-      } else if ( emailDisc === "at" ) {
-          if ( emailSubType === "sub" ) {
+      } else if ( email.audience === "at" ) {
+          if ( email.subscription === "sub" ) {
             iconCode = svgATsub;
           } else {
             iconCode = svgATns;
           }
       // OT
-      } else if ( emailDisc === "ot" ) {
-          if ( emailSubType === "sub" ) {
+      } else if ( email.audience === "ot" ) {
+          if ( email.subscription === "sub" ) {
             iconCode = svgOTsub;
           } else {
             iconCode = svgOTns;
           }
       // SLP
-      } else if ( emailDisc === "slp" ) {
-          if ( emailSubType === "sub" ) {
+      } else if ( email.audience === "slp" ) {
+          if ( email.subscription === "sub" ) {
             iconCode = svgSLPsub;
           } else {
             iconCode = svgSLPns;
           }
       // OTHER
-      } else if ( emailDisc === "other" ) {
-          if ( emailSubType === "sub" ) {
+      } else if ( email.audience === "other" ) {
+          if ( email.subscription === "sub" ) {
             iconCode = svgOTHERsub;
           } else {
             iconCode = svgOTHERns;
           }
       // RN
-    } else if ( emailDisc === "rn" ) {
-          if ( emailSubType === "sub" ) {
+    } else if ( email.audience === "rn" ) {
+          if ( email.subscription === "sub" ) {
             iconCode = svgRNsub;
           } else {
             iconCode = svgRNns;
           }
       // ENT
-      } else if ( emailDisc === "ent" ) {
-            if ( emailSubType === "sub" ) {
+      } else if ( email.audience === "ent" ) {
+            if ( email.subscription === "sub" ) {
               iconCode = svgENTsub;
             } else {
               iconCode = svgENTns;
             }
       // MASSAGE
-      } else if ( emailDisc === "lmt" ) {
-          if ( emailSubType === "sub" ) {
+      } else if ( email.audience === "lmt" ) {
+          if ( email.subscription === "sub" ) {
             iconCode = svgLMTsub;
           } else {
             iconCode = svgLMTns;
           }
       } else {
-        iconCode = '<img class="disc-img" src="' + chrome.extension.getURL('favicons/' + emailDisc + iconSuffix + '.png') + '">';
+        iconCode = '<img class="disc-img" src="' + chrome.extension.getURL('favicons/' + email.audience + iconSuffix + '.png') + '">';
       }
       // Wrap it up in a div
-      headerIcon = "<div class='disc-img svg-" + emailDisc + "'>" + iconCode + "</div>";
+      headerIcon = "<div class='disc-img svg-" + email.audience + "'>" + iconCode + "</div>";
     } else {
-      // No discipline found in emailDisc
+      // No discipline found in email.audience
       headerIcon = "";
     }
 
@@ -1093,18 +1093,18 @@ if ( isSavedFile ) {
 
 
     // Organization Logos
-    if ( outsideOrg ) {
+    if ( email.outsideOrg ) {
       var orgLogo;
 
-      if ( emailOrgName === "fox" ) {
+      if ( email.organization === "fox" ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/fox.png') + "' class='organization-logo'>";
         console.error(orgLogo);
       }
-      if ( emailOrgName === "dr" ) {
+      if ( email.organization === "dr" ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/drayer.png') + "' class='organization-logo'>";
         console.error(orgLogo);
       }
-      if ( emailOrgName === "hs" ) {
+      if ( email.organization === "hs" ) {
         orgLogo = "<img src='" + chrome.extension.getURL('img/organizations/hs.png') + "' class='organization-logo'>";
         console.error(orgLogo);
       }
@@ -1114,15 +1114,15 @@ if ( isSavedFile ) {
 
     // Create HTML for Header Audience Text
     var headerAudienceText = "";
-    if ( emailDisc || emailSubTypeName ) {
+    if ( email.audience || email.subscriptionName ) {
 
       headerAudienceText = '<div class="email-disc">';
 
-      if ( emailDisc ) {
-        headerAudienceText += '<div class="title-large"><span>' + getDisciplineName(emailDisc) + '</span></div>';
+      if ( email.audience ) {
+        headerAudienceText += '<div class="title-large"><span>' + email.audienceName + '</span></div>';
       }
-      if ( emailSubTypeName ) {
-        headerAudienceText += '<div class="title-small"><span>' + emailSubTypeName + '</span></div>';
+      if ( email.subscriptionName ) {
+        headerAudienceText += '<div class="title-small"><span>' + email.subscriptionName + '</span></div>';
       }
 
       headerAudienceText += '</div>';
@@ -1364,7 +1364,7 @@ orbsBottom.appendChild(paneToggleOrb);
 /////////
 
 var shareOrb = document.getElementById("share");
-if ( fileHost !== "local" ) { shareOrb.classList.add("off"); }
+if ( email.fileHost !== "local" ) { shareOrb.classList.add("off"); }
 shareOrb.addEventListener("click", getDbShareLink, false);
 
 
@@ -2451,14 +2451,14 @@ appendQaBar(accessibilityWarningsQaBar);
 
 // We need to know if an email is going to be sent NS, SUB, or Both/Neither.
 // Some link checking relies on this.
-// Append a value of -sub, -ns, or ??? (tbd) to the filename to find out the audience.
+// Append a value of -sub, -ns, or ??? (tbd) to the email.filename to find out the audience.
 
 // var audienceQaBar = document.createElement("div");
 // audienceQaBar.id = "qa-audience";
 // audienceQaBar.className = "qa-audience";
 // appendQaBar(audienceQaBar);
 //
-// if ( emailSubType ) {
+// if ( email.subscription ) {
 //   applyQaResults(audienceQaBar, "success", "Audience Value Found");
 // } else {
 //   applyQaResults(audienceQaBar, "error", "Audience Value Missing");
@@ -4039,14 +4039,14 @@ window.dragMoveListener = dragMoveListener;
 
 //// Use this data to populate the nav bar
 
-if ( fileHost === "externalserver" ) {
+if ( email.fileHost === "externalserver" ) {
 
-  document.getElementById("file-url").innerHTML = '<span>' + fileLocation + '</span>';
+  document.getElementById("file-url").innerHTML = '<span>' + email.fileLocation + '</span>';
 
 }
 else {
 
-  document.getElementById("file-url").innerHTML = '<span class="url-div soft">/</span><span class="soft">' + fileParentFolder + '</span><span class="url-div">/</span><span>' + filename + '</span>';
+  document.getElementById("file-url").innerHTML = '<span class="url-div soft">/</span><span class="soft">' + email.fileParentFolder + '</span><span class="url-div">/</span><span>' + email.filename + '</span>';
 
 }
 
@@ -4067,9 +4067,9 @@ else {
 
 var infoLayer = document.getElementById("info-overlay");
 
-document.querySelectorAll("#file-name .data")[0].insertAdjacentHTML('beforeend', filename);
-document.querySelectorAll("#file-parent-folder .data")[0].insertAdjacentHTML('beforeend', fileParentFolder);
-document.querySelectorAll("#file-path .data")[0].insertAdjacentHTML('beforeend', filePath);
+document.querySelectorAll("#file-name .data")[0].insertAdjacentHTML('beforeend', email.filename);
+document.querySelectorAll("#file-parent-folder .data")[0].insertAdjacentHTML('beforeend', email.fileParentFolder);
+document.querySelectorAll("#file-path .data")[0].insertAdjacentHTML('beforeend', email.filePath);
 
 
 
