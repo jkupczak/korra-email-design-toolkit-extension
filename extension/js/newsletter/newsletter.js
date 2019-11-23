@@ -3545,6 +3545,12 @@ var processShortcut = function (e) {
     toggleLinkMarkers("command");
   }
 
+  // Send to Litmus
+  if ( (e.ctrlKey || e.metaKey ) && e.keyCode == 77 ) {
+    e.preventDefault();
+    sendToLitmus();
+  }
+
 
   // Print Desktop
   if ( (e.ctrlKey || e.metaKey) && e.keyCode == 80 ) {

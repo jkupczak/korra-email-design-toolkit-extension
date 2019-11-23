@@ -74,7 +74,7 @@ function callDropbox(action, source) {
 
   var dropboxEscapedParentFolder = escapeRegExp(dpPath);
   var dropboxTestPattern = new RegExp(dropboxEscapedParentFolder, "gi");
-  var fileLocationEncoded = encodeURI(fileLocation);
+  var fileLocationEncoded = encodeURI(email.fileLocation);
 
   console.group("callDropbox()");
     console.log("action:", action, "source:", source);

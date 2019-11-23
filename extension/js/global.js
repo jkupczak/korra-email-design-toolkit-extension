@@ -721,11 +721,11 @@ function getEmailAudience() {
   if ( /Pardot/gi.test(email.fileLocation) ) {
     email.division = "enterprise";
 
-    if      ( /Setting=(Home-Care|HC)/gi.test(trimmedString) )        { email.audience = "hc"; email.audienceName = "Home Care" }
-    else if ( /Setting=(Hospitals?|Hosp)/gi.test(trimmedString) )     { email.audience = "hosp"; email.audienceName = "Hospital" }
-    else if ( /Setting=(LTC|Long-Term-Care)/gi.test(trimmedString) )  { email.audience = "ltc"; email.audienceName = "Long-Term Care" }
-    else if ( /Setting=(PP|Private-Practice)/gi.test(trimmedString) ) { email.audience = "pp"; email.audienceName = "Private Practice" }
-    else if ( /Setting=(Other|Unknown)/gi.test(trimmedString) )       { email.audience = "ent-other"; email.audienceName = "Other" }
+    if      ( /(Audience|Setting|List)=(Home-Care|HC)/gi.test(trimmedString) )        { email.audience = "hc"; email.audienceName = "Home Care" }
+    else if ( /(Audience|Setting|List)=(Hospitals?|Hosp)/gi.test(trimmedString) )     { email.audience = "hosp"; email.audienceName = "Hospital" }
+    else if ( /(Audience|Setting|List)=(LTC|Long-Term-Care)/gi.test(trimmedString) )  { email.audience = "ltc"; email.audienceName = "Long-Term Care" }
+    else if ( /(Audience|Setting|List)=(PP|Private-Practice)/gi.test(trimmedString) ) { email.audience = "pp"; email.audienceName = "Private Practice" }
+    else if ( /(Audience|Setting|List)=(Other|Unknown)/gi.test(trimmedString) )       { email.audience = "ent-other"; email.audienceName = "Other" }
 
     else {
       email.audience = "all";

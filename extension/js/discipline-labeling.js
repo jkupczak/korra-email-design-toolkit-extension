@@ -70,7 +70,7 @@ if ( getABstatus(disciplineSearch) === "a" ) {
 
 var setPageTitle = function(filename) {
 
-	document.title = filename + " (" + document.title + ")";
+	document.title = filename + " | Korra – Email Preview";
 
 };
 
