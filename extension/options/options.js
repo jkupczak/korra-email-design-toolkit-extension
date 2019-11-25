@@ -1171,7 +1171,7 @@ document.getElementById("reset-settings").addEventListener("click", function() {
 
   if ( confirm("Are you sure you want reset all options to the default?") ) {
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
-      backgroundPage.setDefaultOptions('reset');
+      backgroundPage.setDefaultOptions( { clear: { sync: true, local: true }} );
       resetSettings();
       loadOptions();
       saveSuccessful();

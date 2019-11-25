@@ -228,7 +228,7 @@ var openCurrentTab = function() {
   }
   chrome.tabs.query(query, callback);
 
-}
+};
 
 ///////////////
 ///////////////
@@ -274,3 +274,31 @@ function uuidv4() {
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   );
 }
+
+
+
+///////////////
+///////////////
+//
+// Clear Local Storage
+//
+///////////////
+///////////////
+
+// How to clear `chrome.storage.local` cache when developing a Chrome Extension?
+// https://stackoverflow.com/a/31813035/556079
+
+document.getElementById("clear-local-storage").addEventListener("click", function() {
+
+  console.log("clearing chrome.storage.local");
+  chrome.storage.local.clear();
+
+  // var bkg = chrome.runtime.getBackgroundPage(function(bkg){
+  //
+  //   setDefaultOptions( { set: { local: true } } );
+  //
+  // });
+
+  chrome.extension.getBackgroundPage().setDefaultOptions( {set: { local: true }} );
+
+}, false);

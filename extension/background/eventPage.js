@@ -237,7 +237,7 @@ function handleInstalled(details) {
     // Set default options to storage
     // @TODO I need to check for this value before setting the default options.
     // If its true, we want to set the sync options with data from storage rather than using defaults
-    setDefaultOptions();
+    setDefaultOptions( {set: {sync: true, local: true}} );
 
     // Show start page to provide instructions
     // showStartPage();
@@ -593,16 +593,35 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 // Set the default options to chrome.storage.sync
 // Used on first initilization (first install)
 // and whenever the user specifically requests to reset all options to defaullt.
-function setDefaultOptions(reset) {
+function setDefaultOptions(a) {
+
+  console.log(actions);
+
+  // Defaults
+  var defaults = {
+    clear: {
+      sync: "",
+      local: ""
+    },
+    set: {
+      sync: "",
+      local: ""
+    }
+  };
+
+
+  var actions = Object.assign({}, defaults, a);
 
   // clear storage if we're resetting the options
-  if (reset) {
+  if (actions.clear.sync) {
     chrome.storage.sync.clear(function() {
       var error = chrome.runtime.lastError;
       if (error) {
         console.error(error);
       }
     });
+  }
+  if ( actions.clear.local ) {
     chrome.storage.local.clear(function() {
       var error = chrome.runtime.lastError;
       if (error) {
@@ -611,64 +630,67 @@ function setDefaultOptions(reset) {
     });
   }
 
-  // set the default options
-  chrome.storage.sync.set({
-    // Sync Saved
-    'defaultSyncOptionsLoaded': 'true',
+  if ( actions.set.sync ) {
 
-    // General
-    'watchedExtensions': '.html, .htm',
-    'watchedFolders': '',
+    // set the default options
+    chrome.storage.sync.set({
+      // Sync Saved
+      'defaultSyncOptionsLoaded': 'true',
 
-    // Views
-    'synchronizeScrolling': '1',
-    'mobileViewVisibility': '1',
-    'mobileWidthDefault': '320',
-    'mobileWidth': '320, 360, 375, 414, 480',
+      // General
+      'watchedExtensions': '.html, .htm',
+      'watchedFolders': '',
 
-    // Sharing
-    'autoRedirectDropboxLinkstoLocal': '0',
+      // Views
+      'synchronizeScrolling': '1',
+      'mobileViewVisibility': '1',
+      'mobileWidthDefault': '320',
+      'mobileWidth': '320, 360, 375, 414, 480',
 
-    // Sending Tests
+      // Sharing
+      'autoRedirectDropboxLinkstoLocal': '0',
 
-    // App Integrations
+      // Sending Tests
 
-    // Variables
+      // App Integrations
 
-    // Link Validation
+      // Variables
 
-        // General
-        'autoCheckLinks': '1',
-        'checkTargetAttribute': '1',
-        'checkNoFollowLinks': '1',
+      // Link Validation
 
-        // URL Format Validation
-        'checkMissingHrefAttr': '1',
-        'checkEmptyLink': '1',
-        'checkTrailingHash': '1',
-        'checkTrailingSlash': '0',
-        'ignoreESPTags': '0',
+          // General
+          'autoCheckLinks': '1',
+          'checkTargetAttribute': '1',
+          'checkNoFollowLinks': '1',
 
-        // Loading Validation
-        'cacheValidLinks': '1',
-        'parseDOM': '1',
-        'clearCacheAfterXDays': '1',
+          // URL Format Validation
+          'checkMissingHrefAttr': '1',
+          'checkEmptyLink': '1',
+          'checkTrailingHash': '1',
+          'checkTrailingSlash': '0',
+          'ignoreESPTags': '0',
 
-    // Code Validation
+          // Loading Validation
+          'cacheValidLinks': '1',
+          'parseDOM': '1',
+          'clearCacheAfterXDays': '1',
 
-    // Images
+      // Code Validation
 
-    // Text and Grammer
+      // Images
 
-    // Accessibility
+      // Text and Grammer
 
-    // Other Tools
+      // Accessibility
 
-    // Alerts
+      // Other Tools
 
-    // install status
-    'newInstalled': true
-  });
+      // Alerts
+
+      // install status
+      'newInstalled': true
+    });
+  }
 
   // We can use the chrome.runtime to get the platform
   // chrome.runtime.getPlatformInfo( function(info) {
@@ -677,10 +699,12 @@ function setDefaultOptions(reset) {
   //   });
   // });
 
-  chrome.storage.local.set({
-    'protectedarticles': "",
-    'platform': navigator.platform
-  });
+  if ( actions.set.local ) {
+    chrome.storage.local.set({
+      'protectedarticles': "",
+      'platform': navigator.platform
+    });
+  }
 }
 
 

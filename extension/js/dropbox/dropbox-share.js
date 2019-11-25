@@ -55,12 +55,18 @@ function getDbShareLink() {
 var dpPath;
 function callDropbox(action, source) {
 
-    dbx = new Dropbox({ accessToken: options.sync.dropboxAccessToken });
-    if ( options.sync.dropboxAccessToken ) {
-      // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
-    } else {
-      console.error("Could not retrieve Dropbox access token from chrome.storage.sync. options.sync.dropboxAccessToken is " + options.sync.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
-    }
+  dbx = new Dropbox({ accessToken: options.sync.dropboxAccessToken });
+  if ( options.sync.dropboxAccessToken ) {
+    // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
+  } else {
+    console.error("Could not retrieve Dropbox access token from chrome.storage.sync. options.sync.dropboxAccessToken is " + options.sync.dropboxAccessToken, " - Visit https://dropbox.github.io/dropbox-api-v2-explorer/#auth_token/from_oauth1 to get an access token.");
+  }
+
+  if ( options.local.fullPathToDropboxFolderEncoded ) {
+    // console.log("dropboxAccessToken: ", items.dropboxAccessToken);
+  } else {
+    console.error("Could not retrieve Dropbox folder path from chrome.storage.local. On Mac, this should start with /Users/ and end with the name of the parent Dropbox folder.");
+  }
 
   console.log("options.local.fullPathToDropboxFolderEncoded", options.local.fullPathToDropboxFolderEncoded);
 
