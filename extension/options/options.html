@@ -132,8 +132,8 @@
 							<li><a href="#section-sending-tests">Sending Tests</a></li>
 							<li><a href="#section-esp-options">ESP Options</a></li>
 							<li><a href="#section-app-integrations">App Integrations</a></li>
-							<li><a href="#section-tags">Tags</a></li>
-							<li><a href="#section-badges">Badges</a></li>
+							<!-- <li><a href="#section-tags">Tags</a></li> -->
+							<!-- <li><a href="#section-badges">Badges</a></li> -->
 							<li><a href="#section-link-validation">Link Validation</a></li>
 							<!-- <li><a href="#section-code-validation">Code Validation</a></li> -->
 							<!-- <li><a href="#section-images">Images</a></li> -->
@@ -150,7 +150,8 @@
 						<ul>
 							<li><div id="export-settings" class="link">Export Settings</div></li>
 							<li><div id="import-settings" class="link">Import Settings</div></li>
-							<li><div id="reset-settings" class="link">Reset Settings</div></li>
+							<li><div id="restore-settings" class="link">Restore Default Settings</div></li>
+							<li><div id="clear-settings" class="link">Clear Settings</div></li>
 						</ul>
 					</div>
 
@@ -239,8 +240,8 @@
 				      </div>
 				    </div>
 
-						<!-- -->
-				    <div class="options-section">
+
+				    <div class="options-section notready">
 							<div class="section-title">
 				      	<h2>Desktop View</h2>
 								<p></p>
@@ -294,8 +295,7 @@
 							</div>
 						</div>
 
-						<!-- -->
-						<div class="options-section">
+						<div class="options-section notready">
 							<div class="section-title">
 				      	<h2>Code View</h2>
 								<p></p>
@@ -380,7 +380,7 @@
 									<select data-autosave="true" name="emailTestService">
 										<option selected></option>
 										<option>Mailgun</option>
-										<option>Sparkpost</option>
+										<!-- <option>Sparkpost</option> -->
 									</select>
 								</div>
 
@@ -401,7 +401,7 @@
 						      </div>
 								</div>
 
-								<div class="option-group">
+								<div class="option-group notready">
 									<div class="cols">
 										<div>Sparkpost</div>
 							      <div>
@@ -423,7 +423,8 @@
 			    	</div>
 
 
-						<div class="options-section">
+
+						<div class="options-section notready">
 
 							<div class="section-title">
 								<h2>Email Addresses</h2>
@@ -457,7 +458,7 @@
 				    </div>
 
 
-						<div class="options-section">
+						<div class="options-section notready">
 
 							<div class="section-title">
 								<h2>Default Email Fields</h2>
@@ -503,14 +504,21 @@
 							<div class="section-content">
 
 								<div class="option-group">
-									<label for="mobileWidthDefault">ESP Merge Tags</label>
+									<label>ESP Merge Tags</label>
 									<div class="option-desc">If your HTML email has merge tags, i.e. something like <code>{{fname}}</code>, you can provide the opening and closing characters here so that Korra can interact with them.</div>
 
-									<div>
-										<div>
-											<input data-autosave="true" data-group="true" data-type="keyvalue" data-order="key" type="text" name="espMergeTags" id="mobileWidthDefault" class="sm" value="">
-											<input data-autosave="true" data-group="true" data-type="keyvalue" data-order="value" type="text" name="espMergeTags" id="mobileWidthDefault" class="sm" value="">
+									<div class="esp-merge-tags input-table">
+										<div class="columns input-table-head">
+											<label>ESP Name</label>
+											<label>Head</label>
+											<label>Tail</label>
 										</div>
+
+										<div id="espMergeTags">
+											<!-- Rows generated via js -->
+										</div>
+
+										<button id="add-espmergetag-row" data-espmergetag>Add Row</button>
 									</div>
 
 								</div>
@@ -554,7 +562,7 @@
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Tags -->
-					<div id="section-tags" class="parent-section">
+					<div id="section-tags" class="parent-section notready">
 						<div class="parent-section-title">Tags</div>
 						<div class="parent-section-desc">Tags allow you to setup validation rules that are specific to certain emails. For example, you could tag emails that contain a certain phrase in the filename <em>(e.g. 'sale')</em>. Then you can setup link validation rules that only run in emails that have that tag. Tag your emails based on not just their filename, but the folder path they're in, the day of the month you're previewing it on and more.</div>
 
@@ -703,7 +711,7 @@
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Badges -->
-					<div id="section-badges" class="parent-section">
+					<div id="section-badges" class="parent-section notready">
 						<div class="parent-section-title">Badges</div>
 						<div class="parent-section-desc"></div>
 
@@ -741,6 +749,7 @@
 
 				    </div>
 			    </div>
+
 
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
@@ -953,7 +962,8 @@
 							</div>
 						</div>
 
-				    <div class="options-section">
+						<!-- -->
+				    <div class="options-section notready">
 
 							<div class="section-title">
 				      	<h2>Custom Validation Rules</h2>
@@ -961,7 +971,7 @@
 							</div>
 
 							<div class="section-content has-cards">
-							<!-- -->
+
 							<div id="custom-rules" class="options-sub-section">
 
 								<div id="custom-rules-wrapper" class="custom-rules-wrapper">
@@ -1117,7 +1127,7 @@
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Code Validation -->
-					<!-- <div id="section-code-validation" class="parent-section">
+					<div id="section-code-validation" class="parent-section notready">
 						<div class="parent-section-title">Code Validation</div>
 						<div class="parent-section-desc"></div>
 
@@ -1137,13 +1147,13 @@
 				      </div>
 
 				    </div>
-			    </div> -->
+			    </div>
 
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Images -->
-					<!-- <div id="section-images" class="parent-section">
+					<div id="section-images" class="parent-section notready">
 						<div class="parent-section-title">Images</div>
 						<div class="parent-section-desc"></div>
 
@@ -1163,13 +1173,13 @@
 				      </div>
 
 				    </div>
-			    </div> -->
+			    </div>
 
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Text and Grammer -->
-					<!-- <div id="section-text-and-grammer" class="parent-section">
+					<div id="section-text-and-grammer" class="parent-section notready">
 						<div class="parent-section-title">Text and Grammer</div>
 						<div class="parent-section-desc"></div>
 
@@ -1189,13 +1199,13 @@
 				      </div>
 
 				    </div>
-			    </div> -->
+			    </div>
 
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Accessibility -->
-					<!-- <div id="section-accessibility" class="parent-section">
+					<div id="section-accessibility" class="parent-section notready">
 						<div class="parent-section-title">Accessibility</div>
 						<div class="parent-section-desc"></div>
 
@@ -1215,13 +1225,13 @@
 				      </div>
 
 				    </div>
-			    </div> -->
+			    </div>
 
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Design Tools -->
-					<!-- <div id="section-design-tools" class="parent-section">
+					<div id="section-design-tools" class="parent-section notready">
 						<div class="parent-section-title">Other Tools</div>
 						<div class="parent-section-desc"></div>
 
@@ -1258,13 +1268,13 @@
 				      </div>
 						</div>
 
-			    </div> -->
+			    </div>
 
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Alerts -->
-					<!-- <div id="section-alerts" class="parent-section">
+					<div id="section-alerts" class="parent-section notready">
 						<div class="parent-section-title">Alerts</div>
 						<div class="parent-section-desc"></div>
 
@@ -1284,13 +1294,13 @@
 				      </div>
 
 				    </div>
-			    </div> -->
+			    </div>
 
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
 					<!-- Appearance -->
-					<!-- <div id="section-appearance" class="parent-section">
+					<div id="section-appearance" class="parent-section notready">
 						<div class="parent-section-title">Appearance</div>
 						<div class="parent-section-desc"></div>
 
@@ -1310,7 +1320,7 @@
 				      </div>
 
 				    </div>
-			    </div> -->
+			    </div>
 
 					<!--//////////////////////////////////////////////////////////-->
 					<!--//////////////////////////////////////////////////////////-->
@@ -1344,9 +1354,6 @@
 			</div>
 
 			<div class="footnote">
-				<!-- <div class="footnote-left">
-					<div id="reset-settings-to-default" class="link">Reset Settings to Default</div>
-				</div> -->
 				<div class="footnote-right">
 					Version <span id="manifest-version"></span>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="https://github.com/jkupczak/korra-email-design-toolkit-extension" target="_blank">View on GitHub</a>
 				</div>

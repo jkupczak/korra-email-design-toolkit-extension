@@ -277,13 +277,13 @@ if ( getParameterByName("presentation") === "1" ) {
   stagePreviewBtns.addEventListener("click", changeStage, false);
 
   var viewHtmlBtn = document.createElement("div");
-  viewHtmlBtn.classList.add("stage-preview-btn", "stage-preview-btn--preview", "active");
+  viewHtmlBtn.classList.add("stage-preview-btn", "stage-preview-btn--preview", "main-pane-btn", "active");
   viewHtmlBtn.dataset.stage = "html";
   viewHtmlBtn.innerHTML = "Preview";
   stagePreviewBtns.appendChild(viewHtmlBtn);
 
   var viewCodeBtn = document.createElement("div");
-  viewCodeBtn.classList.add("stage-preview-btn", "stage-preview-btn--code");
+  viewCodeBtn.classList.add("stage-preview-btn", "main-pane-btn", "stage-preview-btn--code");
   viewCodeBtn.dataset.stage = "code";
   viewCodeBtn.innerHTML = "Code";
   stagePreviewBtns.appendChild(viewCodeBtn);
@@ -410,9 +410,9 @@ if ( getParameterByName("presentation") === "1" ) {
       Promise.all(imgUrls.map(function(e) {
         return fetch(e).catch(handleNetErr);
       })).then(function(e) {
-        console.log('then',e); // Outputs: 'then', [Response, TypeError]
+        // console.log('then',e); // Outputs: 'then', [Response, TypeError]
       }).catch(function(e) {
-        console.log('err',e);
+        // console.log('err',e);
       });
 
       ////////
@@ -736,11 +736,11 @@ if ( /\-DR\-/gi.test(email.fileLocation) ) {
   email.subscriptionName = "Subscribers";
 }
 
-if ( /(_|\-|=)ns( +|(%20)+)?[_\.\-\(]/gi.test(email.fileLocation) ) {
+if ( /(Sub=N|(_|\-|=)ns( +|(%20)+)?[_\.\-\(])/gi.test(email.fileLocation) ) {
   email.subscription = "ns";
   email.subscriptionName = "Non-Subscribers";
 }
-else if ( /(_|\-|=)sub( +|(%20)+)?[_\.\-\(]/gi.test(email.fileLocation) ) {
+else if ( /(Sub=S|(_|\-|=)sub( +|(%20)+)?[_\.\-\(])/gi.test(email.fileLocation) ) {
   email.subscription = "sub";
   email.subscriptionName = "Subscribers";
 }
@@ -2749,7 +2749,7 @@ if ( !navigator.onLine ) {
   //
   let tableRows = dFrameContents.querySelectorAll("tr");
   for (let tableRow of tableRows) {
-    console.log("row begin");
+    // console.log("row begin");
     // Check how many table cells are in this row. We only want to address rows with 2 or more.
     if ( tableRow.cells.length >= 2 ) {
 

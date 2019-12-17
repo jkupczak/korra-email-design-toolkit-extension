@@ -237,7 +237,7 @@ function createConditionalsUI() {
 
     // Eye icon to toggle conditions
     var toggleCondition = document.createElement("div");
-    toggleCondition.className = "toggle-condition";
+    toggleCondition.classList.add("toggle-condition");
     toggleCondition.addEventListener("click", toggleThisCondition, false);
     toggleCondition.innerHTML = svgIconEye;
     conditionWrapper.appendChild(toggleCondition);
@@ -249,7 +249,7 @@ function createConditionalsUI() {
   // Conditionals Button to active pane
   var showConditionalsPane = document.createElement("a");
   showConditionalsPane.id = "show-conditionals-btn";
-  showConditionalsPane.classList.add("main-pane-extra-btn", "toggle-conditionals-btn");
+  showConditionalsPane.classList.add("main-pane-extra-btn", "main-pane-btn", "toggle-conditionals-btn");
   showConditionalsPane.innerHTML = "Toggle Conditionals";
   showConditionalsPane.addEventListener("click", toggleConditionalsPane, false);
 

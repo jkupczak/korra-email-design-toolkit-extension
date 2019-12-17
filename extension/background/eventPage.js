@@ -612,6 +612,7 @@ function setDefaultOptions(a) {
 
   var actions = Object.assign({}, defaults, a);
 
+  //////////////////
   // clear storage if we're resetting the options
   if (actions.clear.sync) {
     chrome.storage.sync.clear(function() {
@@ -630,6 +631,7 @@ function setDefaultOptions(a) {
     });
   }
 
+  //////////////////
   if ( actions.set.sync ) {
 
     // set the default options
@@ -676,6 +678,43 @@ function setDefaultOptions(a) {
           'clearCacheAfterXDays': '1',
 
       // Code Validation
+
+      // ESP Options
+
+          // ESP Merge Tags
+          'espMergeTags':
+            [
+              {
+                'n': 'ActiveCampaign',
+                'o': '%',
+                'c': '%'
+              },
+              {
+                'n': 'Pardot',
+                'o': '{{',
+                'c': '}}'
+              },
+              {
+                'n': 'Mailchimp',
+                'o': '*|',
+                'c': '|*'
+              },
+              {
+                'n': 'ON24',
+                'o': '#',
+                'c': '#'
+              },
+              {
+                'n': 'GetResponse',
+                'o': '[[',
+                'c': ']]'
+              },
+              {
+                'n': 'SendGrid',
+                'o': '[',
+                'c': ']'
+              }
+            ],
 
       // Images
 

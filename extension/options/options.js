@@ -50,6 +50,46 @@ document.addEventListener("keydown", function(e) {
 
 ////////////////
 ////////////////
+// buildRow_espMergeTag
+////////////////
+////////////////
+
+document.getElementById("add-espmergetag-row").addEventListener("click", buildRow_espMergeTag, false);
+
+function buildRow_espMergeTag(values) {
+
+  console.log(values);
+
+  if ( !Array.isArray(values) ) {
+    values = [
+      {
+        'n': "",
+        'o': "",
+        'c': ""
+      }
+    ];
+  }
+  console.log(values);
+
+  Object.keys(values).forEach(function (item) {
+  	console.log(values[item]); // value
+
+    let row = `
+      <div class="columns input-table-row p-b-1">
+        <input data-name="n" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="md m-r-1" value="` + values[item].n + `">
+        <input data-name="o" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="center xxs m-r-1" value="` + values[item].o + `">
+        <input data-name="c" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="center xxs m-r-1" value="` + values[item].c + `">
+      </div>
+    `;
+
+    document.getElementById("espMergeTags").insertAdjacentHTML("beforeend", row);
+  });
+
+
+}
+
+////////////////
+////////////////
 // Load options from storage into the HTML.
 ////////////////
 ////////////////
@@ -63,6 +103,12 @@ var applyOptions = function (options) {
     // Process specific keys
     if ( key === "savedEmailAddresses" ) {
       listValues(options[key], document.getElementById("saved-email-addresses"));
+    }
+
+    if ( key === "espMergeTags" ) {
+
+      buildRow_espMergeTag(options[key]);
+
     }
 
     // Process all other keys.
@@ -454,19 +500,6 @@ var saveTag = function() {
 
 };
 
-/////////////////////////////////
-/////////////////////////////////
-/////////////////////////////////
-//
-//   Reset All Settings to Blank
-//
-/////////////////////////////////
-/////////////////////////////////
-/////////////////////////////////
-
-var resetSettings = function() {
-
-};
 
 /////////////////////////////////
 /////////////////////////////////
@@ -887,7 +920,7 @@ function ruleFunctions(e) {
             } else {
               // its only a single line.
               // trim white space and \ /'s
-              savedValueEncoded = encodeURI(decodeURI(savedValueEncoded.trim().replace(/(^\/+|\/+$)/,"")))
+              savedValueEncoded = encodeURI(decodeURI(savedValueEncoded.trim().replace(/(^\/+|\/+$)/,"")));
             }
 
         }
@@ -1021,7 +1054,7 @@ function ruleFunctions(e) {
 ///////////////////////////////////////////////////////////////////////////////////////
 //
 //
-//      Import, Export, Reset
+//      Import, Export, Restore, Clear
 //
 //
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1165,20 +1198,51 @@ var importSettings = function(json) {
 
 };
 
-// Reset Settings to Default
-////////////////////////////
-document.getElementById("reset-settings").addEventListener("click", function() {
 
-  if ( confirm("Are you sure you want reset all options to the default?") ) {
+/////////////////////////////////
+/////////////////////////////////
+/////////////////////////////////
+//
+//   Clear All Settings to Blank
+//
+/////////////////////////////////
+/////////////////////////////////
+/////////////////////////////////
+
+function confirmClear() {
+
+  if ( confirm("Are you sure you want clear all settings to blank? This will also clear out custom settings you've entered.") ) {
     chrome.runtime.getBackgroundPage(function (backgroundPage) {
       backgroundPage.setDefaultOptions( { clear: { sync: true, local: true }} );
-      resetSettings();
       loadOptions();
       saveSuccessful();
     });
   }
 
-}, false);
+}
+document.getElementById("clear-settings").addEventListener("click", confirmClear, false);
+
+/////////////////////////////////
+/////////////////////////////////
+/////////////////////////////////
+//
+//   Restore All Settings to Default
+//
+/////////////////////////////////
+/////////////////////////////////
+/////////////////////////////////
+function confirmRestore() {
+
+  if ( confirm("Are you sure you want restore all settings to the default? This will only affect the settings that have defaults.") ) {
+    chrome.runtime.getBackgroundPage(function (backgroundPage) {
+      backgroundPage.setDefaultOptions( {set: {sync: true, local: true}} );
+      loadOptions();
+      saveSuccessful();
+    });
+  }
+
+}
+document.getElementById("restore-settings").addEventListener("click", confirmRestore, false);
 
 
 // Manifest Version in footer

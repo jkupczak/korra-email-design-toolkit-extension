@@ -171,7 +171,7 @@ function checkCacheElseXHR(i, linkHref, linkObj, response) {
 /////////////////
 function applyXHRResultsToDupeLinks(linkHref, response, options) {
 
-  console.log("running: applyXHRResultsToDupeLinks() on links that match =>", linkHref);
+  // console.log("running: applyXHRResultsToDupeLinks() on links that match =>", linkHref);
 
   // Start a new loop through all links in the DOM
   var i = 0;
@@ -299,7 +299,7 @@ function processLinkStatusResponse(i, linkHref, linkObj, response, options) {
 
     // Make sure there are no overrides in place to prevent caching. Either on all links or this specific link.
     // If not, then add it to chrome.storage
-    console.log(options.sync.cacheLinksThatLoadProperly, response.addToCache);
+    // console.log(options.sync.cacheLinksThatLoadProperly, response.addToCache);
     if ( options.sync.cacheLinksThatLoadProperly === '1' && response.addToCache !== false ) {
       linkStorage.addLink(linkHref, response);
     } else {
@@ -515,7 +515,7 @@ var linkCheckTimeout = 30000;
 
 function checkURL(i, linkHref, linkObj) {
 
-  console.log("running: checkURL()");
+  // console.log("running: checkURL()");
 
   totalXHRs++;
 

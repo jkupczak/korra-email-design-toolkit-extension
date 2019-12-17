@@ -464,11 +464,11 @@ function createImgInfoArray(imgList) {
 
       var i = 0;
 
-      console.log(imgList);
-      console.log(imgInfoArray);
+      // console.log(imgList);
+      // console.log(imgInfoArray);
       for (let img of imgList) {
 
-        console.log(imgInfoArray[i]);
+        // console.log(imgInfoArray[i]);
 
         // Check if image is broken
         if ( img.naturalWidth === 0 && img.naturalHeight === 0 ) {

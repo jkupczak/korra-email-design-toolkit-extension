@@ -528,20 +528,33 @@ function validateLinks(l, i) {
   // replace them in this link by encoding them
   if ( o.sync.ignoreESPTags === '1' && o.sync.espMergeTags ) {
 
-    let re = new RegExp(o.sync.espMergeTags.key + '.+?' + o.sync.espMergeTags.value, 'ig');
-    let mergeTagMatches = l.urlInDOM.match(re);
-    console.log(mergeTagMatches);
+    console.log("checking link for merge tags");
 
-    // if there were any matches, loop through them
-    // If there were none, mergeTagMatches will be null.
-    if ( mergeTagMatches ) {
-      mergeTagMatches.forEach(function (tag, index) {
-      	// console.log(index); // index
-      	// console.log(tag); // value
-        l.urlInDOMMergeTagSafe = l.urlInDOM.replace(tag, 'espmergetagplaceholder');
-        // console.log(l.urlInDOM);
-      });
-    }
+    console.error(o.sync.espMergeTags);
+
+    o.sync.espMergeTags.forEach(function (esp, index) {
+
+    	console.log(esp)
+
+      let re = new RegExp(escapeRegExp(esp.o) + '[^' + escapeRegExp(esp.o.slice(-1)) + ']+?' + escapeRegExp(esp.c), 'ig');
+      let mergeTagMatches = l.urlInDOM.match(re);
+      console.log(re);
+      console.log("mergeTagMatches:", mergeTagMatches);
+
+      // if there were any matches, loop through them
+      // If there were none, mergeTagMatches will be null.
+      if ( mergeTagMatches ) {
+        mergeTagMatches.forEach(function (tag, index) {
+        	// console.log(index); // index
+        	// console.log(tag); // value
+          l.urlInDOMMergeTagSafe = l.urlInDOM.replace(tag, 'espmergetagplaceholder');
+          // console.log(l.urlInDOM);
+        });
+      }
+
+    });
+
+
 
   }
 
@@ -676,37 +689,37 @@ function validateLinks(l, i) {
     singleLinkInfoArray.checkStatus = false;
 
   //ignore links that are made up entirely of a merge tag
-  } else if ( /^\[.+?\]$/.test(l.urlInDOM) ) {
+  } else if ( /^\[[^[]+?\]$/.test(l.urlInDOM) ) {
     singleLinkInfoArray.espMergeTag = "sendgrid";
     singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.includesMergeTag = true;
     singleLinkInfoArray.checkStatus = false;
 
-  } else if ( /^\*\|.+?\|\*$/.test(l.urlInDOM) ) {
+  } else if ( /^\*\|[^|]+?\|\*$/.test(l.urlInDOM) ) {
     singleLinkInfoArray.espMergeTag = "mailchimp";
     singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.includesMergeTag = true;
     singleLinkInfoArray.checkStatus = false;
 
-  } else if ( /^\[\[.+?\]\]$/.test(l.urlInDOM) ) {
+  } else if ( /^\[\[[^[]+?\]\]$/.test(l.urlInDOM) ) {
     singleLinkInfoArray.espMergeTag = "getresponse";
     singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.includesMergeTag = true;
     singleLinkInfoArray.checkStatus = false;
 
-  } else if ( /^\%.+?\%$/.test(l.urlInDOM) ) {
+  } else if ( /^\%[^%]+?\%$/.test(l.urlInDOM) ) {
     singleLinkInfoArray.espMergeTag = "activecampaign";
     singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.includesMergeTag = true;
     singleLinkInfoArray.checkStatus = false;
 
-  } else if ( /^#.+?#$/.test(l.urlInDOM) ) {
+  } else if ( /^#[^#]+?#$/.test(l.urlInDOM) ) {
     singleLinkInfoArray.espMergeTag = "on24";
     singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.includesMergeTag = true;
     singleLinkInfoArray.checkStatus = false;
 
-  } else if ( /^({{|\%\%).+?(\%\%$|}})/.test(l.urlInDOM) ) {
+  } else if ( /^{{[^{]+?}}$/.test(l.urlInDOM) ) {
     singleLinkInfoArray.espMergeTag = "pardot";
     singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.includesMergeTag = true;
@@ -774,23 +787,23 @@ function validateLinks(l, i) {
   else if ( singleLinkInfoArray.type === "merge tag" ) {
 
     // Links in an email for the GetResponse Platform
-    if ( email.esp === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|\[[^\[\]]+?\][^\]])/gi.test(l.urlInDOM) ) { // Look for MailChimp and SendGrid merge tags.
+    if ( email.esp === "gr" && !/(\[\[[^[]+?\]\])/gi.test(l.urlInDOM) ) { // Look for MailChimp and SendGrid merge tags.
       createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
     }
     // Links in an email for the MailChimp Platform
-    else if ( email.esp === "mc" && /^\[\[?.+\]\]?/gi.test(l.urlInDOM) ) { // Look for SendGrid and GR merge tags.
+    else if ( email.esp === "mc" && !/^\*\|[^|]+?\|\*/gi.test(l.urlInDOM) ) { // Look for SendGrid and GR merge tags.
       createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
     }
     // Links in an email for the SendGrid Platform
-    else if ( email.esp === "sg" && /(^\[\[.+\]\]|\*\|.+?\|\*|\*\%7C.+?%7C\*)/gi.test(l.urlInDOM) ) { // Look for MailChimp and GR merge tags.
+    else if ( email.esp === "sg" && !/(^\[[^[]+?\])/gi.test(l.urlInDOM) ) { // Look for MailChimp and GR merge tags.
       createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
     }
     // Links in an email for the ActiveCampaign Platform
-    else if ( email.esp === "ac" && /(^%[^%]+?%)/gi.test(l.urlInDOM) ) { // Look for MailChimp and GR merge tags.
+    else if ( email.esp === "ac" && !/(^%[^%]+?%)/gi.test(l.urlInDOM) ) {
       createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
     }
     // Links in an email for the Pardot Platform
-    else if ( email.esp === "pd" && /(^%%[^%]+?%%)/gi.test(l.urlInDOM) ) { // Look for MailChimp and GR merge tags.
+    else if ( email.esp === "pd" && !/(^{{[^{]+?}})/gi.test(l.urlInDOM) ) {
       createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
     }
 
@@ -1353,7 +1366,7 @@ function validateLinks(l, i) {
     if ( singleLinkInfoArray.contentLinked === 'mixed' || singleLinkInfoArray.contentLinked === 'text' ) {
 
       // Request a Demo
-      if ( ( /(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(l.textContent) && !/#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe) ) || (!/(form|schedule (some )?time|(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)/gi.test(l.textContent) && /#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe)) ) {
+      if ( ( /(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(l.textContent) && !/#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe) ) || (!/((form|schedule (a |some )?time|(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)|connect to further discuss|connect with us)/gi.test(l.textContent) && /#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Text and URL are inconsistent (Demo Request related).");
       }
       // Request EMR Integration
@@ -1693,9 +1706,9 @@ function validateLinks(l, i) {
   // As a result, they are always "approved" for the first time.
   // This is annoying, lets just not show them on page load.
   // The approval marks are still there, and can be viewed if a toggle is clicked.
-  if ( singleLinkInfoArray.type === "merge tag" || singleLinkInfoArray.type === "mailto" ) {
-    linkMarker.classList.add("do-not-highlight");
-  }
+  // if ( singleLinkInfoArray.type === "merge tag" || singleLinkInfoArray.type === "mailto" ) {
+  //   linkMarker.classList.add("do-not-highlight");
+  // }
 
   // Now that we've created an object for this link and added it to the array
   // Check the links status (async) and add the results to the array.

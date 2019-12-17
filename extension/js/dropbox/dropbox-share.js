@@ -120,16 +120,21 @@ function callDropbox(action, source) {
     dbx.sharingListSharedLinks({path: dropboxFilePath})
       .then(function(response) {
 
-        // console.log(response);
+        console.log(response);
         // console.log(response.links[0]);
         // console.log(response.links[0][".tag"]);
         // console.log(response.links[0].url);
 
-        if (response.links.length > 0 && response.links[0][".tag"] !== "folder") {
+        if (response.links.length > 0 && (response.links[0][".tag"] === "file" || response.links[1][".tag"] === "file") ) {
 
-          // console.log("true: response.links.length > 0 = " + response.links.length);
-          console.log("Found a pre-existing link for sharing.");
-          processDbLink(response.links[0].url, action, source);
+          if ( response.links[0][".tag"] === "file" ) {
+            console.log("Found a pre-existing link for sharing.");
+            processDbLink(response.links[0].url, action, source);
+          }
+          else if (response.links[1][".tag"] === "file" ) {
+            console.log("Found a pre-existing link for sharing.");
+            processDbLink(response.links[1].url, action, source);
+          }
 
         } else {
           ////

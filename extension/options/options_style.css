@@ -207,6 +207,16 @@ hr{
     margin: 10px 0px;
 }
 
+.columns {
+  display: flex;
+}
+.columns > div {
+  margin-right:6px;
+}
+.label-top input {
+  display: block;
+}
+
 /************************************/
 /************************************/
 /************************************/
@@ -430,7 +440,7 @@ textarea, input[type="text"].lg, textarea.lg {
 }
 input[type="text"], input[type="text"].md, textarea.md {
   width:100%;
-  max-width:300px;
+  max-width:200px;
 }
 input[type="text"].sm, textarea.sm {
   width:100%;
@@ -442,7 +452,7 @@ input[type="text"].xs, textarea.xs {
 }
 input[type="text"].xxs, textarea.xxs {
   width:100%;
-  max-width:30px;
+  max-width:40px;
 }
 
 input[type="text"].inline {
@@ -451,6 +461,10 @@ input[type="text"].inline {
 input[type="text"].center-text {
   padding:0 1px;
   text-align:center;
+}
+
+input[type="text"].center {
+  text-align: center;
 }
 
 .confirm-input {
@@ -1001,6 +1015,19 @@ div.dropzone
 
 /**********************/
 /**********************/
+/*  Padding Helpers   */
+/**********************/
+
+.p-b-1 {
+  padding-bottom:10px;
+}
+
+.m-r-1 {
+  margin-right:10px;
+}
+
+/**********************/
+/**********************/
 /**********************/
 
 #saved-email-addresses {
@@ -1022,4 +1049,8 @@ div.dropzone
 /**********************/
 .indent {
   padding-left:20px;
+}
+
+.notready {
+  display: none
 }

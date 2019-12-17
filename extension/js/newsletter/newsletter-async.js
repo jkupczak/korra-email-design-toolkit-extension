@@ -143,7 +143,9 @@ if ( /^file\:\/\//i.test(email.fileLocation) ) {
   email.fileHost = "korra";
 }
 
-console.groupCollapsed("[location]");
+console.info("email data:", email);
+
+console.groupCollapsed("location data:");
   console.log("email.fileLocation:", email.fileLocation);
   console.log("email.fileLocationWithoutProtocol:", email.fileLocationWithoutProtocol);
   console.log("email.filePath:", email.filePath);
@@ -152,6 +154,8 @@ console.groupCollapsed("[location]");
   console.log("labelsAvailable:", labelsAvailable);
   console.log("email.fileHost:", email.fileHost);
 console.groupEnd();
+
+
 
 ////////////////////////////
 ////////////////////////////
@@ -403,7 +407,7 @@ Promise.all([getAllOptions, getHtml]).then(function(values) {
         var editorPath = "";
 
           var openInEditorLink = document.createElement("a");
-          openInEditorLink.classList.add("main-pane-extra-btn", "open-in-editor-btn");
+          openInEditorLink.classList.add("main-pane-extra-btn", "main-pane-btn", "open-in-editor-btn");
           stagePreviewBtns.insertAdjacentElement('afterend',openInEditorLink);
 
           if ( options.sync.openInEditor === "atom" ) {
