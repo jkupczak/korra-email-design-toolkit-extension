@@ -11,6 +11,122 @@
 /////////////////////////////////////////////////
 //
 //
+//    Default Settings
+//
+//
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+const defaultLocalSettings = {
+  'protectedarticles': "",
+  'platform': navigator.platform
+};
+
+const defaultSyncSettings = {
+
+  'testOption': '1',
+
+  // Sync Saved
+  'defaultSyncOptionsLoaded': 'true',
+
+  // General
+  'watchedExtensions': '.html, .htm',
+  'watchedFolders': '',
+
+  // Views
+  'synchronizeScrolling': '1',
+  'customColorScheme': '',
+  'mobileViewVisibility': '1',
+  'mobileWidthDefault': '320',
+  'mobileWidth': '320, 360, 375, 414, 480',
+
+  // Sharing
+  'autoRedirectDropboxLinkstoLocal': '0',
+
+  // Sending Tests
+
+  // App Integrations
+
+  // Variables
+
+  // Link Validation
+
+      // General
+      'autoCheckLinks': '1',
+      'checkTargetAttribute': '1',
+      'checkNoFollowLinks': '1',
+
+      // URL Format Validation
+      'checkMissingHrefAttr': '1',
+      'checkEmptyLink': '1',
+      'checkTrailingHash': '1',
+      'checkTrailingSlash': '0',
+      'ignoreESPTags': '0',
+
+      // Loading Validation
+      'cacheValidLinks': '1',
+      'parseDOM': '1',
+      'clearCacheAfterXDays': '1',
+
+  // Code Validation
+
+  // ESP Options
+
+      // ESP Merge Tags
+      'espMergeTags':
+        [
+          {
+            'n': 'ActiveCampaign',
+            'o': '%',
+            'c': '%'
+          },
+          {
+            'n': 'Pardot',
+            'o': '{{',
+            'c': '}}'
+          },
+          {
+            'n': 'Mailchimp',
+            'o': '*|',
+            'c': '|*'
+          },
+          {
+            'n': 'ON24',
+            'o': '#',
+            'c': '#'
+          },
+          {
+            'n': 'GetResponse',
+            'o': '[[',
+            'c': ']]'
+          },
+          {
+            'n': 'SendGrid',
+            'o': '[',
+            'c': ']'
+          }
+        ],
+
+  // Images
+
+  // Text and Grammer
+
+  // Accessibility
+
+  // Other Tools
+
+  // Alerts
+
+  // install status
+  'newInstalled': true
+};
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//
 //    Getting Options
 //
 //
@@ -30,10 +146,14 @@ var getOptions = function() {
     options.sync = result;
     console.log(options);
 
+    checkForPresetSettings("sync", defaultSyncSettings, options.sync);
+
     // // Open Options Pinned?
     // if ( result.openPinnedOptions === "1" ) {
     //   openOptionsTab({pinned: true, active: false});
     // }
+
+
 
   });
 
@@ -41,6 +161,8 @@ var getOptions = function() {
   chrome.storage.local.get(function(result) {
     options.local = result;
     console.log(options);
+
+    checkForPresetSettings("local", defaultLocalSettings, options.local);
 
     // Remove any existing webRequest listeners
     chrome.webRequest.onBeforeRequest.removeListener(openFromDropbox);
@@ -212,6 +334,63 @@ var getOptions = function() {
   });
 };
 getOptions();
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+//
+//   > Check for Default Settings
+//
+//   Whenever the background page is loaded, we're going to check the local and
+//   sync storages to make sure that default settings have been declared.
+//
+//   This is important for when new default settings are designed for Korra.
+//
+//   Without this check, a new setting will not have a value in an existing
+//   install of Korra until the user navigates to the options.html page
+//   and modifies that setting specifically.
+//
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+function checkForPresetSettings(location, presetSettings, savedSettings) {
+
+  console.group("checkForPresetSettings() in", location, "storage");
+
+  // Function to compare keys
+	var compare = function (key, preset, saved) {
+
+    console.group(key);
+    console.log("preset:", preset);
+    console.log("saved:", saved);
+
+    // We've attempted to pull in a key from saved storage that matches a key in our default settings.
+    // If this variable returns as undefined, that means it doesn't exist in storage.
+    // Knowing this we can use the default setting and save it to storage
+    if ( saved === undefined ) {
+      console.error(key, "key is missing in storage. It needs to be set with a value of \"" + JSON.stringify(preset) + "\"");
+      _set(location, {[key]: preset});
+    }
+    // the default setting key was found in storage, do nothing
+    else {
+      console.log("found matching key in storage");
+    }
+
+    console.groupEnd();
+	};
+
+  // Loop through the constant defaultSyncSettings variable
+	for (var key in presetSettings) {
+
+	  compare(key, presetSettings[key], savedSettings[key]);
+
+	}
+
+  console.groupEnd();
+}
+
+
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -497,13 +676,10 @@ var openOptionsTab = function(options) {
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 
-// chrome.tabs.create({
-//   url: 'preview.html'
-// }, callback);
-
 function callback(data) {
   console.log(data);
 }
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -632,118 +808,15 @@ function setDefaultOptions(a) {
   }
 
   //////////////////
+  // set the default options for sync storage
   if ( actions.set.sync ) {
-
-    // set the default options
-    chrome.storage.sync.set({
-      // Sync Saved
-      'defaultSyncOptionsLoaded': 'true',
-
-      // General
-      'watchedExtensions': '.html, .htm',
-      'watchedFolders': '',
-
-      // Views
-      'synchronizeScrolling': '1',
-      'mobileViewVisibility': '1',
-      'mobileWidthDefault': '320',
-      'mobileWidth': '320, 360, 375, 414, 480',
-
-      // Sharing
-      'autoRedirectDropboxLinkstoLocal': '0',
-
-      // Sending Tests
-
-      // App Integrations
-
-      // Variables
-
-      // Link Validation
-
-          // General
-          'autoCheckLinks': '1',
-          'checkTargetAttribute': '1',
-          'checkNoFollowLinks': '1',
-
-          // URL Format Validation
-          'checkMissingHrefAttr': '1',
-          'checkEmptyLink': '1',
-          'checkTrailingHash': '1',
-          'checkTrailingSlash': '0',
-          'ignoreESPTags': '0',
-
-          // Loading Validation
-          'cacheValidLinks': '1',
-          'parseDOM': '1',
-          'clearCacheAfterXDays': '1',
-
-      // Code Validation
-
-      // ESP Options
-
-          // ESP Merge Tags
-          'espMergeTags':
-            [
-              {
-                'n': 'ActiveCampaign',
-                'o': '%',
-                'c': '%'
-              },
-              {
-                'n': 'Pardot',
-                'o': '{{',
-                'c': '}}'
-              },
-              {
-                'n': 'Mailchimp',
-                'o': '*|',
-                'c': '|*'
-              },
-              {
-                'n': 'ON24',
-                'o': '#',
-                'c': '#'
-              },
-              {
-                'n': 'GetResponse',
-                'o': '[[',
-                'c': ']]'
-              },
-              {
-                'n': 'SendGrid',
-                'o': '[',
-                'c': ']'
-              }
-            ],
-
-      // Images
-
-      // Text and Grammer
-
-      // Accessibility
-
-      // Other Tools
-
-      // Alerts
-
-      // install status
-      'newInstalled': true
-    });
+    chrome.storage.sync.set(defaultSyncSettings);
   }
-
-  // We can use the chrome.runtime to get the platform
-  // chrome.runtime.getPlatformInfo( function(info) {
-  //   chrome.storage.local.set({
-  //     'platform': info.os
-  //   });
-  // });
-
+  // set the default options for local storage
   if ( actions.set.local ) {
-    chrome.storage.local.set({
-      'protectedarticles': "",
-      'platform': navigator.platform
-    });
+    chrome.storage.local.set(defaultLocalSettings);
   }
+
 }
 
 

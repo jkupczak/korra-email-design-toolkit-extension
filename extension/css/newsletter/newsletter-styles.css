@@ -853,7 +853,21 @@ html.powered-up, html.powered-up body {
 /*.ab-orb.a:hover:before { content:"A"; }*/
 
 
-
+/* Dark Mode */
+.toggle-dark-mode-orb {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.toggle-dark-mode-orb:hover {
+  background:#4e3db2;
+}
+.toggle-dark-mode-orb:hover .svg-dark-mode-toggle {
+  fill: #fff;
+}
+.svg-dark-mode-toggle { fill: #6b6c6e; width:24px; height:24px; display: block; margin:auto; }
+.toggle-dark-mode-orb.dark-mode-on .svg-activate-light-mode { display:none; }
+.toggle-dark-mode-orb:not(.dark-mode-on) .svg-activate-dark-mode { display:none; }
 
 
 

@@ -1442,6 +1442,39 @@ function swapUrl() {
 
 //////////
 ////
+////  Toggle Dark Mode
+////
+/////////
+
+// Dark Mode Custom Settings
+if ( o.sync.customColorScheme === "" ) {
+  email.customColorScheme = email.osColorScheme;
+}
+else {
+  email.customColorScheme = o.sync.customColorScheme;
+}
+
+
+////
+var toggleDarkModeOrb = document.createElement("div");
+toggleDarkModeOrb.id = "toggle-dark-mode";
+toggleDarkModeOrb.className = "toggle-dark-mode-orb orb glyph";
+if ( email.customColorScheme === "dark" || (email.customColorScheme !== "light" && email.osColorScheme === "dark") ) {
+  toggleDarkModeOrb.classList.add("dark-mode-on");
+}
+toggleDarkModeOrb.innerHTML = `
+  <svg class="svg-dark-mode-toggle svg-activate-dark-mode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 15.3l3.3-3.3L20 8.7V4h-4.7L12 .7 8.7 4H4v4.7L.7 12 4 15.3V20h4.7l3.3 3.3 3.3-3.3H20v-4.7zM12 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/></svg>
+  <svg class="svg-dark-mode-toggle svg-activate-light-mode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.5 21.3c1-.4 1.9-.9 2.6-1.5-4.2.3-8.4-2.2-10-6.4S9.9 4.7 13.2 2c-1 .1-2 .3-3 .7-5.1 2-7.7 7.8-5.7 12.9s7.8 7.7 13 5.7z"/></svg>
+`;
+toggleDarkModeOrb.addEventListener("click", toggleDarkMode, false);
+toolbarSectionOverlays.appendChild(toggleDarkModeOrb);
+
+////
+toggleDarkMode(email.customColorScheme);
+
+
+//////////
+////
 ////  Create Borders/Dimensions Orb
 ////
 /////////

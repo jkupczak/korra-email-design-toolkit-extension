@@ -1025,6 +1025,114 @@ var logCodeBug = function(object, client, errorText, type) {
 };
 
 
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+/////
+/////
+/////    Toggle Dark Mode
+/////
+/////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
+var toggleDarkMode = function(request) {
+
+  console.log( "`current` os color scheme =", email.osColorScheme);
+  console.log( "`current` custom color scheme =", email.customColorScheme);
+  console.log( "`requested` color scheme =", request);
+
+  // Check and update active color scheme
+  // option request on email load
+  if ( request === "dark" ) {
+    email.customColorScheme = "dark";
+    toggleDarkModeOrb.classList.add("dark-mode-on");
+
+  }
+  // option request on email load
+  else if ( request === "light" ) {
+    email.customColorScheme = "light";
+    toggleDarkModeOrb.classList.remove("dark-mode-on");
+
+  }
+  // toggle clicked
+  else if ( email.customColorScheme === "light" ) {
+    email.customColorScheme = "dark";
+    toggleDarkModeOrb.classList.add("dark-mode-on");
+
+  }
+  // toggle clicked
+  else {
+    email.customColorScheme = "light";
+    toggleDarkModeOrb.classList.remove("dark-mode-on");
+
+
+  }
+
+  console.log( "_`new` custom color scheme =", email.customColorScheme);
+
+
+  // Find all <style> tags
+  toggleFrames([dFrameContents, mFrameContents]);
+
+  function toggleFrames(frames) {
+    frames.forEach(function (frame) {
+
+      // Loop through style elements in this frame
+      let styles = frame.querySelectorAll("style");
+      for (let style of styles) {
+
+        if ( email.customColorScheme === "dark" ) {
+
+          if ( email.osColorScheme === "dark" ) {
+
+            style.innerText = style.innerText.replace(/\(prefers-light-interface\)/gi, "(prefers-dark-interface)");
+            style.innerText = style.innerText.replace(/\(prefers-color-scheme: *?light\)/gi, "(prefers-color-scheme: dark)");
+
+          }
+          else {
+
+            style.innerText = style.innerText.replace(/\( *?prefers-dark-interface *?\)/gi, "(prefers-light-interface)");
+            style.innerText = style.innerText.replace(/\( *?prefers-color-scheme *?: *?dark *?\)/gi, "(prefers-color-scheme: light)");
+
+          }
+
+        }
+
+        else {
+
+          if ( email.osColorScheme === "dark" ) {
+
+            style.innerText = style.innerText.replace(/\( *?prefers-dark-interface *?\)/gi, "(prefers-light-interface)");
+            style.innerText = style.innerText.replace(/\( *?prefers-color-scheme *?: *?dark *?\)/gi, "(prefers-color-scheme: light)");
+
+          }
+          else {
+
+            style.innerText = style.innerText.replace(/\(prefers-light-interface\)/gi, "(prefers-dark-interface)");
+            style.innerText = style.innerText.replace(/\(prefers-color-scheme: *?light\)/gi, "(prefers-color-scheme: dark)");
+
+          }
+
+        }
+      }
+
+
+    });
+  }
+
+
+};
+
+
 
 ///////////////////////////////////////
 ///////////////////////////////////////

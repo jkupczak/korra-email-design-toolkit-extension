@@ -29,7 +29,6 @@ var getAllOptions = new Promise((resolve, reject) => {
       console.log(options.sync);
       console.groupEnd();
 
-
       // Created this function to take the items we got from the async call
       // and apply them to variables for easy use in other scripts.
       // I don't actually think this is necessary. Shouldn't I just call the items object?
@@ -81,6 +80,14 @@ var getAllOptions = new Promise((resolve, reject) => {
 let isSavedFile, labelsAvailable;
 
 let email = {};
+
+// Set the default color scheme
+if ( window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ) {
+  email.osColorScheme     = "dark";
+} else {
+  email.osColorScheme     = "light";
+}
+
 
 // decode the URL located in the `open` parameter before we use it
 email.fileLocation = decodeURIComponent(getParameterByName("open"));

@@ -125,18 +125,23 @@ function callDropbox(action, source) {
         // console.log(response.links[0][".tag"]);
         // console.log(response.links[0].url);
 
-        if (response.links.length > 0 && (response.links[0][".tag"] === "file" || response.links[1][".tag"] === "file") ) {
+        if ( response.links.length === 1 && response.links[0][".tag"] === "file" ) {
 
           if ( response.links[0][".tag"] === "file" ) {
             console.log("Found a pre-existing link for sharing.");
             processDbLink(response.links[0].url, action, source);
           }
-          else if (response.links[1][".tag"] === "file" ) {
+
+        }
+        else if ( response.links.length === 2 && response.links[1][".tag"] === "file") {
+
+          if (response.links[1][".tag"] === "file" ) {
             console.log("Found a pre-existing link for sharing.");
             processDbLink(response.links[1].url, action, source);
           }
 
-        } else {
+        }
+        else {
           ////
           // Could not find a pre-existing link for sharing. Create a new one instead.
           ////
@@ -146,7 +151,6 @@ function callDropbox(action, source) {
           dbx.sharingCreateSharedLinkWithSettings({path: dropboxFilePath})
             .then(function(response) {
 
-              // console.log(response);
               processDbLink(response.url, action, source);
 
             })
@@ -156,10 +160,18 @@ function callDropbox(action, source) {
             });
         }
 
+
       })
       .catch(function(error) {
+        console.log("error from Dropbox detected...");
         console.log(error);
-        alertify.error("Could not find file on Dropbox.", 0);
+
+        if ( /expired_access_token/gi.test(error.error) ) {
+          alertify.error("Your Dropbox access token has expired. Update it to continue sharing.", 0);
+        }
+        else {
+          alertify.error("Could not find file on Dropbox.", 0);
+        }
         source.classList.remove("loading");
         source.classList.add("error");
         // To-Do: Add css to make the orb look like there's been an error.

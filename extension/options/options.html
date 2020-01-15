@@ -237,6 +237,17 @@
 
 									<div class="option-desc">Sync up the desktop and mobile views so that they are scrolled simultaneously. You can also toggle this on and off when viewing an email.</div>
 					      </div>
+
+								<div class="option-group select">
+									<label>Overwrite OS Color Scheme</label>
+									<div class="option-desc">Toggle this option to overwrite the prefered color scheme of your OS. For example, if your OS is set to dark mode, but you'd prefer your emails to always be viewed as if you were in light mode. Korra will dynamically update the <code>prefers-color-scheme</code> CSS in your email to match your preference. You can also toggle this manually in each email using the toolbar.</div>
+									<select data-autosave="true" name="customColorScheme">
+										<option value="" selected>No Preference</option>
+										<option value="light">Force Light Mode</option>
+										<option value="dark">Force Dark Mode</option>
+									</select>
+								</div>
+
 				      </div>
 				    </div>
 
