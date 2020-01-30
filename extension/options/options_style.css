@@ -303,6 +303,7 @@ select {
   min-width:150px;
   height:34px;
   border:0;
+  padding: 0 0 2px 8px;
 }
 .option-group label {
   position: relative;

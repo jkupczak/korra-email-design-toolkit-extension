@@ -1211,7 +1211,7 @@ var htmlToolBar = document.querySelectorAll(".html-toolbar")[0];
   }
 
   // Orbs Top
-  var orbsTop = document.createElement("div");
+  const orbsTop = document.querySelector(".orbs-top");
   orbsTop.className = "orbs-top";
   htmlToolBar.appendChild(orbsTop);
 
@@ -1228,7 +1228,7 @@ var htmlToolBar = document.querySelectorAll(".html-toolbar")[0];
   orbsTop.appendChild(toolbarSectionOverlays);
 
   // Orbs Bottom
-  var orbsBottom = document.createElement("div");
+  const orbsBottom = document.querySelector(".orbs-bottom");
   orbsBottom.className = "orbs-bottom";
   htmlToolBar.appendChild(orbsBottom);
 
@@ -1402,40 +1402,40 @@ function swapUrl() {
 ////  https://bitbucket.org/codsen/email-remove-unused-css/src/master/
 ////
 /////////
-
-  var combUnusedCssOrb = document.createElement("div");
-  combUnusedCssOrb.id = "unusedcss-orb";
-  combUnusedCssOrb.className = "unusedcss-orb orb glyph icomoon icomoon-pacman";
-  combUnusedCssOrb.addEventListener("click", processHtmlforUnusedCss, false);
-  orbsBottom.appendChild(combUnusedCssOrb);
-
-  var processHtmlforUnusedCss = function() {
-
-    var html = cleanedOriginalHtml;
-    var result = emailRemoveUnusedCss(html, {
-      whitelist: ["#outlook"]
-    });
-
-    console.groupCollapsed();
-
-    console.log("html", html);
-    console.log("result", result.result);
-
-    console.groupEnd();
-
-    console.log("result", result);
-    console.log("allInBody", result.allInBody);
-    console.log("allInHead", result.allInHead);
-    console.log("deletedFromBody", result.deletedFromBody);
-    console.log("deletedFromHead", result.deletedFromHead);
-
-    console.log(result.result);
-
-    console.log(stringCollapseWhiteSpace(result.result, {removeEmptyLines: true, trimLines: true}));
-
-    // copyToClipboard(result.result, "success", true);
-
-  };
+            //
+            // var combUnusedCssOrb = document.createElement("div");
+            // combUnusedCssOrb.id = "unusedcss-orb";
+            // combUnusedCssOrb.className = "unusedcss-orb orb glyph icomoon icomoon-pacman";
+            // combUnusedCssOrb.addEventListener("click", processHtmlforUnusedCss, false);
+            // orbsBottom.appendChild(combUnusedCssOrb);
+            //
+            // var processHtmlforUnusedCss = function() {
+            //
+            //   var html = cleanedOriginalHtml;
+            //   var result = emailRemoveUnusedCss(html, {
+            //     whitelist: ["#outlook"]
+            //   });
+            //
+            //   console.groupCollapsed();
+            //
+            //   console.log("html", html);
+            //   console.log("result", result.result);
+            //
+            //   console.groupEnd();
+            //
+            //   console.log("result", result);
+            //   console.log("allInBody", result.allInBody);
+            //   console.log("allInHead", result.allInHead);
+            //   console.log("deletedFromBody", result.deletedFromBody);
+            //   console.log("deletedFromHead", result.deletedFromHead);
+            //
+            //   console.log(result.result);
+            //
+            //   console.log(stringCollapseWhiteSpace(result.result, {removeEmptyLines: true, trimLines: true}));
+            //
+            //   // copyToClipboard(result.result, "success", true);
+            //
+            // };
 
 
 
@@ -1446,31 +1446,24 @@ function swapUrl() {
 ////
 /////////
 
-// Dark Mode Custom Settings
-if ( o.sync.customColorScheme === "" ) {
-  email.customColorScheme = email.osColorScheme;
-}
-else {
-  email.customColorScheme = o.sync.customColorScheme;
-}
-
-
 ////
-var toggleDarkModeOrb = document.createElement("div");
-toggleDarkModeOrb.id = "toggle-dark-mode";
-toggleDarkModeOrb.className = "toggle-dark-mode-orb orb glyph";
-if ( email.customColorScheme === "dark" || (email.customColorScheme !== "light" && email.osColorScheme === "dark") ) {
+let toggleDarkModeOrb = document.getElementById("toggle-dark-mode");
+if ( email.osColorScheme === "dark" ) {
   toggleDarkModeOrb.classList.add("dark-mode-on");
 }
-toggleDarkModeOrb.innerHTML = `
-  <svg class="svg-dark-mode-toggle svg-activate-dark-mode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 15.3l3.3-3.3L20 8.7V4h-4.7L12 .7 8.7 4H4v4.7L.7 12 4 15.3V20h4.7l3.3 3.3 3.3-3.3H20v-4.7zM12 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/></svg>
-  <svg class="svg-dark-mode-toggle svg-activate-light-mode" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.5 21.3c1-.4 1.9-.9 2.6-1.5-4.2.3-8.4-2.2-10-6.4S9.9 4.7 13.2 2c-1 .1-2 .3-3 .7-5.1 2-7.7 7.8-5.7 12.9s7.8 7.7 13 5.7z"/></svg>
-`;
 toggleDarkModeOrb.addEventListener("click", toggleDarkMode, false);
-toolbarSectionOverlays.appendChild(toggleDarkModeOrb);
+
 
 ////
-toggleDarkMode(email.customColorScheme);
+//// If the user has selected to overwrite their OS color scheme,
+//// we'll trigger the darkmode function now to handle that.
+//// If the user has not selected anything, email.korraColorScheme
+//// will be undefined and we'll do nothing.
+if ( email.korraColorScheme ) {
+
+  toggleDarkMode(email.korraColorScheme);
+
+}
 
 
 //////////
@@ -1749,12 +1742,12 @@ function toggleGuides() {
 ////   Send Test
 ////
 /////////
-
-var sendTestOrb = document.createElement("div");
-sendTestOrb.className = "send-test-orb orb glyph icomoon icomoon-mail";
-sendTestOrb.id = "send-test-orb";
-sendTestOrb.addEventListener("click", openEmailTestWindow, false);
-orbsBottom.appendChild(sendTestOrb);
+        //
+        // var sendTestOrb = document.createElement("div");
+        // sendTestOrb.className = "send-test-orb orb glyph icomoon icomoon-mail";
+        // sendTestOrb.id = "send-test-orb";
+        // sendTestOrb.addEventListener("click", openEmailTestWindow, false);
+        // orbsBottom.appendChild(sendTestOrb);
 
 
 //////////
@@ -3218,6 +3211,42 @@ catch(error) {
       logAccessibilityWarning(image, 'Missing alt="" attribute.');
     }
   }
+
+  console.groupEnd();
+
+})();
+
+
+// lang=""
+// A language attribute needs to be set on the <html> tag and the wrapping container.
+// Documentation:
+
+(function(){
+
+  console.groupCollapsed("[Accessibility: lang='en']");
+
+  // Check the <html> tag
+  if ( dFrameContents.getElementsByTagName("html")[0].getAttribute("lang") === null ) {
+    logAccessibilityWarning(dFrameContents.getElementsByTagName("html"), 'Missing lang="" attribute.');
+  }
+  else if ( dFrameContents.getElementsByTagName("html")[0].getAttribute("lang").length < 1 ) {
+    logAccessibilityWarning(dFrameContents.getElementsByTagName("html"), 'lang="" attribute missing a value.');
+  }
+
+
+  // Check for a wrapping tag
+  let wrappers = dFrameContents.querySelectorAll("body > *:not([data-korra])");
+  for (let wrapper of wrappers) {
+
+    if ( wrapper.getAttribute("lang") === null ) {
+      logAccessibilityWarning(wrapper, 'Missing lang="" attribute.');
+    }
+    else if ( wrapper.getAttribute("lang").length < 1 ) {
+      logAccessibilityWarning(wrapper, 'lang="" attribute missing a value.');
+    }
+
+  }
+
 
   console.groupEnd();
 

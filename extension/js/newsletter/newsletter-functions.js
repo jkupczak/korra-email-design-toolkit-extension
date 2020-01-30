@@ -1046,90 +1046,110 @@ var logCodeBug = function(object, client, errorText, type) {
  */
 var toggleDarkMode = function(request) {
 
-  console.log( "`current` os color scheme =", email.osColorScheme);
-  console.log( "`current` custom color scheme =", email.customColorScheme);
-  console.log( "`requested` color scheme =", request);
+  console.groupCollapsed("Dark Mode Toggle Activated");
+  console.log( "`os` color scheme =", email.osColorScheme);
+  console.log( "`korra` color scheme =", email.korraColorScheme);
+  console.log( "`current active` color scheme =", email.activeColorScheme);
+
+  // Swap Function
+  let swap = function(string) {
+
+    if ( email.requestedColorScheme === "dark" ) {
+
+      if ( email.osColorScheme === "dark" ) {
+
+        string = string.replace(/\(prefers-light-interface\)/gi, "(prefers-dark-interface)");
+        string = string.replace(/\(prefers-color-scheme: *?light\)/gi, "(prefers-color-scheme: dark)");
+
+      }
+      else {
+
+        string = string.replace(/\( *?prefers-dark-interface *?\)/gi, "(prefers-light-interface)");
+        string = string.replace(/\( *?prefers-color-scheme *?: *?dark *?\)/gi, "(prefers-color-scheme: light)");
+
+      }
+
+      email.activeColorScheme = "dark";
+    }
+
+    else {
+
+      if ( email.osColorScheme === "dark" ) {
+
+        string = string.replace(/\( *?prefers-dark-interface *?\)/gi, "(prefers-light-interface)");
+        string = string.replace(/\( *?prefers-color-scheme *?: *?dark *?\)/gi, "(prefers-color-scheme: light)");
+
+      }
+      else {
+
+        string = string.replace(/\(prefers-light-interface\)/gi, "(prefers-dark-interface)");
+        string = string.replace(/\(prefers-color-scheme: *?light\)/gi, "(prefers-color-scheme: dark)");
+
+      }
+
+      email.activeColorScheme = "light";
+    }
+
+    return string;
+  }
 
   // Check and update active color scheme
-  // option request on email load
+  // this first part toggles dark mode based on Korra settings that force it on email load
   if ( request === "dark" ) {
-    email.customColorScheme = "dark";
+    email.requestedColorScheme = "dark";
     toggleDarkModeOrb.classList.add("dark-mode-on");
-
   }
   // option request on email load
   else if ( request === "light" ) {
-    email.customColorScheme = "light";
+    email.requestedColorScheme = "light";
     toggleDarkModeOrb.classList.remove("dark-mode-on");
 
   }
+  // The remaining code toggles dark mode based on a user click
   // toggle clicked
-  else if ( email.customColorScheme === "light" ) {
-    email.customColorScheme = "dark";
+  else if ( email.activeColorScheme === "light" ) {
+    email.requestedColorScheme = "dark";
     toggleDarkModeOrb.classList.add("dark-mode-on");
 
   }
   // toggle clicked
   else {
-    email.customColorScheme = "light";
+    email.requestedColorScheme = "light";
     toggleDarkModeOrb.classList.remove("dark-mode-on");
 
-
   }
-
-  console.log( "_`new` custom color scheme =", email.customColorScheme);
+  console.log( "`requested` color scheme =", email.requestedColorScheme );
 
 
   // Find all <style> tags
   toggleFrames([dFrameContents, mFrameContents]);
 
   function toggleFrames(frames) {
+
     frames.forEach(function (frame) {
 
       // Loop through style elements in this frame
       let styles = frame.querySelectorAll("style");
       for (let style of styles) {
 
-        if ( email.customColorScheme === "dark" ) {
+        style.innerText = swap(style.innerText);
 
-          if ( email.osColorScheme === "dark" ) {
-
-            style.innerText = style.innerText.replace(/\(prefers-light-interface\)/gi, "(prefers-dark-interface)");
-            style.innerText = style.innerText.replace(/\(prefers-color-scheme: *?light\)/gi, "(prefers-color-scheme: dark)");
-
-          }
-          else {
-
-            style.innerText = style.innerText.replace(/\( *?prefers-dark-interface *?\)/gi, "(prefers-light-interface)");
-            style.innerText = style.innerText.replace(/\( *?prefers-color-scheme *?: *?dark *?\)/gi, "(prefers-color-scheme: light)");
-
-          }
-
-        }
-
-        else {
-
-          if ( email.osColorScheme === "dark" ) {
-
-            style.innerText = style.innerText.replace(/\( *?prefers-dark-interface *?\)/gi, "(prefers-light-interface)");
-            style.innerText = style.innerText.replace(/\( *?prefers-color-scheme *?: *?dark *?\)/gi, "(prefers-color-scheme: light)");
-
-          }
-          else {
-
-            style.innerText = style.innerText.replace(/\(prefers-light-interface\)/gi, "(prefers-dark-interface)");
-            style.innerText = style.innerText.replace(/\(prefers-color-scheme: *?light\)/gi, "(prefers-color-scheme: dark)");
-
-          }
-
-        }
       }
 
+      // Loop through source elements in this frame
+      let pictureSource = frame.querySelectorAll("picture source");
+      for (let source of pictureSource) {
+
+        source.media = swap(source.media);
+
+      }
 
     });
   }
 
+  console.log( "`new active` color scheme =", email.activeColorScheme);
 
+  console.groupEnd();
 };
 
 
@@ -1357,8 +1377,20 @@ var toggleLinkMarkers = function (source) {
 
   console.log("Running: toggleLinkMarkers() with source of", source);
 
+  const linkMarkersEl = dFrameContents.getElementById("link-markers").classList;
+
   if ( source === "command" ) {
-    dFrameContents.getElementById("link-markers").classList.toggle("show-all");
+    if ( linkMarkersEl.contains("show-all") ) {
+      linkMarkersEl.remove("show-all");
+      linkMarkersEl.add("hide-all");
+    }
+    else if ( linkMarkersEl.contains("hide-all") ) {
+      linkMarkersEl.remove("hide-all");
+      linkMarkersEl.add("show-all");
+    }
+    else if ( !linkMarkersEl.contains("show-all") && !linkMarkersEl.contains("hide-all") ) {
+      linkMarkersEl.add("show-all");
+    }
   }
 
   else {

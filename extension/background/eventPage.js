@@ -103,8 +103,8 @@ const defaultSyncSettings = {
           },
           {
             'n': 'SendGrid',
-            'o': '[',
-            'c': ']'
+            'o': '{{',
+            'c': '}}'
           }
         ],
 

@@ -1,9 +1,18 @@
-function sendEmail() {
+function sendEmail(payload) {
+
+  if ( !payload ) {
+    var payload = {};
+    payload.to = "james@medbridgeed.com"
+  }
+  else if ( !payload.hasOwnProperty('to') ) {
+    payload.to = "james@medbridgeed.com"
+  }
 
   korramail.build({
     html:       originalHtml,
     apiKey:     options.sync.mailgunApiKey,
-    domainName: options.sync.mailgunDomainName
+    domainName: options.sync.mailgunDomainName,
+    to:         payload.to
   });
 
 }
