@@ -2,3 +2,6 @@
 /dist
 .idea
 .DS_Store
+extension/js/.DS_Store
+extension/.DS_Store
+branding/.DS_Store
