@@ -4,7 +4,7 @@
 
   "name": "Korra for Email: Design & QA Automation",
   "short_name": "Korra Email QA",
-  "version": "3.9.481",
+  "version": "3.9.483",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 
@@ -57,6 +57,7 @@
 
   "background": {
     "scripts": [
+      "options/defaults.js",
       "js/libs/chrome-storage-promise.js",
       "js/get-options.js",
       "js/global.js",

@@ -425,28 +425,26 @@ Promise.all([getAllOptions, getHtml]).then(function(values) {
     // @@IDEA: Wait until the user clicks the button to assign an href.
     setTimeout(function(){
 
-        var editorPath = "";
+        var openInEditorLink = document.createElement("a");
+        openInEditorLink.classList.add("main-pane-extra-btn", "main-pane-btn", "open-in-editor-btn");
+        stagePreviewBtns.insertAdjacentElement('afterend',openInEditorLink);
 
-          var openInEditorLink = document.createElement("a");
-          openInEditorLink.classList.add("main-pane-extra-btn", "main-pane-btn", "open-in-editor-btn");
-          stagePreviewBtns.insertAdjacentElement('afterend',openInEditorLink);
+        // Encode some characters like &.
+        let editorSafeFileUrl = email.fileLocation.replace(/&/gi, "%26");
 
-          if ( options.sync.openInEditor === "atom" ) {
-            openInEditorLink.innerHTML = "Open in Atom";
-            editorPath = 'atom://open?url=';
-            openInEditorLink.href = editorPath + email.fileLocation;
+        if ( options.sync.openInEditor === "atom" ) {
+          openInEditorLink.innerHTML = "Open in Atom";
+          openInEditorLink.href = 'atom://open?url=' + editorSafeFileUrl;
 
-          } else if ( options.sync.openInEditor === "sublime" ) {
-            openInEditorLink.innerHTML = "Open in Sublime Text";
-            editorPath = 'subl://open?url=';
-            openInEditorLink.href = editorPath + email.fileLocation;
+        } else if ( options.sync.openInEditor === "sublime" ) {
+          openInEditorLink.innerHTML = "Open in Sublime Text";
+          openInEditorLink.href = 'subl://open?url=' + editorSafeFileUrl;
 
-          } else if ( options.sync.openInEditor === "vscode" ) {
-            openInEditorLink.innerHTML = "Open in VS Code";
-            editorPath = 'vscode://file/';
-            openInEditorLink.href = editorPath + email.fileLocation.replace(/^file:\/\//i,"");
+        } else if ( options.sync.openInEditor === "vscode" ) {
+          openInEditorLink.innerHTML = "Open in VS Code";
+          openInEditorLink.href = 'vscode://file/' + editorSafeFileUrl.replace(/^file:\/\//i,"");
 
-          }
+        }
 
     }, 1000);
 

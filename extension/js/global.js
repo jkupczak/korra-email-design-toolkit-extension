@@ -726,6 +726,7 @@ function getEmailAudience() {
     else if ( /(Audience|Setting|List)=(LTC|Long-Term-Care)/gi.test(trimmedString) )  { email.audience = "ltc"; email.audienceName = "Long-Term Care" }
     else if ( /(Audience|Setting|List)=(PP|Private-Practice)/gi.test(trimmedString) ) { email.audience = "pp"; email.audienceName = "Private Practice" }
     else if ( /(Audience|Setting|List)=(Other|Unknown)/gi.test(trimmedString) )       { email.audience = "ent-other"; email.audienceName = "Other" }
+    else if ( /(Audience|Setting|List)=(IRF)/gi.test(trimmedString) )                 { email.audience = "irf"; email.audienceName = "Inpatient Rehabilitation" }
 
     else {
       email.audience = "all";

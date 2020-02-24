@@ -409,9 +409,9 @@ var highlightTextErrors = function (stage) {
   // 1:00pm EST --> this looks odd with no space between the time and pm. I feel like 1:00 pm works or 1pm works, but not 1:00pm.
   // Also, we have it as p,m. with periods in the body of the text. Let's keep it consistent and remove the periods here.
 
-    // flag 1:00pm
+    // flag 1:00pm and 1pm
     findText({
-      find: /\b\d\:\d\d(a|p)m\b/gi
+      find: /\b\d(\:\d\d)?(a|p)m\b/gi
     });
     // flag p.m.
     findText({
@@ -422,6 +422,11 @@ var highlightTextErrors = function (stage) {
   findText({
     find: /\b(tomorrow|noon)\b/gi,
     wrapClass: "text-highlight gmail-fix", forceContext: true
+  });
+
+  // No leading 0's after a month
+  findText({
+    find: /\b(January|February|March|April|May|June|July|August|September|October|November|December) 0/gi,
   });
 
 

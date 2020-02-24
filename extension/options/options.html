@@ -861,11 +861,21 @@
 								</div>
 
 								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="mismatchedHostname" id="mismatchedHostname" value="1" checked>
+									<label for="mismatchedHostname">
+										Mark links with hostnames that don't match the link text
+									</label>
+									<div class="option-desc">Some email clients will assume the worst if a link goes to one place while the visible text of that link claims to go to another. Avoid being flagged as spam by turning this on to be warned so that you can make adjustments.</div>
+									<div class="option-desc default-values">Default: On</div>
+								</div>
+
+								<div class="option-group checkbox">
 									<input data-autosave="true" type="checkbox" name="ignoreESPTags" id="ignoreESPTags" value="1" checked>
 									<label for="ignoreESPTags">
-										Ignore ESP tags found in URLs
+										Ignore ESP merge tags found in URLs
 									</label>
 									<div class="option-desc">Some ESP tags include characters that would normally be invalid in a link (e.g. <code>*|tag|*</code> or <code>%%variable%%</code>). Enable this to prevent Korra from potentially marking your links as invalid when it finds one.<br><em><b>Note:</b> Provide the formatting that your ESP uses in order for this to work. Enter this in the "<a href="#section-esp-options">ESP Options</a>" section.</em></div>
+									<div class="option-desc default-values">Default: On</div>
 								</div>
 
 					      <div>
