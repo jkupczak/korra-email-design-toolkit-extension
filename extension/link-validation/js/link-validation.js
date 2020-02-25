@@ -530,28 +530,32 @@ function validateLinks(l, i) {
   if ( o.sync.ignoreESPTags === '1' && o.sync.espMergeTags ) {
 
     // console.log("checking link for merge tags");
-
     // console.error(o.sync.espMergeTags);
 
+    // Loop through all of the ESP merge tags found in the users settings
     o.sync.espMergeTags.forEach(function (esp, index) {
 
-    	// console.log(esp)
-
+      // Create our regex based on the current merge tag characters
       let re = new RegExp(escapeRegExp(esp.o) + '[^' + escapeRegExp(esp.o.slice(-1)) + ']+?' + escapeRegExp(esp.c), 'ig');
-      let mergeTagMatches = l.urlInDOM.match(re);
-      // console.log(re);
-      // console.log("mergeTagMatches:", mergeTagMatches);
 
-      // if there were any matches, loop through them
-      // If there were none, mergeTagMatches will be null.
-      if ( mergeTagMatches ) {
-        mergeTagMatches.forEach(function (tag, index) {
-        	// console.log(index); // index
-        	// console.log(tag); // value
-          l.urlInDOMMergeTagSafe = l.urlInDOM.replace(tag, 'espmergetagplaceholder');
-          // console.log(l.urlInDOM);
-        });
+      // Only check <a> tags that have an `href`.
+      if ( l.urlInDOM ) {
+
+        // Does the value in this href have merge tags in it?
+        let mergeTagMatches = l.urlInDOM.match(re);
+
+        // if there were any matches, loop through them
+        // If there were none, mergeTagMatches will be null.
+        if ( mergeTagMatches ) {
+          mergeTagMatches.forEach(function (tag, index) {
+          	// console.log(index); // index
+          	// console.log(tag); // value
+            l.urlInDOMMergeTagSafe = l.urlInDOM.replace(tag, 'espmergetagplaceholder');
+            // console.log(l.urlInDOM);
+          });
+        }
       }
+
 
     });
 

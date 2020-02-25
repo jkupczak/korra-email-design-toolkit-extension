@@ -16,7 +16,7 @@ const defaultSyncSettings = {
 
   // Views
   'synchronizeScrolling': '1',
-  'customColorScheme': '',
+  'customColorScheme': 'light', // options: '', 'light', 'dark'
   'mobileViewVisibility': '1',
   'mobileWidthDefault': '320',
   'mobileWidth': '320, 360, 375, 414, 480',
