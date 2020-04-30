@@ -678,6 +678,22 @@ function validateLinks(l, i) {
     singleLinkInfoArray.hasText = true;
   }
 
+  //
+  // if ( !/\.(zip|msi|eps|ai|psd|swf|pdf|jpe?g|a?png|gif|svg|(s|d|m|x)?html?|php|aspx?|web(p|m)|css|js|dll|json|ashx|atom)$/i.test(singleLinkInfoArray.object.pathname) ) {
+  if ( /\.(zip|eps|ai|psd|swf|pdf|jpe?g|a?png|gif|svg|web(p|m))$/i.test(singleLinkInfoArray.object.pathname) ) {
+    singleLinkInfoArray.destinationType = "media";
+  }
+  else {
+    singleLinkInfoArray.destinationType = "page";
+  }
+
+  //
+  if ( /\.[a-z0-9]{2,5}$/i.test(singleLinkInfoArray.object.pathname) ) {
+    singleLinkInfoArray.hasExtension = true;
+  } else {
+    singleLinkInfoArray.hasExtension = false;
+  }
+
   // Assign a type to the URL based on how its written
   // mailto
   if ( !l.urlInDOM || l.urlInDOM === "" ) {
@@ -833,8 +849,22 @@ function validateLinks(l, i) {
 
     console.log("url - " + l.urlInDOMMergeTagSafe);
 
-    // Global link testing variables
+    // Testing selected options
+    // checkTrailingHash
+    if ( o.sync.checkTrailingHash ) {
+      if ( /#$/.test(l.urlInDOMMergeTagSafe) ) {
+        createLinkErrorRow(l, "Found a trailing #. (Turn off this check in Options)");
+      }
+    }
+    // checkTrailingSlash
+    if ( o.sync.checkTrailingSlash && !singleLinkInfoArray.hasExtension ) {
+      if ( !/^[^#\?]+?(\/$|\/#|\/\?)/.test(l.urlInDOMMergeTagSafe) ) {
+        createLinkErrorRow(l, "Missing a trailing / in the pathname. (Turn off this check in Options)");
+      }
+    }
 
+
+    // Global link testing variables
     // MedBridgeEd
     if ( /\.medbridgeeducation\.com/gi.test(l.hostname) ) {
       singleLinkInfoArray.isMedBridgeEdLink = true;
@@ -886,7 +916,7 @@ function validateLinks(l, i) {
 
     // Needs Google Tracking (utm_content)
     linkNeedsGoogleTracking = false;
-    if ( singleLinkInfoArray.isMedBridgeEdLink && !email.outsideOrg && (email.esp === "mc" || email.esp === "ac") ) {
+    if ( singleLinkInfoArray.isMedBridgeEdLink && !email.outsideOrg && singleLinkInfoArray.destinationType === "page" && (email.esp === "mc" || email.esp === "ac") ) {
       linkNeedsGoogleTracking = true;
     } else {
       linkNeedsGoogleTracking = false;
@@ -1171,10 +1201,9 @@ function validateLinks(l, i) {
       createLinkErrorRow(l, "Remove the trailing ? or &.");
     }
 
-    if ( !/(\?|&)$/g.test(l.urlInDOMMergeTagSafe) && /#/g.test(l.urlInDOMMergeTagSafe) && email.division !== "enterprise" ) {
-      createLinkErrorRow(l, "Add a trailing ? after your hashtag to be compatible with ActiveCampaign");
+    if ( !/#.*\?/g.test(l.urlInDOMMergeTagSafe) && /#/g.test(l.urlInDOMMergeTagSafe) && email.division !== "enterprise" ) {
+      createLinkErrorRow(l, "You need a ? somewhere after your hashtag to be compatible with ActiveCampaign.");
     }
-
 
 
     ////-----------------------------////
@@ -1404,7 +1433,7 @@ function validateLinks(l, i) {
     if ( singleLinkInfoArray.hasText ) {
 
       // Request a Demo
-      if ( ( /(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(l.textContent) && !/#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe) ) || (!/((form|schedule (a |some )?time|(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)|connect to further discuss|connect with us)/gi.test(l.textContent) && /#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe)) ) {
+      if ( ( /(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(l.textContent) && !/#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe) ) || (!/((form|schedule (a |some )?time|(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)|connect to further discuss|connect with us|contact us here)/gi.test(l.textContent) && /#request\-a\-demo/i.test(l.urlInDOMMergeTagSafe)) ) {
         createLinkErrorRow(l, "Text and URL are inconsistent (Demo Request related).");
       }
       // Request EMR Integration

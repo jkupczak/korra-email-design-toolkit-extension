@@ -806,9 +806,19 @@
 								</div>
 
 								<div class="option-group textarea">
-									<label for="blacklist">Skip links from these domains</label>
-									<div class="option-desc">Prevent Korra from checking a link by adding it to the disallow list. Enter each URL on its own line.
-										<br><em>(Example: <span>www.mysite.com</span> will stop these links from being validated: <span>www.mysite.com/index.html</span> or <span>www.mysite.com/path/index.html</span>)</em></div>
+									<label for="primaryDomains">Primary domains used in links</label>
+									<div class="option-desc">
+										Korra will limit certain validation checks to primary domains when they make sense. For example, validating <code>utm</code> parameters when the link is to a primary domain and informing you when you shouldn't use them on other links (like on third-party domains). <br>Enter each URL on its own line.
+									</div>
+									<textarea name="primaryDomains"></textarea>
+								</div>
+
+								<div class="option-group textarea">
+									<label for="disallowLinks">Skip links from these domains</label>
+									<div class="option-desc">
+										Prevent Korra from checking a link by adding it to the disallow list. For example, entering <span><code>www.mysite.com</code></span> will stop these links from being validated: <span><code>www.mysite.com/index.html</code></span> or <span><code>www.mysite.com/path/index.html</code></span>
+										<br>Enter each URL on its own line.
+									</div>
 									<textarea name="disallowLinks"></textarea>
 								</div>
 
@@ -855,9 +865,24 @@
 								<div class="option-group checkbox">
 									<input data-autosave="true" type="checkbox" name="checkTrailingSlash" id="checkTrailingSlash" value="0">
 									<label for="checkTrailingSlash">
-										Mark links that are missing a trailing slash <code>/</code> with a warning message
+										Mark links that are missing a trailing slash <code>/</code> with a warning message.
 									</label>
-									<div class="option-desc">When enabled, if the pathname portion of your link is missing a trailing '/' you will be warned.</div>
+									<div class="option-desc">When enabled, if the pathname portion of your link is missing a trailing '/' you will be warned. Ignores links ending with a file extension like .php, .pdf, etc.</div>
+
+									<div class="option-sub-group">
+										<div class="option-group checkbox">
+											<input data-autosave="true" type="checkbox" name="checkTrailingSlashPrimaryDomainsOnly" id="checkTrailingSlashPrimaryDomainsOnly" value="0">
+											<label for="checkTrailingSlashPrimaryDomainsOnly">
+												Limit check to my primary domains.
+											</label>
+										</div>
+
+										<div class="option-group textarea">
+											<label for="checkTrailingSlashCustomDomains">Check these additional domains</label>
+											<textarea name="checkTrailingSlashCustomDomains"></textarea>
+										</div>
+									</div>
+
 								</div>
 
 								<div class="option-group checkbox">

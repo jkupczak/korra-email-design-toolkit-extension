@@ -2490,3 +2490,16 @@ html.error-status.errors:before {
   padding:2px 4px;
   margin-right:10px;
 }
+
+
+/*************************/
+/*************************/
+
+.fullscreen .main-container .nav,
+.fullscreen .panes,
+.fullscreen .mobile-view-wrapper {
+  display: none
+}
+.fullscreen .main-container .stages {
+  padding:0;
+}

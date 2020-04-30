@@ -125,6 +125,9 @@ if ( /^(https?|file):\/\//i.test(email.fileLocation) ) {
     // console.log(response.farewell);
   });
 
+  // Send the file location back to the background page for saving to our file history feature
+  chrome.runtime.sendMessage({saveEmailLocation: email.fileLocation});
+
 }
 
 else { // this is unsaved code

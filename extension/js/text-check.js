@@ -378,15 +378,21 @@ var highlightTextErrors = function (stage) {
 
   //
   // Grammar
-
-      //
+  //
   findText({
-    find: /evidence based EBP/gi
+    find: /evidence(\-| )based EBP/gi
   });
 
 
+  //
+  // Time
+  //
+  // Never EST or EDT, always ET.
   findText({
-    find: /evidence\-based EBP/gi
+    find: /\bE(S|D)T\b/gi
+  });
+  findText({
+    find: /\bP(S|D)T\b/gi
   });
 
 
@@ -423,12 +429,6 @@ var highlightTextErrors = function (stage) {
     find: /\b(tomorrow|noon)\b/gi,
     wrapClass: "text-highlight gmail-fix", forceContext: true
   });
-
-  // No leading 0's after a month
-  findText({
-    find: /\b(January|February|March|April|May|June|July|August|September|October|November|December) 0/gi,
-  });
-
 
 
 };

@@ -41,12 +41,12 @@ const defaultSyncSettings = {
       'checkMissingHrefAttr': '1',
       'checkEmptyLink': '1',
       'checkTrailingHash': '1',
-      'checkTrailingSlash': '0',
+      'checkTrailingSlash': '1',
       'ignoreESPTags': '1',
       'mismatchedHostname': '1',
 
       // Loading Validation
-      'cacheValidLinks': '1',
+      'cacheLinksThatLoadProperly': '1',
       'parseDOM': '1',
       'clearCacheAfterXDays': '1',
 

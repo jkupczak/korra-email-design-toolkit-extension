@@ -1353,8 +1353,14 @@ var paneToggle = function () {
 
 var paneToggleOrb = document.createElement("div");
 paneToggleOrb.className = "pane-orb orb glyph";
-paneToggleOrb.addEventListener("click", paneToggle, false);
+paneToggleOrb.addEventListener("click", fullscreenDesktop, false);
 orbsBottom.appendChild(paneToggleOrb);
+
+function fullscreenDesktop() {
+
+  document.querySelector("html").classList.toggle("fullscreen");
+
+}
 
 
 //////////

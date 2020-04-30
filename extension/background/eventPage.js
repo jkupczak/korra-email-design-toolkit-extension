@@ -789,7 +789,16 @@ function showStartPage() {
 ////////////////////////////// ### //////////////////////////////
 ////_________________________________________________________////
 
+// IndexedDB Databases
 
+//
+// Define your databases
+//
+const db = new Dexie("korra_database");
+db.version(1).stores({
+    emails: 'location,lastViewed',
+    links: 'url,details'
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -944,6 +953,40 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.sendMessage(tabs[0].id, {greeting: request.greeting}, function(response) {
           console.log(response.farewell);
         });
+      });
+
+    }
+
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    if ( request.saveEmailLocation ) {
+
+      // do something
+      console.log( request );
+      console.log( request.saveEmailLocation );
+
+      //
+      // Put some data into the emails db
+      //
+      db.emails.put({location: request.saveEmailLocation, lastViewed: + new Date()}).then (function(){
+          //
+          // Then when data is stored, read from it
+          //
+          return db.emails.get(request.saveEmailLocation);
+      }).then(function (email) {
+          //
+          // Display the result
+          //
+          console.log("location " + email.location);
+          console.log("timestamp " + email.lastViewed);
+      }).catch(function(error) {
+         //
+         // Finally don't forget to catch any error
+         // that could have happened anywhere in the
+         // code blocks above.
+         //
+         console.log("Ooops: " + error);
       });
 
     }
