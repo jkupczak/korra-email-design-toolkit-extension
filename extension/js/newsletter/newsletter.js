@@ -3091,7 +3091,7 @@ var moduleSettingsWrapper = document.createElement("section");
     moduleSettingsWrapper.dataset.korra = "";
     moduleSettingsWrapper.id = "module-settings";
     moduleSettingsWrapper.className = "debug module-settings-wrapper";
-    dFrameContents.documentElement.appendChild(moduleSettingsWrapper);
+    dFrameContents.querySelector("korra").appendChild(moduleSettingsWrapper);
 
 
 let moduleList = dFrameContents.querySelectorAll("[data-mod]");
@@ -3769,22 +3769,26 @@ dFrameContents.addEventListener('scroll', function(e) {
 
   // console.log("desktop", e);
 
-  if ( key.command || key.control || currentKey.ctrlKey || currentKey.metaKey ) {
-    // console.log("command or control was held during scroll")
-  } else {
-    syncScroll(dFrameContents, document.querySelector("#desktop-view"));
-  }
+        // if ( key.command || key.control || currentKey.ctrlKey || currentKey.metaKey ) {
+        //   // console.log("command or control was held during scroll")
+        // } else {
+        //   syncScroll(dFrameContents, document.querySelector("#desktop-view"));
+        // }
+
+  syncScroll(dFrameContents, document.querySelector("#desktop-view"));
 });
 
 mFrameContents.addEventListener('scroll', function(e) {
 
   // console.log("mobile", e);
 
-  if ( key.command || key.control || currentKey.ctrlKey || currentKey.metaKey ) {
-    // do nothing
-  } else {
-    syncScroll(mFrameContents, document.querySelector("#mobile-view"));
-  }
+        // if ( key.command || key.control || currentKey.ctrlKey || currentKey.metaKey ) {
+        //   // do nothing
+        // } else {
+        //   syncScroll(mFrameContents, document.querySelector("#mobile-view"));
+        // }
+
+  syncScroll(mFrameContents, document.querySelector("#mobile-view"));
 });
 
 

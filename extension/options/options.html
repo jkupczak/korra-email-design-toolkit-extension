@@ -520,9 +520,10 @@
 
 									<div class="esp-merge-tags input-table">
 										<div class="columns input-table-head">
-											<label>ESP Name</label>
-											<label>Head</label>
-											<label>Tail</label>
+											<label>Platform</label>
+											<label>Tag Description</label>
+											<label>Open Symbol</label>
+											<label>Close Symbol</label>
 										</div>
 
 										<div id="espMergeTags">
@@ -810,7 +811,7 @@
 									<div class="option-desc">
 										Korra will limit certain validation checks to primary domains when they make sense. For example, validating <code>utm</code> parameters when the link is to a primary domain and informing you when you shouldn't use them on other links (like on third-party domains). <br>Enter each URL on its own line.
 									</div>
-									<textarea name="primaryDomains"></textarea>
+									<textarea name="primaryDomains" data-autosave="true" data-array="multiline"></textarea>
 								</div>
 
 								<div class="option-group textarea">
@@ -867,7 +868,7 @@
 									<label for="checkTrailingSlash">
 										Mark links that are missing a trailing slash <code>/</code> with a warning message.
 									</label>
-									<div class="option-desc">When enabled, if the pathname portion of your link is missing a trailing '/' you will be warned. Ignores links ending with a file extension like .php, .pdf, etc.</div>
+									<div class="option-desc">When enabled, if the pathname portion of your link is missing a trailing '/' you will be warned. By default this will ignore links ending with common file extensions like .php, .pdf, etc.</div>
 
 									<div class="option-sub-group">
 										<div class="option-group checkbox">

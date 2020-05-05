@@ -63,9 +63,10 @@ function buildRow_espMergeTag(values) {
   if ( !Array.isArray(values) ) {
     values = [
       {
-        'n': "",
-        'o': "",
-        'c': ""
+        'p': "", //platform
+        'n': "", //name
+        'o': "", //open
+        'c': ""  //close
       }
     ];
   }
@@ -76,6 +77,7 @@ function buildRow_espMergeTag(values) {
 
     let row = `
       <div class="columns input-table-row p-b-1">
+        <input data-name="p" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="md m-r-1" value="` + values[item].p + `">
         <input data-name="n" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="md m-r-1" value="` + values[item].n + `">
         <input data-name="o" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="center xxs m-r-1" value="` + values[item].o + `">
         <input data-name="c" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="center xxs m-r-1" value="` + values[item].c + `">

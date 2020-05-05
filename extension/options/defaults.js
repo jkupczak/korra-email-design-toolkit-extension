@@ -36,12 +36,14 @@ const defaultSyncSettings = {
       'autoCheckLinks': '1',
       'checkTargetAttribute': '1',
       'checkNoFollowLinks': '1',
+      'primaryDomains': 'medbridgeeducation.com\nmedbridgeed.com',
 
       // URL Format Validation
       'checkMissingHrefAttr': '1',
       'checkEmptyLink': '1',
       'checkTrailingHash': '1',
       'checkTrailingSlash': '1',
+      'checkTrailingSlashPrimaryDomainsOnly': '1',
       'ignoreESPTags': '1',
       'mismatchedHostname': '1',
 
@@ -58,32 +60,44 @@ const defaultSyncSettings = {
       'espMergeTags':
         [
           {
-            'n': 'ActiveCampaign',
+            'p': 'ActiveCampaign',
+            'n': 'Merge Tag',
             'o': '%',
             'c': '%'
           },
           {
-            'n': 'Pardot',
+            'p': 'Pardot',
+            'n': 'Profile Content',
             'o': '{{',
             'c': '}}'
           },
           {
-            'n': 'Mailchimp',
+            'p': 'Pardot',
+            'n': 'Dynamic Content',
+            'o': '{{{',
+            'c': '}}}'
+          },
+          {
+            'p': 'Mailchimp',
+            'n': 'Merge Tag',
             'o': '*|',
             'c': '|*'
           },
           {
-            'n': 'ON24',
+            'p': 'ON24',
+            'n': 'Merge Tag',
             'o': '#',
             'c': '#'
           },
           {
-            'n': 'GetResponse',
+            'p': 'GetResponse',
+            'n': 'Merge Tag',
             'o': '[[',
             'c': ']]'
           },
           {
-            'n': 'SendGrid',
+            'p': 'SendGrid',
+            'n': 'Merge Tag',
             'o': '{{',
             'c': '}}'
           }

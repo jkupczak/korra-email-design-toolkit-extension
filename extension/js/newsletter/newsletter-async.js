@@ -35,6 +35,11 @@ var getAllOptions = new Promise((resolve, reject) => {
         email.korraColorScheme = o.sync.customColorScheme;
       }
 
+      //Convert some option values
+      console.log(o.sync.primaryDomains);
+      o.sync.primaryDomains = o.sync.primaryDomains.split("\n");
+      console.log(o.sync.primaryDomains);
+      
       // Created this function to take the items we got from the async call
       // and apply them to variables for easy use in other scripts.
       // I don't actually think this is necessary. Shouldn't I just call the items object?
@@ -298,9 +303,6 @@ var processCode = function (code) {
 
   // Add allFrames.css to both views
   var allFramesCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-allFrames.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">';
-  cleanedDesktopHtml += allFramesCssString;
-  cleanedMobileHtml += allFramesCssString;
-
 
   //////////////
   //
@@ -310,7 +312,6 @@ var processCode = function (code) {
 
   // Add dFrame.js
   var dFrameFrameScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/dFrame.js') + '"></script>';
-  cleanedDesktopHtml += dFrameFrameScript;
 
   // Add keymaster.js
   // var dFrameKeymaster = '<script data-korra src="' + chrome.extension.getURL('js/libs/keymaster.js') + '"></script>';
@@ -318,7 +319,6 @@ var processCode = function (code) {
 
   // Add dFrame.css to the desktop view
   var dFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-dFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">';
-  cleanedDesktopHtml += dFrameCssString;
 
   //////////////
   //
@@ -328,7 +328,6 @@ var processCode = function (code) {
 
   // Add mFrame.js
   var mFrameScript = '<script data-korra src="' + chrome.extension.getURL('js/newsletter/mFrame.js') + '"></script>';
-  cleanedMobileHtml += mFrameScript;
 
   // Add keymaster.js
   // var mFrameKeymaster = '<script data-korra src="' + chrome.extension.getURL('js/libs/keymaster.js') + '"></script>';
@@ -336,8 +335,16 @@ var processCode = function (code) {
 
   // Add mFrame.css to the mobile view
   var mFrameCssString = '<link data-korra href="' + chrome.extension.getURL('css/newsletter/newsletter-mFrame.css') + '" id="debug-unique-style-block" class="debug" rel="stylesheet" type="text/css">';
-  cleanedMobileHtml += mFrameCssString;
 
+  //////////////
+  //
+  //   WRAP IN <KORRA>
+  //
+  //////////////
+
+
+  cleanedDesktopHtml += "<korra>" + allFramesCssString + dFrameFrameScript + dFrameCssString + "</korra>";
+  cleanedMobileHtml += "<korra>" + allFramesCssString + mFrameScript + mFrameCssString + "</korra>";
 };
 
 

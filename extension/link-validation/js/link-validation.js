@@ -36,6 +36,17 @@ function launchLinkValidation(source, frameContentsPassed, errorBox, dummyLinkLi
 
 }
 
+function isPrimaryDomain(link) {
+  // expecting an arry of domain names
+
+  if ( o.sync.primaryDomains.indexOf(link) > -1 ) {
+    return true;
+  }
+  else {
+    return false;
+  }
+
+}
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -110,8 +121,7 @@ validationStylesheet.setAttribute('href', chrome.extension.getURL('/link-validat
 
 // console.log(validationStylesheet);
 
-frameContents.documentElement.appendChild(validationStylesheet);
-
+frameContents.querySelector("korra").appendChild(validationStylesheet);
 
       // Create the wrapper for the link-markers.
       var linkMarkerWrapper = document.createElement("korra-link-validation");
@@ -119,7 +129,7 @@ frameContents.documentElement.appendChild(validationStylesheet);
       linkMarkerWrapper.id = "link-markers";
       linkMarkerWrapper.className = "debug link-markers-wrapper";
       // linkMarkerWrapper.style = "display:none";
-      frameContents.documentElement.appendChild(linkMarkerWrapper);
+      frameContents.querySelector("korra").appendChild(linkMarkerWrapper);
 
       // Watch the contents of the frameContents for size changes.
       // Modifies placement of link markers.
@@ -413,6 +423,7 @@ function createLinkErrorRow(l, msg, type, icon, marker) {
   var errorRow = document.createElement("korra-div");
       errorRow.dataset.korra = "";
   var errorRowText = document.createElement("korra-div");
+      errorRowText.classList.add("error-message");
       errorRowText.innerHTML = msg;
   errorRow.appendChild(errorRowText);
 
@@ -535,14 +546,22 @@ function validateLinks(l, i) {
     // Loop through all of the ESP merge tags found in the users settings
     o.sync.espMergeTags.forEach(function (esp, index) {
 
+      // @TODO
+      // DOES NOT SUPPORT LOOKING FOR {{{ }}} if you are looking for {{ }} too.
+      // IT JUST GENERALLY DOES NOT WORK THAT WAY YET
+      // MIGHT NEED TO USE NEGATIVE LOOKBEHIND REGEX
+
       // Create our regex based on the current merge tag characters
       let re = new RegExp(escapeRegExp(esp.o) + '[^' + escapeRegExp(esp.o.slice(-1)) + ']+?' + escapeRegExp(esp.c), 'ig');
+      // console.log(esp);
+      // console.log(re);
 
       // Only check <a> tags that have an `href`.
       if ( l.urlInDOM ) {
 
         // Does the value in this href have merge tags in it?
         let mergeTagMatches = l.urlInDOM.match(re);
+        // console.log(mergeTagMatches);
 
         // if there were any matches, loop through them
         // If there were none, mergeTagMatches will be null.
@@ -550,7 +569,7 @@ function validateLinks(l, i) {
           mergeTagMatches.forEach(function (tag, index) {
           	// console.log(index); // index
           	// console.log(tag); // value
-            l.urlInDOMMergeTagSafe = l.urlInDOM.replace(tag, 'espmergetagplaceholder');
+            l.urlInDOMMergeTagSafe = l.urlInDOMMergeTagSafe.replace(tag, 'espmergetagplaceholder');
             // console.log(l.urlInDOM);
           });
         }
@@ -851,16 +870,25 @@ function validateLinks(l, i) {
 
     // Testing selected options
     // checkTrailingHash
-    if ( o.sync.checkTrailingHash ) {
+    if ( o.sync.checkTrailingHash === "1" ) {
       if ( /#$/.test(l.urlInDOMMergeTagSafe) ) {
         createLinkErrorRow(l, "Found a trailing #. (Turn off this check in Options)");
       }
     }
     // checkTrailingSlash
-    if ( o.sync.checkTrailingSlash && !singleLinkInfoArray.hasExtension ) {
-      if ( !/^[^#\?]+?(\/$|\/#|\/\?)/.test(l.urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing a trailing / in the pathname. (Turn off this check in Options)");
+    if ( o.sync.checkTrailingSlash === "1" && !singleLinkInfoArray.hasExtension ) {
+
+      console.log(l);
+      console.log(l);
+      console.log(l);
+      if ( o.sync.checkTrailingSlashPrimaryDomainsOnly !== "1" || o.sync.checkTrailingSlashPrimaryDomainsOnly === "1" && isPrimaryDomain(l.hostname) ) {
+
+        if ( !/^[^#\?]+?(\/$|\/#|\/\?)/.test(l.urlInDOMMergeTagSafe) ) {
+          createLinkErrorRow(l, "Missing a trailing / in the pathname. (Turn off this check in Options)");
+        }
+
       }
+
     }
 
 
