@@ -92,14 +92,16 @@ iframe {
 
 }
 .nav .logo {
-  width:30px;
-  min-width: 30px;
+  width:24px;
+  min-width:24px;
   height: auto;
   opacity:.4;
-  margin-left:16px;
+  margin-left:0px;
+  margin-right:4px;
 }
 
 .nav .file-url {
+  display: flex;
   height:34px;
   line-height:34px;
 
@@ -112,8 +114,8 @@ iframe {
   color:#fff;
   font-size:14px;
   letter-spacing:0.5px;
-  margin-left:14px;
-  padding:0 20px 0 20px;
+  margin-left:12px;
+  padding:0 20px 0 10px;
 
   overflow: hidden;
   padding-right: 24px;
@@ -134,15 +136,18 @@ iframe {
 /*****/
 .nav .nav-options {
   margin-left: auto;
-  margin-right: 20px;
+  margin-right: 10px;
   display: flex;
   flex-direction: row;
 }
 
   .nav .nav-btn {
-    width:28px;
-    height:28px;
-    margin-left:15px;
+    display: flex;
+    width:50px;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+
     cursor:pointer;
     opacity: .5;
     position: relative;
@@ -150,25 +155,10 @@ iframe {
   .nav .nav-btn:hover {
     opacity: 1;
   }
-
-  /* Share */
-  .nav .nav-action-share {  }
-  .nav .nav-action-share .icon:before { content:"\76"; }
-  .nav .nav-action-share svg { fill:#ffffff; width:28px; height:28px; }
-
-  /* Turn Off */
-  .nav .nav-action-turn-off {
-    border-radius:100%;
-    font-size:16px;
-    box-shadow: rgba(255, 255, 255, 1) 0px 0px 0px 2px inset;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .nav .nav-btn:hover svg {
+    width:30px;
+    height: 30px;
   }
-    .nav .nav-action-turn-off:before  {
-      color:#fff;
-      content:"\49";
-    }
 
   /* */
   .nav-btn.loading > * { display:none; }

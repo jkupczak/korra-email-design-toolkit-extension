@@ -493,7 +493,7 @@ if ( getParameterByName("presentation") === "1" ) {
     // console.log( dFrameBody );
     // console.log( dFrameBody.textContent );
     var preheader = cleanPlainTxt(dFrameBody.textContent); // http://stackoverflow.com/a/19032002/556079
-
+    console.error(preheader);
 
 
     // desktopIframe.onload = () => {
@@ -2695,189 +2695,9 @@ if ( !navigator.onLine ) {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-////////////
-////////////
-////////////
-//
-//
-    totalCodingBugs = 0;
-    totalCodingWarnings = 0;
-//
-//
-////////////
-////////////
-////////////
-
-// Outlook Bug
-// No padding on <a>, <p>, or <div>
-// Documentation:
+validateCode();
 
 
-(function(){
-
-  console.groupCollapsed("[Bug Check] Outlook: Lack of Padding Support");
-
-  for (let el of dummyFrameContents.querySelectorAll("p, div")) {
-
-    if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
-
-      logCodeBug(el, "outlook-bug", "no-padding-support");
-
-    }
-
-  }
-
-  for (let el of dummyFrameContents.querySelectorAll("a")) {
-
-    if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
-
-      logCodeBug(el, "outlook-bug", "no-padding-support", "warning");
-
-    }
-
-  }
-  console.groupEnd();
-
-
-})();
-
-
-// Outlook Bug
-// <a> cannot link <table> elements
-// Documentation:
-
-(function(){
-
-  console.groupCollapsed("[Bug Check] Outlook: <a> tags cannot link <table> elements");
-
-  let els = dFrameContents.querySelectorAll("a table");
-  for (let el of els) {
-
-    logCodeBug(el, "outlook-bug", "<table>s cannot be linked with <a> tags in Outlook");
-
-  }
-
-  console.groupEnd();
-
-})();
-
-
-
-// Outlook Bug
-// <td> vertical padding
-// Documentation:
-
-(function(){
-
-  // Consider running this test on a version of the email that has @media
-  // queries stripped out so that there's no question whether it will be relevant in Outlook.
-  // If this test runs while a mobile based media query is active, it could skew results
-
-  console.groupCollapsed("[Bug Check] Outlook: <td> Vertical Padding");
-  console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
-
-  var firstTdTop, firstTdBottom;
-
-  //
-  let tableRows = dFrameContents.querySelectorAll("tr");
-  for (let tableRow of tableRows) {
-    // console.log("row begin");
-    // Check how many table cells are in this row. We only want to address rows with 2 or more.
-    if ( tableRow.cells.length >= 2 ) {
-
-      // console.log(tableRow);
-
-      // Loop through all <td>'s in this table row.
-      for (var i = 0; i < tableRow.cells.length; i++) {
-
-        // console.groupCollapsed();
-        //
-        // console.log(tableRow.cells[i]);
-        // console.log("table cell " + i + " of " + tableRow.cells.length);
-        // console.log("innerText length: " + tableRow.cells[i].innerText.trim().length, "innerText content: '" + tableRow.cells[i].innerText.trim() + "'");
-        // console.log("innerHTML length: " + tableRow.cells[i].innerHTML.trim().length, "innerHTML content: '" + tableRow.cells[i].innerHTML.trim() + "'");
-        // console.log("textContent length: " + tableRow.cells[i].textContent.trim().length, "textContent content: '" + tableRow.cells[i].textContent.trim() + "'");
-        //
-        // console.groupEnd();
-
-        // We need to ignore cells that are empty.
-        // An empty table cell doesn't care if it gets different vertical padding.
-        // So although this is still bugged, no one will ever know.
-
-        // console.log("Begin check: " + i);
-        if ( !isElementEmpty(tableRow.cells[i]) ) {
-        // console.groupEnd();
-
-          console.log( i );
-          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] );
-          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] );
-          console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] );
-
-          // Log the top and bottom padding of our first <td>
-          if ( i === 0 ) {
-            firstTdTop = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top");
-            firstTdBottom = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom");
-            console.log(firstTdTop, firstTdBottom);
-          }
-          // if this isn't the first <td>, check its top and bottom padding against the first <td>
-          // Throw an error if they don't match.
-          else if ( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") !== firstTdTop || window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") !== firstTdBottom ) {
-            // Error
-            logCodeBug(tableRow.cells[i], "outlook", "vertical-cell-padding");
-            console.log( firstTdTop, firstTdBottom, "|", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") );
-          }
-
-        }
-
-      }
-
-    }
-  }
-
-  console.groupEnd();
-
-})();
-
-
-
-// Outlook Bug
-// !important inline css parsing
-// Documentation:
-
-(function(){
-
-  console.groupCollapsed("[Bug Check] Outlook: !important parsing");
-  console.info("Outlook 2007/2010/2013 do not support the use of the `!important` declaration in inline styles. It will always invalidate the style that is attached to. Documentation: https://github.com/hteumeuleu/email-bugs/issues/31");
-
-  var firstTdTop, firstTdBottom;
-
-  //
-  let els = dFrameContents.querySelectorAll("*[style]");
-  for (let el of els) {
-
-    for (var i = 0; i < el.style.length; i++) {
-
-      if ( el.style.getPropertyPriority(el.style[i]) === "important" ) {
-        // console.log( el.style[i] );
-        logCodeBug(el, "outlook", "important-parsing on " + el.style[i]);
-      }
-
-    }
-
-  }
-
-  console.groupEnd();
-
-})();
-
-
-
-
-
-// Report on total bugs to the QA Bar.
-// Combine HTML and CSS Linting errors with custom Korra errors.
-var combinedErrors = myCodeMirror.state.lint.marked.length + totalCodingBugs;
-applyQaResults(htmlhintQaBar, combinedErrors, combinedErrors + " Code Errors Detected");
 
 
 
@@ -2954,14 +2774,20 @@ manifestVersion.innerHTML = chrome.runtime.getManifest().version;
 paneFooter.appendChild(manifestVersion);
 
 // Settings Link
-var settingsLink = document.createElement("div");
-settingsLink.className = "settings-link icomoon icomoon-cog icon-btn";
+var settingsLink = document.getElementById("open-settings");
 settingsLink.addEventListener('click', function() {
-	chrome.runtime.sendMessage({openOptions: 'options'});
+  chrome.tabs.create({
+    url: 'options/options.html'
+  });
 });
-paneFooter.appendChild(settingsLink);
 
-mainPane.appendChild(paneFooter);
+// Gallery Link
+var galleryLink = document.getElementById("open-gallery");
+galleryLink.addEventListener('click', function() {
+  chrome.tabs.create({
+    url: 'gallery.html'
+  });
+});
 
 
 ///////////////////////////////////////////////////////////////////////////////

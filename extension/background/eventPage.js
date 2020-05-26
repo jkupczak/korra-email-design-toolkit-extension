@@ -991,6 +991,16 @@ chrome.runtime.onMessage.addListener(
 
     }
 
+    ///////////////////////
+    ///////////////////////
+    ///////////////////////
+    if ( request.queryEmailTable ) {
+
+      console.log(request.queryEmailTable);
+
+    }
+
+
     // Open the Options page
     ////////////////////////
     if ( request.openOptions ) {

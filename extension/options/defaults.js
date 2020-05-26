@@ -42,8 +42,8 @@ const defaultSyncSettings = {
       'checkMissingHrefAttr': '1',
       'checkEmptyLink': '1',
       'checkTrailingHash': '1',
-      'checkTrailingSlash': '1',
-      'checkTrailingSlashPrimaryDomainsOnly': '1',
+      'checkTrailingSlash': '0',
+      'checkTrailingSlashPrimaryDomainsOnly': '0',
       'ignoreESPTags': '1',
       'mismatchedHostname': '1',
 

@@ -1,0 +1,38 @@
+>>Works on Mac
+file:Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/PT/2019/02-PT/19-02-05-Dischiavi/19-02-05-Other-Steven-Dischiavi-STEM-ns.html
+file:/Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/PT/2019/02-PT/19-02-05-Dischiavi/19-02-05-Other-Steven-Dischiavi-STEM-ns.html
+file:///Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/PT/2019/02-PT/19-02-05-Dischiavi/19-02-05-Other-Steven-Dischiavi-STEM-ns.html
+/Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/PT/2019/02-PT/19-02-05-Dischiavi/19-02-05-Other-Steven-Dischiavi-STEM-ns.html
+//Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/PT/2019/02-PT/19-02-05-Dischiavi/19-02-05-Other-Steven-Dischiavi-STEM-ns.html
+///Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/PT/2019/02-PT/19-02-05-Dischiavi/19-02-05-Other-Steven-Dischiavi-STEM-ns.html
+
+>>Works on Windows
+D:/Desktop/test.html
+file:D:/Desktop/test.html
+file:/D:/Desktop/test.html
+file://D:/Desktop/test.html
+file:///D:/Desktop/test.html
+
+_________________________________________________________
+
+>>Does NOT work on Mac
+file://Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/PT/2019/02-PT/19-02-05-Dischiavi/19-02-05-Other-Steven-Dischiavi-STEM-ns.html
+Users/jameskupczak/Dropbox%20(MedBridge)/Channels/Email/Email%20Campaigns/PT/2019/02-PT/19-02-05-Dischiavi/19-02-05-Other-Steven-Dischiavi-STEM-ns.html
+
+>>Does NOT work on Windows
+/D:/Desktop/test.html
+
+
+_________________________________________________________
+
+All working URLs redirect to file:/// followed by the path.
+
+file:///  +  Users/jameskupczak/test.html
+file:///  +  D:/test.html
+
+
+/Users/jameskupczak/Dropbox (MedBridge)/Channels/LeadingAge2019.xlsx
+
+
+
+Sorry! This file is not located in the local DropBox folder. We searched the current URL (file:///C:/Users/James/Dropbox (Personal)/test.html) for this pattern (/^.+?C:\/Users\/James\/Dropbox%20\(Personal\)/gi).

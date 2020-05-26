@@ -839,8 +839,8 @@ function containsObject(obj, list) {
  */
 var errorLog = function(type, string) {
 
-  console.log(string);
-  console.log(escapeXml(string));
+  // console.log(string);
+  // console.log(escapeXml(string));
   // errorLogRows.insertAdjacentHTML("beforeend", "<div class='error-log-row log-type-" + type + "'>" + escapeXml(string) + "");
 
 };

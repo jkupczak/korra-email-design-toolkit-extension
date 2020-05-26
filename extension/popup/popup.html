@@ -13,10 +13,29 @@
       *, *:before, *:after { box-sizing: inherit; }
 
       body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        font-family: "Roboto", sans-serif;
         font-size: 100%;
-        background:black;
+        background:#272750;
         padding:0; margin:0;
+        width:780px;
+        height:580px;
+      }
+      .main {
+        padding:40px;
+      }
+      button {
+        cursor: pointer;
+        border-radius:4px;
+        color:#fff;
+        background: #3e3eed;
+        border:none;
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12), 0px 0px 2px rgba(0, 0, 0, 0.06);
+      }
+      button:hover {
+        background:#5555f6;
+      }
+      textarea, input {
+        background: #393964;
       }
       #status {
         /* avoid an excessively wide status text */
@@ -24,6 +43,28 @@
         text-overflow: ellipsis;
         overflow: hidden;
         max-width: 400px;
+      }
+
+      .sections {
+        display:flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+      .section {
+        width:calc(50% - 10px);
+        margin-top: 10px;
+        margin-right:10px;
+        border-radius:4px;
+        padding:20px;
+        background: rgba(0,0,0,0.1);
+      }
+      .fat-btn {
+        display:block;
+        width:100%;
+        padding:15px;
+        font-size:18px;
+        font-weight:bold;
+        text-align:center;
       }
     </style>
 
@@ -35,38 +76,41 @@
      -->
   </head>
   <body>
-    <div class="main" style="width:780px; height:580px; background:rebeccapurple; box-shadow:0 0 20px 20px green;">
+    <div class="main">
 
-      <div id="title">popup.html</div>
-      <button id="reload-extension">Reload Korra</button>
+      <div class="sections">
+        <div class="section send-test">
+          <button id="reload-extension" class="fat-btn" style="">Reload Korra</button>
+        </div>
 
-      <div id="status"></div>
-      <img id="image-result" hidden>
+        <div class="section send-test">
+          <textarea id="send-email-code"></textarea>
+          <button id="sent-test" class="fat-btn" style="">Send Test</button>
+        </div>
 
-      <div class="send-test">
-        <textarea id="send-email-code"></textarea>
-        <button id="sent-test">Send Test</button>
+        <div class="section open-current-tab">
+          <button id="open-current-tab" class="fat-btn" style="">Open Current Tab in Korra</button>
+        </div>
+
+        <div class="section open-local-file">
+          <input id="local-file-url">
+          <button id="open-local-file" class="fat-btn" style="">Open Local File</button>
+        </div>
+
+        <div class="section preview-code">
+          <textarea id="preview-email-code"></textarea>
+          <button id="preview-email" class="fat-btn" style="">View Email</button>
+        </div>
+
+        <div class="section">
+          <button id="clear-local-storage" class="fat-btn" style="">Clear Local Storage</button>
+        </div>
+
+        <div class="section">
+          <button id="open-gallery" class="fat-btn" style="">Open Gallery</button>
+        </div>
       </div>
 
-      <div class="open-current-tab">
-        <button id="open-current-tab">Open Current Tab in Korra</button>
-      </div>
-
-      <div class="open-local-file">
-        <input id="local-file-url">
-        <button id="open-local-file">Open Local File</button>
-      </div>
-
-      <div class="preview-code">
-        <textarea id="preview-email-code"></textarea>
-        <button id="preview-email">Preview Email</button>
-      </div>
-
-      <a href="preview.html" target="_blank">Preview</a>
-
-      <div>
-        <button id="clear-local-storage">Clear Local Storage</button>
-      </div>
     </div>
   </body>
   <script src="js/utilities/load-options.js"></script>

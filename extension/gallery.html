@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Gallery</title>
+
+		<style>
+			html {
+				overflow-x: auto;
+			}
+			body {
+				padding:30px;
+				background:#25252c;
+				color:#ededf5;
+			}
+
+			#collection {
+				display: flex;
+			}
+
+			.wrapper {
+				border:0;
+				margin:20px;
+				background: rgba(0,0,0,0.05);
+				box-shadow: 0 0 0 10px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.3);
+				border-radius:4px;
+				overflow: hidden;
+				height:800px;
+				width:360px;
+				min-width:360px;
+			}
+			iframe {
+				border:none;
+		    width: 720px;
+		    height: 1600px;
+		    transform: scale(.5);
+		    transform-origin: top left;
+			}
+		</style>
+
+	</head>
+	<body>
+
+		<h1>Gallery</h1>
+
+		<div id="collection"></div>
+
+		<script src="gallery/js/gallery.js"></script>
+	</body>
+</html>

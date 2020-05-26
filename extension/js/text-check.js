@@ -430,5 +430,10 @@ var highlightTextErrors = function (stage) {
     wrapClass: "text-highlight gmail-fix", forceContext: true
   });
 
+  // Check for words that would typically be linked by stupid Gmail. Like "tomorrow" linking to the calendar.
+  findText({
+    find: /\b(Krafft (&|and) Diana|Krafft (&|and) Kornetti)\b/gi,
+  });
+
 
 };

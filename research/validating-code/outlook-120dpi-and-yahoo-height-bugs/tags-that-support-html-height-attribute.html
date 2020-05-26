@@ -1,0 +1,742 @@
+
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+	<head height="150">
+		<title height="150">testing tags for height compatibility</title>
+	 	<meta charset="utf-8">
+	 	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	 	<meta name="x-apple-disable-message-reformatting">
+		<style height="150">
+
+			.h {
+				background:#cfeefc;
+				border:1px solid #000000;
+				margin:5px;
+			 }
+
+			.l {
+				background:#ffb900;
+				font-weight:bold;
+			}
+
+			img { border:3px solid red; background: blue;}
+
+			.block * { display:block; }
+
+		</style>
+	</head>
+	<body>
+
+		<style>.intro{box-shadow:0 2px 4px rgba(0,0,0,0.3); padding:20px; background:#feffff; margin:20px; border-radius:4px} .intro p, .intro ul {font-size:16px}code {color: #585094; font-family:Menlo; background:#dbd8ed}</style>
+		<div class="intro">
+			<h1>Tags that support HTML height attribute</h1>
+			<p style="">This document was built to test which HTML elements support the HTML <code>height=""</code> attribute. The purpose of this is to help build an efficient code validation function that informs the user when they could possibly run into height related bugs in clients like Yahoo! and Outlook 120dpi.</p>
+
+			<h2>Conclusion</h2>
+			<p>
+				We are only interested in <b>1)</b> HTML elements that can be given an HTML <code>height</code> attribute so that we can solve the <a href="https://github.com/hteumeuleu/email-bugs/issues/9">Yahoo! min-height bug</a> in modern desktop web browsers, and <b>2)</b> elements that Outlook allows us to modify the height of.
+			</p>
+			<p>
+				The following tags support the HTML <code>height=""</code> attribute in <b>Google Chrome 83</b>: <code>table</code>, <code>thead</code>, <code>tbody</code>, <code>tfoot</code>, <code>tr</code>, <code>th</code>, <code>td</code>, <code>marquee</code>, <code>img</code>, <code>image</code>, <code>input[type='image']</code>, <code>object</code>, <code>embed</code>, <code>video</code>, <code>iframe</code>, and <code>canvas</code>.
+			</p>
+			<p>
+				The following tags support the HTML <code>height=""</code> attribute in <b>Microsoft Outlook 2007+ on Windows</b>: <code>tr</code>, <code>th</code>, <code>td</code>, <code>img</code>.
+			</p>
+
+			<h2>Related resources</h2>
+			<ul>
+				<li><a href="https://github.com/hteumeuleu/email-bugs/issues/9">Yahoo! converts the height property to min-height</a></li>
+				<li><a href="https://www.courtneyfantinato.com/correcting-outlook-dpi-scaling-issues/">Coding for DPI Scaling in Outlook 2007-2013</a></li>
+				<li><a href="https://www.emailonacid.com/blog/article/email-development/dpi_scaling_in_outlook_2007-2013/">Correcting Outlook DPI Scaling Issues</a></li>
+				<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element">HTML elements reference on MDN</a></li>
+				<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes">HTML attribute reference on MDN</a></li>
+			</ul>
+		</div>
+
+		<!-- -->
+		<div style="box-shadow:0 0 0 2px #ccc; padding:10px; border-radius:4px"><h2>Elements with the HTML <code>height</code> attribute</h2></div>
+
+		<div class="initial">
+			<p class="l">a</p>
+			<a href="https://www.google.com">a</a>
+
+			<p class="l">abbr</p>
+			<abbr height="150">abbr</abbr>
+
+			<p class="l">acronym</p>
+			<acronym height="150">acronym</acronym>
+
+			<p class="l">address</p>
+			<address height="150">address</address>
+
+			<p class="l">article</p>
+			<article height="150">article</article>
+
+			<p class="l">aside</p>
+			<aside height="150">aside</aside>
+
+			<p class="l">b</p>
+			<b height="150">b</b>
+
+			<p class="l">bdi</p>
+			<bdi height="150">bdi</bdi>
+
+			<p class="l">bdo</p>
+			<bdo height="150">bdo</bdo>
+
+			<p class="l">bgsound</p>
+			<bgsound height="150">bgsound</bgsound>
+
+			<p class="l">big</p>
+			<big height="150">big</big>
+
+			<p class="l">blink</p>
+			<blink height="150">blink</blink>
+
+			<p class="l">blockquote</p>
+			<blockquote height="150">blockquote</blockquote>
+
+			<p class="l">br</p>
+			<br height="150">
+
+			<p class="l">button</p>
+			<button height="150">button</button>
+
+			<p class="l">canvas</p>
+			<canvas height="150">canvas</canvas>
+
+			<p class="l">caption</p>
+			<caption height="150">caption</caption>
+
+			<p class="l">center</p>
+			<center height="150">center</center>
+
+			<p class="l">cite</p>
+			<cite height="150">cite</cite>
+
+			<p class="l">code</p>
+			<code height="150">code</code>
+
+			<p class="l">col</p>
+			<col height="150" />
+
+			<p class="l">colgroup</p>
+			<colgroup height="150">colgroup</colgroup>
+
+			<p class="l">command</p>
+			<command height="150" />
+
+			<p class="l">content</p>
+			<content height="150">content</content>
+
+			<p class="l">data</p>
+			<data height="150">data</data>
+
+			<p class="l">datalist</p>
+			<datalist height="150">
+				<option>option</option>
+			</datalist>
+
+			<p class="l">description list with dd tags</p>
+			<dl height="150"><dd height="150">dd</dd></dl>
+
+			<p class="l">del</p>
+			<del height="150">del</del>
+
+			<p class="l">dfn</p>
+			<dfn height="150">dfn</dfn>
+
+			<p class="l">dialog</p>
+			<dialog height="150">dialog</dialog>
+
+			<p class="l">dir</p>
+			<dir height="150">dir</dir>
+
+			<p class="l">div</p>
+			<div height="150">div</div>
+
+			<p class="l">description list with dt tags</p>
+			<dl height="150"><dt height="150">dt</dt></dl>
+
+			<p class="l">em</p>
+			<em height="150">em</em>
+
+			<p class="l">embed</p>
+			<embed height="150" />
+
+			<p class="l">fieldset</p>
+			<fieldset height="150">fieldset</fieldset>
+
+			<p class="l">figcaption</p>
+			<figcaption height="150">figcaption</figcaption>
+
+			<p class="l">figure</p>
+			<figure height="150">figure</figure>
+
+			<p class="l">font</p>
+			<font height="150">font</font>
+
+			<p class="l">footer</p>
+			<footer height="150">footer</footer>
+
+			<p class="l">frameset</p>
+			<frameset height="150">frameset</frameset>
+
+			<p class="l">h1</p>
+			<h1>h1</h1>
+
+			<p class="l">h2</p>
+			<h2 height="150">h2</h2>
+
+			<p class="l">h3</p>
+			<h3 height="150">h3</h3>
+
+			<p class="l">h4</p>
+			<h4 height="150">h4</h4>
+
+			<p class="l">h5</p>
+			<h5 height="150">h5</h5>
+
+			<p class="l">h6</p>
+			<h6 height="150">h6</h6>
+
+			<p class="l">header</p>
+			<header height="150">header</header>
+
+			<p class="l">hgroup</p>
+			<hgroup height="150">hgroup</hgroup>
+
+			<p class="l">hr</p>
+			<hr height="150" />
+
+			<p class="l">i</p>
+			<i height="150">i</i>
+
+			<p class="l">iframe</p>
+			<iframe height="150">iframe</iframe>
+
+			<p class="l">image</p>
+			<image height="150"></image>
+
+			<p class="l">img</p>
+			<img src="https://via.placeholder.com/150x150" width="150" height="150">
+			<img src="https://via.placeholder.com/150x150" width="150">
+			<img src="https://via.placeholder.com/150x150" height="150">
+			<img src="https://via.placeholder.com/150x150">
+
+			<p class="l">form</p>
+			<form height="150">form</form>
+
+			<p class="l">input</p>
+			<input type="text" height="150" />
+
+			<p class="l">ins</p>
+			<ins height="150">ins</ins>
+
+			<p class="l">kbd</p>
+			<kbd height="150">kbd</kbd>
+
+			<p class="l">keygen</p>
+			<keygen height="150" />
+
+			<p class="l">label</p>
+			<label height="150">label</label>
+
+			<p class="l">legend</p>
+			<legend height="150">legend</legend>
+
+			<p class="l">listing</p>
+			<listing height="150">listing</listing>
+
+			<p class="l">main</p>
+			<main height="150">main</main>
+
+			<p class="l">map</p>
+			<map height="150">maps</map>
+
+			<p class="l">mark</p>
+			<mark height="150">mark</mark>
+
+			<p class="l">marquee</p>
+			<marquee height="150">marquee</marquee>
+
+			<p class="l">menu with menuitem tag</p>
+			<menu height="150"><menuitem height="150" /></menu>
+
+			<p class="l">meter</p>
+			<meter height="150">meter</meter>
+
+			<p class="l">multicol</p>
+			<multicol height="150">multicol</multicol>
+
+			<p class="l">nav</p>
+			<nav height="150">nav</nav>
+
+			<p class="l">nobr</p>
+			<nobr height="150">nobr</nobr>
+
+			<p class="l">object</p>
+			<object height="150">object</object>
+
+			<p class="l">ordered list with li tags</p>
+			<ol height="150"><li height="150">li</li></ol>
+
+			<p class="l">output</p>
+			<output height="150">output</output>
+
+			<p class="l">p</p>
+			<p height="150">p</p>
+
+			<p class="l">picture</p>
+			<picture height="150">picture</picture>
+
+			<p class="l">pre</p>
+			<pre height="150">pre</pre>
+
+			<p class="l">q</p>
+			<q height="150">q</q>
+
+			<p class="l">s</p>
+			<s height="150">s</s>
+
+			<p class="l">samp</p>
+			<samp height="150">samp</samp>
+
+			<p class="l">section</p>
+			<section height="150">section</section>
+
+			<p class="l">select &gt; optgroup &gt; option</p>
+			<select height="150">
+				<optgroup>
+					<option>option</option>
+				</optgroup>
+				<option>option</option>
+			</select>
+
+			<p class="l">slot</p>
+			<slot height="150">slot</slot>
+
+			<p class="l">small</p>
+			<small height="150">small</small>
+
+			<p class="l">spacer</p>
+			<spacer height="150">spacer</spacer>
+
+			<p class="l">strike</p>
+			<strike height="150">strike</strike>
+
+			<p class="l">strong</p>
+			<strong height="150">strong</strong>
+
+			<p class="l">sub</p>
+			<sub height="150">sub</sub>
+
+			<p class="l">details &gt; summary</p>
+			<details>
+				<summary height="150">summary</summary>
+			</details>
+
+			<p class="l">sup</p>
+			<sup height="150">sup</sup>
+
+			<p class="l">table &gt; thead &gt; tr &gt; th / table &gt; tbody &gt; tr &gt; td / table &gt; theatfootd &gt; tr &gt; td </p>
+			<table style="height:300px; background:red">
+				<thead height="150" style="background:green">
+					<tr height="150" style="background:yellow">
+						<th height="150">th</th>
+					</tr>
+				</thead>
+				<tbody height="150">
+					<tr height="150">
+						<td height="150">td</td>
+					</tr>
+				</tbody>
+				<tfoot height="150">
+					<tr>
+						<td height="150">td</td>
+					</tr>
+				</tfoot>
+			</table>
+
+			<p class="l">tr</p>
+			<table style="background:red">
+				<tr height="150" style="background:green">
+					<td>tr</td>
+				</tr>
+			</table>
+
+			<p class="l">table</p>
+			<table height="150" style="background:red">
+				<tr style="background:green">
+					<td>table</td>
+				</tr>
+			</table>
+
+			<p class="l">tbody</p>
+			<table style="background:red"><tbody height="150" style="background:purple"><tr style="background:green"><td>tbody</td></tr></tbody></table>
+
+			<p class="l">tfoot</p>
+			<table style="background:red"><tfoot height="150" style="background:purple"><tr style="background:green"><td>tfoot</td></tr></tfoot></table>
+
+			<p class="l">thead</p>
+			<table style="background:red"><thead height="150" style="background:purple"><tr style="background:green"><th>thead</th></tr></thead></table>
+
+			<p class="l">template</p>
+			<template height="150">template</template>
+
+			<p class="l">textarea</p>
+			<textarea height="150">textarea</textarea>
+
+			<p class="l">time</p>
+			<time height="150">time</time>
+
+			<p class="l">unordered list with li tags</p>
+			<ul height="150"><li height="150">li</li></ul>
+	</div>
+
+
+	<!-- -->
+	<div style="box-shadow:0 0 0 2px #ccc; padding:10px; border-radius:4px"><h2>Elements with the HTML <code>height</code> attribute and a <code>display</code> property of <code>block</code></h2></div>
+
+	<div class="block">
+
+		<p class="l">a</p>
+		<a href="https://www.google.com">a</a>
+
+		<p class="l">abbr</p>
+		<abbr height="150">abbr</abbr>
+
+		<p class="l">acronym</p>
+		<acronym height="150">acronym</acronym>
+
+		<p class="l">address</p>
+		<address height="150">address</address>
+
+		<p class="l">article</p>
+		<article height="150">article</article>
+
+		<p class="l">aside</p>
+		<aside height="150">aside</aside>
+
+		<p class="l">b</p>
+		<b height="150">b</b>
+
+		<p class="l">bdi</p>
+		<bdi height="150">bdi</bdi>
+
+		<p class="l">bdo</p>
+		<bdo height="150">bdo</bdo>
+
+		<p class="l">bgsound</p>
+		<bgsound height="150">bgsound</bgsound>
+
+		<p class="l">big</p>
+		<big height="150">big</big>
+
+		<p class="l">blink</p>
+		<blink height="150">blink</blink>
+
+		<p class="l">blockquote</p>
+		<blockquote height="150">blockquote</blockquote>
+
+		<p class="l">br</p>
+		<br height="150">
+
+		<p class="l">button</p>
+		<button height="150">button</button>
+
+		<p class="l">canvas</p>
+		<canvas height="150">canvas</canvas>
+
+		<p class="l">caption</p>
+		<caption height="150">caption</caption>
+
+		<p class="l">center</p>
+		<center height="150">center</center>
+
+		<p class="l">cite</p>
+		<cite height="150">cite</cite>
+
+		<p class="l">code</p>
+		<code height="150">code</code>
+
+		<p class="l">col</p>
+		<col height="150" />
+
+		<p class="l">colgroup</p>
+		<colgroup height="150">colgroup</colgroup>
+
+		<p class="l">command</p>
+		<command height="150" />
+
+		<p class="l">content</p>
+		<content height="150">content</content>
+
+		<p class="l">data</p>
+		<data height="150">data</data>
+
+		<p class="l">datalist</p>
+		<datalist height="150">
+			<option>option</option>
+		</datalist>
+
+		<p class="l">description list with dd tags</p>
+		<dl height="150"><dd height="150">dd</dd></dl>
+
+		<p class="l">del</p>
+		<del height="150">del</del>
+
+		<p class="l">dfn</p>
+		<dfn height="150">dfn</dfn>
+
+		<p class="l">dialog</p>
+		<dialog height="150">dialog</dialog>
+
+		<p class="l">dir</p>
+		<dir height="150">dir</dir>
+
+		<p class="l">div</p>
+		<div height="150">div</div>
+
+		<p class="l">description list with dt tags</p>
+		<dl height="150"><dt height="150">dt</dt></dl>
+
+		<p class="l">em</p>
+		<em height="150">em</em>
+
+		<p class="l">embed</p>
+		<embed height="150" />
+
+		<p class="l">fieldset</p>
+		<fieldset height="150">fieldset</fieldset>
+
+		<p class="l">figcaption</p>
+		<figcaption height="150">figcaption</figcaption>
+
+		<p class="l">figure</p>
+		<figure height="150">figure</figure>
+
+		<p class="l">font</p>
+		<font height="150">font</font>
+
+		<p class="l">footer</p>
+		<footer height="150">footer</footer>
+
+		<p class="l">frameset</p>
+		<frameset height="150">frameset</frameset>
+
+		<p class="l">h1</p>
+		<h1>h1</h1>
+
+		<p class="l">h2</p>
+		<h2 height="150">h2</h2>
+
+		<p class="l">h3</p>
+		<h3 height="150">h3</h3>
+
+		<p class="l">h4</p>
+		<h4 height="150">h4</h4>
+
+		<p class="l">h5</p>
+		<h5 height="150">h5</h5>
+
+		<p class="l">h6</p>
+		<h6 height="150">h6</h6>
+
+		<p class="l">header</p>
+		<header height="150">header</header>
+
+		<p class="l">hgroup</p>
+		<hgroup height="150">hgroup</hgroup>
+
+		<p class="l">hr</p>
+		<hr height="150" />
+
+		<p class="l">i</p>
+		<i height="150">i</i>
+
+		<p class="l">iframe</p>
+		<iframe height="150">iframe</iframe>
+
+		<p class="l">image</p>
+		<image height="150"></image>
+
+		<p class="l">img</p>
+		<img src="https://via.placeholder.com/150x150" width="150" height="150">
+		<img src="https://via.placeholder.com/150x150" width="150">
+		<img src="https://via.placeholder.com/150x150" height="150">
+		<img src="https://via.placeholder.com/150x150">
+
+		<p class="l">form</p>
+		<form height="150">form</form>
+
+		<p class="l">input</p>
+		<input type="image" height="150" />
+
+		<p class="l">ins</p>
+		<ins height="150">ins</ins>
+
+		<p class="l">kbd</p>
+		<kbd height="150">kbd</kbd>
+
+		<p class="l">keygen</p>
+		<keygen height="150" />
+
+		<p class="l">label</p>
+		<label height="150">label</label>
+
+		<p class="l">legend</p>
+		<legend height="150">legend</legend>
+
+		<p class="l">listing</p>
+		<listing height="150">listing</listing>
+
+		<p class="l">main</p>
+		<main height="150">main</main>
+
+		<p class="l">map</p>
+		<map height="150">maps</map>
+
+		<p class="l">mark</p>
+		<mark height="150">mark</mark>
+
+		<p class="l">marquee</p>
+		<marquee height="150">marquee</marquee>
+
+		<p class="l">menu with menuitem tag</p>
+		<menu height="150"><menuitem height="150" /></menu>
+
+		<p class="l">meter</p>
+		<meter height="150">meter</meter>
+
+		<p class="l">multicol</p>
+		<multicol height="150">multicol</multicol>
+
+		<p class="l">nav</p>
+		<nav height="150">nav</nav>
+
+		<p class="l">nobr</p>
+		<nobr height="150">nobr</nobr>
+
+		<p class="l">object</p>
+		<object height="150">object</object>
+
+		<p class="l">ordered list with li tags</p>
+		<ol height="150"><li height="150">li</li></ol>
+
+		<p class="l">output</p>
+		<output height="150">output</output>
+
+		<p class="l">p</p>
+		<p height="150">p</p>
+
+		<p class="l">picture</p>
+		<picture height="150">picture</picture>
+
+		<p class="l">pre</p>
+		<pre height="150">pre</pre>
+
+		<p class="l">q</p>
+		<q height="150">q</q>
+
+		<p class="l">s</p>
+		<s height="150">s</s>
+
+		<p class="l">samp</p>
+		<samp height="150">samp</samp>
+
+		<p class="l">section</p>
+		<section height="150">section</section>
+
+		<p class="l">select &gt; optgroup &gt; option</p>
+		<select height="150">
+			<optgroup>
+				<option>option</option>
+			</optgroup>
+			<option>option</option>
+		</select>
+
+		<p class="l">slot</p>
+		<slot height="150">slot</slot>
+
+		<p class="l">small</p>
+		<small height="150">small</small>
+
+		<p class="l">spacer</p>
+		<spacer height="150">spacer</spacer>
+
+		<p class="l">strike</p>
+		<strike height="150">strike</strike>
+
+		<p class="l">strong</p>
+		<strong height="150">strong</strong>
+
+		<p class="l">sub</p>
+		<sub height="150">sub</sub>
+
+		<p class="l">details &gt; summary</p>
+		<details>
+			<summary height="150">summary</summary>
+		</details>
+
+		<p class="l">sup</p>
+		<sup height="150">sup</sup>
+
+		<p class="l">table &gt; thead &gt; tr &gt; th / table &gt; tbody &gt; tr &gt; td / table &gt; theatfootd &gt; tr &gt; td </p>
+		<table style="background:red">
+			<thead height="150" style="background:green">
+				<tr height="150" style="background:yellow">
+					<th height="150">th</th>
+				</tr>
+			</thead>
+			<tbody height="150">
+				<tr height="150">
+					<td height="150">td</td>
+				</tr>
+			</tbody>
+			<tfoot height="150">
+				<tr>
+					<td height="150">td</td>
+				</tr>
+			</tfoot>
+		</table>
+
+		<p class="l">tr</p>
+		<table style="background:red">
+			<tr height="150" style="background:green">
+				<td>tr</td>
+			</tr>
+		</table>
+
+		<p class="l">table</p>
+		<table height="150" style="background:red">
+			<tr style="background:green">
+				<td>table</td>
+			</tr>
+		</table>
+
+		<p class="l">tbody</p>
+		<table style="background:red"><tbody height="150" style="background:purple"><tr style="background:green"><td>tbody</td></tr></tbody></table>
+
+		<p class="l">tfoot</p>
+		<table style="background:red"><tfoot height="150" style="background:purple"><tr style="background:green"><td>tfoot</td></tr></tfoot></table>
+
+		<p class="l">thead</p>
+		<table style="background:red"><thead height="150" style="background:purple"><tr style="background:green"><th>thead</th></tr></thead></table>
+
+		<p class="l">template</p>
+		<template height="150">template</template>
+
+		<p class="l">textarea</p>
+		<textarea height="150">textarea</textarea>
+
+		<p class="l">time</p>
+		<time height="150">time</time>
+
+		<p class="l">unordered list with li tags</p>
+		<ul height="150"><li height="150">li</li></ul>
+
+</div>
+
+	</body>
+</html>
