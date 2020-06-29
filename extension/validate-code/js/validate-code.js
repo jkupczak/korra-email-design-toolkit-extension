@@ -29,23 +29,11 @@ function validateCode() {
   // Outlook Bug
   // No padding on <a>, <p>, or <div>
   // Documentation:
-
-
   (function(){
 
     console.groupCollapsed("[Bug Check] Outlook: Lack of Padding Support");
 
-    for (let el of dummyFrameContents.querySelectorAll("p, div")) {
-
-      if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
-
-        logCodeBug(el, "outlook-bug", "no-padding-support");
-
-      }
-
-    }
-
-    for (let el of dummyFrameContents.querySelectorAll("a")) {
+    for (let el of dummyFrameContents.querySelectorAll("p, div, a")) {
 
       if ( window.getComputedStyle(el, null).getPropertyValue("padding") !== "0px" ) {
 
@@ -54,10 +42,11 @@ function validateCode() {
       }
 
     }
+
+    console.info("Total bugs so far:", totalCodingBugs);
     console.groupEnd();
-
-
   })();
+
 
 
   // Outlook Bug
@@ -75,8 +64,8 @@ function validateCode() {
 
     }
 
+    console.info("Total bugs so far:", totalCodingBugs);
     console.groupEnd();
-
   })();
 
 
@@ -152,9 +141,10 @@ function validateCode() {
       }
     }
 
+    console.info("Total bugs so far:", totalCodingBugs);
     console.groupEnd();
-
   })();
+
 
 
   // Outlook 120dpi height Bug
@@ -167,7 +157,7 @@ function validateCode() {
     console.info("Height must be declared in pixels using CSS to be compatible with Outlook 120dpi's scaling feature. This bug only affects tags that support the HTML height='' attribute in the Word rendingering engine present in Microsoft Outlook 2007+ on Windows. Those tags are `tr`, `th`, `td`, and `img`. The following tags in your code were identified as having a height='' attribute set without using px.");
 
     let elWithHeight = dFrameContents.querySelectorAll("img[height], td[height], th[height], tr[height]");
-    console.log(elWithHeight.length, "matches");
+    console.log(elWithHeight.length, "possible matches");
 
     elWithHeight.forEach(function (el, index) {
 
@@ -179,9 +169,9 @@ function validateCode() {
       }
     });
 
+    console.info("Total bugs so far:", totalCodingBugs);
     console.groupEnd();
   })();
-
 
 
   // Yahoo min-height Bug
@@ -193,21 +183,21 @@ function validateCode() {
     console.info("Yahoo! will convert the css height property into the css min-height property. Use the HTML height='' attribute on supported tags to compensate for this. Tags that support the HTML height='' attribute include table, thead, tbody, tfoot, tr, th, td, marquee, img, image, input[type='image'], object, embed, video, iframe, and canvas.");
 
     let elWithHeight = dFrameContents.querySelectorAll("table[style*='height'], tbody[style*='height'], thead[style*='height'], tfoot[style*='height'], tr[style*='height'], th[style*='height'], td[style*='height'], canvas[style*='height'], iframe[style*='height'], img[style*='height'], image[style*='height'], marquee[style*='height'], object[style*='height'], input[type='image'][style*='height'], video[style*='height']");
-    console.log(elWithHeight.length, "matches");
+    console.log(elWithHeight.length, "possible matches");
 
     elWithHeight.forEach(function (el, index) {
 
       let heightAttr  = el.getAttribute("height");
       let heightStyle = el.style.height;
 
-      if ( !heightAttr ) {
+      if ( !heightAttr && heightStyle ) {
         logCodeBug(el, "[yahoo! min-height bug]", "missing a matching height='' attribute on " + el.tagName);
       }
     });
 
+    console.info("Total bugs so far:", totalCodingBugs);
     console.groupEnd();
   })();
-
 
 
   // Outlook Bug
@@ -236,16 +226,15 @@ function validateCode() {
 
     }
 
+    console.info("Total bugs so far:", totalCodingBugs);
     console.groupEnd();
   })();
 
 
 
-
-
   // Report on total bugs to the QA Bar.
   // Combine HTML and CSS Linting errors with custom Korra errors.
-  var combinedErrors = myCodeMirror.state.lint.marked.length + totalCodingBugs;
-  applyQaResults(htmlhintQaBar, combinedErrors, combinedErrors + " Code Errors Detected");
+  applyQaResults(htmlhintQaBar, totalCodingBugs, totalCodingBugs + " Code Errors Detected");
+  applyQaResults(lintQaBar, myCodeMirror.state.lint.marked.length, myCodeMirror.state.lint.marked.length + " Linting Errors Detected");
 
 } // end validateCode function

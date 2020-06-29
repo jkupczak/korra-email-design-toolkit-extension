@@ -387,6 +387,14 @@ if ( getParameterByName("presentation") === "1" ) {
     frames.desktop = desktopIframe;
 
     var dFrameBody = dFrameContents.body;
+
+    // Move the <korra> element in dFrame after the closing </body> tag.
+    // This element is written in plain text and appended to the original HTML file.
+    // When Chrome renders dFrame, it moves it inside of the <body> at the very end.
+    // We can avoid some issues by kicking it out.
+    // We make it a sibling of <body> because it's not allowed to be a sibling of <html>
+    dFrameBody.after(dFrameContents.querySelector("korra"));
+
     var dFrameHTMLEle = dFrameContents.documentElement;
 
     // Activate spellcheck in dFrame by turning designmode on
@@ -569,6 +577,13 @@ if ( getParameterByName("presentation") === "1" ) {
     frames.mobile = mobileIframe;
 
     var mFrameBody = mFrameContents.body;
+
+    // Move the <korra> element in dFrame after the closing </body> tag.
+    // This element is written in plain text and appended to the original HTML file.
+    // When Chrome renders dFrame, it moves it inside of the <body> at the very end.
+    // We can avoid some issues by kicking it out.
+    // We make it a sibling of <body> because it's not allowed to be a sibling of <html>
+    mFrameBody.after(mFrameContents.querySelector("korra"));
 
     // Activate spellcheck by turning designmode on
     // activateSpellcheck(mFrameContents);
@@ -2421,7 +2436,7 @@ appendQaBar(linksQaBar);
 
 //////////
 ////
-////  QA Bar: HTML Linting Errors
+////  QA Bar: Coding Errors
 ////
 /////////
 
@@ -2430,6 +2445,20 @@ htmlhintQaBar.id = "qa-htmlhint-warnings";
 htmlhintQaBar.className = "qa-htmlhint-warnings";
 htmlhintQaBar.dataset.errors = "0";
 appendQaBar(htmlhintQaBar);
+
+
+
+//////////
+////
+////  QA Bar: Linting Errors
+////
+/////////
+
+var lintQaBar = document.createElement("div");
+lintQaBar.id = "qa-lint-warnings";
+lintQaBar.className = "qa-lint-warnings";
+lintQaBar.dataset.errors = "0";
+appendQaBar(lintQaBar);
 
 
 //////////
@@ -2913,7 +2942,7 @@ checkZoomLevel();
 ////////////
 ////////////
 
-var moduleSettingsWrapper = document.createElement("section");
+var moduleSettingsWrapper = document.createElement("korra-div");
     moduleSettingsWrapper.dataset.korra = "";
     moduleSettingsWrapper.id = "module-settings";
     moduleSettingsWrapper.className = "debug module-settings-wrapper";
@@ -2983,21 +3012,21 @@ if (typeof moduleSettingsMenu != 'undefined') {
 ////////////
 
 
-try {
-  emailAllCharsWithinAscii(originalHtml);
-}
-catch(error) {
-  console.groupCollapsed("[Special Characters] emailAllCharsWithinAscii plugin");
-  console.error(error);
-  console.error(error.toString());
-  console.error(escapeXml(error.toString()));
-  console.error(error.toString().replace(/&/gi,"@"));
-  var err = error.toString().replace(/^Error\:.+?: /i, "");
-  // errorLog("error", err);
-  console.groupEnd();
-  // expected output: SyntaxError: unterminated string literal
-  // Note - error messages will vary depending on browser
-}
+        // try {
+        //   emailAllCharsWithinAscii(originalHtml);
+        // }
+        // catch(error) {
+        //   console.groupCollapsed("[Special Characters] emailAllCharsWithinAscii plugin");
+        //   console.error(error);
+        //   console.error(error.toString());
+        //   console.error(escapeXml(error.toString()));
+        //   console.error(error.toString().replace(/&/gi,"@"));
+        //   var err = error.toString().replace(/^Error\:.+?: /i, "");
+        //   // errorLog("error", err);
+        //   console.groupEnd();
+        //   // expected output: SyntaxError: unterminated string literal
+        //   // Note - error messages will vary depending on browser
+        // }
 
 
 
@@ -3057,7 +3086,7 @@ catch(error) {
 
   console.groupCollapsed("[Accessibility: lang='en']");
 
-  // Check the <html> tag
+  // Check the <html> tag for the attribute and a value
   if ( dFrameContents.getElementsByTagName("html")[0].getAttribute("lang") === null ) {
     logAccessibilityWarning(dFrameContents.getElementsByTagName("html"), 'Missing lang="" attribute.');
   }

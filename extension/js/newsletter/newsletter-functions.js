@@ -816,36 +816,6 @@ function containsObject(obj, list) {
     return false;
 }
 
-
-
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-/////
-/////
-/////
-/////
-/////
-///////////////////////////////////////
-///////////////////////////////////////
-///////////////////////////////////////
-
-
-/**
- * [someFunction description]
- * @param  {[type]} arg1 [description]
- * @param  {[type]} arg2 [description]
- * @return {[type]}      [description]
- */
-var errorLog = function(type, string) {
-
-  // console.log(string);
-  // console.log(escapeXml(string));
-  // errorLogRows.insertAdjacentHTML("beforeend", "<div class='error-log-row log-type-" + type + "'>" + escapeXml(string) + "");
-
-};
-
-
 ///////////////////////////////////////
 ///////////////////////////////////////
 ///////////////////////////////////////
@@ -1018,9 +988,14 @@ var updateQaBar = function(bar, errors, string) {
  * @return {[type]}      [description]
  */
 var logCodeBug = function(object, client, errorText, type) {
-  console.error("Coding Bug:", client, errorText, object);
-  errorLog("warning", errorText );
-  totalCodingBugs++;
+  
+  if ( type !== "warning" ) {
+    console.error("Coding Bug Error:", client, errorText, object);
+    totalCodingBugs++;
+  }
+  else {
+    console.warn("Coding Bug Warning:", client, errorText, object);
+  }
   // updateQaBar(codingBugsQaBar, totalCodingBugs, " Bugs Found");
 };
 

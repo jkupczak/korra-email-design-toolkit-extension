@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+	<head>
+		<title>mso-hide:all</title>
+	 	<meta charset="utf-8">
+	 	<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<style>
+			.l {
+				background:#ffb900;
+				font-weight:bold;
+			}
+			.hide { mso-hide:all }
+		</style>
+	</head>
+	<body>
+
+		<style>.intro{box-shadow:0 2px 4px rgba(0,0,0,0.3); padding:20px; background:#feffff; margin:20px; border-radius:4px} .intro p, .intro ul {font-size:16px}code {color: #585094; font-family:Menlo; background:#dbd8ed}</style>
+		<div class="intro">
+			<h1>Tags that support HTML height attribute</h1>
+			<p style="">This document was built to test which HTML elements support the HTML <code>height=""</code> attribute. The purpose of this is to help build an efficient code validation function that informs the user when they could possibly run into height related bugs in clients like Yahoo! and Outlook 120dpi.</p>
+
+			<h2>Conclusion</h2>
+			<p>
+				We are only interested in <b>1)</b> HTML elements that can be given an HTML <code>height</code> attribute so that we can solve the <a href="https://github.com/hteumeuleu/email-bugs/issues/9">Yahoo! min-height bug</a> in modern desktop web browsers, and <b>2)</b> elements that Outlook allows us to modify the height of.
+			</p>
+			<p>
+				The following tags support the HTML <code>height=""</code> attribute in <b>Google Chrome 83</b>: <code>table</code>, <code>thead</code>, <code>tbody</code>, <code>tfoot</code>, <code>tr</code>, <code>th</code>, <code>td</code>, <code>marquee</code>, <code>img</code>, <code>image</code>, <code>input[type='image']</code>, <code>object</code>, <code>embed</code>, <code>video</code>, <code>iframe</code>, and <code>canvas</code>.
+			</p>
+			<p>
+				The following tags support the HTML <code>height=""</code> attribute in <b>Microsoft Outlook 2007+ on Windows</b>: <code>tr</code>, <code>th</code>, <code>td</code>, <code>img</code>.
+			</p>
+		</div>
+
+<div>
+
+	<p class="l">a</p>
+		<a href="https://www.google.com">a – not hidden</a>
+		<a class="hide" href="https://www.google.com">a – hidden with class</a>
+		<a style="mso-hide:all" href="https://www.google.com">a – hidden with style</a>
+
+	<p class="l">address</p>
+		<address height="50">address – not hidden</address>
+		<address class="hide" height="50">address – hidden with class</address>
+		<address style="mso-hide:all" height="50">address – hidden with style</address>
+
+	<p class="l">b</p>
+		<b height="50">b – not hidden</b>
+		<b class="hide" height="50">b – hidden with class</b>
+		<b style="mso-hide:all" height="50">b – hidden with style</b>
+
+	<p class="l">blockquote</p>
+		<blockquote height="50">blockquote – not hidden</blockquote>
+		<blockquote class="hide" height="50">blockquote – hidden with class</blockquote>
+		<blockquote style="mso-hide:all" height="50">blockquote – hidden with style</blockquote>
+
+	<p class="l">br</p>
+		text before first br
+		<br height="50">text after first br
+		<br class="hide" height="50">text after second br – hidden with class
+		<br style="mso-hide:all" height="50">text after third br – hidden with style
+
+	<p class="l">button</p>
+		<button height="50">button – not hidden</button>
+		<button class="hide" height="50">button – hidden with class</button>
+		<button style="mso-hide:all" height="50">button – hidden with style</button>
+
+	<p class="l">caption</p>
+		<caption height="50">caption – not hidden</caption>
+		<caption class="hide" height="50">caption – hidden with class</caption>
+		<caption style="mso-hide:all" height="50">caption – hidden with style</caption>
+
+	<p class="l">center</p>
+		<center height="50">center – not hidden</center>
+		<center class="hide" height="50">center – hidden with class</center>
+		<center style="mso-hide:all" height="50">center – hidden with style</center>
+
+	<p class="l">cite</p>
+		<cite height="50">cite – not hidden</cite>
+		<cite class="hide" height="50">cite – hidden with class</cite>
+		<cite style="mso-hide:all" height="50">cite – hidden with style</cite>
+
+	<p class="l">code</p>
+		<code height="50">code – not hidden</code>
+		<code class="hide" height="50">code – hidden with class</code>
+		<code style="mso-hide:all" height="50">code – hidden with style</code>
+
+	<p class="l">description list with dd tags</p>
+		<dl height="50"><dd height="50">dd – not hidden</dd></dl>
+		<dl class="hide" height="50"><dd height="50">dd – hidden with class</dd></dl>
+		<dl style="mso-hide:all" height="50"><dd height="50">dd – hidden with style</dd></dl>
+
+	<p class="l">del</p>
+		<del height="50">del – not hidden</del>
+		<del class="hide" height="50">del – hidden with class</del>
+		<del style="mso-hide:all" height="50">del – hidden with style</del>
+
+	<p class="l">dialog</p>
+		<dialog height="50">dialog – not hidden</dialog>
+		<dialog class="hide" height="50">dialog – hidden with class</dialog>
+		<dialog style="mso-hide:all" height="50">dialog – hidden with style</dialog>
+
+	<p class="l">dir</p>
+		<dir height="50">dir – not hidden</dir>
+		<dir class="hide" height="50">dir – hidden with class</dir>
+		<dir style="mso-hide:all" height="50">dir – hidden with style</dir>
+
+	<p class="l">div</p>
+		<div height="50">div – not hidden</div>
+		<div class="hide" height="50">div – hidden with class</div>
+		<div style="mso-hide:all" height="50">div – hidden with style</div>
+
+	<p class="l">description list with dt tags</p>
+		<dl height="50"><dt height="50">dt – not hidden</dt></dl>
+		<dl class="hide" height="50"><dt height="50">dt – hidden with class</dt></dl>
+		<dl style="mso-hide:all" height="50"><dt height="50">dt – hidden with style</dt></dl>
+
+	<p class="l">em</p>
+		<em height="50">em – not hidden</em>
+		<em class="hide" height="50">em – hidden with class</em>
+		<em style="mso-hide:all" height="50">em – hidden with style</em>
+
+	<p class="l">fieldset</p>
+		<fieldset height="50">fieldset – not hidden</fieldset>
+		<fieldset class="hide" height="50">fieldset – hidden with class</fieldset>
+		<fieldset style="mso-hide:all" height="50">fieldset – hidden with style</fieldset>
+
+	<p class="l">figcaption</p>
+		<figcaption height="50">figcaption – not hidden</figcaption>
+		<figcaption class="hide" height="50">figcaption – hidden with class</figcaption>
+		<figcaption style="mso-hide:all" height="50">figcaption – hidden with style</figcaption>
+
+	<p class="l">figure</p>
+		<figure height="50">figure – not hidden</figure>
+		<figure class="hide" height="50">figure – hidden with class</figure>
+		<figure style="mso-hide:all" height="50">figure – hidden with style</figure>
+
+	<p class="l">font</p>
+		<font height="50">font – not hidden</font>
+		<font class="hide" height="50">font – hidden with class</font>
+		<font style="mso-hide:all" height="50">font – hidden with style</font>
+
+	<p class="l">footer</p>
+		<footer height="50">footer – not hidden</footer>
+		<footer class="hide" height="50">footer – hidden with class</footer>
+		<footer style="mso-hide:all" height="50">footer – hidden with style</footer>
+
+	<p class="l">h1</p>
+		<h1>h1 – not hidden</h1>
+		<h1 class="hide">h1 – hidden with class</h1>
+		<h1 style="mso-hide:all">h1 – hidden with style</h1>
+
+	<p class="l">h2</p>
+		<h2 height="50">h2 – not hidden</h2>
+		<h2 class="hide" height="50">h2 – hidden with class</h2>
+		<h2 style="mso-hide:all" height="50">h2 – hidden with style</h2>
+
+	<p class="l">h3</p>
+		<h3 height="50">h3 – not hidden</h3>
+		<h3 class="hide" height="50">h3 – hidden with class</h3>
+		<h3 style="mso-hide:all" height="50">h3 – hidden with style</h3>
+
+	<p class="l">h4</p>
+		<h4 height="50">h4 – not hidden</h4>
+		<h4 class="hide" height="50">h4 – hidden with class</h4>
+		<h4 style="mso-hide:all" height="50">h4 – hidden with style</h4>
+
+	<p class="l">h5</p>
+		<h5 height="50">h5 – not hidden</h5>
+		<h5 class="hide" height="50">h5 – hidden with class</h5>
+		<h5 style="mso-hide:all" height="50">h5 – hidden with style</h5>
+
+	<p class="l">h6</p>
+		<h6 height="50">h6 – not hidden</h6>
+		<h6 class="hide" height="50">h6 – hidden with class</h6>
+		<h6 style="mso-hide:all" height="50">h6 – hidden with style</h6>
+
+	<p class="l">header</p>
+		<header height="50">header – not hidden</header>
+		<header class="hide" height="50">header – hidden with class</header>
+		<header style="mso-hide:all" height="50">header – hidden with style</header>
+
+	<p class="l">hr</p>
+		<hr height="50" />after first hr
+		<hr class="hide" height="50" />after second hr – hidden with class
+		<hr style="mso-hide:all" height="50" />after third hr – hidden with style
+
+	<p class="l">i</p>
+		<i height="50">i – not hidden</i>
+		<i class="hide" height="50">i – hidden with class</i>
+		<i style="mso-hide:all" height="50">i – hidden with style</i>
+
+	<p class="l">img</p>
+		<img src="https://via.placeholder.com/50x50">after first image
+		<img class="hide" src="https://via.placeholder.com/50x50">after second image – hidden with class
+		<img style="mso-hide:all" src="https://via.placeholder.com/50x50">after third image – hidden with style
+
+	<p class="l">form</p>
+		<form height="50">form – not hidden</form>
+		<form class="hide" height="50">form – hidden with class</form>
+		<form style="mso-hide:all" height="50">form – hidden with style</form>
+
+	<p class="l">input</p>
+		<input type="image" height="50" />after first input
+		<input class="hide" type="image" height="50" />after second input – hidden with class
+		<input style="mso-hide:all" type="image" height="50" />after third input – hidden with style
+
+	<p class="l">ins</p>
+		<ins height="50">ins – not hidden</ins>
+		<ins class="hide" height="50">ins – hidden with class</ins>
+		<ins style="mso-hide:all" height="50">ins – hidden with style</ins>
+
+	<p class="l">label</p>
+		<label height="50">label – not hidden</label>
+		<label class="hide" height="50">label – hidden with class</label>
+		<label style="mso-hide:all" height="50">label – hidden with style</label>
+
+	<p class="l">legend</p>
+		<legend height="50">legend – not hidden</legend>
+		<legend class="hide" height="50">legend – hidden with class</legend>
+		<legend style="mso-hide:all" height="50">legend – hidden with style</legend>
+
+	<p class="l">marquee</p>
+		<marquee height="50">marquee – not hidden</marquee>
+		<marquee class="hide" height="50">marquee – hidden with class</marquee>
+		<marquee style="mso-hide:all" height="50">marquee – hidden with style</marquee>
+
+	<p class="l">nav</p>
+		<nav height="50">nav – not hidden</nav>
+		<nav class="hide" height="50">nav – hidden with class</nav>
+		<nav style="mso-hide:all" height="50">nav – hidden with style</nav>
+
+	<p class="l">nobr</p>
+		<nobr height="50">nobr – not hidden</nobr>
+		<nobr class="hide" height="50">nobr – hidden with class</nobr>
+		<nobr style="mso-hide:all" height="50">nobr – hidden with style</nobr>
+
+	<p class="l">ordered list with li tags</p>
+		<ol height="50"><li height="50">li – not hidden</li></ol>
+		<ol class="hide" height="50"><li height="50">li</li></ol>
+		<ol style="mso-hide:all" height="50"><li height="50">li – hidden with style</li></ol>
+
+	<p class="l">p</p>
+		<p height="50">p – not hidden</p>
+		<p class="hide" height="50">p – hidden with class</p>
+		<p style="mso-hide:all" height="50">p – hidden with style</p>
+
+	<p class="l">pre</p>
+		<pre height="50">pre – not hidden</pre>
+		<pre class="hide" height="50">pre – hidden with class</pre>
+		<pre style="mso-hide:all" height="50">pre – hidden with style</pre>
+
+	<p class="l">section</p>
+		<section height="50">section – not hidden</section>
+		<section class="hide" height="50">section – hidden with class</section>
+		<section style="mso-hide:all" height="50">section – hidden with style</section>
+
+	<p class="l">small</p>
+		<small height="50">small – not hidden</small>
+		<small class="hide" height="50">small – hidden with class</small>
+		<small style="mso-hide:all" height="50">small – hidden with style</small>
+
+	<p class="l">strike</p>
+		<strike height="50">strike – not hidden</strike>
+		<strike class="hide" height="50">strike – hidden with class</strike>
+		<strike style="mso-hide:all" height="50">strike – hidden with style</strike>
+
+	<p class="l">strong</p>
+		<strong height="50">strong – not hidden</strong>
+		<strong class="hide" height="50">strong – hidden with class</strong>
+		<strong style="mso-hide:all" height="50">strong – hidden with style</strong>
+
+	<p class="l">sub</p>
+		<sub height="50">sub – not hidden</sub>
+		<sub class="hide" height="50">sub – hidden with class</sub>
+		<sub style="mso-hide:all" height="50">sub – hidden with style</sub>
+
+	<p class="l">details &gt; summary</p>
+		<details>
+			<summary height="50">summary – not hidden</summary>
+		</details>
+		<details class="hide">
+			<summary height="50">summary – hidden with class</summary>
+		</details>
+		<details style="mso-hide:all">
+			<summary height="50">summary – hidden with style</summary>
+		</details>
+
+	<p class="l">sup</p>
+		<sup height="50">sup – not hidden</sup>
+		<sup class="hide" height="50">sup – hidden with class</sup>
+		<sup style="mso-hide:all" height="50">sup – hidden with style</sup>
+
+	<p class="l">tr</p>
+		<table style="background:red"><tr height="50" style="background:green"><td>tr – not hidden</td></tr></table>
+		<table class="hide" style="background:red"><tr height="50" style="background:green"><td>tr – hidden with class</td></tr></table>
+		<table style="mso-hide:all; background:red"><tr height="50" style="background:green"><td>tr – hidden with style</td></tr></table>
+
+	<p class="l">table</p>
+		<table height="50" style="background:red"><tr style="background:green"><td>table – not hidden</td></tr></table>
+		<table class="hide" height="50" style="background:red"><tr style="background:green"><td>table – hidden with class</td></tr></table>
+		<table height="50" style="mso-hide:all; background:red"><tr style="background:green"><td>table – hidden with style</td></tr></table>
+
+	<p class="l">tbody</p>
+		<table style="background:red"><tbody height="50" style="background:purple"><tr style="background:green"><td>tbody – not hidden</td></tr></tbody></table>
+		<table class="hide" style="background:red"><tbody height="50" style="background:purple"><tr style="background:green"><td>tbody – hidden with class</td></tr></tbody></table>
+		<table style="mso-hide:all; background:red"><tbody height="50" style="background:purple"><tr style="background:green"><td>tbody – hidden with style</td></tr></tbody></table>
+
+	<p class="l">tfoot</p>
+		<table style="background:red"><tfoot height="50" style="background:purple"><tr style="background:green"><td>tfoot – not hidden</td></tr></tfoot></table>
+		<table class="hide" style="background:red"><tfoot height="50" style="background:purple"><tr style="background:green"><td>tfoot – hidden with class</td></tr></tfoot></table>
+		<table style="mso-hide:all; background:red"><tfoot height="50" style="background:purple"><tr style="background:green"><td>tfoot – hidden with style</td></tr></tfoot></table>
+
+	<p class="l">thead</p>
+		<table style="background:red"><thead height="50" style="background:purple"><tr style="background:green"><th>thead – not hidden</th></tr></thead></table>
+		<table class="hide" style="background:red"><thead height="50" style="background:purple"><tr style="background:green"><th>thead – hidden with class</th></tr></thead></table>
+		<table style="mso-hide:all; background:red"><thead height="50" style="background:purple"><tr style="background:green"><th>thead – hidden with style</th></tr></thead></table>
+
+	<p class="l">textarea</p>
+		<textarea height="50">textarea – not hidden</textarea>
+		<textarea class="hide" height="50">textarea – hidden with class</textarea>
+		<textarea style="mso-hide:all" height="50">textarea – hidden with style</textarea>
+
+	<p class="l">time</p>
+		<time height="50">time – not hidden</time>
+		<time class="hide" height="50">time – hidden with class</time>
+		<time style="mso-hide:all" height="50">time – hidden with style</time>
+
+	<p class="l">unordered list with li tags</p>
+		<ul height="50"><li height="50">li – not hidden</li></ul>
+		<ul class="hide" height="50"><li height="50">li – hidden with class</li></ul>
+		<ul style="mso-hide:all" height="50"><li height="50">li – hidden with style</li></ul>
+
+</div>
+
+	</body>
+</html>

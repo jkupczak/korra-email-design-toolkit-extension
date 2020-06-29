@@ -39,7 +39,7 @@ var getAllOptions = new Promise((resolve, reject) => {
       console.log(o.sync.primaryDomains);
       o.sync.primaryDomains = o.sync.primaryDomains.split("\n");
       console.log(o.sync.primaryDomains);
-      
+
       // Created this function to take the items we got from the async call
       // and apply them to variables for easy use in other scripts.
       // I don't actually think this is necessary. Shouldn't I just call the items object?
@@ -343,8 +343,8 @@ var processCode = function (code) {
   //////////////
 
 
-  cleanedDesktopHtml += "<korra>" + allFramesCssString + dFrameFrameScript + dFrameCssString + "</korra>";
-  cleanedMobileHtml += "<korra>" + allFramesCssString + mFrameScript + mFrameCssString + "</korra>";
+  cleanedDesktopHtml += "<korra data-korra>" + allFramesCssString + dFrameFrameScript + dFrameCssString + "</korra>";
+  cleanedMobileHtml += "<korra data-korra>" + allFramesCssString + mFrameScript + mFrameCssString + "</korra>";
 };
 
 

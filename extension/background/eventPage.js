@@ -454,47 +454,6 @@ var openOptionsTab = function(options) {
 };
 
 
-
-
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
-    //
-    // //this is a global var and to be added to any timestamp in ms
-    // var dateCurrent= new Date(),
-    //     correction = dateCurrent.getTimezoneOffset()*60*1000;
-    //
-    //
-    // //now when calling history.search I'm calculating that correction in
-    // //eg. for yestrday
-    //
-    // var dN = Date.now(),
-    // d1 = dN%86400000,
-    // b = correction + dN - d1,
-    // a = b - 86400000;
-    //
-    // chrome.history.search({
-    //   text:       'file\:\/\/\/',
-    //   startTime:  a,
-    //   endTime:    b,
-    //   maxResults: 100000
-    // }, items => console.log(items));
-    //
-    //
-    // chrome.history.search({
-    //     text: ".html",
-    //     startTime: 0,
-    //     maxResults: 0
-    // }, items => console.log(items));
-    //
-    //
-    // function historyItems() {
-    //
-    //   console.log("historyItems()");
-    //
-    // }
-
-
 // !!!!!!!!!!!!!
 // EVENT / BACKGROUND PAGE
 // NO DOM ACCESS
@@ -1178,26 +1137,6 @@ var bkg = chrome.extension.getBackgroundPage();
 
 
 
-
-// http://stackoverflow.com/a/26373282/556079
-function saveMessage(data) {
-
-  bkgUrl = data;
-
-  if (data == null) {
-  	chrome.contextMenus.update("backgroundImageAWS", { enabled: false });
-  	chrome.contextMenus.update("viewBackgroundImg", { enabled: false });
-  } else {
-  	chrome.contextMenus.update("backgroundImageAWS", { enabled: true });
-  	chrome.contextMenus.update("viewBackgroundImg", { enabled: true });
-  }
-
-  console.log("saveMessage function: " + bkgUrl);
-
-}
-
-
-
 ////
 //// MY FUNCTIONS
 ////
@@ -1249,188 +1188,211 @@ function awsFilepath(link) {
 //   });
 // });
 
+///// CONTEXT MENUS
+///// CONTEXT MENUS
+///// CONTEXT MENUS
+///// CONTEXT MENUS
+                      //
+                      //
+                      // // http://stackoverflow.com/a/26373282/556079
+                      // function saveMessage(data) {
+                      //
+                      //   bkgUrl = data;
+                      //
+                      //   if (data == null) {
+                      //   	chrome.contextMenus.update("backgroundImageAWS", { enabled: false });
+                      //   	chrome.contextMenus.update("viewBackgroundImg", { enabled: false });
+                      //   } else {
+                      //   	chrome.contextMenus.update("backgroundImageAWS", { enabled: true });
+                      //   	chrome.contextMenus.update("viewBackgroundImg", { enabled: true });
+                      //   }
+                      //
+                      //   console.log("saveMessage function: " + bkgUrl);
+                      //
+                      // }
 
-////////////////////////////// ### //////////////////////////////
-////////////////////////////// ### //////////////////////////////
-////_________________________________________________________////
-
-
-// What does this do?
-chrome.contextMenus.onClicked.addListener(onClickHandler);
-
-
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// The onClicked callback function.
-function onClickHandler(info, tab) {
-
-  if (info.menuItemId == "validateLinks") {
-    beginLinkCheck();
-  }
-
-  else if (info.menuItemId == "radio1" || info.menuItemId == "radio2") {
-    console.log("radio item " + info.menuItemId +
-                " was clicked (previous checked state was "  +
-                info.wasChecked + ")");
-  }
-
-  else if (info.menuItemId == "checkbox1" || info.menuItemId == "checkbox2") {
-    console.log(JSON.stringify(info));
-    console.log("checkbox item " + info.menuItemId +
-                " was clicked, state is now: " + info.checked +
-                " (previous state was " + info.wasChecked + ")");
-
-  }
-  else if (info.menuItemId == "backgroundImageAWS") {
-  	window.open("https://console.aws.amazon.com/s3/buckets" + awsFilepath(bkgUrl));
-  }
-  else if (info.menuItemId == "viewBackgroundImg") {
-  	window.open(trimUrl(bkgUrl));
-  }
-  else if (info.menuItemId == "contextimage") {
-  	window.open("https://console.aws.amazon.com/s3/buckets" + awsFilepath(info.srcUrl));
-  }
-  else {
-    console.log("item " + info.menuItemId + " was clicked");
-    console.log("info: " + JSON.stringify(info));
-    console.log("tab: " + JSON.stringify(tab));
-    console.log(awsFilename(info.srcUrl));
-    console.log(awsFilepath(info.srcUrl));
-  }
-};
-
-
-
-///////////////////////////////////
-///////////////////////////////////
-///////////////////////////////////
-
-
-// Set up context menu tree at install time.
-chrome.runtime.onInstalled.addListener(function() {
-
-  // 'Validate Links' on this page
-  chrome.contextMenus.create({
-    "title": "Validate Links",
-    "contexts": ["all"],
-    "documentUrlPatterns": ["file:///*", "*://*/*"],
-    "id": "validateLinks"
-  });
-
-  // Separator
-  chrome.contextMenus.create({ "id": "sep", "type":'separator' });
-
-  // AMAZON
-  // Load the AWS page based on the Amazon Image that is clicked
-  // Can I load different scripts based on the image clicked? And load different "title" text to match those different images?
-  chrome.contextMenus.create({
-    "title": "Open image folder in AWS",
-    "contexts": ["image"],
-    "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://s3.amazonaws.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
-    "id": "context" + "image"
-  });
-
-  // Create one test item for each context type.
-  var contexts = ["all", "page", "selection", "link", "editable", "video", "audio", "browser_action", "page_action"];
-
-  for (var i = 0; i < contexts.length; i++) {
-    var context = contexts[i];
-    var title = "Test '" + context + "' menu item";
-    var id = chrome.contextMenus.create({
-      "title": title,
-      "contexts": [context],
-      "id": "context" + context
-    });
-    // console.log("'" + context + "' item:" + id);
-  }
-
-
-  // Separator
-  // Commented out, was causing an error
-  // chrome.contextMenus.create({ "id": "sep", "type":'separator' });
-
-
-  // Create a parent item and two children.
-  chrome.contextMenus.create({
-    "title": "Test parent item",
-    "id": "parent"
-  });
-
-  chrome.contextMenus.create({
-    "title": "Child 1",
-    "parentId": "parent",
-    "id": "child1"
-  });
-
-  chrome.contextMenus.create({
-    "title": "Child 2",
-    "parentId": "parent",
-    "id": "child2"
-  });
-  console.log("parent child1 child2");
-
-  // Create some radio items.
-  chrome.contextMenus.create({
-    "title": "Radio 1",
-    "type": "radio",
-    "id": "radio1"
-  });
-
-  chrome.contextMenus.create({
-    "title": "Radio 2",
-    "type": "radio",
-    "id": "radio2"
-  });
-  console.log("radio1 radio2");
-
-  // Create some checkbox items.
-  chrome.contextMenus.create({
-    "title": "Checkbox1",
-    "type": "checkbox",
-    "id": "checkbox1"
-  });
-
-  chrome.contextMenus.create({
-    "title": "Checkbox2",
-    "type": "checkbox",
-    "id": "checkbox2"
-  });
-  console.log("checkbox1 checkbox2");
-
-  chrome.contextMenus.create({
-    "title": "Radio 3",
-    "type": "radio",
-    "id": "radio3"
-  });
-
-  chrome.contextMenus.create({
-    "id": "sep2",
-    "type": "separator"
-  });
-
-  chrome.contextMenus.create({
-    "id": "sep1",
-    "type": "separator"
-  });
-
-  chrome.contextMenus.create({
-    "title": "Open image folder in AWS!",
-    "contexts": ["all"],
-    "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
-    "id": "backgroundImageAWS"
-  });
-
-  chrome.contextMenus.create({
-    "title": "Open background image in new tab",
-    "contexts": ["all"],
-    "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
-    "id": "viewBackgroundImg"
-  });
-
-
-});
+                      //
+                      // ////////////////////////////// ### //////////////////////////////
+                      // ////////////////////////////// ### //////////////////////////////
+                      // ////_________________________________________________________////
+                      //
+                      //
+                      // // What does this do?
+                      // chrome.contextMenus.onClicked.addListener(onClickHandler);
+                      //
+                      //
+                      // // Copyright (c) 2012 The Chromium Authors. All rights reserved.
+                      // // Use of this source code is governed by a BSD-style license that can be
+                      // // found in the LICENSE file.
+                      //
+                      // // The onClicked callback function.
+                      // function onClickHandler(info, tab) {
+                      //
+                      //   if (info.menuItemId == "validateLinks") {
+                      //     beginLinkCheck();
+                      //   }
+                      //
+                      //   else if (info.menuItemId == "radio1" || info.menuItemId == "radio2") {
+                      //     console.log("radio item " + info.menuItemId +
+                      //                 " was clicked (previous checked state was "  +
+                      //                 info.wasChecked + ")");
+                      //   }
+                      //
+                      //   else if (info.menuItemId == "checkbox1" || info.menuItemId == "checkbox2") {
+                      //     console.log(JSON.stringify(info));
+                      //     console.log("checkbox item " + info.menuItemId +
+                      //                 " was clicked, state is now: " + info.checked +
+                      //                 " (previous state was " + info.wasChecked + ")");
+                      //
+                      //   }
+                      //   else if (info.menuItemId == "backgroundImageAWS") {
+                      //   	window.open("https://console.aws.amazon.com/s3/buckets" + awsFilepath(bkgUrl));
+                      //   }
+                      //   else if (info.menuItemId == "viewBackgroundImg") {
+                      //   	window.open(trimUrl(bkgUrl));
+                      //   }
+                      //   else if (info.menuItemId == "contextimage") {
+                      //   	window.open("https://console.aws.amazon.com/s3/buckets" + awsFilepath(info.srcUrl));
+                      //   }
+                      //   else {
+                      //     console.log("item " + info.menuItemId + " was clicked");
+                      //     console.log("info: " + JSON.stringify(info));
+                      //     console.log("tab: " + JSON.stringify(tab));
+                      //     console.log(awsFilename(info.srcUrl));
+                      //     console.log(awsFilepath(info.srcUrl));
+                      //   }
+                      // };
+                      //
+                      //
+                      //
+                      // ///////////////////////////////////
+                      // ///////////////////////////////////
+                      // ///////////////////////////////////
+                      //
+                      //
+                      // // Set up context menu tree at install time.
+                      // chrome.runtime.onInstalled.addListener(function() {
+                      //
+                      //   // 'Validate Links' on this page
+                      //   chrome.contextMenus.create({
+                      //     "title": "Validate Links",
+                      //     "contexts": ["all"],
+                      //     "documentUrlPatterns": ["file:///*", "*://*/*"],
+                      //     "id": "validateLinks"
+                      //   });
+                      //
+                      //   // Separator
+                      //   chrome.contextMenus.create({ "id": "sep", "type":'separator' });
+                      //
+                      //   // AMAZON
+                      //   // Load the AWS page based on the Amazon Image that is clicked
+                      //   // Can I load different scripts based on the image clicked? And load different "title" text to match those different images?
+                      //   chrome.contextMenus.create({
+                      //     "title": "Open image folder in AWS",
+                      //     "contexts": ["image"],
+                      //     "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://s3.amazonaws.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
+                      //     "id": "context" + "image"
+                      //   });
+                      //
+                      //   // Create one test item for each context type.
+                      //   var contexts = ["all", "page", "selection", "link", "editable", "video", "audio", "browser_action", "page_action"];
+                      //
+                      //   for (var i = 0; i < contexts.length; i++) {
+                      //     var context = contexts[i];
+                      //     var title = "Test '" + context + "' menu item";
+                      //     var id = chrome.contextMenus.create({
+                      //       "title": title,
+                      //       "contexts": [context],
+                      //       "id": "context" + context
+                      //     });
+                      //     // console.log("'" + context + "' item:" + id);
+                      //   }
+                      //
+                      //
+                      //   // Separator
+                      //   // Commented out, was causing an error
+                      //   // chrome.contextMenus.create({ "id": "sep", "type":'separator' });
+                      //
+                      //
+                      //   // Create a parent item and two children.
+                      //   chrome.contextMenus.create({
+                      //     "title": "Test parent item",
+                      //     "id": "parent"
+                      //   });
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "title": "Child 1",
+                      //     "parentId": "parent",
+                      //     "id": "child1"
+                      //   });
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "title": "Child 2",
+                      //     "parentId": "parent",
+                      //     "id": "child2"
+                      //   });
+                      //   console.log("parent child1 child2");
+                      //
+                      //   // Create some radio items.
+                      //   chrome.contextMenus.create({
+                      //     "title": "Radio 1",
+                      //     "type": "radio",
+                      //     "id": "radio1"
+                      //   });
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "title": "Radio 2",
+                      //     "type": "radio",
+                      //     "id": "radio2"
+                      //   });
+                      //   console.log("radio1 radio2");
+                      //
+                      //   // Create some checkbox items.
+                      //   chrome.contextMenus.create({
+                      //     "title": "Checkbox1",
+                      //     "type": "checkbox",
+                      //     "id": "checkbox1"
+                      //   });
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "title": "Checkbox2",
+                      //     "type": "checkbox",
+                      //     "id": "checkbox2"
+                      //   });
+                      //   console.log("checkbox1 checkbox2");
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "title": "Radio 3",
+                      //     "type": "radio",
+                      //     "id": "radio3"
+                      //   });
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "id": "sep2",
+                      //     "type": "separator"
+                      //   });
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "id": "sep1",
+                      //     "type": "separator"
+                      //   });
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "title": "Open image folder in AWS!",
+                      //     "contexts": ["all"],
+                      //     "documentUrlPatterns": ["file:///*", "*://*.medbridgemassage.com/*", "*://*.medbridgeeducation.com/*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
+                      //     "id": "backgroundImageAWS"
+                      //   });
+                      //
+                      //   chrome.contextMenus.create({
+                      //     "title": "Open background image in new tab",
+                      //     "contexts": ["all"],
+                      //     "documentUrlPatterns": ["*://*.medbridgemassage.com/*","*://*.medbridgeeducation.com/*","file:///*", "http://localhost:4567/*", "*://*.dropbox.com/home/*", "*://*.dropbox.com/s/*", "*://*.dropboxusercontent.com/s/*"],
+                      //     "id": "viewBackgroundImg"
+                      //   });
+                      //
+                      //
+                      // });
 
 
 /////////////////

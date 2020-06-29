@@ -115,6 +115,7 @@ linkListUniqueURLs.push("https://www.google.com");
 // console.log( frameContents.body );
 
 var validationStylesheet = document.createElement('link');
+validationStylesheet.dataset.korra = "";
 validationStylesheet.setAttribute('rel', 'stylesheet');
 validationStylesheet.setAttribute('type', 'text/css');
 validationStylesheet.setAttribute('href', chrome.extension.getURL('/validate-links/css/validate-links.css'));
@@ -623,6 +624,7 @@ function validateLinks(l, i) {
   //
   /////////
   var linkMarker = document.createElement("korra-link-marker");
+  linkMarker.dataset.korra = "";
   linkMarker.id = "link-marker-" + i;
   linkMarker.className = "link-marker loading";
 
@@ -1594,27 +1596,27 @@ function validateLinks(l, i) {
 
     // Enterprise Setting Pages
     // Home Care
-    if ( email.division === "enterprise" ) {
-      if ( email.audience !== "hc" && /medbridgeed(ucation)?\.com\/enterprise\/home-care-and-hospice/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Wrong homepage.");
-      }
-      // Hospital
-      if ( email.audience !== "hosp" && /medbridgeed(ucation)?\.com\/enterprise\/hospitals-health-care-systems/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Wrong homepage.");
-      }
-      // Long-Term Care
-      if ( email.audience !== "ltc" && /medbridgeed(ucation)?\.com\/enterprise\/skilled-nursing-and-long-term-care/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Wrong homepage.");
-      }
-      // Private Practice
-      if ( email.audience !== "pp" && /medbridgeed(ucation)?\.com\/enterprise\/private-practice/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Wrong homepage.");
-      }
-      // Other/Unknown
-      if ( (email.audience !== "ent-other" && email.audience !== "all" ) && /medbridgeed(ucation)?\.com\/enterprise($|\/$|\/?\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Wrong homepage.");
-      }
-    }
+            // if ( email.division === "enterprise" ) {
+            //   if ( email.audience !== "hc" && /medbridgeed(ucation)?\.com\/enterprise\/home-care-and-hospice/gi.test(l._urlInDOMMergeTagSafe) ) {
+            //     createLinkErrorRow(l, "Wrong homepage.");
+            //   }
+            //   // Hospital
+            //   if ( email.audience !== "hosp" && /medbridgeed(ucation)?\.com\/enterprise\/hospitals-health-care-systems/gi.test(l._urlInDOMMergeTagSafe) ) {
+            //     createLinkErrorRow(l, "Wrong homepage.");
+            //   }
+            //   // Long-Term Care
+            //   if ( email.audience !== "ltc" && /medbridgeed(ucation)?\.com\/enterprise\/skilled-nursing-and-long-term-care/gi.test(l._urlInDOMMergeTagSafe) ) {
+            //     createLinkErrorRow(l, "Wrong homepage.");
+            //   }
+            //   // Private Practice
+            //   if ( email.audience !== "pp" && /medbridgeed(ucation)?\.com\/enterprise\/private-practice/gi.test(l._urlInDOMMergeTagSafe) ) {
+            //     createLinkErrorRow(l, "Wrong homepage.");
+            //   }
+            //   // Other/Unknown
+            //   if ( (email.audience !== "ent-other" && email.audience !== "all" ) && /medbridgeed(ucation)?\.com\/enterprise($|\/$|\/?\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
+            //     createLinkErrorRow(l, "Wrong homepage.");
+            //   }
+            // }
 
 
     // Discipline Check - Blog

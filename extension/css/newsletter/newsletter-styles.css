@@ -1,6 +1,6 @@
-.html-toolbar label { display:none; }
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+.html-toolbar label { display:none; }
 
 /**********/
 /* RESETS */
@@ -2447,7 +2447,8 @@ html.error-status.errors:before {
 }
 
 #info-overlay .title.row {
-  font-family: Roboto-Light;
+  font-family: Roboto, sans-serif;
+  font-weight:300;
   font-size:26px;
   margin-bottom:30px;
 }
