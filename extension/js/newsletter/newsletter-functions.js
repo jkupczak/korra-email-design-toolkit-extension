@@ -988,7 +988,7 @@ var updateQaBar = function(bar, errors, string) {
  * @return {[type]}      [description]
  */
 var logCodeBug = function(object, client, errorText, type) {
-  
+
   if ( type !== "warning" ) {
     console.error("Coding Bug Error:", client, errorText, object);
     totalCodingBugs++;
@@ -1350,11 +1350,13 @@ var toggleInfoLayer = function(intent) {
 var linkMarkersToggle;
 var toggleLinkMarkers = function (source) {
 
-  console.log("Running: toggleLinkMarkers() with source of", source);
-
   const linkMarkersEl = dFrameContents.getElementById("link-markers").classList;
+  console.log(linkMarkersEl);
 
   if ( source === "command" ) {
+
+    console.log("Running: toggleLinkMarkers() with source of", source);
+
     if ( linkMarkersEl.contains("show-all") ) {
       linkMarkersEl.remove("show-all");
       linkMarkersEl.add("hide-all");
@@ -1370,6 +1372,7 @@ var toggleLinkMarkers = function (source) {
 
   else {
 
+    console.log("Running: toggleLinkMarkers() with source of NOT ", source);
 
     if ( this.nodeType !== 1 ) {
       dFrameContents.getElementById("link-markers").classList.add("on-page-load");

@@ -306,6 +306,16 @@ function handleInstalled(details) {
     // showStartPage();
 
   }
+
+  if ( details.reason == 'update' ) {
+
+    // show 'whats new' modal the next time an email is loaded
+    chrome.tabs.create({
+      url: 'whats-new.html'
+    });
+
+  }
+
 }
 
 /////////////////////////////////////////////////

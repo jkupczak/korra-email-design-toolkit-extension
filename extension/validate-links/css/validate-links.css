@@ -120,10 +120,10 @@ korra-link-validation .link-marker.cache.approved {
   display:none;
 }
 
-korra-link-validation #link-markers.show-all .link-marker {
+korra-link-validation#link-markers.show-all .link-marker {
   display:block;
 }
-korra-link-validation #link-markers.hide-all .link-marker {
+korra-link-validation#link-markers.hide-all .link-marker {
   display:none;
 }
 

@@ -2818,6 +2818,18 @@ galleryLink.addEventListener('click', function() {
   });
 });
 
+// Help Link
+var helpLink = document.getElementById("view-help");
+helpLink.addEventListener('click', function() {
+  document.getElementById("info-overlay").style.display = document.getElementById("info-overlay").style.display === 'none' ? '' : 'none';
+});
+
+  // Close Help Overlay
+  var closeHelpOverlay = document.getElementById("close-help-overlay");
+  closeHelpOverlay.addEventListener('click', function() {
+    document.getElementById("info-overlay").style.display = document.getElementById("info-overlay").style.display === 'none' ? '' : 'none';
+  });
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -3525,21 +3537,6 @@ key('ctrl+p, ⌘+p', function() {
   return false;
 });
 
-// Zoom the desktop view only.
-key('ctrl+-, ⌘+-', function() {
-  zoom("-");
-  return false;
-});
-key('ctrl+=, ⌘+=', function() {
-  zoom("+");
-  return false;
-});
-key('ctrl+0, ⌘+0', function() {
-  zoom("0");
-  return false;
-});
-
-
 
 
 ////////////////////
@@ -3558,46 +3555,6 @@ var printDesktop = function () {
 };
 
 
-// Zoom the desktop view only.
-var dFrameZoomStatus = document.getElementById("desktop-zoom-status");
-var currentZoomLevel = "1";
-var zoomLevels     = ["0.25", "0.33", "0.5", "0.67", "0.75", "0.8", "0.9", "1", "1.1", "1.25", "1.5", "1.75", "2"];
-var zoomLevelsText = ["25%", "33%", "50%", "67%", "75%", "80%", "90%", "100%", "110%", "125%", "150%", "175%", "200%"];
-
-var zoom = function (direction) {
-
-  // console.log("zoom() function inititated");
-  // console.log("zoom(direction): " + direction);
-  // console.log("currentZoomLevel: " + currentZoomLevel);
-
-  currentZoomLevel = dFrameHTMLEle.style.zoom || "1";
-
-  // Zoom-out
-  if ( direction === "-" && currentZoomLevel !== "0.25" ) {
-    dFrameHTMLEle.style.zoom   = zoomLevels[zoomLevels.indexOf(currentZoomLevel)-1]; // Go DOWN 1 level in the array.
-    dFrameZoomStatus.innerHTML = zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)-1]; // Go DOWN 1 level in the array.
-    dFrameZoomStatus.classList.add("show");
-
-    console.log( "Zoom: " + zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)-1] );
-  }
-  // Zoom-in
-  if ( direction === "+" && currentZoomLevel !== "2" ) {
-    dFrameHTMLEle.style.zoom   = zoomLevels[zoomLevels.indexOf(currentZoomLevel)+1]; // Go UP 1 level in the array.
-    dFrameZoomStatus.innerHTML = zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)+1]; // Go UP 1 level in the array.
-    dFrameZoomStatus.classList.add("show");
-
-    console.log( "Zoom: " + zoomLevelsText[zoomLevels.indexOf(currentZoomLevel)+1] );
-  }
-  // Reset Zoom
-  if ( direction === "0" ) {
-    dFrameHTMLEle.style.zoom   = zoomLevels[7]; // Go UP 1 level in the array.
-    dFrameZoomStatus.innerHTML = zoomLevelsText[7]; // Go UP 1 level in the array.
-  }
-  // Reset Zoom
-  if ( dFrameHTMLEle.style.zoom === "1") {
-    dFrameZoomStatus.classList.remove("show");
-  }
-};
 
 
 
@@ -4079,3 +4036,17 @@ ro.observe(desktopIframe);
 
 ///////
 document.querySelector("html").classList.toggle("errors");
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////// == xxxxxxxxxxxxxxxx == ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+///////// Whats New
+
+document.getElementById("whats-new").insertAdjacentHTML('beforeend', '<iframe src="whats-new.html" frameborder="0">');

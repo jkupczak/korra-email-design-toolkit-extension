@@ -2409,11 +2409,11 @@ html.error-status.errors:before {
   height:100vh;
 
   z-index: 999999;
-  position:absolute;
+  position:fixed;
   top:0; left:0;
-  background: rgb(35, 35, 40, .96);
+  background: rgba(35, 35, 40, .97);
 
-  padding:80px 100px 0 100px;
+  padding: 60px;
   color:#d1d6de;
 }
 
@@ -2422,10 +2422,13 @@ html.error-status.errors:before {
   height: 100%;
 }
 
-#info-overlay .file-info {
+#info-overlay .left-column {
   padding-right:30px;
   border-right:1px solid rgba(255,255,255,0.25);
   width:75%;
+}
+#info-overlay .file-info {
+
 }
 #info-overlay .shortcuts-legend {
   padding-left:30px;
@@ -2446,11 +2449,11 @@ html.error-status.errors:before {
   display: inline-block;
 }
 
-#info-overlay .title.row {
+#info-overlay h2 {
   font-family: Roboto, sans-serif;
   font-weight:300;
   font-size:26px;
-  margin-bottom:30px;
+  margin:0px 0 20px;
 }
 
 #info-overlay .section {
@@ -2482,7 +2485,9 @@ html.error-status.errors:before {
   margin-right:10px;
 }
 
-
+#whats-new {
+  margin-top: 30px;
+}
 /*************************/
 /*************************/
 
