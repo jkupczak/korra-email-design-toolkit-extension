@@ -687,7 +687,7 @@ if ( email.fileHost === "local" || email.fileHost === "localserver" ) {
     ///// Get the Platform
     ///////////
 
-    if ( /^GR\-/i.test(email.filename) ) {
+    if ( /^GR[-_]/i.test(email.filename) ) {
       email.esp = "gr";
       email.espName = "GetResponse";
     } else if ( /\/Pardot\//i.test(email.filePath) ) {
@@ -1374,6 +1374,7 @@ orbsBottom.appendChild(paneToggleOrb);
 function fullscreenDesktop() {
 
   document.querySelector("html").classList.toggle("fullscreen");
+  sessionStorage.setItem('fullscreen', document.querySelector("html").classList.contains("fullscreen"));
 
 }
 
@@ -1480,7 +1481,13 @@ toggleDarkModeOrb.addEventListener("click", toggleDarkMode, false);
 //// we'll trigger the darkmode function now to handle that.
 //// If the user has not selected anything, email.korraColorScheme
 //// will be undefined and we'll do nothing.
-if ( email.korraColorScheme ) {
+
+if ( sessionStorage.getItem("colorScheme") ) {
+
+  toggleDarkMode(sessionStorage.getItem("colorScheme"));
+
+}
+else if ( email.korraColorScheme ) {
 
   toggleDarkMode(email.korraColorScheme);
 
@@ -1504,13 +1511,14 @@ var showDims = function() {
   showDimsToggle = !showDimsToggle;
 
   if ( showDimsToggle ) {
-    history.replaceState(null,null, updateQueryString("showdims", "1") );
+    sessionStorage.setItem("showDims", true);
 
     [].forEach.call(dFrameContents.querySelectorAll("*:not(section)"),function(a){ a.dataset.dimsColor = Math.floor(Math.random() * Math.floor(30)); });
     [].forEach.call(mFrameContents.querySelectorAll("*:not(section)"),function(a){ a.dataset.dimsColor = Math.floor(Math.random() * Math.floor(30)); });
 
   } else {
-    history.replaceState(null,null, updateQueryString("showdims") );
+    sessionStorage.setItem("showDims", false);
+
     [].forEach.call(dFrameContents.querySelectorAll("*"),function(a){a.style.outline="";});
     [].forEach.call(mFrameContents.querySelectorAll("*"),function(a){a.style.outline="";});
   }
@@ -1679,9 +1687,9 @@ function createBaselineOverlay() {
     baselineToggle = !baselineToggle;
 
     if ( baselineToggle ) {
-      history.replaceState(null,null, updateQueryString("baseline", "1") );
+      sessionStorage.setItem("showBaseline", "true");
     } else {
-      history.replaceState(null,null, updateQueryString("baseline") );
+      sessionStorage.setItem("showBaseline", "false");
     }
 
     document.getElementById("baseline-orb").classList.toggle("on");
@@ -1707,9 +1715,9 @@ function toggleGuides() {
   guidesToggle = !guidesToggle;
 
   if ( guidesToggle ) {
-    history.replaceState(null,null, updateQueryString("guides", "1") );
+    sessionStorage.setItem("showGuides", "true");
   } else {
-    history.replaceState(null,null, updateQueryString("guides") );
+    sessionStorage.setItem("showGuides", "false");
   }
 
   document.getElementById("guides-orb").classList.toggle("on");
@@ -1730,7 +1738,7 @@ function toggleGuides() {
 
       var guidesStyling2 = dFrameContents.createElement("section");
       guidesStyling2.classList.add("alignment-guide");
-      guidesStyling2.style.left = "calc(50% - 559px)";
+      guidesStyling2.style.left = "calc(50% - 539px)";
       guidesStyling2.style.right = "50%";
       guidesStylingWrapper.appendChild(guidesStyling2);
 
@@ -1743,7 +1751,7 @@ function toggleGuides() {
       var guidesStyling4 = dFrameContents.createElement("section");
       guidesStyling4.classList.add("alignment-guide");
       guidesStyling4.style.left = "50%";
-      guidesStyling4.style.right = "calc(50% - 559px)";
+      guidesStyling4.style.right = "calc(50% - 539px)";
       guidesStylingWrapper.appendChild(guidesStyling4);
 
       var guidesStyling5 = dFrameContents.createElement("section");
@@ -1800,11 +1808,10 @@ var styleToggle = false;
 var toggleStyles = function() {
 
   styleToggle = !styleToggle;
-
   if ( styleToggle ) {
-    history.replaceState(null,null, updateQueryString("style", "0") );
+    sessionStorage.setItem("removeStyles", "true");
   } else {
-    history.replaceState(null,null, updateQueryString("style") );
+    sessionStorage.setItem("removeStyles", "false");
   }
 
   if ( styleToggle ) {
@@ -1913,8 +1920,14 @@ function toggleHiddenContent() {
 
   hiddenContentToggle = !hiddenContentToggle;
 
+  if ( hiddenContentToggle ) {
+    sessionStorage.setItem("showHiddenContent", "true");
+  } else {
+    sessionStorage.setItem("showHiddenContent", "false");
+  }
+
   // Toggle the icon
-  this.classList.toggle("on");
+  document.getElementById("hidden-content-orb").classList.toggle("on");
 
   // Reveal all hidden elements.
   if ( hiddenContentToggle ) {
@@ -2034,9 +2047,9 @@ function toggleImages() {
   imagesToggle = !imagesToggle;
 
   if ( imagesToggle ) {
-    history.replaceState(null,null, updateQueryString("img", "0") );
+    sessionStorage.setItem("imagesOff", "true");
   } else {
-    history.replaceState(null,null, updateQueryString("img") );
+    sessionStorage.setItem("imagesOff", "false");
   }
 
     let dFrameimgList = dFrameContents.querySelectorAll("img");
@@ -2402,18 +2415,20 @@ if ( matchRating > 69 ) {
   applyQaResults(preheaderQaBar, "error", preheaderMatchText);
 }
 
-setTimeout(function() {
+// This got kind of annoying over time, didn't it?
 
-  if ( matchRating < 70 ) {
-    toast("suppress", "error", "Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.</div>", 0);
-    // alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.", 0);
-    // preheaderMatchDiv.classList.add("error");
-    // preflightErrors++;
-    preflightError();
-  }
-  // preheaderMatchDiv.classList.add("ready");
-
-}, 500);
+        // setTimeout(function() {
+        //
+        //   if ( matchRating < 70 ) {
+        //     toast("suppress", "error", "Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.</div>", 0);
+        //     // alertify.error("Preheader text may not be updated! <div>Only " + matchRating + "% of the important words in the preheader match the rest of the email.", 0);
+        //     // preheaderMatchDiv.classList.add("error");
+        //     // preflightErrors++;
+        //     preflightError();
+        //   }
+        //   // preheaderMatchDiv.classList.add("ready");
+        //
+        // }, 500);
 
 console.groupEnd();
 
@@ -2814,7 +2829,7 @@ settingsLink.addEventListener('click', function() {
 var galleryLink = document.getElementById("open-gallery");
 galleryLink.addEventListener('click', function() {
   chrome.tabs.create({
-    url: 'gallery.html'
+    url: 'gallery/gallery.html'
   });
 });
 
@@ -3108,11 +3123,17 @@ if (typeof moduleSettingsMenu != 'undefined') {
 
 
   // Check for a wrapping tag
+  // finds all direct children of the body tag, ignores korra elements (i feel like we should be running this on an unaldered version of the dom, thats a big project)
   let wrappers = dFrameContents.querySelectorAll("body > *:not([data-korra])");
   for (let wrapper of wrappers) {
 
     if ( wrapper.getAttribute("lang") === null ) {
-      logAccessibilityWarning(wrapper, 'Missing lang="" attribute.');
+
+      // Ignore elements that have no children or that are schema (characterized by having itemscope and itemtype attributes)
+      // Also the element is not script, style, or meta
+      if ( wrapper.childNodes.length > 0 && !wrapper.hasAttribute("itemscope") && !wrapper.hasAttribute("itemtype") && wrapper.tagName !== "SCRIPT" && wrapper.tagName !== "STYLE" && wrapper.tagName !== "META"  ) {
+        logAccessibilityWarning(wrapper, 'Missing lang="" attribute.');
+      }
     }
     else if ( wrapper.getAttribute("lang").length < 1 ) {
       logAccessibilityWarning(wrapper, 'lang="" attribute missing a value.');
@@ -3302,27 +3323,31 @@ if ( getParameterByName("helpers") === "0" ) {
 
 window.onload = function () {
 
-
   // Wait until all images are downloaded before running functions that alter or enhance the email preview.
   // These functions rely on the layout being set in its place.
   // https://stackoverflow.com/a/588048/556079
 
-  if ( getParameterByName("img") === "0" ) {
+  if ( sessionStorage.getItem("imagesOff") === "true" ) {
     toggleImages();
     console.log("images off");
   }
 
-  if ( getParameterByName("style") === "0" ) {
+  if ( sessionStorage.getItem("removeStyles") === "true" ) {
     toggleStyles();
     console.log("style blocks off");
   }
 
-  if ( getParameterByName("showdims") === "1" ) {
+  if ( sessionStorage.getItem("showDims") === "true" ) {
     showDims();
     console.log("container outlines shown");
   }
 
-  if ( getParameterByName("baseline") === "1" ) {
+  // if ( sessionStorage.getItem("darkMode") === "true" ) {
+  //   toggleDarkMode();
+  //   console.log("toggling dark mode");
+  // }
+
+  if ( sessionStorage.getItem("showBaseline") === "true" ) {
     createBaselineOverlay();
     console.log("baseline grids shown");
   }
@@ -3337,11 +3362,16 @@ window.onload = function () {
     console.log("img dimensions revealed");
   }
 
+  if ( sessionStorage.getItem("showHiddenContent") === "true" ) {
+    toggleHiddenContent();
+    console.log("hidden content revealed");
+  }
+
 };
 
 // These functions don't need to wait for the layout to settle down.
 
-if ( getParameterByName("guides") === "1" ) {
+if ( sessionStorage.getItem("showGuides") === "true" ) {
   toggleGuides();
   console.log("guides shown");
 }

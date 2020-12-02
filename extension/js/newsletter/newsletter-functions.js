@@ -1019,12 +1019,15 @@ var logCodeBug = function(object, client, errorText, type) {
  * @param  {[type]} arg2 [description]
  * @return {[type]}      [description]
  */
+
 var toggleDarkMode = function(request) {
 
   console.groupCollapsed("Dark Mode Toggle Activated");
   console.log( "`os` color scheme =", email.osColorScheme);
   console.log( "`korra` color scheme =", email.korraColorScheme);
   console.log( "`current active` color scheme =", email.activeColorScheme);
+  console.log( "`session state` color scheme force dark =", sessionStorage.getItem("darkMode"));
+
 
   // Swap Function
   let swap = function(string) {
@@ -1072,11 +1075,13 @@ var toggleDarkMode = function(request) {
   // this first part toggles dark mode based on Korra settings that force it on email load
   if ( request === "dark" ) {
     email.requestedColorScheme = "dark";
+    sessionStorage.setItem("colorScheme", "dark");
     toggleDarkModeOrb.classList.add("dark-mode-on");
   }
   // option request on email load
   else if ( request === "light" ) {
     email.requestedColorScheme = "light";
+    sessionStorage.setItem("colorScheme", "light");
     toggleDarkModeOrb.classList.remove("dark-mode-on");
 
   }
@@ -1084,12 +1089,14 @@ var toggleDarkMode = function(request) {
   // toggle clicked
   else if ( email.activeColorScheme === "light" ) {
     email.requestedColorScheme = "dark";
+    sessionStorage.setItem("colorScheme", "dark");
     toggleDarkModeOrb.classList.add("dark-mode-on");
 
   }
   // toggle clicked
   else {
     email.requestedColorScheme = "light";
+    sessionStorage.setItem("colorScheme", "light");
     toggleDarkModeOrb.classList.remove("dark-mode-on");
 
   }
@@ -1125,6 +1132,7 @@ var toggleDarkMode = function(request) {
   console.log( "`new active` color scheme =", email.activeColorScheme);
 
   console.groupEnd();
+
 };
 
 

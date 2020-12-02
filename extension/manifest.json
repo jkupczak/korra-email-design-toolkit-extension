@@ -4,7 +4,7 @@
 
   "name": "Korra for Email: Design & QA Automation",
   "short_name": "Korra Email QA",
-  "version": "3.9.493",
+  "version": "3.9.494",
   "description": "Automate the QA process, debugging and testing of your emails.",
 
 
@@ -45,6 +45,7 @@
     "https://*.dropbox.com/*",
     "https://*.mailgun.net/*",
 
+    "activeTab",
     "storage",
     "webRequest",
     "webRequestBlocking",

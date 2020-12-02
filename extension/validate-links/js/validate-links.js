@@ -2,6 +2,12 @@
 var totalLinkErrors = 0;
 var totalLinkWarnings = 0;
 
+// Ignore List
+const linkIgnoreList = [
+  'https://www.medbridgeeducation.com/h/email-preference-center?email=%EMAIL%&EMAIL_PROGRAM_UPDATE=%DISCIPLINE%'
+]
+
+/////////
 function launchLinkValidation(source, frameContentsPassed, errorBox, dummyLinkList) {
 
   // Get our options from chrome.storage.async
@@ -38,6 +44,9 @@ function launchLinkValidation(source, frameContentsPassed, errorBox, dummyLinkLi
 
 function isPrimaryDomain(link) {
   // expecting an arry of domain names
+
+  // @TODO
+  // - Does not know the difference between medbridgeed.com and www.medbridgeed.com. I should accept wildcard * values.
 
   if ( o.sync.primaryDomains.indexOf(link) > -1 ) {
     return true;
@@ -536,6 +545,7 @@ function validateLinks(l, i) {
   l._urlInDOM = l.getAttribute("href");
   l._urlInDOMMergeTagSafe = l._urlInDOM;
 
+
   //### If the user wants us to ignore merge tags,
   // and they've identified at least one pair of opening and closing characters
   // replace them in this link by encoding them
@@ -699,6 +709,12 @@ function validateLinks(l, i) {
     singleLinkInfoArray.hasText = true;
   }
 
+  // if this link is on the ignore list, skip it.
+  if ( linkIgnoreList.includes(l._urlInDOM) ) {
+    singleLinkInfoArray.checkStatus = true;
+    singleLinkInfoArray.validate = false;
+  }
+
   //
   // if ( !/\.(zip|msi|eps|ai|psd|swf|pdf|jpe?g|a?png|gif|svg|(s|d|m|x)?html?|php|aspx?|web(p|m)|css|js|dll|json|ashx|atom)$/i.test(singleLinkInfoArray.object.pathname) ) {
   if ( /\.(zip|eps|ai|psd|swf|pdf|jpe?g|a?png|gif|svg|web(p|m))$/i.test(singleLinkInfoArray.object.pathname) ) {
@@ -716,7 +732,7 @@ function validateLinks(l, i) {
   }
 
   // Assign a type to the URL based on how its written
-  // mailto
+
   if ( !l._urlInDOM || l._urlInDOM === "" ) {
     singleLinkInfoArray.type = "empty"; //empty
     singleLinkInfoArray.checkStatus = false;
@@ -756,7 +772,9 @@ function validateLinks(l, i) {
     singleLinkInfoArray.includesMergeTag = true;
     singleLinkInfoArray.checkStatus = false;
 
-  } else if ( /^{{[^{]+?}}$/.test(l._urlInDOM) ) {
+  // Pardot
+  // support for both double {{ and triple {{{
+  } else if ( /^{{{?[^{]+?}?}}$/.test(l._urlInDOM) ) {
     singleLinkInfoArray.espMergeTag = "pardot";
     singleLinkInfoArray.type = "merge tag";
     singleLinkInfoArray.includesMergeTag = true;
@@ -806,990 +824,1033 @@ function validateLinks(l, i) {
   ////////////////
   ////////////////
 
-  // If the link doesn't have an href attribute, stop this loop.
-  if ( !l._urlInDOM ) {
-    createLinkErrorRow(l, "Missing href attribute.");
-    // linkMarkerDone(linkMarker);
-  }
-
-  // Empty link? Skip it.
-  ///////////////////////
-  else if ( l._urlInDOM === "" ) {
-    createLinkErrorRow(l, "Empty Link.");
-  }
-
-  // VALIDATE MERGE TAGS
-  //////////////////////
-  // If the entirety of this link is a merge tag - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
-  else if ( singleLinkInfoArray.type === "merge tag" ) {
-
-    // Links in an email for the GetResponse Platform
-    if ( email.esp === "gr" && !/(\[\[[^[]+?\]\])/gi.test(l._urlInDOM) ) { // Look for MailChimp and SendGrid merge tags.
-      createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
-    }
-    // Links in an email for the MailChimp Platform
-    else if ( email.esp === "mc" && !/^\*\|[^|]+?\|\*/gi.test(l._urlInDOM) ) { // Look for SendGrid and GR merge tags.
-      createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
-    }
-    // Links in an email for the SendGrid Platform
-    else if ( email.esp === "sg" && !/(^\[[^[]+?\])/gi.test(l._urlInDOM) ) { // Look for MailChimp and GR merge tags.
-      createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
-    }
-    // Links in an email for the ActiveCampaign Platform
-    else if ( email.esp === "ac" && !/(^%[^%]+?%)/gi.test(l._urlInDOM) ) {
-      createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
-    }
-    // Links in an email for the Pardot Platform
-    else if ( email.esp === "pd" && !/(^{{[^{]+?}})/gi.test(l._urlInDOM) ) {
-      createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
-    }
-
-    // QUICK FIX: The mailchimp merge tag *|...|* doesn't play well with Twitter during our ajax request. We need to escape the pipes | in order to get a working URL.
-    // These tags automatically change in MailChimp so it's no problem there. Just right now when we are testing the URL.
-    // This may also be a problem with SendGrid, GetResponse, etc. Look into that.
-    if ( l._urlInDOM.match(/\*\|.+?\|\*/) ) {
-      l._urlInDOM = l._urlInDOM.replace(/\|/g,"%7C");
-    }
-  }
-
-  // VALIDATE MAILTOS
-  ///////////////////
-  else if ( singleLinkInfoArray.type === "mailto" ) {
-    // @ TODO
-  }
-
-  // VALIDATE ALL OTHER LINKS
-  ///////////////////////////
-  else {
-
-    // Check if we're online. If not, we need to apply a warning badge.
-    // This excludes merge tags since there's nothing to check except for formatting.
-    if ( !navigator.onLine && singleLinkInfoArray.checkStatus ) {
-      createLinkErrorRow(l, "Be aware that you are currently offline.", "warning");
-    }
-
-    // console.log("url - " + l._urlInDOMMergeTagSafe);
-
-    // Testing selected options
-    // checkTrailingHash
-    if ( o.sync.checkTrailingHash === "1" ) {
-      if ( /#$/.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Found a trailing #. (Turn off this check in Options)");
-      }
-    }
-    // checkTrailingSlash
-    if ( o.sync.checkTrailingSlash === "1" && !singleLinkInfoArray.hasExtension ) {
-
-      if ( o.sync.checkTrailingSlashPrimaryDomainsOnly !== "1" || o.sync.checkTrailingSlashPrimaryDomainsOnly === "1" && isPrimaryDomain(l.hostname) ) {
-
-        if ( !/^[^#\?]+?(\/$|\/#|\/\?)/.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Missing a trailing / in the pathname. (Turn off this check in Options)");
-        }
-
-      }
-
-    }
-
-
-    // Global link testing variables
-    // MedBridgeEd
-    if ( /\.medbridgeeducation\.com/gi.test(l.hostname) ) {
-      singleLinkInfoArray.isMedBridgeEdLink = true;
-    } else {
-      singleLinkInfoArray.isMedBridgeEdLink = false;
-    }
-
-    // Massage
-    if ( /\.medbridgemassage\.com/gi.test(l.hostname) ) {
-      singleLinkInfoArray.isMedBridgeMassageLink = true;
-    } else {
-      singleLinkInfoArray.isMedBridgeMassageLink = false;
-    }
-
-    // MedBridge Brand
-    if ( singleLinkInfoArray.isMedBridgeEdLink || singleLinkInfoArray.isMedBridgeMassageLink ) {
-      singleLinkInfoArray.isMedBridgeBrandLink = true;
-    } else {
-      singleLinkInfoArray.isMedBridgeBrandLink = false;
-    }
-
-    //// Is Blog Link
-    if ( singleLinkInfoArray.isMedBridgeEdLink && (/\.com\/blog/.test(l._urlInDOMMergeTagSafe) || /url=\/?blog.+?p=/.test(l._urlInDOMMergeTagSafe) || /\-blog(\/|\?)/.test(l._urlInDOMMergeTagSafe) || /after_affiliate_url=\/?blog/.test(l._urlInDOMMergeTagSafe)) ) {
-      singleLinkInfoArray.isBlogLink = true;
-    } else {
-      singleLinkInfoArray.isBlogLink = false;
-    }
-
-    // Is Article Link
-    if ( singleLinkInfoArray.isMedBridgeEdLink && /blog/i.test(l._urlInDOMMergeTagSafe) && /(\/20\d\d\/\d\d\/|p=.+)/i.test(l._urlInDOMMergeTagSafe) && !/p=2503/gi.test(l._urlInDOMMergeTagSafe) ) {
-      singleLinkInfoArray.isArticle = true;
-    } else {
-      singleLinkInfoArray.isArticle = false;
-    }
-
-    // is Marketing URL
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && /(\.com\/(gr|mc)?trk\-|after_affiliate_url=)/gi.test(l._urlInDOMMergeTagSafe) ) {
-      singleLinkInfoArray.isMarketingUrl = true;
-    } else {
-      singleLinkInfoArray.isMarketingUrl = false;
-    }
-
-    // Has tracking link back (after_affiliate_url)
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && /after_affiliate_url/gi.test(l._urlInDOMMergeTagSafe) ) {
-      singleLinkInfoArray.hasTrackingLinkback = true;
-    } else {
-      singleLinkInfoArray.hasTrackingLinkback = false;
-    }
-
-    // Needs Google Tracking (utm_content)
-    linkNeedsGoogleTracking = false;
-    if ( singleLinkInfoArray.isMedBridgeEdLink && !email.outsideOrg && singleLinkInfoArray.destinationType === "page" && (email.esp === "mc" || email.esp === "ac") ) {
-      linkNeedsGoogleTracking = true;
-    } else {
-      linkNeedsGoogleTracking = false;
-    }
-    console.log("linkNeedsGoogleTracking - " + linkNeedsGoogleTracking);
-
-    ////
-    var linkNeedsPromoCode;
-    if ( (email.subscription === "ns" && !email.outsideOrg && email.esp !== "pd" && email.audience !== "ent" ) && singleLinkInfoArray.isMedBridgeBrandLink ) {
-      linkNeedsPromoCode = true;
-    } else {
-      linkNeedsPromoCode = false;
-    }
-    console.log("linkNeedsPromoCode - " + linkNeedsPromoCode);
-
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-
-    ////
-    // Validate URL
-    // Ignore valid URLs, valid mailto:, and valid MailChimp links ( *|text|* converted to *%7Ctext%7C* )
-    // http://stackoverflow.com/a/15734347/556079
-    // http://stackoverflow.com/a/3809435/556079
-    // Unused - http://stackoverflow.com/questions/161738/what-is-the-best-regular-expression-to-check-if-a-string-is-a-valid-url
-    ////
-    // WTF IS THIS ===  !/^(http|https):\/\/[^ "]+$/.test(l._urlInDOMMergeTagSafe)
-
-
-  ///////
-  //// Begin Link Check ////
-  ///////
-
-  ///////
-  // Ignore mailto's and localhost:
-  ///////
-  ///////
-  ///////
-
-
-    if ( !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Invalid URL scheme [1].");
-    }
-
-    // http://stackoverflow.com/a/9284473/556079
-    // https://gist.github.com/dperini/729294
-    // Edited by me to allow _ in subdomain.
-    // Does not support _ in domain, but it should.
-    // Does not support URL's ending with a - but it should.
-    else if ( !/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9](?:_|-)*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(l._urlInDOMMergeTagSafe) )
-    {
-      createLinkErrorRow(l, "Invalid URL scheme [2].");
-    }
-
-
-    // Marketing URL's
-    // trk = mc, grtrk = getresponse
-    if ( email.esp === "gr" && linkNeedsPromoCode && !/\.com\/grtrk\-/i.test(l._urlInDOMMergeTagSafe) ) {
-      // Look for MailChimp and SendGrid merge tags.
-      createLinkErrorRow(l, "Wrong tracking url for this email platform, use grtrk-.");
-    }
-
-
-    //////
-    ////// Detect the use of merge tags.
-    ////// This is different than earlier where detected links that were JUST merge tags. Like [[email]] and *|UNSUB|*
-
-      // Wrong merge tags in a Link for the GetResponse Platform
-      if ( email.esp === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(l._urlInDOMMergeTagSafe) ) { // Look for MailChimp and SendGrid merge tags.
-        createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
-      }
-      // Wrong merge tags in a Link for the MailChimp Platform
-      else if ( email.esp === "mc" && /^\[\[?.+\]\]?/gi.test(l._urlInDOMMergeTagSafe) ) { // Look for SendGrid and GR merge tags.
-        createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
-      }
-
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-    ///////////////////////
-
-
-    ////-----------------------------////
-    ////
-    // Link do NOT need a target attribute.
-
-    if ( o.sync.checkTargetAttribute === "1" ) {
-      if ( l.hasAttribute("target") ) {
-        createLinkErrorRow(l, "Target attribute not needed.");
-      }
-    }
-
-    ////-----------------------------////
-    ////
-    // utm's other than content are unlikely to be used
-
-    // !!!! //////////////////// Re-active this when I can make a feature that allows you to ignore it.
-
-    // if ( /utm_(medium|source|campaign)/gi.test(l._urlInDOMMergeTagSafe) ) {
-    //   createLinkErrorRow(l, "extra utm's");
-    // }
-
-    ////-----------------------------////
-    ////
-    // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( linkNeedsGoogleTracking && !/utm_content/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Missing <code>utm_content</code>.");
-    }
-
-    ////-----------------------------////
-    ////
-    // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( /\.com\/\//gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Remove extra /.");
-    }
-
-    ////-----------------------------////
-    ////
-    // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
-    if ( /after_affiliate_url=&/i.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Missing redirect URL for <code>after_affiliate_url</code>. ");
-    }
-
-    ////-----------------------------////
-    ////
-    // DON'T USE UTM - email.outsideOrg and off domain urls should not have utms
-    if ( /utm_content/gi.test(l._urlInDOMMergeTagSafe) && !singleLinkInfoArray.isMedBridgeEdLink ) {
-      createLinkErrorRow(l, "Remove <code>utm_content</code> parameter in non-MedBridge links.");
-    }
-
-    ////-----------------------------////
-    ////
-    // MedBridge links must be https. If only because it makes sorting links easier when we do our metrics
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && singleLinkInfoArray.type !== "https" ) {
-      createLinkErrorRow(l, "Use <code>https</code> for MedBridge links.");
-    }
-
-
-    ////-----------------------------////
-    ////
-    // Mismatching hostnames
-
-
-    // const tlds = ['aaa','aarp','abarth','abb','abbott','abbvie','abc','able','abogado','abudhabi','ac','academy','accenture','accountant','accountants','aco','actor','ad','adac','ads','adult','ae','aeg','aero','aetna','af','afamilycompany','afl','africa','ag','agakhan','agency','ai','aig','aigo','airbus','airforce','airtel','akdn','al','alfaromeo','alibaba','alipay','allfinanz','allstate','ally','alsace','alstom','am','americanexpress','americanfamily','amex','amfam','amica','amsterdam','analytics','android','anquan','anz','ao','aol','apartments','app','apple','aq','aquarelle','ar','arab','aramco','archi','army','arpa','art','arte','as','asda','asia','associates','at','athleta','attorney','au','auction','audi','audible','audio','auspost','author','auto','autos','avianca','aw','aws','ax','axa','az','azure','ba','baby','baidu','banamex','bananarepublic','band','bank','bar','barcelona','barclaycard','barclays','barefoot','bargains','baseball','basketball','bauhaus','bayern','bb','bbc','bbt','bbva','bcg','bcn','bd','be','beats','beauty','beer','bentley','berlin','best','bestbuy','bet','bf','bg','bh','bharti','bi','bible','bid','bike','bing','bingo','bio','biz','bj','black','blackfriday','blockbuster','blog','bloomberg','blue','bm','bms','bmw','bn','bnpparibas','bo','boats','boehringer','bofa','bom','bond','boo','book','booking','bosch','bostik','boston','bot','boutique','box','br','bradesco','bridgestone','broadway','broker','brother','brussels','bs','bt','budapest','bugatti','build','builders','business','buy','buzz','bv','bw','by','bz','bzh','ca','cab','cafe','cal','call','calvinklein','cam','camera','camp','cancerresearch','canon','capetown','capital','capitalone','car','caravan','cards','care','career','careers','cars','casa','case','caseih','cash','casino','cat','catering','catholic','cba','cbn','cbre','cbs','cc','cd','ceb','center','ceo','cern','cf','cfa','cfd','cg','ch','chanel','channel','charity','chase','chat','cheap','chintai','christmas','chrome','church','ci','cipriani','circle','cisco','citadel','citi','citic','city','cityeats','ck','cl','claims','cleaning','click','clinic','clinique','clothing','cloud','club','clubmed','cm','cn','co','coach','codes','coffee','college','cologne','com','comcast','commbank','community','company','compare','computer','comsec','condos','construction','consulting','contact','contractors','cooking','cookingchannel','cool','coop','corsica','country','coupon','coupons','courses','cpa','cr','credit','creditcard','creditunion','cricket','crown','crs','cruise','cruises','csc','cu','cuisinella','cv','cw','cx','cy','cymru','cyou','cz','dabur','dad','dance','data','date','dating','datsun','day','dclk','dds','de','deal','dealer','deals','degree','delivery','dell','deloitte','delta','democrat','dental','dentist','desi','design','dev','dhl','diamonds','diet','digital','direct','directory','discount','discover','dish','diy','dj','dk','dm','dnp','do','docs','doctor','dog','domains','dot','download','drive','dtv','dubai','duck','dunlop','dupont','durban','dvag','dvr','dz','earth','eat','ec','eco','edeka','edu','education','ee','eg','email','emerck','energy','engineer','engineering','enterprises','epson','equipment','er','ericsson','erni','es','esq','estate','esurance','et','etisalat','eu','eurovision','eus','events','exchange','expert','exposed','express','extraspace','fage','fail','fairwinds','faith','family','fan','fans','farm','farmers','fashion','fast','fedex','feedback','ferrari','ferrero','fi','fiat','fidelity','fido','film','final','finance','financial','fire','firestone','firmdale','fish','fishing','fit','fitness','fj','fk','flickr','flights','flir','florist','flowers','fly','fm','fo','foo','food','foodnetwork','football','ford','forex','forsale','forum','foundation','fox','fr','free','fresenius','frl','frogans','frontdoor','frontier','ftr','fujitsu','fujixerox','fun','fund','furniture','futbol','fyi','ga','gal','gallery','gallo','gallup','game','games','gap','garden','gay','gb','gbiz','gd','gdn','ge','gea','gent','genting','george','gf','gg','ggee','gh','gi','gift','gifts','gives','giving','gl','glade','glass','gle','global','globo','gm','gmail','gmbh','gmo','gmx','gn','godaddy','gold','goldpoint','golf','goo','goodyear','goog','google','gop','got','gov','gp','gq','gr','grainger','graphics','gratis','green','gripe','grocery','group','gs','gt','gu','guardian','gucci','guge','guide','guitars','guru','gw','gy','hair','hamburg','hangout','haus','hbo','hdfc','hdfcbank','health','healthcare','help','helsinki','here','hermes','hgtv','hiphop','hisamitsu','hitachi','hiv','hk','hkt','hm','hn','hockey','holdings','holiday','homedepot','homegoods','homes','homesense','honda','horse','hospital','host','hosting','hot','hoteles','hotels','hotmail','house','how','hr','hsbc','ht','hu','hughes','hyatt','hyundai','ibm','icbc','ice','icu','id','ie','ieee','ifm','ikano','il','im','imamat','imdb','immo','immobilien','in','inc','industries','infiniti','info','ing','ink','institute','insurance','insure','int','intel','international','intuit','investments','io','ipiranga','iq','ir','irish','is','ismaili','ist','istanbul','it','itau','itv','iveco','jaguar','java','jcb','jcp','je','jeep','jetzt','jewelry','jio','jll','jm','jmp','jnj','jo','jobs','joburg','jot','joy','jp','jpmorgan','jprs','juegos','juniper','kaufen','kddi','ke','kerryhotels','kerrylogistics','kerryproperties','kfh','kg','kh','ki','kia','kim','kinder','kindle','kitchen','kiwi','km','kn','koeln','komatsu','kosher','kp','kpmg','kpn','kr','krd','kred','kuokgroup','kw','ky','kyoto','kz','la','lacaixa','lamborghini','lamer','lancaster','lancia','land','landrover','lanxess','lasalle','lat','latino','latrobe','law','lawyer','lb','lc','lds','lease','leclerc','lefrak','legal','lego','lexus','lgbt','li','lidl','life','lifeinsurance','lifestyle','lighting','like','lilly','limited','limo','lincoln','linde','link','lipsy','live','living','lixil','lk','llc','llp','loan','loans','locker','locus','loft','lol','london','lotte','lotto','love','lpl','lplfinancial','lr','ls','lt','ltd','ltda','lu','lundbeck','lupin','luxe','luxury','lv','ly','ma','macys','madrid','maif','maison','makeup','man','management','mango','map','market','marketing','markets','marriott','marshalls','maserati','mattel','mba','mc','mckinsey','md','me','med','media','meet','melbourne','meme','memorial','men','menu','merckmsd','metlife','mg','mh','miami','microsoft','mil','mini','mint','mit','mitsubishi','mk','ml','mlb','mls','mm','mma','mn','mo','mobi','mobile','moda','moe','moi','mom','monash','money','monster','mormon','mortgage','moscow','moto','motorcycles','mov','movie','mp','mq','mr','ms','msd','mt','mtn','mtr','mu','museum','mutual','mv','mw','mx','my','mz','na','nab','nadex','nagoya','name','nationwide','natura','navy','nba','nc','ne','nec','net','netbank','netflix','network','neustar','new','newholland','news','next','nextdirect','nexus','nf','nfl','ng','ngo','nhk','ni','nico','nike','nikon','ninja','nissan','nissay','nl','no','nokia','northwesternmutual','norton','now','nowruz','nowtv','np','nr','nra','nrw','ntt','nu','nyc','nz','obi','observer','off','office','okinawa','olayan','olayangroup','oldnavy','ollo','om','omega','one','ong','onl','online','onyourside','ooo','open','oracle','orange','org','organic','origins','osaka','otsuka','ott','ovh','pa','page','panasonic','paris','pars','partners','parts','party','passagens','pay','pccw','pe','pet','pf','pfizer','pg','ph','pharmacy','phd','philips','phone','photo','photography','photos','physio','pics','pictet','pictures','pid','pin','ping','pink','pioneer','pizza','pk','pl','place','play','playstation','plumbing','plus','pm','pn','pnc','pohl','poker','politie','porn','post','pr','pramerica','praxi','press','prime','pro','prod','productions','prof','progressive','promo','properties','property','protection','pru','prudential','ps','pt','pub','pw','pwc','py','qa','qpon','quebec','quest','qvc','racing','radio','raid','re','read','realestate','realtor','realty','recipes','red','redstone','redumbrella','rehab','reise','reisen','reit','reliance','ren','rent','rentals','repair','report','republican','rest','restaurant','review','reviews','rexroth','rich','richardli','ricoh','rightathome','ril','rio','rip','rmit','ro','rocher','rocks','rodeo','rogers','room','rs','rsvp','ru','rugby','ruhr','run','rw','rwe','ryukyu','sa','saarland','safe','safety','sakura','sale','salon','samsclub','samsung','sandvik','sandvikcoromant','sanofi','sap','sarl','sas','save','saxo','sb','sbi','sbs','sc','sca','scb','schaeffler','schmidt','scholarships','school','schule','schwarz','science','scjohnson','scor','scot','sd','se','search','seat','secure','security','seek','select','sener','services','ses','seven','sew','sex','sexy','sfr','sg','sh','shangrila','sharp','shaw','shell','shia','shiksha','shoes','shop','shopping','shouji','show','showtime','shriram','si','silk','sina','singles','site','sj','sk','ski','skin','sky','skype','sl','sling','sm','smart','smile','sn','sncf','so','soccer','social','softbank','software','sohu','solar','solutions','song','sony','soy','space','sport','spot','spreadbetting','sr','srl','ss','st','stada','staples','star','statebank','statefarm','stc','stcgroup','stockholm','storage','store','stream','studio','study','style','su','sucks','supplies','supply','support','surf','surgery','suzuki','sv','swatch','swiftcover','swiss','sx','sy','sydney','symantec','systems','sz','tab','taipei','talk','taobao','target','tatamotors','tatar','tattoo','tax','taxi','tc','tci','td','tdk','team','tech','technology','tel','temasek','tennis','teva','tf','tg','th','thd','theater','theatre','tiaa','tickets','tienda','tiffany','tips','tires','tirol','tj','tjmaxx','tjx','tk','tkmaxx','tl','tm','tmall','tn','to','today','tokyo','tools','top','toray','toshiba','total','tours','town','toyota','toys','tr','trade','trading','training','travel','travelchannel','travelers','travelersinsurance','trust','trv','tt','tube','tui','tunes','tushu','tv','tvs','tw','tz','ua','ubank','ubs','ug','uk','unicom','university','uno','uol','ups','us','uy','uz','va','vacations','vana','vanguard','vc','ve','vegas','ventures','verisign','versicherung','vet','vg','vi','viajes','video','vig','viking','villas','vin','vip','virgin','visa','vision','vistaprint','viva','vivo','vlaanderen','vn','vodka','volkswagen','volvo','vote','voting','voto','voyage','vu','vuelos','wales','walmart','walter','wang','wanggou','watch','watches','weather','weatherchannel','webcam','weber','website','wed','wedding','weibo','weir','wf','whoswho','wien','wiki','williamhill','win','windows','wine','winners','wme','wolterskluwer','woodside','work','works','world','wow','ws','wtc','wtf','xbox','xerox','xfinity','xihuan','xin','xn--11b4c3d','xn--1ck2e1b','xn--1qqw23a','xn--2scrj9c','xn--30rr7y','xn--3bst00m','xn--3ds443g','xn--3e0b707e','xn--3hcrj9c','xn--3oq18vl8pn36a','xn--3pxu8k','xn--42c2d9a','xn--45br5cyl','xn--45brj9c','xn--45q11c','xn--4gbrim','xn--54b7fta0cc','xn--55qw42g','xn--55qx5d','xn--5su34j936bgsg','xn--5tzm5g','xn--6frz82g','xn--6qq986b3xl','xn--80adxhks','xn--80ao21a','xn--80aqecdr1a','xn--80asehdb','xn--80aswg','xn--8y0a063a','xn--90a3ac','xn--90ae','xn--90ais','xn--9dbq2a','xn--9et52u','xn--9krt00a','xn--b4w605ferd','xn--bck1b9a5dre4c','xn--c1avg','xn--c2br7g','xn--cck2b3b','xn--cg4bki','xn--clchc0ea0b2g2a9gcd','xn--czr694b','xn--czrs0t','xn--czru2d','xn--d1acj3b','xn--d1alf','xn--e1a4c','xn--eckvdtc9d','xn--efvy88h','xn--estv75g','xn--fct429k','xn--fhbei','xn--fiq228c5hs','xn--fiq64b','xn--fiqs8s','xn--fiqz9s','xn--fjq720a','xn--flw351e','xn--fpcrj9c3d','xn--fzc2c9e2c','xn--fzys8d69uvgm','xn--g2xx48c','xn--gckr3f0f','xn--gecrj9c','xn--gk3at1e','xn--h2breg3eve','xn--h2brj9c','xn--h2brj9c8c','xn--hxt814e','xn--i1b6b1a6a2e','xn--imr513n','xn--io0a7i','xn--j1aef','xn--j1amh','xn--j6w193g','xn--jlq61u9w7b','xn--jvr189m','xn--kcrx77d1x4a','xn--kprw13d','xn--kpry57d','xn--kpu716f','xn--kput3i','xn--l1acc','xn--lgbbat1ad8j','xn--mgb9awbf','xn--mgba3a3ejt','xn--mgba3a4f16a','xn--mgba7c0bbn0a','xn--mgbaakc7dvf','xn--mgbaam7a8h','xn--mgbab2bd','xn--mgbah1a3hjkrd','xn--mgbai9azgqp6j','xn--mgbayh7gpa','xn--mgbbh1a','xn--mgbbh1a71e','xn--mgbc0a9azcg','xn--mgbca7dzdo','xn--mgbcpq6gpa1a','xn--mgberp4a5d4ar','xn--mgbgu82a','xn--mgbi4ecexp','xn--mgbpl2fh','xn--mgbt3dhd','xn--mgbtx2b','xn--mgbx4cd0ab','xn--mix891f','xn--mk1bu44c','xn--mxtq1m','xn--ngbc5azd','xn--ngbe9e0a','xn--ngbrx','xn--node','xn--nqv7f','xn--nqv7fs00ema','xn--nyqy26a','xn--o3cw4h','xn--ogbpf8fl','xn--otu796d','xn--p1acf','xn--p1ai','xn--pbt977c','xn--pgbs0dh','xn--pssy2u','xn--q7ce6a','xn--q9jyb4c','xn--qcka1pmc','xn--qxa6a','xn--qxam','xn--rhqv96g','xn--rovu88b','xn--rvc1e0am3e','xn--s9brj9c','xn--ses554g','xn--t60b56a','xn--tckwe','xn--tiq49xqyj','xn--unup4y','xn--vermgensberater-ctb','xn--vermgensberatung-pwb','xn--vhquv','xn--vuq861b','xn--w4r85el8fhu5dnra','xn--w4rs40l','xn--wgbh1c','xn--wgbl6a','xn--xhq521b','xn--xkc2al3hye2a','xn--xkc2dl3a5ee0h','xn--y9a3aq','xn--yfro4i67o','xn--ygbi2ammx','xn--zfr164b','xxx','xyz','yachts','yahoo','yamaxun','yandex','ye','yodobashi','yoga','yokohama','you','youtube','yt','yun','za','zappos','zara','zero','zip','zm','zone','zuerich','zw'];
-          //
-          // let textHasTlds = function() {
-          //
-          //   tlds.some(function (tld) {
-          //
-          //     let re = new RegExp(".\\." + escapeRegEx(tld) + "\\b", "i");
-          //
-          //     if ( re.test(singleLinkInfoArray.text) ) {
-          //       console.log(re);
-          //       console.log( singleLinkInfoArray.text );
-          //       return true;
-          //     }
-          //
-          //   });
-          //
-          // };
-          //
-          // if ( singleLinkInfoArray.hasText ) {
-          //
-          //   if ( textHasTlds() ) {
-          //     console.error("@@@@@@@@@@@@@@@@@@@");
-          //     createLinkErrorRow(l, "Link text includes a domain name that may differ from the linked URL.");
-          //   }
-          //   else {
-          //     console.error("!!!!!!!!!!!!!!!!");
-          //   }
-          // }
-          //
-    ////-----------------------------////
-    ////
-    // Check tracking links to see if the URL is consistent with the rest of the links.
-    // eg. If most links say trk-sep-17-davenport, but this one says trk-sep-17-walter, throw an error.
-    // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common occurence.
-
-          // console.log(commonUtmCampaign);
-          // console.log(commonUtmCampaignRegex);
-          //
-          // console.log(l.href);
-          // console.log(l._urlInDOM);
-          // console.log(l._urlInDOMMergeTagSafe);
-
-    if ( email.subscription === "ns" && singleLinkInfoArray.isMarketingUrl && linkNeedsPromoCode ) {
-      // Ignore if the links pathname ends in -student
-      if ( !commonTrkUrlRegex.test(l.href) && !/\-student\/?$/gi.test(l.pathname) ) {
-        createLinkErrorRow(l, "Tracking URL is missing or inconsistent, " + commonTrkUrl + " is most common. - " + l._urlInDOMMergeTagSafe);
-      }
-    }
-
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && email.esp !== "gr" ) {
-      if ( commonUtmSource ) {
-        if ( !commonUtmSourceRegex.test(l.href) ) {
-          createLinkErrorRow(l, "<code>utm_source</code> is missing or inconsistent, " + commonUtmSource + " is most common.");
-        }
-      }
-
-
-      if ( commonUtmCampaign ) {
-        if ( !commonUtmCampaignRegex.test(l.href) ) {
-          createLinkErrorRow(l, "<code>utm_campaign</code> is missing or inconsistent, " + commonUtmCampaign + " is most common.");
-        }
-      }
-    }
-
-    ////
-    // Check for whitelabeling versus www
-    if ( email.outsideOrg && singleLinkInfoArray.isMedBridgeEdLink ) {
-
-      if ( /https?:\/\/(www\.)?med/.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing whitelabeling.");
-      }
-      else if ( ( email.organization === "hs" && !/\/(encompasshealth|healthsouth)\./i.test(l._urlInDOMMergeTagSafe)) || (email.organization === "dr" && !/\/drayerpt\./i.test(l._urlInDOMMergeTagSafe)) || (email.organization === "fox" && !/\/foxrehab\./i.test(l._urlInDOMMergeTagSafe)) ) {
-        createLinkErrorRow(l, "Incorrect whitelabeling.");
-      }
-
-    }
-    if ( !email.outsideOrg && singleLinkInfoArray.isMedBridgeEdLink && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Remove whitelabeling.");
-    }
-
-    ////
-    ////
-    // Validate querystring pattern if it looks like there is one
-    //////////////
-    //////////////
-    //////////////
-
-    // http://stackoverflow.com/a/23959662/556079
-    // http://rubular.com/r/kyiKS9OlsM
-
-    // Check the query string without any ending hash
-    // Ignore links with after_signin_url, we'll check that later.
-    l._urlInDOMMergeTagSafeNoHash = l._urlInDOMMergeTagSafe.replace(/\#.+/, "");
-
-    if ( /[^#]+\&.+\=/.test(l._urlInDOMMergeTagSafeNoHash) || /[^#]+\?.+\=/.test(l._urlInDOMMergeTagSafeNoHash) && ( !/after_signin_url/.test(l._urlInDOMMergeTagSafeNoHash) ) ) {
-
-      if ( /\&.+\=/.test(l._urlInDOMMergeTagSafe) && !/\?./.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing ? in querystring.");
-      }
-
-      if ( /\?[^#]+\?.+\=/.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Replace the ? with an & in the querystring.");
-      }
-
-      ///////////
-      // @TODO - Add exclusions for merge tags
-      ///////////
-
-      // Add characters you want to ignore twice. Like *, |, and '.
-      if ( !/\?([\@\%\.\w-]+(=[\!\'\*\|\:\+\@\%\.\/\w-]*)?(&[\@\%\.\w-]+(=[\'\*\|\+\@\%\.\/\w-]*)?)*)?$/.test(l._urlInDOMMergeTagSafeNoHash) ) {
-        createLinkErrorRow(l, "Invalid querystring.");
-        console.log(l._urlInDOMMergeTagSafeNoHash);
-      }
-
-    }
-          // after_signin_url is different.
-          // If you're using more than one qs parameter then the ? needs to be followed immediately
-          // by another ? for the redirect to carry the parameters over to the next page.
-          if ( /after_signin_url=/.test(l._urlInDOMMergeTagSafeNoHash) ) {
-
-            // Can't (shouldn't) do &after_signin_url.
-            if ( !/\?after_signin_url=/.test(l._urlInDOMMergeTagSafe) ) {
-              createLinkErrorRow(l, "<code>after_signin_url</code> must be the first parameter.");
+  if (singleLinkInfoArray.validate !== false) {
+
+            // If the link doesn't have an href attribute, stop this loop.
+            if ( !l._urlInDOM ) {
+              createLinkErrorRow(l, "Missing href attribute.");
+              // linkMarkerDone(linkMarker);
             }
 
-            if ( /\?after_signin_url=[^\?#]*?&/.test(l._urlInDOMMergeTagSafe) ) {
-              createLinkErrorRow(l, "Replace the first <code>&</code> with a URL encoded <code>?</code> (<code>%3F</code>) in the querystring after the <code>after_signin_url</code> parameter to pass that parameter along. This is a workaround for a MedBridge bug that will allow you to transfer one parameter after they login (except for Angular pages).");
+            // Empty link? Skip it.
+            ///////////////////////
+            else if ( l._urlInDOM === "" ) {
+              createLinkErrorRow(l, "Empty link.");
             }
 
-          }
+            // VALIDATE MERGE TAGS
+            //////////////////////
+            // If the entirety of this link is a merge tag - MailChimp, SendGrid, or GetResponse link (eg. *|ARCHIVE|* or [weblink] [[email]]
+            else if ( singleLinkInfoArray.type === "merge tag" ) {
 
-    // Leftover & or ? from a removed querystring
-    // TEMPORARILY MODIFIED -
-    // In Q4 2019 we started needing to end course links with trailing ?.
-    // Something about the combination of AC and the new marketing site made this necessary
-    // AC tracking is removing the #discipline at the end of links
-    // We currently have to make this link:
-       // https://www.medbridgeeducation.com/courses?utm_content=mod1#/discipline
-    // Look like this:
-       // https://www.medbridgeeducation.com/courses?utm_content=mod1#/discipline?
-    // When this is fixed, we can remove the second criteria
-              // if ( /(\?|&)$/g.test(l._urlInDOMMergeTagSafe) ) {
-              //   createLinkErrorRow(l, "Remove the trailing ? or &.");
+              // Links in an email for the GetResponse Platform
+              if ( email.esp === "gr" && !/(\[\[[^[]+?\]\])/gi.test(l._urlInDOM) ) { // Look for MailChimp and SendGrid merge tags.
+                createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
+              }
+              // Links in an email for the MailChimp Platform
+              else if ( email.esp === "mc" && !/^\*\|[^|]+?\|\*/gi.test(l._urlInDOM) ) { // Look for SendGrid and GR merge tags.
+                createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
+              }
+              // Links in an email for the SendGrid Platform
+              else if ( email.esp === "sg" && !/(^\[[^[]+?\])/gi.test(l._urlInDOM) ) { // Look for MailChimp and GR merge tags.
+                createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
+              }
+              // Links in an email for the ActiveCampaign Platform
+              else if ( email.esp === "ac" && !/(^%[^%]+?%)/gi.test(l._urlInDOM) ) {
+                createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
+              }
+              // Links in an email for the Pardot Platform. Support for both double {{ and triple {{{
+              else if ( email.esp === "pd" && !/(^{{{?[^{]+?}?}})/gi.test(l._urlInDOM) ) {
+                createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
+              }
+
+              // QUICK FIX: The mailchimp merge tag *|...|* doesn't play well with Twitter during our ajax request. We need to escape the pipes | in order to get a working URL.
+              // These tags automatically change in MailChimp so it's no problem there. Just right now when we are testing the URL.
+              // This may also be a problem with SendGrid, GetResponse, etc. Look into that.
+              if ( l._urlInDOM.match(/\*\|.+?\|\*/) ) {
+                l._urlInDOM = l._urlInDOM.replace(/\|/g,"%7C");
+              }
+            }
+
+            // VALIDATE MAILTOS
+            ///////////////////
+            else if ( singleLinkInfoArray.type === "mailto" ) {
+              // @ TODO
+            }
+
+            // VALIDATE ALL OTHER LINKS
+            ///////////////////////////
+            else {
+
+              // Check if we're online. If not, we need to apply a warning badge.
+              // This excludes merge tags since there's nothing to check except for formatting.
+              if ( !navigator.onLine && singleLinkInfoArray.checkStatus ) {
+                createLinkErrorRow(l, "Be aware that you are currently offline.", "warning");
+              }
+
+              // console.log("url - " + l._urlInDOMMergeTagSafe);
+
+              // Testing selected options
+              // checkTrailingHash
+              if ( o.sync.checkTrailingHash === "1" ) {
+                if ( /#$/.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Found a trailing #. (Turn off this check in Options)");
+                }
+              }
+              // checkTrailingSlash
+              console.log(o.sync.checkTrailingSlash);
+              console.log(singleLinkInfoArray.hasExtension);
+              if ( o.sync.checkTrailingSlash === "1" && !singleLinkInfoArray.hasExtension ) {
+
+                if ( o.sync.checkTrailingSlashPrimaryDomainsOnly !== "1" || o.sync.checkTrailingSlashPrimaryDomainsOnly === "1" && isPrimaryDomain(l.hostname) ) {
+
+                  if ( !/^[^#\?]+?(\/$|\/#|\/\?)/.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Missing a trailing / in the pathname. (Turn off this check in Options)");
+                  }
+
+                }
+
+              }
+
+
+              // Global link testing variables
+              // MedBridgeEd
+              if ( /\.medbridgeeducation\.com/gi.test(l.hostname) ) {
+                singleLinkInfoArray.isMedBridgeEdLink = true;
+              } else {
+                singleLinkInfoArray.isMedBridgeEdLink = false;
+              }
+
+              // Massage
+              if ( /\.medbridgemassage\.com/gi.test(l.hostname) ) {
+                singleLinkInfoArray.isMedBridgeMassageLink = true;
+              } else {
+                singleLinkInfoArray.isMedBridgeMassageLink = false;
+              }
+
+              // MedBridge Brand
+              if ( singleLinkInfoArray.isMedBridgeEdLink || singleLinkInfoArray.isMedBridgeMassageLink ) {
+                singleLinkInfoArray.isMedBridgeBrandLink = true;
+              } else {
+                singleLinkInfoArray.isMedBridgeBrandLink = false;
+              }
+
+              //// Is Blog Link
+              if ( singleLinkInfoArray.isMedBridgeEdLink && (/\.com\/blog/.test(l._urlInDOMMergeTagSafe) || /url=\/?blog.+?p=/.test(l._urlInDOMMergeTagSafe) || /\-blog(\/|\?)/.test(l._urlInDOMMergeTagSafe) || /after_affiliate_url=\/?blog/.test(l._urlInDOMMergeTagSafe)) ) {
+                singleLinkInfoArray.isBlogLink = true;
+              } else {
+                singleLinkInfoArray.isBlogLink = false;
+              }
+
+              // Is Article Link
+              if ( singleLinkInfoArray.isMedBridgeEdLink && /blog/i.test(l._urlInDOMMergeTagSafe) && /(\/20\d\d\/\d\d\/|p=.+)/i.test(l._urlInDOMMergeTagSafe) && !/p=2503/gi.test(l._urlInDOMMergeTagSafe) ) {
+                singleLinkInfoArray.isArticle = true;
+              } else {
+                singleLinkInfoArray.isArticle = false;
+              }
+
+              // is Marketing URL
+              if ( singleLinkInfoArray.isMedBridgeBrandLink && /(\.com\/(gr|mc)?trk\-|after_affiliate_url=)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                singleLinkInfoArray.isMarketingUrl = true;
+              } else {
+                singleLinkInfoArray.isMarketingUrl = false;
+              }
+
+              // Has tracking link back (after_affiliate_url)
+              if ( singleLinkInfoArray.isMedBridgeBrandLink && /after_affiliate_url/gi.test(l._urlInDOMMergeTagSafe) ) {
+                singleLinkInfoArray.hasTrackingLinkback = true;
+              } else {
+                singleLinkInfoArray.hasTrackingLinkback = false;
+              }
+
+              // Needs Google Tracking (utm_content)
+              linkNeedsGoogleTracking = false;
+              if ( singleLinkInfoArray.isMedBridgeEdLink && !email.outsideOrg && singleLinkInfoArray.destinationType === "page" && (email.esp === "mc" || email.esp === "ac") ) {
+                linkNeedsGoogleTracking = true;
+              } else {
+                linkNeedsGoogleTracking = false;
+              }
+              console.log("linkNeedsGoogleTracking - " + linkNeedsGoogleTracking);
+
+              ////
+              var linkNeedsPromoCode;
+              if ( (email.subscription === "ns" && !email.outsideOrg && email.esp !== "pd" && email.division !== "enterprise" && email.audience !== "ent" ) && singleLinkInfoArray.isMedBridgeBrandLink ) {
+                linkNeedsPromoCode = true;
+              } else {
+                linkNeedsPromoCode = false;
+              }
+              console.log("linkNeedsPromoCode - " + linkNeedsPromoCode);
+
+              ///////////////////////
+              ///////////////////////
+              ///////////////////////
+              ///////////////////////
+
+              ////
+              // Validate URL
+              // Ignore valid URLs, valid mailto:, and valid MailChimp links ( *|text|* converted to *%7Ctext%7C* )
+              // http://stackoverflow.com/a/15734347/556079
+              // http://stackoverflow.com/a/3809435/556079
+              // Unused - http://stackoverflow.com/questions/161738/what-is-the-best-regular-expression-to-check-if-a-string-is-a-valid-url
+              ////
+              // WTF IS THIS ===  !/^(http|https):\/\/[^ "]+$/.test(l._urlInDOMMergeTagSafe)
+
+
+            ///////
+            //// Begin Link Check ////
+            ///////
+
+            ///////
+            // Ignore mailto's and localhost:
+            ///////
+            ///////
+            ///////
+
+
+              if ( !/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Invalid URL scheme [1].");
+              }
+
+              // http://stackoverflow.com/a/9284473/556079
+              // https://gist.github.com/dperini/729294
+              // Edited by me to allow _ in subdomain.
+              // Does not support _ in domain, but it should.
+              // Does not support URL's ending with a - but it should.
+              else if ( !/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9](?:_|-)*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(l._urlInDOMMergeTagSafe) )
+              {
+                createLinkErrorRow(l, "Invalid URL scheme [2].");
+              }
+
+
+              // Marketing URL's
+              // trk = mc, grtrk = getresponse
+              if ( email.esp === "gr" && linkNeedsPromoCode && !/\.com\/grtrk\-/i.test(l._urlInDOMMergeTagSafe) ) {
+                // Look for MailChimp and SendGrid merge tags.
+                createLinkErrorRow(l, "Wrong tracking url for this email platform, use grtrk-.");
+              }
+
+
+              //////
+              ////// Detect the use of merge tags.
+              ////// This is different than earlier where detected links that were JUST merge tags. Like [[email]] and *|UNSUB|*
+
+                // Wrong merge tags in a Link for the GetResponse Platform
+                if ( email.esp === "gr" && /(\*\|.+?\|\*|\*\%7C.+?%7C\*|^\[[A-Za-z0-9]+?\])/gi.test(l._urlInDOMMergeTagSafe) ) { // Look for MailChimp and SendGrid merge tags.
+                  createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
+                }
+                // Wrong merge tags in a Link for the MailChimp Platform
+                else if ( email.esp === "mc" && /^\[\[?.+\]\]?/gi.test(l._urlInDOMMergeTagSafe) ) { // Look for SendGrid and GR merge tags.
+                  createLinkErrorRow(l, "Wrong merge tag for this platform (" + email.espName + ").");
+                }
+
+              ///////////////////////
+              ///////////////////////
+              ///////////////////////
+              ///////////////////////
+
+
+              ////-----------------------------////
+              ////
+              // Link do NOT need a target attribute.
+
+              if ( o.sync.checkTargetAttribute === "1" ) {
+                if ( l.hasAttribute("target") ) {
+                  createLinkErrorRow(l, "Target attribute not needed.");
+                }
+              }
+
+              ////-----------------------------////
+              ////
+              // Look for utm_'s being declared more than once. e.g. &utm_source=email&utm_source=newsletter
+              // source
+              let utmRepeated = l._urlInDOMMergeTagSafe.match(/[&\?]utm_source=/gi);
+              if ( utmRepeated && utmRepeated.length > 1 ) {
+                createLinkErrorRow(l, "Too many instances of <code>utm_source</code>.");
+              }
+              // medium
+              utmRepeated = l._urlInDOMMergeTagSafe.match(/[&\?]utm_medium=/gi);
+              if ( utmRepeated && utmRepeated.length > 1 ) {
+                createLinkErrorRow(l, "Too many instances of <code>utm_medium</code>.");
+              }
+              // camopaign
+              utmRepeated = l._urlInDOMMergeTagSafe.match(/[&\?]utm_campaign=/gi);
+              if ( utmRepeated && utmRepeated.length > 1 ) {
+                createLinkErrorRow(l, "Too many instances of <code>utm_campaign</code>.");
+              }
+              // content
+              utmRepeated = l._urlInDOMMergeTagSafe.match(/[&\?]utm_content=/gi);
+              if ( utmRepeated && utmRepeated.length > 1 ) {
+                createLinkErrorRow(l, "Too many instances of <code>utm_content</code>.");
+              }
+              // term
+              utmRepeated = l._urlInDOMMergeTagSafe.match(/[&\?]utm_term=/gi);
+              if ( utmRepeated && utmRepeated.length > 1 ) {
+                createLinkErrorRow(l, "Too many instances of <code>utm_term</code>.");
+              }
+
+              ////-----------------------------////
+              ////
+              // utm's other than content are unlikely to be used
+
+              // !!!! //////////////////// Re-active this when I can make a feature that allows you to ignore it.
+
+              // if ( /utm_(medium|source|campaign)/gi.test(l._urlInDOMMergeTagSafe) ) {
+              //   createLinkErrorRow(l, "extra utm's");
               // }
 
-    if ( /(\?|&)$/g.test(l._urlInDOMMergeTagSafe) && email.division === "enterprise" ) {
-      createLinkErrorRow(l, "Remove the trailing ? or &.");
-    }
-
-    if ( !/#.*\?/g.test(l._urlInDOMMergeTagSafe) && /#/g.test(l._urlInDOMMergeTagSafe) && email.division !== "enterprise" ) {
-      createLinkErrorRow(l, "You need a ? somewhere after your hashtag to be compatible with ActiveCampaign.");
-    }
-
-
-    ////-----------------------------////
-    ////
-    if ( /google\.com\/url\?/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "This looks like a Google redirect.");
-    }
-
-    ////-----------------------------////
-    ////
-    if ( linkNeedsPromoCode ) {
-
-      // Links to MedBridge in -ns emails need to use a marketing URL
-      if ( !/\.com\/(gr|mc)?trk\-/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/(signin|courses\/|blog\/)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Use a Marketing URL.");
-      }
-
-      // Spell after_affiliate_url correctly!
-      if ( !/\-(blog|article)/gi.test(l._urlInDOMMergeTagSafe) && !/after_affiliate_url/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing after_affiliate_url query parameter.");
-      }
-
-      // Too many leading /'s' during a redirect can cause a link to not work
-      if ( /after_affiliate_url=\/\/+/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Too many consecutive /s.");
-      }
-
-      // Watch out for extra hyphens!
-      if ( /\-\-.+?after_affiliate_url/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Investigate consecutive hyphens.");
-      }
-      // Watch out for extra forward slashes!
-      if ( /https?:\/\/.+?\/\//gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Investigate consecutive forward slashes.");
-      }
-
-      // console.log("email.date.getMonth(); " + email.date.getMonth());
-
-      // Check the date in a tracking URL if the email's filename has a date in it to match against
-      if ( labelsAvailable ) {
-        if ( email.date.getMonth() ) {
-          var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + email.monthName + "\\-", "gi");
-          if ( !monthPattern.test(l._urlInDOMMergeTagSafe) ) {
-            createLinkErrorRow(l, "Link should include '-" + email.monthName + "-' to match month in filename.");
-          }
-        }
-      }
-
-    }
-
-
-    // DEPRECATED - 2020-02-24
-    // Helen has requested that we stop validating the `mod#` on table modules.
-    // The B2C team is switching to a more descriptive method to target modules by type.
-    //
-    // ////
-    // // Is the module # in the utm correct?
-    // ////
-    //
-    // // console.error("0");
-    // //
-    // // console.log("email.subscription: " + email.subscription);
-    // // console.log("email.outsideOrg: " + email.outsideOrg);
-    // // console.log("singleLinkInfoArray.isMedBridgeBrandLink: " + singleLinkInfoArray.isMedBridgeBrandLink);
-    //
-    // console.error("1");
-    // if ( linkNeedsGoogleTracking && email.esp !== "gr" ) {
-    // console.error("2");
-    //
-    //   var moduleNumber = l.closest("[data-module-count]");
-    //
-    //   if ( elementExists(moduleNumber) ) {
-    //
-    //     console.error("3");
-    //
-    //     moduleNumber = moduleNumber.getAttribute("data-module-count");
-    //     var moduleNumberMatch = new RegExp("utm_content=.*?mod" + moduleNumber + "(\/|\-|&|$|#)", "gi");
-    //
-    //     // mod followed by 1 or 2 digits, followed by - or # or & or the link ends.
-    //     if ( /utm_content=.*?mod\d(\d)?(\/|\-|&|$|#)/gi.test(l._urlInDOMMergeTagSafe) ) {
-    //
-    //       console.error("4");
-    //
-    //       if ( !moduleNumberMatch.test(l._urlInDOMMergeTagSafe) ) {
-    //
-    //         console.error("5");
-    //
-    //         // console.log( "no match: " + !moduleNumberMatch.test(l._urlInDOMMergeTagSafe) );
-    //         createLinkErrorRow(l, "Wrong mod #, use " + "mod" + moduleNumber + ".");
-    //       } else {
-    //         console.error("6");
-    //         // console.log( "match: " + !moduleNumberMatch.test(l._urlInDOMMergeTagSafe) );
-    //       }
-    //
-    //     } else {
-    //
-    //       console.error("7");
-    //       createLinkErrorRow(l, "Missing or mistyped mod #, use mod" + moduleNumber + ".");
-    //
-    //     }
-    //   }
-    // }
-    // console.error("8");
-
-    ////
-    // Is color present in the style attribute?
-    // Ignore if there's no text, or it's an image (unless that image has alt text).
-    ////
-
-    var linkedImg;
-
-    // Get the img child first.
-    if ( elementExists(l.getElementsByTagName('img')[0]) ) {
-      linkedImg = l.getElementsByTagName('img')[0];
-
-
-    if ( l.style.color === '' ) {
-
-      if ( (linkedImg && l.textContent !== '') || l.textContent !== '' )
-      createLinkErrorRow(l, "Missing color in style attribute.");
-      }
-
-    }
-
-    // @TODO: Not seeing this bug. Disabled until I see it again.
-    // if ( l.style.textAlign !== '' && linkedImg ) {
-    //   createLinkErrorRow(l, "Don't use <code>text-align</code> in links when linking images, it breaks in Safari.");
-    // }
-
-
-
-    ////
-    // Check for old fashioned marketing URLS in sub, ent, or email.outsideOrg
-    if ( (email.outsideOrg || email.subscription === "sub" || email.audience === "ent" ) && (singleLinkInfoArray.isMedBridgeBrandLink && /\.com\/(gr|mc)?trk\-/gi.test(l._urlInDOMMergeTagSafe) || /after_affiliate_url/gi.test(l._urlInDOMMergeTagSafe)) ) {
-      createLinkErrorRow(l, "Do not use a Marketing URL.");
-    }
-
-    ////
-    // Check for medium=email in Sale and Presale emails
-    if ( (email.subscription === "sub" || !emailAnySale) && /[\?&]medium=email/gi.test(l._urlInDOMMergeTagSafe) ) {
-
-      createLinkErrorRow(l, "Remove <code>medium=email</code>.");
-
-    }
-
-    else if ( email.subscription === "ns" && !email.outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink && ( singleLinkInfoArray.isArticle || /\-article/gi.test(l._urlInDOMMergeTagSafe) ) ) {
-
-      if ( emailAnySale && !/medium=email/gi.test(l._urlInDOMMergeTagSafe)) { // Any sale email
-        createLinkErrorRow(l, "Add <code>medium=email</code>.");
-      }
-
-    }
-
-
-    //
-    // Check ns emails
-    //
-    if ( singleLinkInfoArray.isMedBridgeEdLink && email.subscription === "ns" ) {
-
-      // Webinars
-      if ( /\.com\/webinars(\?|\/|#|$)[^d]/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Link to /live-webinars instead in Non-Subscriber emails.");
-      }
-
-    }
-
-    //
-    // Check sub emails
-    //
-    if ( singleLinkInfoArray.isMedBridgeEdLink && (email.subscription === "sub" || email.outsideOrg) ) {
-
-      //
-      if ( /\.com\/continuing-education(\?|\/|#|$)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Link to /courses instead in Subscriber emails.");
-      }
-      //
-      if ( /\.com\/(speech-language-pathology|occupational-therapy|athletic-training|physical-therapy)(\?|\/|#|$)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Link to a page without conversion messaging in Subscriber emails.");
-      }
-      // Webinars
-      if ( /\.com\/live-webinars(\?|\/|#|$)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Link to /webinars instead in Subscriber emails.");
-      }
-
-      ////
-      // Check for sub=yes
-      ////
-      // sub=yes is required in blog links.
-      if ( singleLinkInfoArray.isBlogLink && !/sub=yes/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Add <code>sub=yes</code>.");
-      }
-      // sub=yes should not be in any other links.
-      if ( ( !singleLinkInfoArray.isBlogLink && !/\-(blog|article)/gi.test(l._urlInDOMMergeTagSafe) ) && /sub=yes/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Remove <code>sub=yes</code>.");
-      }
-
-    }
-
-    ////
-    // Check for broken article links in sub
-    if ( singleLinkInfoArray.isMedBridgeEdLink && email.subscription === "sub" && /p=\d\d\d/gi.test(l._urlInDOMMergeTagSafe) && !/\.com\/blog(\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Article link is broken.");
-    }
-
-    ////
-    // Check all links in non-subscriber emails for sub=yes, never use it in ns.
-    if ( email.subscription === "ns" && /sub=yes/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Remove <code>sub=yes</code>.");
-    }
-
-    ////
-    // Verify links in A/B emails if it looks like the link is using -a or -b.
-    if ( singleLinkInfoArray.isMarketingUrl && abTesting === "a" && /\-b[\?\/]/i.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Fix a/b version.");
-    }
-    if ( singleLinkInfoArray.isMarketingUrl && abTesting === "b" && /\-a[\?\/]/i.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Fix a/b version.");
-    }
-    if ( singleLinkInfoArray.isMarketingUrl && (abTesting !== "a" && abTesting !== "b") && /\-(a|b)[\?\/]/i.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Remove -a/-b.");
-    }
-
-
-    ////
-    // Link Text Hints
-    // Only test for link -vs- text inconsistencies if we've determined that the linked content actually includes text.
-    if ( singleLinkInfoArray.hasText ) {
-
-      // Request a Demo
-      if ( ( /(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(l.textContent) && !/#request\-a\-demo/i.test(l._urlInDOMMergeTagSafe) ) || (!/((form|schedule (a |some )?time|(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)|connect to further discuss|connect with us|contact us here)/gi.test(l.textContent) && /#request\-a\-demo/i.test(l._urlInDOMMergeTagSafe)) ) {
-        createLinkErrorRow(l, "Text and URL are inconsistent (Demo Request related).");
-      }
-      // Request EMR Integration
-      if ( (singleLinkInfoArray.hasText ) && (/Request (EMR|Integration)/gi.test(l.textContent) && !/#request-integration/i.test(l._urlInDOMMergeTagSafe)) || (!/Request|EMR|Integration/gi.test(l.textContent) && /#request-integration/i.test(l._urlInDOMMergeTagSafe)) ) {
-        createLinkErrorRow(l, "Text and URL are inconsistent (EMR Integration related).");
-      }
-
-    }
-
-    if ( email.organization !== "hs" ) {
-      if ( /\barticle\b/gi.test(l.textContent) && !singleLinkInfoArray.isArticle ) {
-        createLinkErrorRow(l, "Text references an article but the URL does not go to one.");
-      }
-      if ( /\barticles\b/gi.test(l.textContent) && !singleLinkInfoArray.isBlogLink ) {
-        createLinkErrorRow(l, "Text references articles but the URL does not go to the blog.");
-      }
-      // This was a failed experiment. I later realized that we would want to link article titles that don't
-      // have the word "Read" or "Article" in them.
-      // if ( !/Read|Article/gi.test(l.textContent) && singleLinkInfoArray.isArticle ) {
-      //   createLinkErrorRow(l, "Link text does not match url (article related) [2].");
-      // }
-    }
-
-    ////
-    // Enterprise
-    // Deprecated - Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
-    // if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "sub" && email.audience === "ent" && /request\-a\-demo/gi.test(l._urlInDOMMergeTagSafe) ) {
-    //   createLinkErrorRow(l, "no demo requests in enterprise sub");
-    // }
-
-    //// Using after_signin_url on Subscriber links
-    ///////////////////////////////////////////////
-    // email.outsideOrg and subs should not link to home-exercise-program.
-    // Use sign-in/?after_signin_url=patient_care/programs/create
-
-    // Check that this is a sub or email.outsideOrg email
-    if ( email.outsideOrg || email.subscription === "sub") {
-
-      // // // Courses
-      // if ( /\.com\/courses\/details\//gi.test(l._urlInDOMMergeTagSafe) ) {
-      //   createLinkErrorRow(l, "Use <code>sign-in/?after_signin_url=courses/details/...</code>");
-      // }
-
-      // Patient Education
-      if ( /\.com\/patient\-education\-library\/condition\//gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Use <code>sign-in/?after_signin_url=patient-education-library/condition/...</code>");
-      }
-
-      // Webinars
-      if ( /\.com\/webinars\/details\//gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Use <code>sign-in/?after_signin_url=webinars/details/...</code>");
-      }
-      // HEP
-      if ( /\.com\/home\-exercise\-program/gi.test(l._urlInDOMMergeTagSafe) || /patient_care\/programs\/create/gi.test(l._urlInDOMMergeTagSafe) ) {
-
-        if ( !/after_signin_url/gi.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
-        }
-
-      }
-      //
-      // // TODO: TEMPORARY UNTIL DEV FIXES A BUG
-      // if ( /after_signin_url=/gi.test(l._urlInDOMMergeTagSafe) && !email.outsideOrg && !/(patient_care\/programs\/create|webinars\/details\/|patient\-education\-library\/condition)/gi.test(l._urlInDOMMergeTagSafe) && !/refer/gi.test(l._urlInDOMMergeTagSafe) ) {
-      //   createLinkErrorRow(l, "Don't use <code>after_signin_url</code> (temporary).");
-      // }
-
-    } else {
-      // This is an NS email? No after_signin_url for you!
-      if ( /(\.com\/sign-in|after_signin_url=)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Don't use sign-in related URLs in Non-Subscriber emails.");
-      }
-    }
-
-    if ( (!email.outsideOrg && email.subscription !== "sub") && /patient_care\/programs\/create/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "use <code>home-exercise-program</code>");
-    }
-
-
-
-    ////
-    // Tracking URL - Discipline Check
-
-    if ( email.audience !== "multi" && email.audience !== "ent" && email.audience !== null && email.subscription === "ns" && singleLinkInfoArray.isMedBridgeBrandLink && !/\/courses\/details\//g.test(l._urlInDOMMergeTagSafe) && singleLinkInfoArray.isMarketingUrl ) {
-
-      if ( email.audience === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing/wrong discipline.");
-      }
-      if ( email.audience === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing/wrong discipline.");
-      }
-      if ( email.audience === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing/wrong discipline.");
-      }
-      if ( email.audience === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing/wrong discipline.");
-      }
-      if ( email.audience === "ind-other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Missing/wrong discipline.");
-      }
-    }
-
-    // Homepage - Discipline Check
-    // Checking NS and SUB.
-    if ( email.division === "individual" ) {
-      if ( email.audience !== "multi" && email.audience !== "all" && email.audience !== null && email.audience !== undefined && !email.outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink ) {
-
-        if ( (email.audience !== "pt" && email.audience !== "ind-other") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/physical-therapy\/?(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
-          createLinkErrorRow(l, "Wrong homepage.");
-        }
-        if ( (email.audience !== "ind-other" && email.audience !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
-          createLinkErrorRow(l, "Wrong homepage.");
-        }
-        if ( email.audience !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/athletic-training\/?(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
-          createLinkErrorRow(l, "Wrong homepage.");
-        }
-        if ( email.audience !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/occupational-therapy\/?(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
-          createLinkErrorRow(l, "Wrong homepage.");
-        }
-        if ( email.audience !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/speech-language-pathology\/?(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
-          createLinkErrorRow(l, "Wrong homepage.");
-        }
-      }
-    }
-
-    // Enterprise Setting Pages
-    // Home Care
-            // if ( email.division === "enterprise" ) {
-            //   if ( email.audience !== "hc" && /medbridgeed(ucation)?\.com\/enterprise\/home-care-and-hospice/gi.test(l._urlInDOMMergeTagSafe) ) {
-            //     createLinkErrorRow(l, "Wrong homepage.");
-            //   }
-            //   // Hospital
-            //   if ( email.audience !== "hosp" && /medbridgeed(ucation)?\.com\/enterprise\/hospitals-health-care-systems/gi.test(l._urlInDOMMergeTagSafe) ) {
-            //     createLinkErrorRow(l, "Wrong homepage.");
-            //   }
-            //   // Long-Term Care
-            //   if ( email.audience !== "ltc" && /medbridgeed(ucation)?\.com\/enterprise\/skilled-nursing-and-long-term-care/gi.test(l._urlInDOMMergeTagSafe) ) {
-            //     createLinkErrorRow(l, "Wrong homepage.");
-            //   }
-            //   // Private Practice
-            //   if ( email.audience !== "pp" && /medbridgeed(ucation)?\.com\/enterprise\/private-practice/gi.test(l._urlInDOMMergeTagSafe) ) {
-            //     createLinkErrorRow(l, "Wrong homepage.");
-            //   }
-            //   // Other/Unknown
-            //   if ( (email.audience !== "ent-other" && email.audience !== "all" ) && /medbridgeed(ucation)?\.com\/enterprise($|\/$|\/?\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
-            //     createLinkErrorRow(l, "Wrong homepage.");
-            //   }
-            // }
-
-
-    // Discipline Check - Blog
-    // Checking NS and SUB.
-    if ( /blog\/discipline\/pt/gi.test(l._urlInDOMMergeTagSafe) && (email.audience !== "pt" && email.audience !== "ind-other") ) {
-      createLinkErrorRow(l, "Wrong discipline.");
-    }
-    else if ( /blog\/discipline\/at/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "at" ) {
-      createLinkErrorRow(l, "Wrong discipline.");
-    }
-    else if ( /blog\/discipline\/ot/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "ot" ) {
-      createLinkErrorRow(l, "Wrong discipline.");
-    }
-    else if ( /blog\/discipline\/slp/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "slp" ) {
-      createLinkErrorRow(l, "Wrong discipline.");
-    }
-    else if ( /blog\/discipline\/(at|ot|slp)/gi.test(l._urlInDOMMergeTagSafe) && email.audience === "ind-other" ) {
-      createLinkErrorRow(l, "Wrong discipline.");
-    }
-
-
-    // False Courses Page URL
-    // courses/speech-language-pathology isn't a page
-    // The only valid pages for courses is courses/# and courses/details
-    // First match that this is intended to be a courses link. Then see if it DOESN'T match the only valid kinds of courses links.
-    if ( /(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses/gi.test(l._urlInDOMMergeTagSafe) && !/(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses(\/details|\/?(#|&|\?|$))/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Invalid courses page. Only <code>courses/#</code> and <code>courses/details</code> is valid.");
-    }
-
-
-    // Courses Page
-    // Is this the courses page (not the courses detail page)?
-    if ( /(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses(\/?#|\/?&|\/?\?|\/?$|\/[^d])/gi.test(l._urlInDOMMergeTagSafe) ) {
-
-      // If the email has a discipline, the link to the courses page needs one too.
-      // Check the discipline of the email against the hashtag that's being used for links meant to go to the courses page
-      if ( email.audience === "enterprise" || email.audience === "ent" || email.audience === "multi" || email.audience === "all" || email.audience === null || email.audience === undefined ) {
-
-        // Removed on 9/25/18
-        // I was editing a Pardot campaign that had no discipline set. But we were linking to the #nursing category of the courses page.
-        // This threw an error when I'd rather it hadn't.
-        // if ( /#/gi.test(l._urlInDOMMergeTagSafe) ) {
-        //   createLinkErrorRow(l, "Remove the hashtag. This email has no assigned discipline to link to.");
-        // }
-
-      } else {
-        if ( !/#/gi.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Missing discipline in the hashtag.");
-        } else {
-          if ( (email.audience === "pt" ) && !/#\/?physical-therapy/gi.test(l._urlInDOMMergeTagSafe) ) {
-            createLinkErrorRow(l, "Wrong discipline in the hashtag.");
-          }
-          if ( (email.audience === "ind-other" ) && /#\/?(athletic-training|occupational-therapy|speech-language-pathology|nursing)/gi.test(l._urlInDOMMergeTagSafe) ) {
-            createLinkErrorRow(l, "Wrong discipline in the hashtag.");
-          }
-          if ( email.audience === "at" && !/#\/?athletic-training/gi.test(l._urlInDOMMergeTagSafe) ) {
-            createLinkErrorRow(l, "Wrong discipline in the hashtag.");
-          }
-          if ( email.audience === "ot" && !/#\/?occupational-therapy/gi.test(l._urlInDOMMergeTagSafe) ) {
-            createLinkErrorRow(l, "Wrong discipline in the hashtag.");
-          }
-          if ( email.audience === "slp" && !/#\/?speech-language-pathology/gi.test(l._urlInDOMMergeTagSafe) ) {
-            createLinkErrorRow(l, "Wrong discipline in the hashtag.");
-          }
-          if ( email.audience === "rn" && !/#\/?nursing/gi.test(l._urlInDOMMergeTagSafe) ) {
-            createLinkErrorRow(l, "Wrong discipline in the hashtag.");
-          }
-        }
-      }
-
-    }
-
-    // Patient Engagement Landing Page
-    // Discipline Check
-    // [NS]
-    if ( email.subscription === "ns" ) {
-      if ( /h\/patient-engagement-for-physical-therapists/gi.test(l._urlInDOMMergeTagSafe) && (email.audience !== "pt" && email.audience !== "ind-other") ) {
-        createLinkErrorRow(l, "Wrong landing page for this discipline.");
-      }
-      else if ( /h\/patient-engagement-for-athletic-trainers/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "at" ) {
-        createLinkErrorRow(l, "Wrong landing page for this discipline.");
-      }
-      else if ( /h\/patient-engagement-for-occupational-therapists/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "ot" ) {
-        createLinkErrorRow(l, "Wrong landing page for this discipline.");
-      }
-      else if ( /h\/patient-engagement-for-speech-language-pathology/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "slp" ) {
-        createLinkErrorRow(l, "Wrong landing page for this discipline.");
-      }
-    }
-    // [SUB]
-    if ( /h\/patient-engagement-for-(physical-therapists|athletic-trainers|occupational-therapists|speech-language-pathology)/gi.test(l._urlInDOMMergeTagSafe) && email.subscription === "sub" ) {
-      // createLinkErrorRow(l, "Wrong landing page for subscribers. Use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
-      createLinkErrorRow(l, "Wrong landing page for subscribers. Use <code>patient_care/programs/create</code>");
-    }
-
-
-    // Pricing
-    // SUB
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "sub" && /\.com\/(cart|pricing)/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Don't link to the pricing or cart pages in subscriber emails.");
-    }
-    // NS -
-    if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "ns" ) {
-
-      // Pricing Page - Discipline Check
-      if ( /pricing/gi.test(l._urlInDOMMergeTagSafe) ) {
-        // PT
-        if ( email.audience === "pt" && !/pricing\/pt/gi.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Link to pricing/pt.");
-        }
-        // AT
-        else if ( email.audience === "at" && !/pricing\/at/gi.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Link to pricing/at.");
-        }
-        // OT
-        else if ( email.audience === "ot" && !/pricing\/ot/gi.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Link to pricing/ot.");
-        }
-        // SLP
-        else if ( email.audience === "slp" && !/pricing\/slp/gi.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Link to pricing/slp.");
-        }
-        // Other
-        else if ( email.audience === "ind-other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Link to pricing/other.");
-        }
-        // No Discipline
-        else if ( !email.audience && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(l._urlInDOMMergeTagSafe) ) {
-          createLinkErrorRow(l, "Link to standard pricing page.");
-        }
-
-        // Students
-        if ( /student/.test(l.pathname) ) {
-          createLinkErrorRow(l, "If this is a student promo code, link to <code>cart/get_subscription/9</code> instead.");
-        }
-      }
-
-      // NS - Cart Page - Discipline Check
-      if ( /cart/gi.test(l._urlInDOMMergeTagSafe) && !/get_subscription\/[0-9]/gi.test(l._urlInDOMMergeTagSafe) ) {
-        createLinkErrorRow(l, "Links to the cart page need to link to <code>cart/get_subscription/##</code>.");
-      }
-    }
-
-
-    // Check for unecessary discipline hastags. Should only be used when linking to courses page
-    if ( /#\/?(speech-language-pathology|physical-therapy|nursing|athletic-training|occupational-therapy)/gi.test(l._urlInDOMMergeTagSafe) && ( !/(_url=courses|\/courses|\/course-catalog)(#|\/|\?|&|$)/gi.test(l._urlInDOMMergeTagSafe) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(l._urlInDOMMergeTagSafe) ) ) {
-      createLinkErrorRow(l, "Unecessary hashtag.");
-    }
-
-
-    ////
-    // Do not link to medbridgeed.com. Use the full medbridgeeducation.com URL.
-    // Unless it starts with enterprise\.
-    if ( /(\:\/\/|\.)medbridgeed\.com/gi.test(l._urlInDOMMergeTagSafe) && !/\:\/\/enterprise\.medbridgeed\.com/gi.test(l._urlInDOMMergeTagSafe) ) {
-      createLinkErrorRow(l, "Use medbridgeeducation.com");
-    }
-
-    ////
-    // NO //support. in email.outsideOrg
-    if ( /\/support\./gi.test(l._urlInDOMMergeTagSafe) && email.outsideOrg ) {
-      createLinkErrorRow(l, "://support. not allowed in email.outsideOrg, use mailto:support@medbridgeed.com");
-    }
-
-    ////
-    // Do not advertise Enterprise products to email.outsideOrg
-    if ( /enterprise/gi.test(l._urlInDOMMergeTagSafe) && email.outsideOrg ) {
-      createLinkErrorRow(l, "do not advertise enterprise to email.outsideOrg");
-    }
-
-  ///////
-  //// End Link Check ////
-  ///////
+              ////-----------------------------////
+              ////
+              // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
+              if ( linkNeedsGoogleTracking && !/utm_content/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Missing <code>utm_content</code>.");
+              }
+
+              ////-----------------------------////
+              ////
+              // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
+              if ( /\.com\/\//gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Remove extra /.");
+              }
+
+              ////-----------------------------////
+              ////
+              // MUST HAVE UTM - Check for utm_content on links going to medbridgeeducation.com or medbridgemassage.com. Error if utm_content is not present.
+              if ( /after_affiliate_url=&/i.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Missing redirect URL for <code>after_affiliate_url</code>. ");
+              }
+
+              ////-----------------------------////
+              ////
+              // DON'T USE UTM - email.outsideOrg and off domain urls should not have utms
+              if ( /utm_content/gi.test(l._urlInDOMMergeTagSafe) && !singleLinkInfoArray.isMedBridgeEdLink ) {
+                createLinkErrorRow(l, "Remove <code>utm_content</code> parameter in non-MedBridge links.");
+              }
+
+              ////-----------------------------////
+              ////
+              // MedBridge links must be https. If only because it makes sorting links easier when we do our metrics
+              if ( singleLinkInfoArray.isMedBridgeBrandLink && singleLinkInfoArray.type !== "https" ) {
+                createLinkErrorRow(l, "Use <code>https</code> for MedBridge links.");
+              }
+
+
+              ////-----------------------------////
+              ////
+              // Mismatching hostnames
+
+
+              // const tlds = ['aaa','aarp','abarth','abb','abbott','abbvie','abc','able','abogado','abudhabi','ac','academy','accenture','accountant','accountants','aco','actor','ad','adac','ads','adult','ae','aeg','aero','aetna','af','afamilycompany','afl','africa','ag','agakhan','agency','ai','aig','aigo','airbus','airforce','airtel','akdn','al','alfaromeo','alibaba','alipay','allfinanz','allstate','ally','alsace','alstom','am','americanexpress','americanfamily','amex','amfam','amica','amsterdam','analytics','android','anquan','anz','ao','aol','apartments','app','apple','aq','aquarelle','ar','arab','aramco','archi','army','arpa','art','arte','as','asda','asia','associates','at','athleta','attorney','au','auction','audi','audible','audio','auspost','author','auto','autos','avianca','aw','aws','ax','axa','az','azure','ba','baby','baidu','banamex','bananarepublic','band','bank','bar','barcelona','barclaycard','barclays','barefoot','bargains','baseball','basketball','bauhaus','bayern','bb','bbc','bbt','bbva','bcg','bcn','bd','be','beats','beauty','beer','bentley','berlin','best','bestbuy','bet','bf','bg','bh','bharti','bi','bible','bid','bike','bing','bingo','bio','biz','bj','black','blackfriday','blockbuster','blog','bloomberg','blue','bm','bms','bmw','bn','bnpparibas','bo','boats','boehringer','bofa','bom','bond','boo','book','booking','bosch','bostik','boston','bot','boutique','box','br','bradesco','bridgestone','broadway','broker','brother','brussels','bs','bt','budapest','bugatti','build','builders','business','buy','buzz','bv','bw','by','bz','bzh','ca','cab','cafe','cal','call','calvinklein','cam','camera','camp','cancerresearch','canon','capetown','capital','capitalone','car','caravan','cards','care','career','careers','cars','casa','case','caseih','cash','casino','cat','catering','catholic','cba','cbn','cbre','cbs','cc','cd','ceb','center','ceo','cern','cf','cfa','cfd','cg','ch','chanel','channel','charity','chase','chat','cheap','chintai','christmas','chrome','church','ci','cipriani','circle','cisco','citadel','citi','citic','city','cityeats','ck','cl','claims','cleaning','click','clinic','clinique','clothing','cloud','club','clubmed','cm','cn','co','coach','codes','coffee','college','cologne','com','comcast','commbank','community','company','compare','computer','comsec','condos','construction','consulting','contact','contractors','cooking','cookingchannel','cool','coop','corsica','country','coupon','coupons','courses','cpa','cr','credit','creditcard','creditunion','cricket','crown','crs','cruise','cruises','csc','cu','cuisinella','cv','cw','cx','cy','cymru','cyou','cz','dabur','dad','dance','data','date','dating','datsun','day','dclk','dds','de','deal','dealer','deals','degree','delivery','dell','deloitte','delta','democrat','dental','dentist','desi','design','dev','dhl','diamonds','diet','digital','direct','directory','discount','discover','dish','diy','dj','dk','dm','dnp','do','docs','doctor','dog','domains','dot','download','drive','dtv','dubai','duck','dunlop','dupont','durban','dvag','dvr','dz','earth','eat','ec','eco','edeka','edu','education','ee','eg','email','emerck','energy','engineer','engineering','enterprises','epson','equipment','er','ericsson','erni','es','esq','estate','esurance','et','etisalat','eu','eurovision','eus','events','exchange','expert','exposed','express','extraspace','fage','fail','fairwinds','faith','family','fan','fans','farm','farmers','fashion','fast','fedex','feedback','ferrari','ferrero','fi','fiat','fidelity','fido','film','final','finance','financial','fire','firestone','firmdale','fish','fishing','fit','fitness','fj','fk','flickr','flights','flir','florist','flowers','fly','fm','fo','foo','food','foodnetwork','football','ford','forex','forsale','forum','foundation','fox','fr','free','fresenius','frl','frogans','frontdoor','frontier','ftr','fujitsu','fujixerox','fun','fund','furniture','futbol','fyi','ga','gal','gallery','gallo','gallup','game','games','gap','garden','gay','gb','gbiz','gd','gdn','ge','gea','gent','genting','george','gf','gg','ggee','gh','gi','gift','gifts','gives','giving','gl','glade','glass','gle','global','globo','gm','gmail','gmbh','gmo','gmx','gn','godaddy','gold','goldpoint','golf','goo','goodyear','goog','google','gop','got','gov','gp','gq','gr','grainger','graphics','gratis','green','gripe','grocery','group','gs','gt','gu','guardian','gucci','guge','guide','guitars','guru','gw','gy','hair','hamburg','hangout','haus','hbo','hdfc','hdfcbank','health','healthcare','help','helsinki','here','hermes','hgtv','hiphop','hisamitsu','hitachi','hiv','hk','hkt','hm','hn','hockey','holdings','holiday','homedepot','homegoods','homes','homesense','honda','horse','hospital','host','hosting','hot','hoteles','hotels','hotmail','house','how','hr','hsbc','ht','hu','hughes','hyatt','hyundai','ibm','icbc','ice','icu','id','ie','ieee','ifm','ikano','il','im','imamat','imdb','immo','immobilien','in','inc','industries','infiniti','info','ing','ink','institute','insurance','insure','int','intel','international','intuit','investments','io','ipiranga','iq','ir','irish','is','ismaili','ist','istanbul','it','itau','itv','iveco','jaguar','java','jcb','jcp','je','jeep','jetzt','jewelry','jio','jll','jm','jmp','jnj','jo','jobs','joburg','jot','joy','jp','jpmorgan','jprs','juegos','juniper','kaufen','kddi','ke','kerryhotels','kerrylogistics','kerryproperties','kfh','kg','kh','ki','kia','kim','kinder','kindle','kitchen','kiwi','km','kn','koeln','komatsu','kosher','kp','kpmg','kpn','kr','krd','kred','kuokgroup','kw','ky','kyoto','kz','la','lacaixa','lamborghini','lamer','lancaster','lancia','land','landrover','lanxess','lasalle','lat','latino','latrobe','law','lawyer','lb','lc','lds','lease','leclerc','lefrak','legal','lego','lexus','lgbt','li','lidl','life','lifeinsurance','lifestyle','lighting','like','lilly','limited','limo','lincoln','linde','link','lipsy','live','living','lixil','lk','llc','llp','loan','loans','locker','locus','loft','lol','london','lotte','lotto','love','lpl','lplfinancial','lr','ls','lt','ltd','ltda','lu','lundbeck','lupin','luxe','luxury','lv','ly','ma','macys','madrid','maif','maison','makeup','man','management','mango','map','market','marketing','markets','marriott','marshalls','maserati','mattel','mba','mc','mckinsey','md','me','med','media','meet','melbourne','meme','memorial','men','menu','merckmsd','metlife','mg','mh','miami','microsoft','mil','mini','mint','mit','mitsubishi','mk','ml','mlb','mls','mm','mma','mn','mo','mobi','mobile','moda','moe','moi','mom','monash','money','monster','mormon','mortgage','moscow','moto','motorcycles','mov','movie','mp','mq','mr','ms','msd','mt','mtn','mtr','mu','museum','mutual','mv','mw','mx','my','mz','na','nab','nadex','nagoya','name','nationwide','natura','navy','nba','nc','ne','nec','net','netbank','netflix','network','neustar','new','newholland','news','next','nextdirect','nexus','nf','nfl','ng','ngo','nhk','ni','nico','nike','nikon','ninja','nissan','nissay','nl','no','nokia','northwesternmutual','norton','now','nowruz','nowtv','np','nr','nra','nrw','ntt','nu','nyc','nz','obi','observer','off','office','okinawa','olayan','olayangroup','oldnavy','ollo','om','omega','one','ong','onl','online','onyourside','ooo','open','oracle','orange','org','organic','origins','osaka','otsuka','ott','ovh','pa','page','panasonic','paris','pars','partners','parts','party','passagens','pay','pccw','pe','pet','pf','pfizer','pg','ph','pharmacy','phd','philips','phone','photo','photography','photos','physio','pics','pictet','pictures','pid','pin','ping','pink','pioneer','pizza','pk','pl','place','play','playstation','plumbing','plus','pm','pn','pnc','pohl','poker','politie','porn','post','pr','pramerica','praxi','press','prime','pro','prod','productions','prof','progressive','promo','properties','property','protection','pru','prudential','ps','pt','pub','pw','pwc','py','qa','qpon','quebec','quest','qvc','racing','radio','raid','re','read','realestate','realtor','realty','recipes','red','redstone','redumbrella','rehab','reise','reisen','reit','reliance','ren','rent','rentals','repair','report','republican','rest','restaurant','review','reviews','rexroth','rich','richardli','ricoh','rightathome','ril','rio','rip','rmit','ro','rocher','rocks','rodeo','rogers','room','rs','rsvp','ru','rugby','ruhr','run','rw','rwe','ryukyu','sa','saarland','safe','safety','sakura','sale','salon','samsclub','samsung','sandvik','sandvikcoromant','sanofi','sap','sarl','sas','save','saxo','sb','sbi','sbs','sc','sca','scb','schaeffler','schmidt','scholarships','school','schule','schwarz','science','scjohnson','scor','scot','sd','se','search','seat','secure','security','seek','select','sener','services','ses','seven','sew','sex','sexy','sfr','sg','sh','shangrila','sharp','shaw','shell','shia','shiksha','shoes','shop','shopping','shouji','show','showtime','shriram','si','silk','sina','singles','site','sj','sk','ski','skin','sky','skype','sl','sling','sm','smart','smile','sn','sncf','so','soccer','social','softbank','software','sohu','solar','solutions','song','sony','soy','space','sport','spot','spreadbetting','sr','srl','ss','st','stada','staples','star','statebank','statefarm','stc','stcgroup','stockholm','storage','store','stream','studio','study','style','su','sucks','supplies','supply','support','surf','surgery','suzuki','sv','swatch','swiftcover','swiss','sx','sy','sydney','symantec','systems','sz','tab','taipei','talk','taobao','target','tatamotors','tatar','tattoo','tax','taxi','tc','tci','td','tdk','team','tech','technology','tel','temasek','tennis','teva','tf','tg','th','thd','theater','theatre','tiaa','tickets','tienda','tiffany','tips','tires','tirol','tj','tjmaxx','tjx','tk','tkmaxx','tl','tm','tmall','tn','to','today','tokyo','tools','top','toray','toshiba','total','tours','town','toyota','toys','tr','trade','trading','training','travel','travelchannel','travelers','travelersinsurance','trust','trv','tt','tube','tui','tunes','tushu','tv','tvs','tw','tz','ua','ubank','ubs','ug','uk','unicom','university','uno','uol','ups','us','uy','uz','va','vacations','vana','vanguard','vc','ve','vegas','ventures','verisign','versicherung','vet','vg','vi','viajes','video','vig','viking','villas','vin','vip','virgin','visa','vision','vistaprint','viva','vivo','vlaanderen','vn','vodka','volkswagen','volvo','vote','voting','voto','voyage','vu','vuelos','wales','walmart','walter','wang','wanggou','watch','watches','weather','weatherchannel','webcam','weber','website','wed','wedding','weibo','weir','wf','whoswho','wien','wiki','williamhill','win','windows','wine','winners','wme','wolterskluwer','woodside','work','works','world','wow','ws','wtc','wtf','xbox','xerox','xfinity','xihuan','xin','xn--11b4c3d','xn--1ck2e1b','xn--1qqw23a','xn--2scrj9c','xn--30rr7y','xn--3bst00m','xn--3ds443g','xn--3e0b707e','xn--3hcrj9c','xn--3oq18vl8pn36a','xn--3pxu8k','xn--42c2d9a','xn--45br5cyl','xn--45brj9c','xn--45q11c','xn--4gbrim','xn--54b7fta0cc','xn--55qw42g','xn--55qx5d','xn--5su34j936bgsg','xn--5tzm5g','xn--6frz82g','xn--6qq986b3xl','xn--80adxhks','xn--80ao21a','xn--80aqecdr1a','xn--80asehdb','xn--80aswg','xn--8y0a063a','xn--90a3ac','xn--90ae','xn--90ais','xn--9dbq2a','xn--9et52u','xn--9krt00a','xn--b4w605ferd','xn--bck1b9a5dre4c','xn--c1avg','xn--c2br7g','xn--cck2b3b','xn--cg4bki','xn--clchc0ea0b2g2a9gcd','xn--czr694b','xn--czrs0t','xn--czru2d','xn--d1acj3b','xn--d1alf','xn--e1a4c','xn--eckvdtc9d','xn--efvy88h','xn--estv75g','xn--fct429k','xn--fhbei','xn--fiq228c5hs','xn--fiq64b','xn--fiqs8s','xn--fiqz9s','xn--fjq720a','xn--flw351e','xn--fpcrj9c3d','xn--fzc2c9e2c','xn--fzys8d69uvgm','xn--g2xx48c','xn--gckr3f0f','xn--gecrj9c','xn--gk3at1e','xn--h2breg3eve','xn--h2brj9c','xn--h2brj9c8c','xn--hxt814e','xn--i1b6b1a6a2e','xn--imr513n','xn--io0a7i','xn--j1aef','xn--j1amh','xn--j6w193g','xn--jlq61u9w7b','xn--jvr189m','xn--kcrx77d1x4a','xn--kprw13d','xn--kpry57d','xn--kpu716f','xn--kput3i','xn--l1acc','xn--lgbbat1ad8j','xn--mgb9awbf','xn--mgba3a3ejt','xn--mgba3a4f16a','xn--mgba7c0bbn0a','xn--mgbaakc7dvf','xn--mgbaam7a8h','xn--mgbab2bd','xn--mgbah1a3hjkrd','xn--mgbai9azgqp6j','xn--mgbayh7gpa','xn--mgbbh1a','xn--mgbbh1a71e','xn--mgbc0a9azcg','xn--mgbca7dzdo','xn--mgbcpq6gpa1a','xn--mgberp4a5d4ar','xn--mgbgu82a','xn--mgbi4ecexp','xn--mgbpl2fh','xn--mgbt3dhd','xn--mgbtx2b','xn--mgbx4cd0ab','xn--mix891f','xn--mk1bu44c','xn--mxtq1m','xn--ngbc5azd','xn--ngbe9e0a','xn--ngbrx','xn--node','xn--nqv7f','xn--nqv7fs00ema','xn--nyqy26a','xn--o3cw4h','xn--ogbpf8fl','xn--otu796d','xn--p1acf','xn--p1ai','xn--pbt977c','xn--pgbs0dh','xn--pssy2u','xn--q7ce6a','xn--q9jyb4c','xn--qcka1pmc','xn--qxa6a','xn--qxam','xn--rhqv96g','xn--rovu88b','xn--rvc1e0am3e','xn--s9brj9c','xn--ses554g','xn--t60b56a','xn--tckwe','xn--tiq49xqyj','xn--unup4y','xn--vermgensberater-ctb','xn--vermgensberatung-pwb','xn--vhquv','xn--vuq861b','xn--w4r85el8fhu5dnra','xn--w4rs40l','xn--wgbh1c','xn--wgbl6a','xn--xhq521b','xn--xkc2al3hye2a','xn--xkc2dl3a5ee0h','xn--y9a3aq','xn--yfro4i67o','xn--ygbi2ammx','xn--zfr164b','xxx','xyz','yachts','yahoo','yamaxun','yandex','ye','yodobashi','yoga','yokohama','you','youtube','yt','yun','za','zappos','zara','zero','zip','zm','zone','zuerich','zw'];
+                    //
+                    // let textHasTlds = function() {
+                    //
+                    //   tlds.some(function (tld) {
+                    //
+                    //     let re = new RegExp(".\\." + escapeRegEx(tld) + "\\b", "i");
+                    //
+                    //     if ( re.test(singleLinkInfoArray.text) ) {
+                    //       console.log(re);
+                    //       console.log( singleLinkInfoArray.text );
+                    //       return true;
+                    //     }
+                    //
+                    //   });
+                    //
+                    // };
+                    //
+                    // if ( singleLinkInfoArray.hasText ) {
+                    //
+                    //   if ( textHasTlds() ) {
+                    //     console.error("@@@@@@@@@@@@@@@@@@@");
+                    //     createLinkErrorRow(l, "Link text includes a domain name that may differ from the linked URL.");
+                    //   }
+                    //   else {
+                    //     console.error("!!!!!!!!!!!!!!!!");
+                    //   }
+                    // }
+                    //
+              ////-----------------------------////
+              ////
+              // Check tracking links to see if the URL is consistent with the rest of the links.
+              // eg. If most links say trk-sep-17-davenport, but this one says trk-sep-17-walter, throw an error.
+              // The logic for this is resolved higher up where we looped through each link, saved all tracking URLs to an array, and determined the most common occurence.
+
+                    // console.log(commonUtmCampaign);
+                    // console.log(commonUtmCampaignRegex);
+                    //
+                    // console.log(l.href);
+                    // console.log(l._urlInDOM);
+                    // console.log(l._urlInDOMMergeTagSafe);
+
+              if ( email.subscription === "ns" && singleLinkInfoArray.isMarketingUrl && linkNeedsPromoCode ) {
+                // Ignore if the links pathname ends in -student
+                if ( !commonTrkUrlRegex.test(l.href) && !/\-student\/?$/gi.test(l.pathname) ) {
+                  createLinkErrorRow(l, "Tracking URL is missing or inconsistent, " + commonTrkUrl + " is most common. - " + l._urlInDOMMergeTagSafe);
+                }
+              }
+
+              if ( singleLinkInfoArray.isMedBridgeBrandLink && email.esp !== "gr" ) {
+                if ( commonUtmSource ) {
+                  if ( !commonUtmSourceRegex.test(l.href) ) {
+                    createLinkErrorRow(l, "<code>utm_source</code> is missing or inconsistent, " + commonUtmSource + " is most common.");
+                  }
+                }
+
+
+                if ( commonUtmCampaign ) {
+                  if ( !commonUtmCampaignRegex.test(l.href) ) {
+                    createLinkErrorRow(l, "<code>utm_campaign</code> is missing or inconsistent, " + commonUtmCampaign + " is most common.");
+                  }
+                }
+              }
+
+              ////
+              // Check for whitelabeling versus www
+              if ( email.outsideOrg && singleLinkInfoArray.isMedBridgeEdLink ) {
+
+                if ( /https?:\/\/(www\.)?med/.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Missing whitelabeling.");
+                }
+                else if ( ( email.organization === "hs" && !/\/(encompasshealth|healthsouth)\./i.test(l._urlInDOMMergeTagSafe)) || (email.organization === "dr" && !/\/drayerpt\./i.test(l._urlInDOMMergeTagSafe)) || (email.organization === "fox" && !/\/foxrehab\./i.test(l._urlInDOMMergeTagSafe)) ) {
+                  createLinkErrorRow(l, "Incorrect whitelabeling.");
+                }
+
+              }
+              if ( !email.outsideOrg && singleLinkInfoArray.isMedBridgeEdLink && !/\/(support\.|www\.|medbridgeed(ucation)?\.com)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Remove whitelabeling.");
+              }
+
+              ////
+              ////
+              // Validate querystring pattern if it looks like there is one
+              //////////////
+              //////////////
+              //////////////
+
+              // http://stackoverflow.com/a/23959662/556079
+              // http://rubular.com/r/kyiKS9OlsM
+
+              // Check the query string without any ending hash
+              // Ignore links with after_signin_url, we'll check that later.
+              l._urlInDOMMergeTagSafeNoHash = l._urlInDOMMergeTagSafe.replace(/\#.+/, "");
+
+              if ( /[^#]+\&.+\=/.test(l._urlInDOMMergeTagSafeNoHash) || /[^#]+\?.+\=/.test(l._urlInDOMMergeTagSafeNoHash) && ( !/after_signin_url/.test(l._urlInDOMMergeTagSafeNoHash) ) ) {
+
+                if ( /\&.+\=/.test(l._urlInDOMMergeTagSafe) && !/\?./.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Missing ? in querystring.");
+                }
+
+                if ( /\?[^#]+\?.+\=/.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Replace the ? with an & in the querystring.");
+                }
+
+                ///////////
+                // @TODO - Add exclusions for merge tags
+                ///////////
+
+                // Add characters you want to ignore twice. Like *, |, and '.
+                if ( !/\?([\@\%\.\w-]+(=[\!\'\*\|\:\+\@\%\.\/\w-]*)?(&[\@\%\.\w-]+(=[\'\*\|\+\@\%\.\/\w-]*)?)*)?$/.test(l._urlInDOMMergeTagSafeNoHash) ) {
+                  createLinkErrorRow(l, "Invalid querystring.");
+                  console.log(l._urlInDOMMergeTagSafeNoHash);
+                }
+
+              }
+                    // after_signin_url is different.
+                    // If you're using more than one qs parameter then the ? needs to be followed immediately
+                    // by another ? for the redirect to carry the parameters over to the next page.
+                    if ( /after_signin_url=/.test(l._urlInDOMMergeTagSafeNoHash) ) {
+
+                      // Can't (shouldn't) do &after_signin_url.
+                      if ( !/\?after_signin_url=/.test(l._urlInDOMMergeTagSafe) ) {
+                        createLinkErrorRow(l, "<code>after_signin_url</code> must be the first parameter.");
+                      }
+
+                      if ( /\?after_signin_url=[^\?#]*?&/.test(l._urlInDOMMergeTagSafe) ) {
+                        createLinkErrorRow(l, "Replace the first <code>&</code> with a URL encoded <code>?</code> (<code>%3F</code>) in the querystring after the <code>after_signin_url</code> parameter to pass that parameter along. This is a workaround for a MedBridge bug that will allow you to transfer one parameter after they login (except for Angular pages).");
+                      }
+
+                    }
+
+              // Leftover & or ? from a removed querystring
+              // TEMPORARILY MODIFIED -
+              // In Q4 2019 we started needing to end course links with trailing ?.
+              // Something about the combination of AC and the new marketing site made this necessary
+              // AC tracking is removing the #discipline at the end of links
+              // We currently have to make this link:
+                 // https://www.medbridgeeducation.com/courses?utm_content=mod1#/discipline
+              // Look like this:
+                 // https://www.medbridgeeducation.com/courses?utm_content=mod1#/discipline?
+              // When this is fixed, we can remove the second criteria
+                        // if ( /(\?|&)$/g.test(l._urlInDOMMergeTagSafe) ) {
+                        //   createLinkErrorRow(l, "Remove the trailing ? or &.");
+                        // }
+
+              if ( /(\?|&)$/g.test(l._urlInDOMMergeTagSafe) && email.division === "enterprise" ) {
+                createLinkErrorRow(l, "Remove the trailing ? or &.");
+              }
+
+              if ( !/#.*\?/g.test(l._urlInDOMMergeTagSafe) && /#/g.test(l._urlInDOMMergeTagSafe) && email.division !== "enterprise" ) {
+                createLinkErrorRow(l, "You need a ? somewhere after your hashtag to be compatible with ActiveCampaign.");
+              }
+
+
+              ////-----------------------------////
+              ////
+              if ( /google\.com\/url\?/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "This looks like a Google redirect.");
+              }
+
+
+              ////-----------------------------////
+              ////
+              if ( o.sync.linkValidation_duplicates === "1" && singleLinkInfoArray.firstInstance === false ) {
+                createLinkErrorRow(l, "This link is an exact duplicate of a previous link.");
+              }
+
+              ////-----------------------------////
+              ////
+              if ( linkNeedsPromoCode ) {
+
+                // Links to MedBridge in -ns emails need to use a marketing URL
+                if ( !/\.com\/(gr|mc)?trk\-/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/(signin|courses\/|blog\/)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Use a Marketing URL.");
+                }
+
+                // Spell after_affiliate_url correctly!
+                if ( !/\-(blog|article)/gi.test(l._urlInDOMMergeTagSafe) && !/after_affiliate_url/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Missing after_affiliate_url query parameter.");
+                }
+
+                // Too many leading /'s' during a redirect can cause a link to not work
+                if ( /after_affiliate_url=\/\/+/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Too many consecutive /s.");
+                }
+
+                // Watch out for extra hyphens!
+                if ( /\-\-.+?after_affiliate_url/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Investigate consecutive hyphens.");
+                }
+                // Watch out for extra forward slashes!
+                if ( /https?:\/\/.+?\/\//gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Investigate consecutive forward slashes.");
+                }
+
+                // console.log("email.date.getMonth(); " + email.date.getMonth());
+
+                // Check the date in a tracking URL if the email's filename has a date in it to match against
+                if ( labelsAvailable ) {
+                  if ( email.date.getMonth() ) {
+                    var monthPattern = new RegExp("\\/(gr|mc)?trk\\-.*?" + email.monthName + "\\-", "gi");
+                    if ( !monthPattern.test(l._urlInDOMMergeTagSafe) ) {
+                      createLinkErrorRow(l, "Link should include '-" + email.monthName + "-' to match month in filename.");
+                    }
+                  }
+                }
+
+              }
+
+
+              // DEPRECATED - 2020-02-24
+              // Helen has requested that we stop validating the `mod#` on table modules.
+              // The B2C team is switching to a more descriptive method to target modules by type.
+              //
+              // ////
+              // // Is the module # in the utm correct?
+              // ////
+              //
+              // // console.error("0");
+              // //
+              // // console.log("email.subscription: " + email.subscription);
+              // // console.log("email.outsideOrg: " + email.outsideOrg);
+              // // console.log("singleLinkInfoArray.isMedBridgeBrandLink: " + singleLinkInfoArray.isMedBridgeBrandLink);
+              //
+              // console.error("1");
+              // if ( linkNeedsGoogleTracking && email.esp !== "gr" ) {
+              // console.error("2");
+              //
+              //   var moduleNumber = l.closest("[data-module-count]");
+              //
+              //   if ( elementExists(moduleNumber) ) {
+              //
+              //     console.error("3");
+              //
+              //     moduleNumber = moduleNumber.getAttribute("data-module-count");
+              //     var moduleNumberMatch = new RegExp("utm_content=.*?mod" + moduleNumber + "(\/|\-|&|$|#)", "gi");
+              //
+              //     // mod followed by 1 or 2 digits, followed by - or # or & or the link ends.
+              //     if ( /utm_content=.*?mod\d(\d)?(\/|\-|&|$|#)/gi.test(l._urlInDOMMergeTagSafe) ) {
+              //
+              //       console.error("4");
+              //
+              //       if ( !moduleNumberMatch.test(l._urlInDOMMergeTagSafe) ) {
+              //
+              //         console.error("5");
+              //
+              //         // console.log( "no match: " + !moduleNumberMatch.test(l._urlInDOMMergeTagSafe) );
+              //         createLinkErrorRow(l, "Wrong mod #, use " + "mod" + moduleNumber + ".");
+              //       } else {
+              //         console.error("6");
+              //         // console.log( "match: " + !moduleNumberMatch.test(l._urlInDOMMergeTagSafe) );
+              //       }
+              //
+              //     } else {
+              //
+              //       console.error("7");
+              //       createLinkErrorRow(l, "Missing or mistyped mod #, use mod" + moduleNumber + ".");
+              //
+              //     }
+              //   }
+              // }
+              // console.error("8");
+
+              ////
+              // Is color present in the style attribute?
+              // Ignore if there's no text, or it's an image (unless that image has alt text).
+              ////
+
+              var linkedImg;
+
+              // Get the img child first.
+              if ( elementExists(l.getElementsByTagName('img')[0]) ) {
+                linkedImg = l.getElementsByTagName('img')[0];
+
+
+              if ( l.style.color === '' ) {
+
+                if ( (linkedImg && l.textContent !== '') || l.textContent !== '' )
+                createLinkErrorRow(l, "Missing color in style attribute.");
+                }
+
+              }
+
+              // @TODO: Not seeing this bug. Disabled until I see it again.
+              // if ( l.style.textAlign !== '' && linkedImg ) {
+              //   createLinkErrorRow(l, "Don't use <code>text-align</code> in links when linking images, it breaks in Safari.");
+              // }
+
+
+
+              ////
+              // Check for old fashioned marketing URLS in sub, ent, or email.outsideOrg
+              if ( (email.outsideOrg || email.subscription === "sub" || email.audience === "ent" ) && (singleLinkInfoArray.isMedBridgeBrandLink && /\.com\/(gr|mc)?trk\-/gi.test(l._urlInDOMMergeTagSafe) || /after_affiliate_url/gi.test(l._urlInDOMMergeTagSafe)) ) {
+                createLinkErrorRow(l, "Do not use a Marketing URL.");
+              }
+
+              ////
+              // Check for medium=email in Sale and Presale emails
+              if ( (email.subscription === "sub" || !emailAnySale) && /[\?&]medium=email/gi.test(l._urlInDOMMergeTagSafe) ) {
+
+                createLinkErrorRow(l, "Remove <code>medium=email</code>.");
+
+              }
+
+              else if ( email.subscription === "ns" && !email.outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink && ( singleLinkInfoArray.isArticle || /\-article/gi.test(l._urlInDOMMergeTagSafe) ) ) {
+
+                if ( emailAnySale && !/medium=email/gi.test(l._urlInDOMMergeTagSafe)) { // Any sale email
+                  createLinkErrorRow(l, "Add <code>medium=email</code>.");
+                }
+
+              }
+
+
+              //
+              // Check ns emails
+              //
+              if ( singleLinkInfoArray.isMedBridgeEdLink && email.subscription === "ns" ) {
+
+                // Webinars
+                if ( /\.com\/webinars(\?|\/|#|$)[^d]/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Link to /live-webinars instead in Non-Subscriber emails.");
+                }
+
+              }
+
+              //
+              // Check sub emails
+              //
+              if ( singleLinkInfoArray.isMedBridgeEdLink && (email.subscription === "sub" || email.outsideOrg) ) {
+
+                //
+                if ( /\.com\/continuing-education(\?|\/|#|$)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Link to /courses instead in Subscriber emails.");
+                }
+                //
+                if ( /\.com\/(speech-language-pathology|occupational-therapy|athletic-training|physical-therapy)(\?|\/|#|$)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Link to a page without conversion messaging in Subscriber emails.");
+                }
+                // Webinars
+                if ( /\.com\/live-webinars(\?|\/|#|$)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Link to /webinars instead in Subscriber emails.");
+                }
+
+                ////
+                // Check for sub=yes
+                ////
+                // sub=yes is required in blog links.
+                if ( singleLinkInfoArray.isBlogLink && !/sub=yes/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Add <code>sub=yes</code>.");
+                }
+                // sub=yes should not be in any other links.
+                if ( ( !singleLinkInfoArray.isBlogLink && !/\-(blog|article)/gi.test(l._urlInDOMMergeTagSafe) ) && /sub=yes/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Remove <code>sub=yes</code>.");
+                }
+
+              }
+
+              ////
+              // Check for broken article links in sub
+              if ( singleLinkInfoArray.isMedBridgeEdLink && email.subscription === "sub" && /p=\d\d\d/gi.test(l._urlInDOMMergeTagSafe) && !/\.com\/blog(\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Article link is broken.");
+              }
+
+              ////
+              // Check all links in non-subscriber emails for sub=yes, never use it in ns.
+              if ( email.subscription === "ns" && /sub=yes/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Remove <code>sub=yes</code>.");
+              }
+
+              ////
+              // Verify links in A/B emails if it looks like the link is using -a or -b.
+              if ( singleLinkInfoArray.isMarketingUrl && abTesting === "a" && /\-b[\?\/]/i.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Fix a/b version.");
+              }
+              if ( singleLinkInfoArray.isMarketingUrl && abTesting === "b" && /\-a[\?\/]/i.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Fix a/b version.");
+              }
+              if ( singleLinkInfoArray.isMarketingUrl && (abTesting !== "a" && abTesting !== "b") && /\-(a|b)[\?\/]/i.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Remove -a/-b.");
+              }
+
+
+              ////
+              // Link Text Hints
+              // Only test for link -vs- text inconsistencies if we've determined that the linked content actually includes text.
+              if ( singleLinkInfoArray.hasText ) {
+
+                // Request a Demo
+                if ( ( /(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing/gi.test(l.textContent) && !/#request\-a\-demo/i.test(l._urlInDOMMergeTagSafe) ) || (!/((form|schedule (a |some )?time|(speak with|Group Pricing|Part of an organization|(Schedule|Request) (Group|a Demo|Info))|Pricing|Request)|connect to further discuss|connect with us|contact us here)/gi.test(l.textContent) && /#request\-a\-demo/i.test(l._urlInDOMMergeTagSafe)) ) {
+                  createLinkErrorRow(l, "Text and URL are inconsistent (Demo Request related).");
+                }
+                // Request EMR Integration
+                if ( (singleLinkInfoArray.hasText ) && (/Request (EMR|Integration)/gi.test(l.textContent) && !/#request-integration/i.test(l._urlInDOMMergeTagSafe)) || (!/Request|EMR|Integration/gi.test(l.textContent) && /#request-integration/i.test(l._urlInDOMMergeTagSafe)) ) {
+                  createLinkErrorRow(l, "Text and URL are inconsistent (EMR Integration related).");
+                }
+
+              }
+
+              if ( email.organization !== "hs" ) {
+                if ( /\barticle\b/gi.test(l.textContent) && !singleLinkInfoArray.isArticle ) {
+                  createLinkErrorRow(l, "Text references an article but the URL does not go to one.");
+                }
+                if ( /\barticles\b/gi.test(l.textContent) && !singleLinkInfoArray.isBlogLink ) {
+                  createLinkErrorRow(l, "Text references articles but the URL does not go to the blog.");
+                }
+                // This was a failed experiment. I later realized that we would want to link article titles that don't
+                // have the word "Read" or "Article" in them.
+                // if ( !/Read|Article/gi.test(l.textContent) && singleLinkInfoArray.isArticle ) {
+                //   createLinkErrorRow(l, "Link text does not match url (article related) [2].");
+                // }
+              }
+
+              ////
+              // Enterprise
+              // Deprecated - Just because a contact is subscribed to our Enterprise solution, doesn't mean that they have all of the enterprise products.
+              // if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "sub" && email.audience === "ent" && /request\-a\-demo/gi.test(l._urlInDOMMergeTagSafe) ) {
+              //   createLinkErrorRow(l, "no demo requests in enterprise sub");
+              // }
+
+              //// Using after_signin_url on Subscriber links
+              ///////////////////////////////////////////////
+              // email.outsideOrg and subs should not link to home-exercise-program.
+              // Use sign-in/?after_signin_url=patient_care/programs/create
+
+              // Check that this is a sub or email.outsideOrg email
+              if ( email.outsideOrg || email.subscription === "sub") {
+
+                // // // Courses
+                // if ( /\.com\/courses\/details\//gi.test(l._urlInDOMMergeTagSafe) ) {
+                //   createLinkErrorRow(l, "Use <code>sign-in/?after_signin_url=courses/details/...</code>");
+                // }
+
+                // Patient Education
+                if ( /\.com\/patient\-education\-library\/condition\//gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Use <code>sign-in/?after_signin_url=patient-education-library/condition/...</code>");
+                }
+
+                // Webinars
+                if ( /\.com\/webinars\/details\//gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Use <code>sign-in/?after_signin_url=webinars/details/...</code>");
+                }
+                // HEP
+                if ( /\.com\/home\-exercise\-program/gi.test(l._urlInDOMMergeTagSafe) || /patient_care\/programs\/create/gi.test(l._urlInDOMMergeTagSafe) ) {
+
+                  if ( !/after_signin_url/gi.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+                  }
+
+                }
+                //
+                // // TODO: TEMPORARY UNTIL DEV FIXES A BUG
+                // if ( /after_signin_url=/gi.test(l._urlInDOMMergeTagSafe) && !email.outsideOrg && !/(patient_care\/programs\/create|webinars\/details\/|patient\-education\-library\/condition)/gi.test(l._urlInDOMMergeTagSafe) && !/refer/gi.test(l._urlInDOMMergeTagSafe) ) {
+                //   createLinkErrorRow(l, "Don't use <code>after_signin_url</code> (temporary).");
+                // }
+
+              } else {
+                // This is an NS email? No after_signin_url for you!
+                if ( /(\.com\/sign-in|after_signin_url=)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Don't use sign-in related URLs in Non-Subscriber emails.");
+                }
+              }
+
+              if ( (!email.outsideOrg && email.subscription !== "sub") && /patient_care\/programs\/create/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "use <code>home-exercise-program</code>");
+              }
+
+
+
+              ////
+              // Tracking URL - Discipline Check
+
+              if ( email.audience !== "multi" && email.audience !== "ent" && email.audience !== null && email.subscription === "ns" && singleLinkInfoArray.isMedBridgeBrandLink && !/\/courses\/details\//g.test(l._urlInDOMMergeTagSafe) && singleLinkInfoArray.isMarketingUrl ) {
+
+                if ( email.audience === "pt" && !/\-pt(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Missing/wrong discipline.");
+                }
+                if ( email.audience === "at" && !/\-at(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Missing/wrong discipline.");
+                }
+                if ( email.audience === "ot" && !/\-ot(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Missing/wrong discipline.");
+                }
+                if ( email.audience === "slp" && !/\-slp(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Missing/wrong discipline.");
+                }
+                if ( email.audience === "ind-other" && !/\-other(\-(\/?$|.+?(\?|\&)after|$)|\/|\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Missing/wrong discipline.");
+                }
+              }
+
+              // Homepage - Discipline Check
+              // Checking NS and SUB.
+              if ( email.division === "individual" ) {
+                if ( email.audience !== "multi" && email.audience !== "all" && email.audience !== null && email.audience !== undefined && !email.outsideOrg && singleLinkInfoArray.isMedBridgeBrandLink ) {
+
+                  if ( (email.audience !== "pt" && email.audience !== "ind-other") && (/after_affiliate_url=\/?physical-therapy(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/physical-therapy\/?(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
+                    createLinkErrorRow(l, "Wrong homepage.");
+                  }
+                  if ( (email.audience !== "ind-other" && email.audience !== "lmt") && (/after_affiliate_url=\/(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
+                    createLinkErrorRow(l, "Wrong homepage.");
+                  }
+                  if ( email.audience !== "at" && (/after_affiliate_url=\/?athletic-training(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/athletic-training\/?(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
+                    createLinkErrorRow(l, "Wrong homepage.");
+                  }
+                  if ( email.audience !== "ot" && (/after_affiliate_url=\/?occupational-therapy(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/occupational-therapy\/?(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
+                    createLinkErrorRow(l, "Wrong homepage.");
+                  }
+                  if ( email.audience !== "slp" && (/after_affiliate_url=\/?speech-language-pathology(&|$)/gi.test(l._urlInDOMMergeTagSafe) || /\.com\/speech-language-pathology\/?(\?|$)/gi.test(l._urlInDOMMergeTagSafe)) ) {
+                    createLinkErrorRow(l, "Wrong homepage.");
+                  }
+                }
+              }
+
+              // Enterprise Setting Pages
+              // Home Care
+                      // if ( email.division === "enterprise" ) {
+                      //   if ( email.audience !== "hc" && /medbridgeed(ucation)?\.com\/enterprise\/home-care-and-hospice/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      //     createLinkErrorRow(l, "Wrong homepage.");
+                      //   }
+                      //   // Hospital
+                      //   if ( email.audience !== "hosp" && /medbridgeed(ucation)?\.com\/enterprise\/hospitals-health-care-systems/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      //     createLinkErrorRow(l, "Wrong homepage.");
+                      //   }
+                      //   // Long-Term Care
+                      //   if ( email.audience !== "ltc" && /medbridgeed(ucation)?\.com\/enterprise\/skilled-nursing-and-long-term-care/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      //     createLinkErrorRow(l, "Wrong homepage.");
+                      //   }
+                      //   // Private Practice
+                      //   if ( email.audience !== "pp" && /medbridgeed(ucation)?\.com\/enterprise\/private-practice/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      //     createLinkErrorRow(l, "Wrong homepage.");
+                      //   }
+                      //   // Other/Unknown
+                      //   if ( (email.audience !== "ent-other" && email.audience !== "all" ) && /medbridgeed(ucation)?\.com\/enterprise($|\/$|\/?\?)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      //     createLinkErrorRow(l, "Wrong homepage.");
+                      //   }
+                      // }
+
+
+              // Discipline Check - Blog
+              // Checking NS and SUB.
+              if ( /blog\/discipline\/pt/gi.test(l._urlInDOMMergeTagSafe) && (email.audience !== "pt" && email.audience !== "ind-other") ) {
+                createLinkErrorRow(l, "Wrong discipline.");
+              }
+              else if ( /blog\/discipline\/at/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "at" ) {
+                createLinkErrorRow(l, "Wrong discipline.");
+              }
+              else if ( /blog\/discipline\/ot/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "ot" ) {
+                createLinkErrorRow(l, "Wrong discipline.");
+              }
+              else if ( /blog\/discipline\/slp/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "slp" ) {
+                createLinkErrorRow(l, "Wrong discipline.");
+              }
+              else if ( /blog\/discipline\/(at|ot|slp)/gi.test(l._urlInDOMMergeTagSafe) && email.audience === "ind-other" ) {
+                createLinkErrorRow(l, "Wrong discipline.");
+              }
+
+
+              // False Courses Page URL
+              // courses/speech-language-pathology isn't a page
+              // The only valid pages for courses is courses/# and courses/details
+              // First match that this is intended to be a courses link. Then see if it DOESN'T match the only valid kinds of courses links.
+              if ( /(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses/gi.test(l._urlInDOMMergeTagSafe) && !/(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses(\/details|\/?(#|&|\?|$))/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Invalid courses page. Only <code>courses/#</code> and <code>courses/details</code> is valid.");
+              }
+
+
+              // Courses Page
+              // Is this the courses page (not the courses detail page)?
+              if ( /(\.com\/|after_signin_url=\/?|after_affiliate_url=\/?)courses(\/?#|\/?&|\/?\?|\/?$|\/[^d])/gi.test(l._urlInDOMMergeTagSafe) ) {
+
+                // If the email has a discipline, the link to the courses page needs one too.
+                // Check the discipline of the email against the hashtag that's being used for links meant to go to the courses page
+                if ( email.audience === "enterprise" || email.audience === "ent" || email.audience === "multi" || email.audience === "all" || email.audience === null || email.audience === undefined ) {
+
+                  // Removed on 9/25/18
+                  // I was editing a Pardot campaign that had no discipline set. But we were linking to the #nursing category of the courses page.
+                  // This threw an error when I'd rather it hadn't.
+                  // if ( /#/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  //   createLinkErrorRow(l, "Remove the hashtag. This email has no assigned discipline to link to.");
+                  // }
+
+                } else {
+                  if ( !/#/gi.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Missing discipline in the hashtag.");
+                  } else {
+                    if ( (email.audience === "pt" ) && !/#\/?physical-therapy/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      createLinkErrorRow(l, "Wrong discipline in the hashtag.");
+                    }
+                    if ( (email.audience === "ind-other" ) && /#\/?(athletic-training|occupational-therapy|speech-language-pathology|nursing)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      createLinkErrorRow(l, "Wrong discipline in the hashtag.");
+                    }
+                    if ( email.audience === "at" && !/#\/?athletic-training/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      createLinkErrorRow(l, "Wrong discipline in the hashtag.");
+                    }
+                    if ( email.audience === "ot" && !/#\/?occupational-therapy/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      createLinkErrorRow(l, "Wrong discipline in the hashtag.");
+                    }
+                    if ( email.audience === "slp" && !/#\/?speech-language-pathology/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      createLinkErrorRow(l, "Wrong discipline in the hashtag.");
+                    }
+                    if ( email.audience === "rn" && !/#\/?nursing/gi.test(l._urlInDOMMergeTagSafe) ) {
+                      createLinkErrorRow(l, "Wrong discipline in the hashtag.");
+                    }
+                  }
+                }
+
+              }
+
+              // Patient Engagement Landing Page
+              // Discipline Check
+              // [NS]
+              if ( email.subscription === "ns" ) {
+                if ( /h\/patient-engagement-for-physical-therapists/gi.test(l._urlInDOMMergeTagSafe) && (email.audience !== "pt" && email.audience !== "ind-other") ) {
+                  createLinkErrorRow(l, "Wrong landing page for this discipline.");
+                }
+                else if ( /h\/patient-engagement-for-athletic-trainers/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "at" ) {
+                  createLinkErrorRow(l, "Wrong landing page for this discipline.");
+                }
+                else if ( /h\/patient-engagement-for-occupational-therapists/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "ot" ) {
+                  createLinkErrorRow(l, "Wrong landing page for this discipline.");
+                }
+                else if ( /h\/patient-engagement-for-speech-language-pathology/gi.test(l._urlInDOMMergeTagSafe) && email.audience !== "slp" ) {
+                  createLinkErrorRow(l, "Wrong landing page for this discipline.");
+                }
+              }
+              // [SUB]
+              if ( /h\/patient-engagement-for-(physical-therapists|athletic-trainers|occupational-therapists|speech-language-pathology)/gi.test(l._urlInDOMMergeTagSafe) && email.subscription === "sub" ) {
+                // createLinkErrorRow(l, "Wrong landing page for subscribers. Use <code>sign-in/?after_signin_url=patient_care/programs/create</code>");
+                createLinkErrorRow(l, "Wrong landing page for subscribers. Use <code>patient_care/programs/create</code>");
+              }
+
+
+              // Pricing
+              // SUB
+              if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "sub" && /\.com\/(cart|pricing)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Don't link to the pricing or cart pages in subscriber emails.");
+              }
+              // NS -
+              if ( singleLinkInfoArray.isMedBridgeBrandLink && email.subscription === "ns" ) {
+
+                // Pricing Page - Discipline Check
+                if ( /pricing/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  // PT
+                  if ( email.audience === "pt" && !/pricing\/pt/gi.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Link to pricing/pt.");
+                  }
+                  // AT
+                  else if ( email.audience === "at" && !/pricing\/at/gi.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Link to pricing/at.");
+                  }
+                  // OT
+                  else if ( email.audience === "ot" && !/pricing\/ot/gi.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Link to pricing/ot.");
+                  }
+                  // SLP
+                  else if ( email.audience === "slp" && !/pricing\/slp/gi.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Link to pricing/slp.");
+                  }
+                  // Other
+                  else if ( email.audience === "ind-other" && !/pricing(\/(pt|other)|\/?(&|$))/gi.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Link to pricing/other.");
+                  }
+                  // No Discipline
+                  else if ( !email.audience && /pricing\/(pta?|at|ota?|slp|cscs|other)/gi.test(l._urlInDOMMergeTagSafe) ) {
+                    createLinkErrorRow(l, "Link to standard pricing page.");
+                  }
+
+                  // Students
+                  if ( /student/.test(l.pathname) ) {
+                    createLinkErrorRow(l, "If this is a student promo code, link to <code>cart/get_subscription/9</code> instead.");
+                  }
+                }
+
+                // NS - Cart Page - Discipline Check
+                if ( /cart/gi.test(l._urlInDOMMergeTagSafe) && !/get_subscription\/[0-9]/gi.test(l._urlInDOMMergeTagSafe) ) {
+                  createLinkErrorRow(l, "Links to the cart page need to link to <code>cart/get_subscription/##</code>.");
+                }
+              }
+
+
+              // Check for unecessary discipline hastags. Should only be used when linking to courses page
+              if ( /#\/?(speech-language-pathology|physical-therapy|nursing|athletic-training|occupational-therapy)/gi.test(l._urlInDOMMergeTagSafe) && ( !/(_url=courses|\/courses|\/course-catalog)(#|\/|\?|&|$)/gi.test(l._urlInDOMMergeTagSafe) && !/\/\/(foxrehab|drayerpt)\.medbridgeeducation\.com\/#/gi.test(l._urlInDOMMergeTagSafe) ) ) {
+                createLinkErrorRow(l, "Unecessary hashtag.");
+              }
+
+
+              ////
+              // Do not link to medbridgeed.com. Use the full medbridgeeducation.com URL.
+              // Unless it starts with enterprise\.
+              if ( /(\:\/\/|\.)medbridgeed\.com/gi.test(l._urlInDOMMergeTagSafe) && !/\:\/\/enterprise\.medbridgeed\.com/gi.test(l._urlInDOMMergeTagSafe) ) {
+                createLinkErrorRow(l, "Use medbridgeeducation.com");
+              }
+
+              ////
+              // NO //support. in email.outsideOrg
+              if ( /\/support\./gi.test(l._urlInDOMMergeTagSafe) && email.outsideOrg ) {
+                createLinkErrorRow(l, "://support. not allowed in email.outsideOrg, use mailto:support@medbridgeed.com");
+              }
+
+              ////
+              // Do not advertise Enterprise products to email.outsideOrg
+              if ( /enterprise/gi.test(l._urlInDOMMergeTagSafe) && email.outsideOrg ) {
+                createLinkErrorRow(l, "do not advertise enterprise to email.outsideOrg");
+              }
+
+
+            }
+
   }
+  ///////
+  //// End of local link validation ////
+  //// Checking that a link works with an ajax request is next //
   ///////
   ///////
 

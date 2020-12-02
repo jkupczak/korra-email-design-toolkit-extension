@@ -176,6 +176,9 @@ label{
     color: rgb(225, 230, 239);
     width:fit-content;
 }
+input + label {
+  cursor: pointer !important;
+}
 
 #support{
     margin: 0px -12px 10px -12px;
@@ -415,6 +418,20 @@ input[type='checkbox']:checked + label:before {
     text-indent:-1px;
 }
 
+/***********/
+/***********/
+/***********/
+.center-contents-vertically {
+  display:flex;
+  align-items:center
+}
+
+/***********/
+/***********/
+/***********/
+.input-table input[type='checkbox'] + label {
+  margin:0;
+}
 
 /***********/
 /***********/

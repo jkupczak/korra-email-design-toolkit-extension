@@ -159,18 +159,32 @@ document.getElementById("sent-test").addEventListener("click", function() {
 
 }, false);
 
-///////////////
-///////////////
-//
-// Open Gallery
-//
-///////////////
-///////////////
-document.getElementById("open-gallery").addEventListener("click", function() {
 
-  chrome.tabs.create({
-    url: 'gallery.html'
-  });
+
+///////////////
+///////////////
+//
+// Open Dropbox File
+//
+///////////////
+///////////////
+document.getElementById("open-dropbox-file").addEventListener("click", function() {
+
+  // Execute a script on the current tab from the popup window.
+  // The script finds the files folder path hidden in Dropbox's DOM.
+  // clean up the path and send it to the background script with sendMessage
+  // The background clip listens for a type of "viewDropboxFile" and then uses our saved local dropbox parent folder to finish creating the url
+  // background script then navigates to the korra preview page and shows the email
+  // https://stackoverflow.com/a/4532567/556079
+  chrome.tabs.executeScript({ code: `(${ inContent })()` });
+
+  function inContent() {
+    localDropboxUrl = document.querySelector("a.react-title-bar__close.mc-button-styleless").href.replace(/^http.+\.com\/home\//i,"").replace(/\?role=work&select=/i,"/");
+
+    chrome.runtime.sendMessage({message: {type: "viewDropboxFile", url: localDropboxUrl}}, function(response) {
+      console.log(response.farewell);
+    });
+  }
 
 }, false);
 

@@ -1,4 +1,5 @@
 // @TODO --- Possibly switch to keybuddy to support iframes.
+// --- Remember zoom settings on page refresh
 
 function fitToViewport() {
 
@@ -44,6 +45,8 @@ var zoomLevelsText = ["Browser Zoom 25%", "Browser Zoom 33%", "Browser Zoom 50%"
 
 var zoom = function (direction) {
 
+  turnOffFitToViewport();
+
   // console.log("zoom() function inititated");
   // console.log("zoom(direction): " + direction);
   // console.log("currentZoomLevel: " + currentZoomLevel);
@@ -87,6 +90,16 @@ function resetZoom() {
   dFrameHTMLEle.dataset.fitToViewport = "false";
 }
 
+function turnoffBrowserZoom() {
+  dFrameHTMLEle.style.zoom = "";
+  dFrameHTMLEle.dataset.browserZoom = "false";
+}
+
+function turnOffFitToViewport() {
+  dFrameHTMLEle.style.transform = "";
+  dFrameHTMLEle.style.overflowY = "scroll";
+  dFrameHTMLEle.dataset.fitToViewport = "false";
+}
 
 // Zoom the desktop view only.
 key('ctrl+-, ⌘+-', function() {

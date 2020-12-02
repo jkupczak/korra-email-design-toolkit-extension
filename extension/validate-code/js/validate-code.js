@@ -81,7 +81,7 @@ function validateCode() {
     // If this test runs while a mobile based media query is active, it could skew results
 
     console.groupCollapsed("[Bug Check] Outlook: <td> Vertical Padding");
-    console.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
+    log.info("Outlook 2007/2010/2013 do not allow sibling <td>s to have differing vertical padding (top and/or bottom). It will automatically set all sibling <td>s to have the same vertical padding as the first <td>. Documentation: Pending");
 
     var firstTdTop, firstTdBottom;
 
@@ -94,18 +94,15 @@ function validateCode() {
 
         // console.log(tableRow);
 
+        firstTdTop = window.getComputedStyle(tableRow.cells[0], null).getPropertyValue("padding-top");
+        firstTdBottom = window.getComputedStyle(tableRow.cells[0], null).getPropertyValue("padding-bottom");
+        console.log("padding in the first <td> in this row –", "padding-top:", firstTdTop, "padding-bottom:", firstTdBottom);
+        console.log("code for this <td>", tableRow.cells[0]);
+
         // Loop through all <td>'s in this table row.
         for (var i = 0; i < tableRow.cells.length; i++) {
 
-          // console.groupCollapsed();
-          //
-          // console.log(tableRow.cells[i]);
-          // console.log("table cell " + i + " of " + tableRow.cells.length);
-          // console.log("innerText length: " + tableRow.cells[i].innerText.trim().length, "innerText content: '" + tableRow.cells[i].innerText.trim() + "'");
-          // console.log("innerHTML length: " + tableRow.cells[i].innerHTML.trim().length, "innerHTML content: '" + tableRow.cells[i].innerHTML.trim() + "'");
-          // console.log("textContent length: " + tableRow.cells[i].textContent.trim().length, "textContent content: '" + tableRow.cells[i].textContent.trim() + "'");
-          //
-          // console.groupEnd();
+          console.log("Current cell:", i+1);
 
           // We need to ignore cells that are empty.
           // An empty table cell doesn't care if it gets different vertical padding.
@@ -115,23 +112,24 @@ function validateCode() {
           if ( !isElementEmpty(tableRow.cells[i]) ) {
           // console.groupEnd();
 
-            console.log( i );
-            console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding"), tableRow.cells[i] );
-            console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), tableRow.cells[i] );
-            console.log( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom"), tableRow.cells[i] );
+            console.log( "<td> cell number in this row:", i+1 );
+            console.log( tableRow.cells[i] );
+            console.log( "padding:", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding") );
+            console.log( "padding-top:", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") );
+            console.log( "padding-bottom:", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") );
 
             // Log the top and bottom padding of our first <td>
             if ( i === 0 ) {
               firstTdTop = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top");
               firstTdBottom = window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom");
-              console.log(firstTdTop, firstTdBottom);
+              console.log("padding in this <td> (which is the first) in this row –", "padding-top:", firstTdTop, "padding-bottom:", firstTdBottom);
             }
             // if this isn't the first <td>, check its top and bottom padding against the first <td>
             // Throw an error if they don't match.
             else if ( window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top") !== firstTdTop || window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") !== firstTdBottom ) {
               // Error
               logCodeBug(tableRow.cells[i], "outlook", "vertical-cell-padding");
-              console.log( firstTdTop, firstTdBottom, "|", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") );
+              console.log( "first cell:", firstTdTop, firstTdBottom, "|", "cell", i+1, ":", window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-top"), window.getComputedStyle(tableRow.cells[i], null).getPropertyValue("padding-bottom") );
             }
 
           }

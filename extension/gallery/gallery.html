@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Gallery</title>
+		<style>
+			/* resets */
+			html {
+				box-sizing: border-box;
+			}
+			*, *:before, *:after {
+				box-sizing: inherit;
+			}
+			body { /* Chrome injects a stylesheet that sets the font-size to 75% and font-family to system-ui. We need to reset this. */
+				font-size: unset;
+				font-family: unset;
+			}
+
+			/* custom styles */
+			body {
+				padding:0;
+				background:#25252c;
+				color:#ededf5;
+			}
+		</style>
+		<link rel="stylesheet" type="text/css" href="css/gallery.css" />
+	</head>
+	<body>
+
+		<div id="main">
+			<div id="controls">
+
+				<div class="direction">
+					<h2>Direction</h2>
+					<div class="direction--options">
+						<button data-control="direction" data-control-direction="h">Horizontal</button>
+						<button data-control="direction" data-control-direction="v">Vertical</button>
+					</div>
+				</div>
+
+				<div class="grid">
+					<h2>Grid</h2>
+					<div class="grid--options">
+						<button data-control="grid" data-control-grid="1">1</button>
+						<button data-control="grid" data-control-grid="2">2</button>
+						<button data-control="grid" data-control-grid="3">3</button>
+						<button data-control="grid" data-control-grid="4">4</button>
+						<button data-control="grid" data-control-grid="5">5</button>
+					</div>
+				</div>
+
+				<div class="zoom">
+					<h2>Zoom</h2>
+					<div class="zoom--options">
+						<button data-control="zoom" data-control-zoom="100">100%</button>
+						<button data-control="zoom" data-control-zoom="75">75%</button>
+						<button data-control="zoom" data-control-zoom="67">67%</button>
+						<button data-control="zoom" data-control-zoom="50">50%</button>
+						<button data-control="zoom" data-control-zoom="33">33%</button>
+						<button data-control="zoom" data-control-zoom="25">25%</button>
+						<button data-control="zoom" data-control-zoom="10">10%</button>
+					</div>
+				</div>
+
+				<div class="format">
+					<h2>Format</h2>
+					<div class="format--options">
+						<button data-control="format" data-control-format="d">Desktop</button>
+						<button data-control="format" data-control-format="m">Mobile</button>
+					</div>
+				</div>
+
+				<div class="scroll">
+					<h2>Scroll Position</h2>
+					<div class="format--options">
+						<button data-control="scroll" data-control-scroll="t">Pin to top</button>
+						<button data-control="scroll" data-control-scroll="b">Pin to bottom</button>
+					</div>
+				</div>
+
+			</div>
+			<div id="gallery" data-direction="h" data-grid="3" data-view="d" data-zoom="33" class="view">
+				<div id="gallery-wrapper"></div>
+			</div>
+		</div>
+
+		<script src="js/gallery.js"></script>
+	</body>
+</html>

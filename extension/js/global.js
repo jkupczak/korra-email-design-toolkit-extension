@@ -25,6 +25,19 @@
  * @param  {[type]} arg2 [description]
  * @return {[type]}      [description]
  */
+
+const log = {
+  info: function(msg) {
+    console.log(`%c💡 ${msg}`, "font-weight:bold; color:#50d2d0");
+  }
+}
+
+/**
+ * [someFunction description]
+ * @param  {[type]} arg1 [description]
+ * @param  {[type]} arg2 [description]
+ * @return {[type]}      [description]
+ */
 var escapeXml = function(unsafe) {
     return unsafe.replace(/[<>&'"]/g, function (c) {
         switch (c) {
@@ -718,7 +731,7 @@ function getEmailAudience() {
 
   var trimmedString = email.filename.trim();
 
-  if ( /Pardot/gi.test(email.fileLocation) ) {
+  if ( /\/(GetResponse Enterprise|Pardot)\//gi.test(email.fileLocation) ) {
     email.division = "enterprise";
 
     if      ( /(Audience|Setting|List)=(Home-Health|HH|Home-Care|HC)/gi.test(trimmedString) )        { email.audience = "hc"; email.audienceName = "Home Care" }

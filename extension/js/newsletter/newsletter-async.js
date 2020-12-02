@@ -1,6 +1,14 @@
 "use strict";
 
 /////
+///// Get settinns from sessionStorage
+/////
+
+if (sessionStorage.getItem("fullscreen") === "true") {
+  document.querySelector("html").classList.add("fullscreen");
+}
+
+/////
 ///// Get options from storage
 /////
 

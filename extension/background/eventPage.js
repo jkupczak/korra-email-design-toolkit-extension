@@ -822,6 +822,19 @@ chrome.runtime.onMessage.addListener(
       saveTabInfo(sender.tab.id, request.data);
     }
 
+    ////
+    // Request from the popup.js file
+    if (request.type === "viewDropboxFile") {
+      saveTabInfo(sender.tab.id, request.data);
+
+      var localUrl = chrome.extension.getURL('preview.html?open=') + "file:///" + options.local.fullPathToDropboxFolderEncoded + "/" + request.message.url;
+
+  		chrome.tabs.update(sender.tab.id, {
+  		    url: localUrl
+  		});
+
+    }
+
     ////////////////////
     // Dynamically loading content scripts into iframes using .executeScript();
     // Originally designed to deal with the issue of not being able to add content scripts to iframes using the manifest.

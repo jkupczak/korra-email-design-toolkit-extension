@@ -1,28 +1,28 @@
 const defaultLocalSettings = {
-  'protectedarticles': "",
-  'platform': navigator.platform
+  "protectedarticles": "",
+  "platform": navigator.platform
 };
 
 const defaultSyncSettings = {
 
-  'testOption': '1',
+  "testOption": "1",
 
   // Sync Saved
-  'defaultSyncOptionsLoaded': 'true',
+  "defaultSyncOptionsLoaded": "true",
 
   // General
-  'watchedExtensions': '.html, .htm',
-  'watchedFolders': '',
+  "watchedExtensions": ".html, .htm",
+  "watchedFolders": "",
 
   // Views
-  'synchronizeScrolling': '1',
-  'customColorScheme': 'light', // options: '', 'light', 'dark'
-  'mobileViewVisibility': '1',
-  'mobileWidthDefault': '320',
-  'mobileWidth': '320, 360, 375, 414, 480',
+  "synchronizeScrolling": "1",
+  "customColorScheme": "light", // options: "", "light", "dark"
+  "mobileViewVisibility": "1",
+  "mobileWidthDefault": "320",
+  "mobileWidth": "320, 360, 375, 414, 480",
 
   // Sharing
-  'autoRedirectDropboxLinkstoLocal': '0',
+  "autoRedirectDropboxLinkstoLocal": "0",
 
   // Sending Tests
 
@@ -33,75 +33,86 @@ const defaultSyncSettings = {
   // Link Validation
 
       // General
-      'autoCheckLinks': '1',
-      'checkTargetAttribute': '1',
-      'checkNoFollowLinks': '1',
-      'primaryDomains': 'medbridgeeducation.com\nmedbridgeed.com',
+      "autoCheckLinks": "1",
+      "checkTargetAttribute": "1",
+      "checkNoFollowLinks": "1",
+      "primaryDomains": "medbridgeeducation.com\nmedbridgeed.com\nwww.medbridgeeducation.com\nwww.medbridgeed.com\nfoxrehab.medbridgeeducation.com\nfoxrehab.medbridgeed.com\nencompasshealth.medbridgeeducation.com\nencompasshealth.medbridgeed.com\n",
 
       // URL Format Validation
-      'checkMissingHrefAttr': '1',
-      'checkEmptyLink': '1',
-      'checkTrailingHash': '1',
-      'checkTrailingSlash': '0',
-      'checkTrailingSlashPrimaryDomainsOnly': '0',
-      'ignoreESPTags': '1',
-      'mismatchedHostname': '1',
+      "checkMissingHrefAttr": "1",
+      "checkEmptyLink": "1",
+      "checkTrailingHash": "1",
+      "checkTrailingSlash": "0",
+      "checkTrailingSlashPrimaryDomainsOnly": "0",
+      "ignoreESPTags": "1",
+      "mismatchedHostname": "1",
+      "linkValidation_duplicates": "0",
 
       // Loading Validation
-      'cacheLinksThatLoadProperly': '1',
-      'parseDOM': '1',
-      'clearCacheAfterXDays': '1',
+      "cacheLinksThatLoadProperly": "1",
+      "parseDOM": "1",
+      "clearCacheAfterXDays": "1",
 
   // Code Validation
 
   // ESP Options
 
       // ESP Merge Tags
-      'espMergeTags':
+      "espMergeTagHandles":
         [
           {
-            'p': 'ActiveCampaign',
-            'n': 'Merge Tag',
-            'o': '%',
-            'c': '%'
+            "p": "ActiveCampaign",
+            "n": "Merge Tag",
+            "o": "%",
+            "c": "%"
           },
           {
-            'p': 'Pardot',
-            'n': 'Profile Content',
-            'o': '{{',
-            'c': '}}'
+            "p": "Pardot",
+            "n": "Profile Content",
+            "o": "{{",
+            "c": "}}"
           },
           {
-            'p': 'Pardot',
-            'n': 'Dynamic Content',
-            'o': '{{{',
-            'c': '}}}'
+            "p": "Pardot",
+            "n": "Dynamic Content",
+            "o": "{{{",
+            "c": "}}}"
           },
           {
-            'p': 'Mailchimp',
-            'n': 'Merge Tag',
-            'o': '*|',
-            'c': '|*'
+            "p": "Mailchimp",
+            "n": "Merge Tag",
+            "o": "*|",
+            "c": "|*"
           },
           {
-            'p': 'ON24',
-            'n': 'Merge Tag',
-            'o': '#',
-            'c': '#'
+            "p": "ON24",
+            "n": "Merge Tag",
+            "o": "#",
+            "c": "#"
           },
           {
-            'p': 'GetResponse',
-            'n': 'Merge Tag',
-            'o': '[[',
-            'c': ']]'
+            "p": "GetResponse",
+            "n": "Merge Tag",
+            "o": "[[",
+            "c": "]]"
           },
           {
-            'p': 'SendGrid',
-            'n': 'Merge Tag',
-            'o': '{{',
-            'c': '}}'
+            "p": "SendGrid",
+            "n": "Merge Tag",
+            "o": "{{",
+            "c": "}}"
           }
         ],
+
+        // ESP Merge Values
+        "espMergeTagValues":
+          [
+            {
+              "mergeTagName": "{{Recipient.FirstName}}",
+              "mergeTagValue": "Jack",
+              "mergeTagDefaultOn": "1"
+            }
+          ],
 
   // Images
 
@@ -114,5 +125,5 @@ const defaultSyncSettings = {
   // Alerts
 
   // install status
-  'newInstalled': true
+  "newInstalled": true
 };

@@ -518,7 +518,9 @@
 									<label>ESP Merge Tags</label>
 									<div class="option-desc">If your HTML email has merge tags, i.e. something like <code>{{fname}}</code>, you can provide the opening and closing characters here so that Korra can interact with them.</div>
 
-									<div class="esp-merge-tags input-table">
+									<b>SAVING IN UI NOT WORKING</b>
+									
+									<div class="esp-merge-tag-handles input-table">
 										<div class="columns input-table-head">
 											<label>Platform</label>
 											<label>Tag Description</label>
@@ -526,14 +528,37 @@
 											<label>Close Symbol</label>
 										</div>
 
-										<div id="espMergeTags">
+										<div id="espMergeTagHandles">
 											<!-- Rows generated via js -->
 										</div>
 
-										<button id="add-espmergetag-row" data-espmergetag>Add Row</button>
+										<button id="add-espmergetaghandles-row" data-espmergetaghandles>Add Row</button>
 									</div>
 
 								</div>
+
+
+								<div class="option-group">
+									<label>Merge Tag Values</label>
+									<div class="option-desc">Name some specific merge tag values you use and insert some placeholder content. For example, you can toggle on an <code>{{fname}}</code> tag when viewing an email. When you do, all instances of <code>{{fname}}</code> in the preview will be swapped out for "Jack".</div>
+
+									<b>SAVING IN UI NOT WORKING</b>
+
+									<div class="esp-merge-values input-table">
+										<div class="columns input-table-head">
+											<label>Merge Tag</label>
+											<label>Value</label>
+										</div>
+
+										<div id="espMergeTagValues">
+											<!-- Rows generated via js -->
+										</div>
+
+										<button id="add-espmergetagvalues-row" data-espmergetagvalues>Add Row</button>
+									</div>
+
+								</div>
+
 
 				    	</div>
 			    	</div>
@@ -902,6 +927,15 @@
 									</label>
 									<div class="option-desc">Some ESP tags include characters that would normally be invalid in a link (e.g. <code>*|tag|*</code> or <code>%%variable%%</code>). Enable this to prevent Korra from potentially marking your links as invalid when it finds one.<br><em><b>Note:</b> Provide the formatting that your ESP uses in order for this to work. Enter this in the "<a href="#section-esp-options">ESP Options</a>" section.</em></div>
 									<div class="option-desc default-values">Default: On</div>
+								</div>
+
+								<div class="option-group checkbox">
+									<input data-autosave="true" type="checkbox" name="linkValidation_duplicates" id="linkValidation_duplicates" value="0">
+									<label for="linkValidation_duplicates">
+										Mark links that are exact duplicates of other links in the email
+									</label>
+									<div class="option-desc">When enabled, if an exact copy of a link is seen a second time or more you will see an error message. Enable this if you would like to be reminded to differentiate your links to improve the accuracy of your reporting.</em></div>
+									<div class="option-desc default-values">Default: Off</div>
 								</div>
 
 					      <div>

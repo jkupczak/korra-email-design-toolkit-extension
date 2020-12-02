@@ -50,13 +50,13 @@ document.addEventListener("keydown", function(e) {
 
 ////////////////
 ////////////////
-// buildRow_espMergeTag
+// buildRow_for_espMergeTagHandles
 ////////////////
 ////////////////
 
-document.getElementById("add-espmergetag-row").addEventListener("click", buildRow_espMergeTag, false);
+document.getElementById("add-espmergetaghandles-row").addEventListener("click", buildRow_for_espMergeTagHandles, false);
 
-function buildRow_espMergeTag(values) {
+function buildRow_for_espMergeTagHandles(values) {
 
   console.log(values);
 
@@ -77,17 +77,71 @@ function buildRow_espMergeTag(values) {
 
     let row = `
       <div class="columns input-table-row p-b-1">
-        <input data-name="p" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="md m-r-1" value="` + values[item].p + `">
-        <input data-name="n" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="md m-r-1" value="` + values[item].n + `">
-        <input data-name="o" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="center xxs m-r-1" value="` + values[item].o + `">
-        <input data-name="c" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTags" class="center xxs m-r-1" value="` + values[item].c + `">
+        <input data-name="p" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTagHandles" class="md m-r-1" value="` + values[item].p + `">
+        <input data-name="n" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTagHandles" class="md m-r-1" value="` + values[item].n + `">
+        <input data-name="o" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTagHandles" class="center xxs m-r-1" value="` + values[item].o + `">
+        <input data-name="c" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTagHandles" class="center xxs m-r-1" value="` + values[item].c + `">
       </div>
     `;
 
-    document.getElementById("espMergeTags").insertAdjacentHTML("beforeend", row);
+    document.getElementById("espMergeTagHandles").insertAdjacentHTML("beforeend", row);
   });
 
 
+}
+
+////////////////
+////////////////
+// buildRow_for_espMergeTagValues
+////////////////
+////////////////
+
+document.getElementById("add-espmergetagvalues-row").addEventListener("click", buildRow_for_espMergeTagValues, false);
+
+function buildRow_for_espMergeTagValues(values) {
+
+  console.log("running buildRow_for_espMergeTagValues()");
+
+  console.log(values);
+
+  if ( !Array.isArray(values) ) {
+    console.log("if succeeded");
+    values = [
+      {
+        'mergeTagName': "",
+        'mergeTagValue': ""
+      }
+    ];
+  }
+  else {
+    console.log("if failed");
+  }
+  console.log(values);
+
+  Object.keys(values).forEach(function (item) {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  	console.log(values[item]); // value
+
+    let row = `
+      <div class="columns input-table-row p-b-1">
+        <input data-name="mergeTagName" data-autosave="true" data-group="true" data-group-type="object" type="text" name="mergeTagName" class="md m-r-1" value="` + values[item].mergeTagName + `">
+        <input data-name="mergeTagValue" data-autosave="true" data-group="true" data-group-type="object" type="text" name="espMergeTagValues" class="md m-r-1" value="` + values[item].mergeTagValue + `">
+        <div class="center-contents-vertically">
+          <input data-name="mergeTagDefaultOn" data-autosave="true" data-group="true" data-group-type="object" type="checkbox" name="mergeTagDefaultOn" id="mergeTagDefaultOn" class="md m-r-1" value="` + values[item].mergeTagDefaultOn + `">
+          <label for="mergeTagDefaultOn">
+            Auto-replace in Previews
+          </label>
+        </div>
+      </div>
+    `;
+
+
+    document.getElementById("espMergeTagValues").insertAdjacentHTML("beforeend", row);
+
+    console.log("finished running loop for buildRow_for_espMergeTagValues()");
+  });
+
+  console.log("finished running buildRow_for_espMergeTagValues()");
 }
 
 ////////////////
@@ -107,9 +161,15 @@ var applyOptions = function (options) {
       listValues(options[key], document.getElementById("saved-email-addresses"));
     }
 
-    if ( key === "espMergeTags" ) {
+    if ( key === "espMergeTagHandles" ) {
 
-      buildRow_espMergeTag(options[key]);
+      buildRow_for_espMergeTagHandles(options[key]);
+
+    }
+
+    if ( key === "espMergeTagValues" ) {
+
+      buildRow_for_espMergeTagValues(options[key]);
 
     }
 

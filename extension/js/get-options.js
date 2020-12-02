@@ -16,16 +16,16 @@ var logging = true;
 // OPTIONS: Zap all items in localstore
 ////////
 function clearStrg() {
-    log('about to clear local storage');
+    logit('about to clear local storage');
     window.localStorage.clear();
-    log('cleared');
+    logit('cleared');
 }
 
 
 ////////
 //
 ////////
-function log(txt) {
+function logit(txt) {
   if (logging) {
     // console.log(txt);
   }
@@ -58,14 +58,14 @@ function setItem(key, value, location) {
     });
 
     try {
-      log("Inside setItem:" + key + ":" + value);
+      logit("Inside setItem:" + key + ":" + value);
       window.localStorage.removeItem(key);
       window.localStorage.setItem(key, value);
     }catch(e) {
-      log("Error inside setItem");
-      log(e);
+      logit("Error inside setItem");
+      logit(e);
     }
-    log("Return from setItem" + key + ":" +  value);
+    logit("Return from setItem" + key + ":" +  value);
 }
 
 ////////
@@ -73,19 +73,19 @@ function setItem(key, value, location) {
 ////////
 function getItem(key) {
     var value;
-    log('Get Item:' + key);
+    logit('Get Item:' + key);
     try {
       value = window.localStorage.getItem(key);
       if(typeof value === 'undefined'){
         return null;
       }
     }catch(e) {
-      log("Error inside getItem() for key:" + key);
-      log(e);
+      logit("Error inside getItem() for key:" + key);
+      logit(e);
       value = null;
     }
 
-    log("Returning value: " + value);
+    logit("Returning value: " + value);
     return value;
 }
 

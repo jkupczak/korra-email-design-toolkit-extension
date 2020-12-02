@@ -21,7 +21,7 @@
         height:580px;
       }
       .main {
-        padding:40px;
+        padding:30px;
       }
       button {
         cursor: pointer;
@@ -36,6 +36,8 @@
       }
       textarea, input {
         background: #393964;
+        color:rgba(255,255,2550.9);
+        font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
       }
       #status {
         /* avoid an excessively wide status text */
@@ -56,7 +58,7 @@
         margin-right:10px;
         border-radius:4px;
         padding:20px;
-        background: rgba(0,0,0,0.1);
+        background: rgba(0,0,0,0.3);
       }
       .fat-btn {
         display:block;
@@ -65,6 +67,23 @@
         font-size:18px;
         font-weight:bold;
         text-align:center;
+      }
+
+      .quick-links {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .quick-links a {
+        display: block;
+        text-decoration: none;
+        background:rgba(0,0,0,0.45);
+        border-radius:3px;
+        padding:10px;
+        margin-left:10px;
+        color:#fff;
+      }
+      .quick-links a:hover {
+        background: #3e3eed !important;
       }
     </style>
 
@@ -77,6 +96,12 @@
   </head>
   <body>
     <div class="main">
+
+      <div class="quick-links">
+        <a href="../whats-new.html" target="_whatsnew">What's New</a>
+        <a href="../gallery/gallery.html" target="_gallery">Gallery</a>
+        <a href="../options/options.html" target="_options">Options</a>
+      </div>
 
       <div class="sections">
         <div class="section send-test">
@@ -97,6 +122,10 @@
           <button id="open-local-file" class="fat-btn" style="">Open Local File</button>
         </div>
 
+        <div class="section open-dropbox-file">
+          <button id="open-dropbox-file" class="fat-btn" style="">Open Dropbox File</button>
+        </div>
+
         <div class="section preview-code">
           <textarea id="preview-email-code"></textarea>
           <button id="preview-email" class="fat-btn" style="">View Email</button>
@@ -104,10 +133,6 @@
 
         <div class="section">
           <button id="clear-local-storage" class="fat-btn" style="">Clear Local Storage</button>
-        </div>
-
-        <div class="section">
-          <button id="open-gallery" class="fat-btn" style="">Open Gallery</button>
         </div>
       </div>
 

@@ -1,37 +1,60 @@
 <div>
 	<section>
-		<h2>3.9.5 – July 31st, 2020</h2>
+		<h2>3.9.494 – December 2nd, 2020</h2>
 
-		<h3>New Features</h3>
+		<section>
+			<h3>New Features</h3>
 
-		<h4>Email Viewer UI</h4>
-		<ul>
-			<li>Added a (?) shortcut icon to the "Info Overlay" in the top bar.
-			<li>Info Overlay now has a close button in the upper right hand corner.
-			<li>You can now shrink (or less likely, expand) your desktop email preview to fit to the screen. Helpful to get a quick look at your entire email.
-			<li>Info Overlay has been updated to show more of the shortcuts available to you.
-		</ul>
+			<section>
+				<h4>Email Viewer UI</h4>
+				<ul>
+					<li>Added a (?) shortcut icon to the "Info Overlay" in the top bar.
+					<li>Info Overlay now has a close button in the upper right hand corner.
+					<li>You can now shrink (or less likely, expand) your desktop email preview to fit to the screen. Helpful to get a quick look at your entire email.
+					<li>Info Overlay has been updated to show more of the shortcuts available to you.
+					<li>After refreshing an email preview, Korra now remembers if you had guidelines turned on, hidden content visible, you were in fullscreen mode (hiding the left pane and the mobile view), or if you toggled dark mode.
+				</ul>
+			</section>
 
-		<h4>Email QA</h4>
-		<ul>
-			<li>A large block of "spam" words that we use to highlight have been removed. Further research has proven that inbox placement has very little to do with supposed "spam" words so pointing them out in the email preview is unecessary.
-		</ul>
+			<section>
+				<h4>Email QA</h4>
+				<ul>
+					<li>A large block of "spam" words that we used to highlight have now been removed. Further research has proven that inbox placement has very little to do with supposed "spam" words so pointing them out in the email preview is unecessary.
+					<li>A new link validation option alerts you to duplicate links in your email. When enabled, if an exact copy of a link is seen a second time or more you will see an error message. Enable this if you would like to be reminded to differentiate your links to improve the accuracy of your reporting. This option is off by default on fresh installations.
+					<li>The accessibility checker will no longer warn you to add a lang="" attribute on some elements that do not need it.
+				</ul>
+			</section>
 
-		<h4>Other</h4>
-		<ul>
-			<li>Created a "What's New" page that pulls in the changelog for the extension. It opens when the extension is updated and also appears in the "Info Overlay" when viewing an email.
-		</ul>
+			<section>
+				<h4>Email Gallery</h4>
+				<p>
+					A new feature that will display recent emails in a collage style view. Access it from the top bar when viewing any email. This is still a work in progress.
+				</p>
+			</section>
 
-		<h3>Bug Fixes</h3>
-		<ul>
-			<li>The ability to toggle link markers on and off wasn't working because of some renaming of elements.
-		</ul>
+			<section>
+				<h4>Other</h4>
+				<ul>
+					<li>Created a "What's New" page that pulls in the changelog for the extension. It opens when the extension is updated and also appears in the "Info Overlay" when viewing an email.
+				</ul>
+			</section>
+		</section>
 
-		<h3>Maintenance</h3>
-		<ul>
-			<li>Added back in permissions that allowed us to access any page on the internet. It was previously removed because Google has been cracking down on extensions requesting more permissions than they need. After attempting to tighten up our manifest it became clear that we would need those broader permissions.
-			<li>Moved all zoom related code to it's own .js file for better organization.
-		</ul>
+		<section>
+			<h3>Bug Fixes</h3>
+			<ul>
+				<li>The ability to toggle link markers on and off wasn't working because of some renaming of elements.
+			</ul>
+		</section>
+
+		<section>
+			<h3>Maintenance</h3>
+			<ul>
+				<li>Added back in permissions that allowed us to access any page on the internet. It was previously removed because Google has been cracking down on extensions requesting more permissions than they need. After attempting to tighten up our manifest it became clear that we would need those broader permissions.
+				<li>Moved all page zoom related code to it's own .js file for better organization.
+				<li>The tools pane now uses sessionStorage instead of querystring parameters to remember a users setting across refreshes.
+			</ul>
+		</section>
 
 	</section>
 
