@@ -1994,7 +1994,7 @@ var displayErrorMsg = function(reason) {
     emoji = "&#128562;";
     title = "Couldn't find the file you requested.";
     reasonText = "Check that the file exists on your local harddrive.";
-    tip = "<div style='padding-top:10px;font-family: monospace; font-size:12px; line-height:20px'><span style='user-select:none; border-radius: 3px;background: #144e88;margin-right: 6px;padding: 2px 4px 2px 5px;color: #fff;'>File</span><span style=' opacity:.4'>" + email.filePath + "/</span><span style='opacity:.75'>" + filename + "</span></div>";
+    tip = "<div style='padding-top:10px;font-family: monospace; font-size:12px; line-height:20px'><span style='user-select:none; border-radius: 3px;background: #144e88;margin-right: 6px;padding: 2px 4px 2px 5px;color: #fff;'>File</span><span style=' opacity:.4'>" + email.filePath + "/</span><span style='opacity:.75'>" + email.filename + "</span></div>";
     document.title = "Error: Couldn't find the file you requested.";
   }
   else if (reason === "fileaccess") {

@@ -1114,7 +1114,19 @@ var toggleDarkMode = function(request) {
       let styles = frame.querySelectorAll("style");
       for (let style of styles) {
 
-        style.innerText = swap(style.innerText);
+        console.warn("styles BEFORE color scheme adjustment");
+        console.log(style.innerText);
+
+        // [Note] - 2020-12-10
+        // Replacing/updating the innerText of the <style> tag using innerText caused the linebreaks in the original string to be collapsed. And then when it was rendered in the browser the linebreaks became <br> tags. HTML inside of a style tag is obviously bad. To solve for this we're using .textContent instead.
+
+        // [Note] - 2020-12-10
+        // As of Chrome 87, the default background color on a page is now dark instead of white. This applies when the OS is in dark mode and your CSS has support for dark mode. Unsure at this time if this warrants any modificatons via Korra to get more desirable outcome for our dark mode switcher.
+
+        style.textContent = swap(style.innerText);
+
+        console.warn("styles AFTER color scheme adjustment");
+        console.log(style.innerText);
 
       }
 

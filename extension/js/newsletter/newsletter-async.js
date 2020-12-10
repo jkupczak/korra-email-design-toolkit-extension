@@ -128,7 +128,7 @@ if ( /^(https?|file):\/\//i.test(email.fileLocation) ) {
   // So we're going to encode any instances of the % sign.
   // Once that is done we're then going to encode any instances of the '?' character.
   // Otherwise, I believe Chrome thinks the '?' represents the beginning of a param? Unsure.
-  // Fact is that we can't load a file that that includes those characters without encoding them first.
+  // Fact is that we can't load a file that includes those characters without encoding them first.
   // As of 8/29/19 this is working and I'm not aware of any filenames that we can't open
   email.encodedFileLocation = email.fileLocation.replace(/%/gi, "%25");
   email.encodedFileLocation = email.encodedFileLocation.replace(/\?/gi, "%3F");
@@ -366,7 +366,7 @@ var getHtml = new Promise(function(resolve, reject) {
   // Check if its code saved in storage
   if ( !isSavedFile ) {
 
-    console.info("Doing a GET request for code saved in storage.\n", email.fileLocation);
+    console.info("Retrieving code saved in browser storage.\n", email.fileLocation);
     chrome.storage.promise.local.get(email.fileLocation).then(function(items) {
       // resolved
       console.log(items); // => {'foo': 'bar'}
@@ -380,7 +380,11 @@ var getHtml = new Promise(function(resolve, reject) {
   // It's not code saved in storage, it's a local file.
   } else {
 
-    console.info("Doing a GET request for a local file.\n", email.encodedFileLocation);
+    console.info("Doing a GET request for a local file or file from the web (file:// or http(s)://) using email.encodedFileLocation.\n");
+
+      console.log("encodedFileLocation\n",email.encodedFileLocation);
+      console.log("fileLocation\n",email.fileLocation);
+
     var xhr = new XMLHttpRequest();
 
     // The encoded
@@ -396,12 +400,16 @@ var getHtml = new Promise(function(resolve, reject) {
 
       } else {
 
+        console.log("`this.response.length` returns",this.response.length);
+        console.log("`this.response.length > 0` did not return true, throwing and error message with `displayErrorMsg('missing');`");
+
         displayErrorMsg("missing");
 
         reject({
           status: this.status,
           statusText: xhr.statusText,
         });
+        
       }
     };
 
